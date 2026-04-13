@@ -118,9 +118,6 @@ activate prior knowledge.
 > SCM is not new. Coordinating flows of materials, information, and
 > money across distances and time has been a decisive competitive
 > advantage since antiquity.
->
-> The difference today: **scale, speed, and complexity.**
-
 
 ::: notes
 Use this slide as a hook. Students often think SCM is a modern corporate
@@ -147,18 +144,16 @@ retailers, and customers themselves.
 The supply chain includes every stage from raw material extraction to
 end-customer delivery — and the reverse logistics flows beyond.
 
-**Hugos (2018) on SCM:** \> "Supply Chain Management is the coordination
-of production, inventory, location, transportation, and information
-among the participants in a supply chain to achieve the **best mix of
+**Hugos (2018) on SCM:** "Supply Chain Management is the coordination of
+production, inventory, location, transportation, and information among
+the participants in a supply chain to achieve the **best mix of
 responsiveness and efficiency** for the market being served."
 
-**A simple SC structure:**
+------------------------------------------------------------------------
 
-```         
-Raw Materials → Supplier → Manufacturer → Distributor → Retailer → Customer
-     ↑____________________ Information ______________________________↑
-     ↑________________________ Finance ________________________________↑
-```
+## Supply Chain Structures
+
+![](images/clipboard-3173047212.png)
 
 ::: notes
 Stress that the definition is deliberately broad — "all parties"
@@ -170,7 +165,188 @@ signals upstream.
 
 ------------------------------------------------------------------------
 
+## Supply Chains & Logistics
+
+![](images/clipboard-1244104178.png)
+
+::: notes
+Differences between SC and Logistics: Focus on physical distribution
+(logistics) vs. management of physical, monetary and information flows
+(SCM)
+:::
+
+------------------------------------------------------------------------
+
 ## The Three Flows
+
+
+```{r}
+#| label: fig-scm-flows
+#| fig-cap: >
+#|   Material, information, and cash flows in a multi-echelon supply chain.
+#|   Goods flow downstream (supplier → consumer); orders and demand signals
+#|   flow bidirectionally; payments flow upstream.
+#| fig-width: 9
+#| fig-height: 3.5
+#| fig-alt: >
+#|   Diagram of a five-echelon supply chain (Supplier – Manufacturer –
+#|   Distributor – Retailer – Consumer) showing three parallel flows:
+#|   solid arrows for material/goods (left to right), dashed bidirectional
+#|   arrows for information/orders, and dotted arrows for cash/payments
+#|   (right to left).
+#| echo: false
+
+library(ggplot2)
+library(grid)
+
+# ─── HSRM Wiesbaden Business School brand colors ─────────────────────────────
+col_mat  <- "#361E47"   # dark purple  — material / goods
+col_info <- "#5E3EE1"   # violet       — information / orders
+col_cash <- "#A42564"   # berry/wine   — cash / payments
+
+# ─── Echelon configuration ───────────────────────────────────────────────────
+labels <- c("Supplier", "Manufacturer", "Distributor", "Retailer", "Consumer")
+n      <- length(labels)
+
+# Node geometry (canvas: x ∈ [0,1], y ∈ [0,1])
+margin <- 0.09          # left/right canvas margin
+bw     <- 0.043         # box half-width
+bh     <- 0.09          # box half-height
+gap    <- 0.010         # gap between box edge and arrow start/end
+
+s      <- (1 - 2 * margin) / (n - 1)   # spacing between node centres
+node_x <- margin + (0:(n - 1)) * s
+
+# Flow lane y-positions
+y_mat  <- 0.80          # material flow (top)
+y_node <- 0.50          # node row + information flow (middle)
+y_cash <- 0.20          # cash flow (bottom)
+
+# Stub termination points (slightly inside the flow lane)
+arr_mat  <- y_mat  - 0.055
+arr_cash <- y_cash + 0.055
+
+# ─── Horizontal segment data (between consecutive node boxes) ─────────────────
+h_segs <- do.call(rbind, lapply(seq_len(n - 1), function(i) {
+  data.frame(
+    x    = node_x[i]   + bw + gap,
+    xend = node_x[i+1] - bw - gap
+  )
+}))
+
+# ─── Vertical connector stubs (node box ↔ flow lane) ─────────────────────────
+xr <- node_x[-n] + bw    # right edges of nodes 1..4 (outgoing)
+xl <- node_x[-1] - bw    # left edges of nodes 2..5  (incoming)
+
+mat_stubs <- rbind(
+  data.frame(x = xr, y_lo = y_node + bh, y_hi = arr_mat),
+  data.frame(x = xl, y_lo = y_node + bh, y_hi = arr_mat)
+)
+cash_stubs <- rbind(
+  data.frame(x = xr, y_lo = arr_cash, y_hi = y_node - bh),
+  data.frame(x = xl, y_lo = arr_cash, y_hi = y_node - bh)
+)
+
+nodes_df <- data.frame(x = node_x, label = labels)
+
+# ─── Build plot ───────────────────────────────────────────────────────────────
+ggplot() +
+
+  # Shaded background lanes
+  annotate("rect", xmin = 0, xmax = 1,
+           ymin = y_mat  - 0.07, ymax = y_mat  + 0.07,
+           fill = col_mat,  alpha = 0.07) +
+  annotate("rect", xmin = 0, xmax = 1,
+           ymin = y_node - 0.12, ymax = y_node + 0.12,
+           fill = col_info, alpha = 0.04) +
+  annotate("rect", xmin = 0, xmax = 1,
+           ymin = y_cash - 0.07, ymax = y_cash + 0.07,
+           fill = col_cash, alpha = 0.07) +
+
+  # Vertical stubs — material (solid)
+  geom_segment(data = mat_stubs,
+               aes(x = x, xend = x, y = y_lo, yend = y_hi),
+               color = col_mat, linewidth = 0.45, linetype = "solid") +
+
+  # Vertical stubs — cash (dotted)
+  geom_segment(data = cash_stubs,
+               aes(x = x, xend = x, y = y_lo, yend = y_hi),
+               color = col_cash, linewidth = 0.45, linetype = "dotted") +
+
+  # Material flow: solid arrow, L → R
+  geom_segment(data = transform(h_segs, y = y_mat, yend = y_mat),
+               aes(x = x, xend = xend, y = y, yend = yend),
+               color = col_mat, linewidth = 1.1, linetype = "solid",
+               arrow = arrow(length = unit(0.22, "cm"),
+                             type = "closed", ends = "last")) +
+
+  # Information flow: dashed, bidirectional
+  geom_segment(data = transform(h_segs, y = y_node, yend = y_node),
+               aes(x = x, xend = xend, y = y, yend = yend),
+               color = col_info, linewidth = 0.85, linetype = "dashed",
+               arrow = arrow(length = unit(0.20, "cm"),
+                             type = "open", ends = "both")) +
+
+  # Cash flow: dotted, R → L
+  geom_segment(data = transform(h_segs, y = y_cash, yend = y_cash),
+               aes(x = x, xend = xend, y = y, yend = yend),
+               color = col_cash, linewidth = 1.1, linetype = "dotted",
+               arrow = arrow(length = unit(0.22, "cm"),
+                             type = "open", ends = "first")) +
+
+  # Node boxes (drawn on top so they cover lane shading)
+  geom_rect(data = nodes_df,
+            aes(xmin = x - bw, xmax = x + bw,
+                ymin = y_node - bh, ymax = y_node + bh),
+            fill = "white", color = col_mat, linewidth = 0.65) +
+
+  # Node labels
+  geom_text(data = nodes_df,
+            aes(x = x, y = y_node, label = label),
+            size = 2.65, color = col_mat, fontface = "bold") +
+
+  # Lane labels (left margin)
+  annotate("text", x = -0.005, y = y_mat,
+           label = "Material\nflow",    size = 2.2, hjust = 1,
+           color = col_mat,  fontface = "bold", lineheight = 0.88) +
+  annotate("text", x = -0.005, y = y_node,
+           label = "Information\nflow", size = 2.2, hjust = 1,
+           color = col_info, fontface = "bold", lineheight = 0.88) +
+  annotate("text", x = -0.005, y = y_cash,
+           label = "Cash\nflow",        size = 2.2, hjust = 1,
+           color = col_cash, fontface = "bold", lineheight = 0.88) +
+
+  # Legend strip
+  annotate("segment",
+           x = 0.08, xend = 0.17, y = 0.05, yend = 0.05,
+           color = col_mat, linewidth = 0.9, linetype = "solid",
+           arrow = arrow(length = unit(0.14, "cm"), type = "closed", ends = "last")) +
+  annotate("text", x = 0.18, y = 0.05, hjust = 0, size = 2.1, color = col_mat,
+           label = "Material / goods flow") +
+
+  annotate("segment",
+           x = 0.40, xend = 0.49, y = 0.05, yend = 0.05,
+           color = col_info, linewidth = 0.8, linetype = "dashed",
+           arrow = arrow(length = unit(0.14, "cm"), type = "open", ends = "both")) +
+  annotate("text", x = 0.50, y = 0.05, hjust = 0, size = 2.1, color = col_info,
+           label = "Information / order flow") +
+
+  annotate("segment",
+           x = 0.73, xend = 0.82, y = 0.05, yend = 0.05,
+           color = col_cash, linewidth = 0.85, linetype = "dotted",
+           arrow = arrow(length = unit(0.14, "cm"), type = "open", ends = "first")) +
+  annotate("text", x = 0.83, y = 0.05, hjust = 0, size = 2.1, color = col_cash,
+           label = "Cash / payment flow") +
+
+  scale_x_continuous(limits = c(-0.12, 1.01), expand = c(0, 0)) +
+  scale_y_continuous(limits = c(-0.01, 0.97), expand = c(0, 0)) +
+  theme_void() +
+  theme(
+    plot.background = element_rect(fill = "white", color = NA),
+    plot.margin     = margin(4, 4, 4, 4)
+  )
+```
+
 
 Every supply chain manages **three flows simultaneously**:
 
