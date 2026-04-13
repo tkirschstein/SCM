@@ -1,0 +1,190 @@
+# Uncertainty & Inventory Management {#sec-uncertainty}
+
+## Introduction
+
+Demand uncertainty is the central challenge in supply chain planning. No forecast is perfect, and the gap between forecast and reality creates either excess inventory or stockouts — both costly.
+
+## The Newsvendor Model
+
+The **Newsvendor Model** (also called the Critical Ratio Model) is the fundamental framework for single-period ordering under demand uncertainty.
+
+### Setup
+
+A retailer must order quantity $Q$ before observing demand $D$. Once demand is realized:
+- If $D > Q$: unmet demand $D - Q$ is lost at cost $c_u$ per unit (underage cost)
+- If $D \leq Q$: leftover $Q - D$ is salvaged at cost $c_o$ per unit (overage cost)
+
+Typically: $c_u = p - c$ (lost margin) and $c_o = c - s$ (disposal loss), where $p$ = price, $c$ = cost, $s$ = salvage.
+
+### Optimal Solution: The Critical Ratio
+
+The optimal order quantity $Q^*$ satisfies:
+
+$$F(Q^*) = \frac{c_u}{c_u + c_o} = \text{CR} \quad \text{(Critical Ratio)}$$
+
+**Interpretation**: Order $Q^*$ such that the probability of demand not exceeding $Q^*$ equals CR.
+
+If CR is high (e.g., 0.90) → High margin product → Accept higher risk of overstock → Order more.
+
+### Normal Demand
+
+For $D \sim \mathcal{N}(\mu, \sigma^2)$:
+
+$$Q^* = \mu + z_{\text{CR}} \cdot \sigma$$
+
+where $z_{\text{CR}} = \Phi^{-1}(\text{CR})$ is the standard normal quantile.
+
+```{r}
+#| label: newsvendor-demo
+#| echo: true
+newsvendor_normal <- function(mu, sigma, p, c, s) {
+  cu <- p - c     # underage cost (lost margin)
+  co <- c - s     # overage cost (holding/disposal)
+  CR <- cu / (cu + co)
+  Q_star <- qnorm(CR, mean = mu, sd = sigma)
+  z <- (Q_star - mu) / sigma
+  
+  # Expected profit
+  E_profit <- (p - s) * mu - 
+              (p - s) * sigma * dnorm(z) - 
+              (c - s) * Q_star
+  
+  list(
+    critical_ratio = round(CR, 4),
+    Q_star         = round(Q_star),
+    z_score        = round(z, 3),
+    expected_profit = round(E_profit, 2)
+  )
+}
+
+# Three product scenarios
+scenarios <- list(
+  parka    = list(mu = 500, sigma = 100, p = 200, c = 120, s = 60),
+  t_shirt  = list(mu = 2000, sigma = 300, p = 15,  c = 8,   s = 3),
+  handbag  = list(mu = 50,   sigma = 20,  p = 900, c = 400, s = 150)
+)
+
+results <- lapply(names(scenarios), function(nm) {
+  s <- scenarios[[nm]]
+  r <- do.call(newsvendor_normal, s)
+  data.frame(Product = nm, CR = r$critical_ratio,
+             Q_star = r$Q_star, E_Profit = r$expected_profit)
+})
+
+do.call(rbind, results)
+```
+
+```{r}
+#| label: fig-newsvendor
+#| fig-cap: "Expected profit as a function of order quantity (Parka scenario)"
+library(ggplot2)
+
+Q_range <- seq(200, 800, by = 5)
+profit_fn <- function(Q, mu, sigma, p, c, s) {
+  # E[profit] = (p-s)*E[min(D,Q)] - (c-s)*Q
+  # E[min(D,Q)] = mu - sigma*(phi(z) + z*(1-Phi(z)))
+  z <- (Q - mu) / sigma
+  E_min <- mu - sigma * (dnorm(z) + z * (1 - pnorm(z)))
+  (p - s) * E_min - (c - s) * Q
+}
+
+profs <- profit_fn(Q_range, 500, 100, 200, 120, 60)
+opt   <- newsvendor_normal(500, 100, 200, 120, 60)
+
+ggplot(data.frame(Q = Q_range, Profit = profs), aes(Q, Profit)) +
+  geom_line(color = "#01696F", linewidth = 1.2) +
+  geom_vline(xintercept = opt$Q_star, linetype = "dashed", color = "#A84B2F") +
+  annotate("text", x = opt$Q_star + 15, 
+           y = min(profs) + 0.1 * diff(range(profs)),
+           label = paste0("Q* = ", opt$Q_star), color = "#A84B2F") +
+  labs(title = "Newsvendor: Expected Profit vs. Order Quantity",
+       subtitle = "Parka scenario: p=€200, c=€120, s=€60, μ=500, σ=100",
+       x = "Order Quantity Q", y = "Expected Profit (€)") +
+  theme_minimal()
+```
+
+## Inventory Pooling
+
+**Pooling** consolidates demand from multiple locations into a single inventory point, reducing total safety stock.
+
+### The Square Root Law
+
+For $n$ independent, identically distributed demand locations (each $\sim \mathcal{N}(\mu, \sigma^2)$):
+
+| Configuration | Safety Stock |
+|--------------|-------------|
+| $n$ individual stores | $n \cdot z_\alpha \cdot \sigma$ |
+| 1 pooled warehouse | $z_\alpha \cdot \sqrt{n} \cdot \sigma$ |
+| Reduction factor | $\sqrt{n}$ |
+
+**Example**: 4 stores, σ = 50, z₀.₉₅ = 1.645
+
+- Without pooling: $4 \times 1.645 \times 50 = 329$ units safety stock
+- With pooling: $1.645 \times \sqrt{4} \times 50 = 164$ units → 50% reduction
+
+```{r}
+#| label: fig-pooling
+#| fig-cap: "Safety stock reduction from inventory pooling"
+library(ggplot2)
+
+n_range <- 1:20
+sigma <- 50
+z <- qnorm(0.95)
+
+df_pool <- data.frame(
+  n           = n_range,
+  without     = n_range * z * sigma,
+  with_pooling = z * sqrt(n_range) * sigma
+)
+
+library(tidyr)
+df_long <- pivot_longer(df_pool, -n, names_to = "config", values_to = "safety_stock")
+df_long$config <- ifelse(df_long$config == "without", "Without pooling", "With pooling")
+
+ggplot(df_long, aes(n, safety_stock, color = config)) +
+  geom_line(linewidth = 1.2) +
+  geom_point(size = 2) +
+  scale_color_manual(values = c("#01696F", "#A84B2F")) +
+  labs(title = "Safety Stock: Pooled vs. Individual Locations",
+       subtitle = "Service level 95%, σ = 50 per location",
+       x = "Number of locations", y = "Total safety stock (units)",
+       color = NULL) +
+  theme_minimal()
+```
+
+## The Bullwhip Effect
+
+The **Bullwhip Effect** describes the amplification of demand variability as one moves upstream in the supply chain.
+
+### Causes and Remedies
+
+| Cause | Mechanism | Remedy |
+|-------|-----------|--------|
+| Demand signal processing | Each stage re-forecasts → adds noise | Share POS data; centralize forecasting |
+| Order batching | Infrequent large orders appear volatile | EDI ordering; smaller, frequent orders |
+| Price fluctuations | Forward buying during promotions | EDLP; smooth pricing |
+| Shortage gaming | Over-ordering during scarcity | Allocate by historical demand |
+
+### Quantification
+
+For AR(1) demand with autocorrelation $\rho$ and order-up-to policy with forecast window $p$ and lead time $L$:
+
+$$\frac{\text{Var}(Q_t)}{\text{Var}(D_t)} \geq 1 + \frac{2L}{p} + \frac{2L^2}{p^2}$$
+
+Even with perfect information sharing, the bullwhip ratio exceeds 1 when $L > 0$.
+
+## EOQ Model — Deterministic Setting
+
+When demand is deterministic at rate $D$ per period, the **Economic Order Quantity (EOQ)** balances fixed ordering cost $K$ against holding cost $h$ per unit per period:
+
+$$Q^* = \sqrt{\frac{2KD}{h}}, \quad TC^* = \sqrt{2KDh}$$
+
+**Reorder point** with lead time $L$: $r = D \cdot L$
+
+## Exercises
+
+1. Apply the Newsvendor model to the ski parka problem: c=€120, p=€200, s=€60, demand N(500, 100²). Find Q*, expected profit, and the order quantity that achieves exactly 95% service level.
+
+2. TrendStyle GmbH operates 9 stores each with independent parka demand N(85, 35²). Calculate safety stock with and without pooling at 90% service level. What are the annual savings if holding cost is 25% of purchase price €120?
+
+3. A spare-parts retailer faces demand D = 2,400 units/year. Fixed ordering cost K = €80. Holding cost h = €12/unit/year. Find EOQ and reorder point if lead time = 2 weeks.

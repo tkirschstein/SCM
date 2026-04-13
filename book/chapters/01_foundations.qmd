@@ -1,0 +1,234 @@
+# Foundations of Supply Chain Management {#sec-foundations}
+
+## What Is a Supply Chain?
+
+A **supply chain** is the network of all organizations, people, activities, information, and resources involved in moving a product or service from raw material extraction to the final customer. It is not a chain in the linear sense — modern supply chains are complex networks with multiple tiers, many-to-many relationships, and feedback loops.
+
+The Council of Supply Chain Management Professionals (CSCMP) defines SCM as:
+
+> "Supply chain management encompasses the planning and management of all activities involved in sourcing and procurement, conversion, and all logistics management activities. Importantly, it also includes coordination and collaboration with channel partners, which can be suppliers, intermediaries, third-party service providers, and customers."
+
+A practical example: a smartphone reaching a consumer in Frankfurt involves lithium mined in the Democratic Republic of Congo, rare earth elements from China, chip fabrication in Taiwan, assembly in Vietnam, air freight to Europe, last-mile delivery by a German parcel carrier — all coordinated across dozens of companies.
+
+### Scope of SCM vs. Logistics
+
+**Logistics** is the subset of SCM concerned with the physical movement and storage of goods — transportation, warehousing, packaging. **SCM** is broader: it includes purchasing strategy, supplier relationships, demand planning, production coordination, customer service, and financial flows. All logistics is part of SCM; not all SCM is logistics.
+
+## The Three Flows
+
+Every supply chain manages three distinct types of flow simultaneously:
+
+### 1. Material Flow
+
+Physical goods move **downstream** — from suppliers, through production and distribution, to the end customer. Return flows (reverse logistics) move **upstream** — defective products, recycling, remanufactured goods.
+
+*Example*: Raw aluminum travels from a smelter → stamping plant → car body assembly → OEM → dealership → customer.
+
+### 2. Information Flow
+
+Data moves in **both directions**. Demand signals (orders, POS data, forecasts) move upstream; supply confirmations, tracking, and availability data move downstream. The quality and speed of information flow directly determines how well the material flow can be managed.
+
+*Example*: A retailer's POS system shares real-time sales data with the manufacturer, which triggers automated replenishment orders to the supplier. The supplier confirms delivery dates, which feeds back into the retailer's available-to-promise calculations.
+
+### 3. Financial Flow
+
+Money moves **upstream** — customers pay retailers, retailers pay distributors, distributors pay manufacturers, manufacturers pay suppliers. Payment terms, trade credit, and supply chain financing instruments (factoring, reverse factoring) shape the cash conversion cycle of every SC participant.
+
+*Example*: A supplier ships on net-60 payment terms. A reverse factoring program allows the supplier to be paid by a bank in 5 days (at a small discount), while the buyer still settles with the bank in 60 days — the bank profits from the interest spread, the supplier gets liquidity.
+
+## The Cycle View of Supply Chains
+
+Chopra & Meindl (2022) organize supply chain activities into **four cycles**, each triggered by an interface between two consecutive stages:
+
+| Cycle | Interface | Activities |
+|-------|-----------|------------|
+| Customer Order Cycle | Customer ↔ Retailer | Order entry, fulfillment, delivery |
+| Replenishment Cycle | Retailer ↔ Distributor | Reorder point, batch ordering, DC pickup |
+| Manufacturing Cycle | Distributor ↔ Manufacturer | Production scheduling, MRP, batch production |
+| Procurement Cycle | Manufacturer ↔ Supplier | Purchase orders, supplier selection, inbound logistics |
+
+The **cycle view** is useful because it reveals where inventory is held, what triggers each replenishment event, and which information must be shared across each interface. Long cycle times at any stage increase total SC inventory requirements.
+
+## Push vs. Pull and the Decoupling Point
+
+Supply chain processes can be classified along a fundamental dimension:
+
+- **Pull processes** are initiated by actual customer demand. No speculation about future demand — goods are produced or shipped only when orders arrive.
+- **Push processes** are initiated based on demand *forecasts*. Goods are produced or positioned in anticipation of demand.
+
+The **decoupling point** (also called the customer order decoupling point, CODP) is the point in the supply chain where push transitions to pull. Everything upstream of the decoupling point is driven by forecasts; everything downstream by real orders.
+
+**Strategic implications**: Moving the decoupling point downstream increases responsiveness but requires carrying inventory closer to the customer. Moving it upstream reduces inventory carrying cost but lengthens response time. The optimal position depends on demand characteristics and competitive requirements.
+
+*Example*: A furniture manufacturer using mass customization (customer selects fabric, dimensions) may keep semi-finished frames in stock (push up to the decoupling point) and complete the upholstery only after receiving the order (pull from the decoupling point onward).
+
+## DuPont Analysis — SC Impact on Financial Performance
+
+The **DuPont decomposition** reveals how supply chain decisions drive return on investment (ROI). The key insight: supply chains affect both the numerator (profit) and denominator (assets employed) of ROI.
+
+$$\text{ROI} = \frac{\text{Net Income}}{\text{Assets}} = \underbrace{\frac{\text{Net Income}}{\text{Revenue}}}_{\text{Profit Margin}} \times \underbrace{\frac{\text{Revenue}}{\text{Assets}}}_{\text{Asset Turnover}}$$
+
+Expanding further:
+
+$$\text{ROI} = \frac{\text{Revenue} - \text{Total Cost}}{\text{Revenue}} \times \frac{\text{Revenue}}{\text{Fixed Assets} + \text{Current Assets}}$$
+
+Current assets include **inventory**, **receivables**, and **cash** — all directly managed by supply chain decisions.
+
+### Worked Example
+
+**Base case** (€ thousands):
+
+| Item | Value |
+|------|------:|
+| Revenue | 11,000 |
+| Material cost | 5,500 |
+| Personnel cost | 4,950 |
+| Total Cost | 10,450 |
+| **Net Income** | **550** |
+| Fixed assets | 2,000 |
+| Cash | 500 |
+| Inventory | 3,300 |
+| Receivables | 1,075 |
+| **Total Assets** | **6,875** |
+
+$$\text{Profit Margin} = \frac{550}{11{,}000} = 5.0\%$$
+
+$$\text{Asset Turnover} = \frac{11{,}000}{6{,}875} = 1.60$$
+
+$$\text{ROI} = 5.0\% \times 1.60 = 8.0\%$$
+
+**After a 5% inventory reduction** (inventory falls from 3,300 to 3,135; also saves holding cost of ~€50k):
+
+| Item | Value |
+|------|------:|
+| Net Income | 600 |
+| Total Assets | 6,635 |
+| Profit Margin | 5.45% |
+| Asset Turnover | 1.658 |
+| **ROI** | **9.04%** |
+
+A 5% inventory reduction increases ROI by 130 basis points — without any change in revenue. This motivates lean inventory strategies.
+
+```{r}
+#| label: fig-dupont
+#| fig-cap: "DuPont tree: impact of 5% inventory reduction on ROI"
+#| message: false
+#| warning: false
+
+library(plotly)
+
+# Base case values
+base <- list(
+  revenue = 11000, material = 5500, personnel = 4950,
+  fixed_assets = 2000, cash = 500, inventory = 3300, receivables = 1075
+)
+
+# Scenario: 5% inventory reduction, holding cost saving €50k
+scen <- base
+scen$inventory <- base$inventory * 0.95
+holding_saving <- 50  # €50k holding cost saving
+
+calc_dupont <- function(p) {
+  total_cost <- p$material + p$personnel
+  net_income <- p$revenue - total_cost + holding_saving * (p$inventory < base$inventory)
+  total_assets <- p$fixed_assets + p$cash + p$inventory + p$receivables
+  pm <- net_income / p$revenue
+  at <- p$revenue / total_assets
+  roi <- pm * at
+  list(net_income = net_income, total_assets = total_assets,
+       pm = pm, at = at, roi = roi)
+}
+
+b <- calc_dupont(base)
+s <- calc_dupont(scen)
+
+# Build comparison bar chart
+metrics <- c("Profit Margin (%)", "Asset Turnover", "ROI (%)")
+base_vals <- c(b$pm * 100, b$at, b$roi * 100)
+scen_vals <- c(s$pm * 100, s$at, s$roi * 100)
+
+fig <- plot_ly() |>
+  add_bars(x = metrics, y = base_vals, name = "Base Case",
+           marker = list(color = "#20808D")) |>
+  add_bars(x = metrics, y = scen_vals, name = "5% Inventory Reduction",
+           marker = list(color = "#A84B2F")) |>
+  layout(
+    barmode = "group",
+    title = list(text = "DuPont Analysis: Effect of 5% Inventory Reduction",
+                 font = list(size = 14)),
+    xaxis = list(title = ""),
+    yaxis = list(title = "Value"),
+    legend = list(orientation = "h", y = -0.2),
+    plot_bgcolor = "#FAFAFA",
+    paper_bgcolor = "#FFFFFF"
+  )
+
+fig
+```
+
+## SC Performance Metrics
+
+Supply chain performance is measured across multiple dimensions. Chopra & Meindl group these into two categories: **efficiency** and **responsiveness**.
+
+### Key Performance Indicators
+
+| KPI | Formula | What it Measures |
+|-----|---------|-----------------|
+| Inventory Turnover | Revenue / Avg. Inventory | How quickly inventory sells |
+| Days of Supply | Inventory / Daily Cost of Sales | Inventory coverage in days |
+| Fill Rate | Orders Filled Complete / Total Orders | Service reliability |
+| Order-to-Delivery Cycle Time | Ship date − Order date | Responsiveness |
+| Perfect Order Rate | % orders: on time, complete, damage-free, correct docs | End-to-end quality |
+| Cash-to-Cash Cycle Time | DIO + DSO − DPO | Working capital efficiency |
+| Total Landed Cost | Purchase + Transport + Duties + Handling | True procurement cost |
+
+Where:
+
+- DIO = Days Inventory Outstanding
+- DSO = Days Sales Outstanding
+- DPO = Days Payable Outstanding
+
+A short **cash-to-cash cycle** means the company receives payment from customers before it must pay suppliers — a favorable working capital position. Supply chain decisions directly control all three components.
+
+### SCOR Model
+
+The **Supply Chain Operations Reference (SCOR)** model provides a standardized process taxonomy and metric hierarchy across five process types: Plan, Source, Make, Deliver, Return. Level 1 metrics map to the five performance attributes: Reliability, Responsiveness, Agility, Costs, and Asset Management Efficiency.
+
+## SC Planning Hierarchy
+
+Supply chain planning operates across multiple time horizons:
+
+| Level | Horizon | Decisions |
+|-------|---------|-----------|
+| **Strategic** | 3–10 years | Network design, facility location, make-or-buy, partner selection |
+| **Tactical** | 3–18 months | Aggregate production planning, capacity allocation, contract volumes |
+| **Operational** | Days–weeks | Scheduling, routing, replenishment, order fulfillment |
+
+The **hierarchical planning principle**: Decisions at higher levels constrain the solution space at lower levels. A strategic decision to operate two distribution centers limits the tactical options for regional stock allocation. Suboptimal strategic decisions cannot be fully compensated by excellent operational execution.
+
+*Anthony's triangle* formalizes this: strategic decisions are few, high-impact, and hard to reverse; operational decisions are frequent, low-impact individually, and reversible. SCM education typically focuses on strategic and tactical models — operational execution follows from the infrastructure put in place.
+
+---
+
+## Exercises
+
+**Exercise 1.1 — DuPont Analysis**
+
+A logistics company reports: Revenue €8,500k, Total Cost €7,800k, Fixed Assets €1,200k, Cash €300k, Inventory €2,100k, Receivables €950k.
+
+a. Calculate profit margin, asset turnover, and ROI.
+b. The company implements a lean initiative reducing inventory by 15% and saves €30k in holding costs. Recalculate all three metrics.
+c. Alternatively, the sales team proposes increasing revenue by 8% (same cost structure). Which initiative improves ROI more?
+
+**Exercise 1.2 — Push vs. Pull**
+
+For each of the following products, identify the likely decoupling point and justify your answer:
+
+a. A custom-configured Dell laptop
+b. A seasonal chocolate advent calendar
+c. A standard steel I-beam
+d. A Hermès Birkin bag (18-month waiting list)
+
+**Exercise 1.3 — Three Flows**
+
+Map the three flows (material, information, financial) for the following supply chain scenario: A consumer orders a kitchen appliance from an online retailer. The retailer does not hold stock — it drop-ships from the manufacturer. The manufacturer sources the motor from a supplier in Eastern Europe. The consumer pays by credit card at checkout; the credit card company settles with the retailer in 2 days; the retailer pays the manufacturer in 30 days; the manufacturer pays the supplier in 45 days. Draw the flow diagram and identify where each flow is fastest and slowest.

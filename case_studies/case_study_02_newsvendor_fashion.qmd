@@ -1,0 +1,364 @@
+---
+title: "Case Study 2: Seasonal Inventory — The Fashion Dilemma"
+subtitle: "Team-Based Case Study — SCM Bachelor"
+format:
+  html:
+    theme: cosmo
+    toc: true
+    toc-depth: 3
+  pdf:
+    documentclass: article
+    papersize: a4
+execute:
+  echo: false
+---
+
+# Introduction and Learning Objectives
+
+In fashion retail, seasonal goods must be ordered months before demand is realised. Order too little and you lose sales; order too much and you mark down at the end of season. This is the classical **single-period inventory problem** — the Newsvendor Model.
+
+This case study examines **TrendStyle GmbH**, a mid-sized German fashion retailer, across three product scenarios of increasing complexity. On completion, students will be able to:
+
+- Derive and apply the Newsvendor Model to a real decision context
+- Evaluate the cost of suboptimal ordering policies
+- Quantify the value of better demand information (lower forecast error)
+- Analyse inventory pooling benefits across channels and store network
+- Formulate managerial recommendations grounded in quantitative analysis
+
+**Submission**: Written report (max 12 pages) + R script. Team presentation: 10 minutes. Teams of 3–4 students.
+
+---
+
+# Company Background
+
+**TrendStyle GmbH** operates 50 retail stores across Germany, with flagship locations in Munich, Berlin, Hamburg, Frankfurt, and Cologne. Annual turnover is approximately €180M. The product portfolio spans:
+
+- **Basic category** (~60% of revenue): stable, year-round demand; predictable forecasts
+- **Fashion category** (~40% of revenue): highly seasonal; trend-driven; forecast accuracy low
+
+Each season (Spring/Summer; Autumn/Winter), TrendStyle commits to orders **10–14 weeks before the season start**, long before actual demand is known. Unsold fashion items are either marked down (in-store sale) or sold to discount markets at substantial losses.
+
+TrendStyle recently opened an **online channel** (trendstyle.de) that now accounts for 15% of revenue and is growing at 25% per year. The online channel creates both opportunities (pooling inventory) and complications (separate fulfilment logistics, different return rates).
+
+The Head of Merchandising, Ms. Müller, has asked your team to analyse three specific situations and provide quantitative recommendations.
+
+---
+
+# Data Appendix
+
+## Scenario 1: Winter Jackets (Basic Category)
+
+The following table shows five years of actual store-level demand aggregated across the 50-store network for the **Classic Winter Jacket** (style: WJ-2020):
+
+| Season | Actual Demand (units) |
+|--------|-----------------------:|
+| AW 2019 | 14,820 |
+| AW 2020 | 11,200 *(COVID year — outlier)* |
+| AW 2021 | 15,340 |
+| AW 2022 | 16,100 |
+| AW 2023 | 15,680 |
+
+*Note: The 2020 season is considered non-representative due to store closures. Your analysis should discuss how to handle this outlier.*
+
+**Product economics:**
+
+| Parameter | Value |
+|-----------|------:|
+| Purchase price (c) | €45 |
+| Retail price (p) | €89 |
+| End-of-season sale price (s) | €29 |
+| Markdown timing | Week 8 of 12-week season |
+
+**Current ordering policy**: TrendStyle's buyers use **last year's actual demand** as their order quantity. For AW 2024, this means ordering 15,680 units (= AW 2023 actual).
+
+## Scenario 2: Trendy Parkas (Fashion Category)
+
+The **Ultra-Parka Pro** is a new style for AW 2024 — no historical demand data exists. The buying team's best estimate:
+
+| Parameter | Value |
+|-----------|------:|
+| Point forecast (μ) | 1,200 units (across all 50 stores) |
+| Forecast uncertainty | "High" — buyer assessment |
+| Purchase price (c) | €120 |
+| Retail price (p) | €220 |
+| Salvage (export to discount market) (s) | €40 |
+| Minimum acceptable service level | 90% (Marketing requirement) |
+| Finance department target | Maximise expected profit |
+
+Because there is no historical data, the buying team must assume a demand distribution. They consider two assumptions:
+
+- **Conservative**: $D \sim \mathcal{N}(1200, 300^2)$ (CV = 25%)
+- **Aggressive**: $D \sim \mathcal{N}(1200, 500^2)$ (CV = 42%)
+
+## Scenario 3: Inventory Pooling — Store vs. Online
+
+TrendStyle's 10 stores in Bavaria (cluster analysis group) each forecast independent demand for the **Basic Hoodie** (BH-Classic):
+
+- Per-store forecast: $D_i \sim \mathcal{N}(120, 40^2)$ units
+- Total demand across all 10 stores: $D_{\text{total}} = \sum_{i=1}^{10} D_i \sim \mathcal{N}(1200, \sigma_{\text{total}}^2)$
+- Product economics: $c = €18$, $p = €35$, $s = €8$
+
+**Online channel** for Bavaria has a separate forecast: $D_{\text{online}} \sim \mathcal{N}(200, 60^2)$ units.
+
+Two fulfilment scenarios are being evaluated:
+
+- **Scenario 3A (Decentralised)**: Each store orders independently for its own stock. Online channel orders separately.
+- **Scenario 3B (Pooled)**: A single regional distribution centre (RDC) for Bavaria holds all inventory and fulfils both store replenishment and online orders.
+
+---
+
+# Task 1: Evaluate the Current Ordering Policy
+
+**For Scenario 1 (Winter Jackets):**
+
+Using the five years of historical data, fit a normal distribution to the demand (excluding or including the 2020 outlier — justify your choice).
+
+1. Compute the sample mean $\hat{\mu}$ and sample standard deviation $\hat{\sigma}$ from the four non-COVID years.
+2. Calculate the **critical ratio** for Winter Jackets.
+3. Determine the **optimal order quantity** $Q^*$.
+4. Calculate the **expected profit** at $Q^*$.
+5. Calculate the expected profit at the **current policy** (order 15,680 units).
+6. Quantify the **annual profit loss** from the current naïve policy.
+
+**R analysis hint:**
+
+```r
+# Historical demand (exclude 2020)
+demand_hist <- c(14820, 15340, 16100, 15680)
+
+mu_hat    <- mean(demand_hist)
+sigma_hat <- sd(demand_hist)
+
+# Newsvendor parameters
+c <- 45; p <- 89; s <- 29
+cr <- (p - c) / (p - s)
+z_star <- qnorm(cr)
+q_star <- mu_hat + sigma_hat * z_star
+
+# Expected profit function (see Exercise Block 4)
+newsvendor_profit <- function(Q, mu, sigma, p, c, s) {
+  co <- c - s; z <- (Q - mu)/sigma
+  L  <- function(zz) dnorm(zz) - zz*(1-pnorm(zz))
+  (p-c)*(mu - sigma*L(z)) - co*sigma*L(-z)
+}
+```
+
+---
+
+# Task 2: Newsvendor Analysis for Both Categories
+
+## Scenario 1: Winter Jackets (full analysis)
+
+Present a complete Newsvendor analysis:
+
+- Critical ratio and its economic interpretation
+- Optimal $Q^*$ with confidence interval (i.e., range of $Q$ that achieves ≥95% of maximum expected profit)
+- Expected profit, expected sales, expected leftover units, and expected stockout units at $Q^*$
+- A **profit curve** plot: expected profit as a function of order quantity $Q$ (from $Q = \mu - 3\sigma$ to $Q = \mu + 3\sigma$)
+
+## Scenario 2: Trendy Parkas
+
+Analyse both distributional assumptions (conservative and aggressive):
+
+1. For **each** assumption, compute $Q^*$, expected profit, and the 90% service-level order quantity $Q^{SL90}$.
+2. Compute the **expected profit** at $Q^{SL90}$ — how much expected profit does TrendStyle sacrifice to guarantee 90% service?
+3. Which ordering quantity would you recommend? Justify using both financial and service arguments.
+4. **Sensitivity analysis**: Plot $Q^*$ and expected profit as a function of $\sigma$ (range: 100 to 600 units) for a fixed $\mu = 1200$.
+
+---
+
+# Task 3: The Value of Demand Information
+
+**Setting (Scenario 2 context):**
+
+Suppose TrendStyle could run a **quick-response trial**: sell the Ultra-Parka Pro through the online channel 4 weeks before the in-store season, using a pre-order mechanism. This provides early sales data that tightens the demand forecast from $\sigma = 300$ (conservative) down to $\sigma = 150$ units.
+
+The pre-order trial incurs a cost of **€8,000**.
+
+**Analysis tasks:**
+
+1. Compute $Q^*$ and expected profit under $\sigma = 300$ (no trial)
+2. Compute $Q^*$ and expected profit under $\sigma = 150$ (trial)
+3. Calculate the **Expected Value of Better Information (EVBI)**:
+   $$\text{EVBI} = \Pi^*(Q^*_{\sigma=150}) - \Pi^*(Q^*_{\sigma=300})$$
+4. Is the trial worth its €8,000 cost? Provide a clear recommendation with quantitative justification.
+5. **Break-even analysis**: At what trial cost would TrendStyle be indifferent between running and not running the trial?
+
+---
+
+# Task 4: Inventory Pooling Analysis
+
+## 4.1 Decentralised Ordering (Scenario 3A)
+
+Each of the 10 Bavarian stores orders independently to achieve a 90% service level:
+
+$$SS_i = z_{0.90} \cdot \sigma_i = z_{0.90} \cdot 40 \text{ units}$$
+
+1. Compute $Q_i^*$ for a single store (Newsvendor optimal, not SL-constrained)
+2. Compute total inventory investment across all 10 stores at $Q_i^*$
+3. Compute total safety stock (above mean) across all 10 stores
+
+## 4.2 Pooled Ordering (Scenario 3B)
+
+Under pooling, the RDC orders for the combined demand of all 10 stores:
+
+$$D_{\text{pool}} \sim \mathcal{N}\!\left(10 \cdot 120, \; 10 \cdot 40^2\right) = \mathcal{N}(1200, 16000)$$
+
+Note: $\sigma_{\text{pool}} = \sqrt{10} \cdot 40 \approx 126.5$ units
+
+1. Compute $Q^*_{\text{pool}}$ (Newsvendor optimal)
+2. Compare $Q^*_{\text{pool}}$ to $\sum_{i=1}^{10} Q_i^*$ — what is the inventory reduction?
+3. Express the savings as a fraction: the **pooling factor** is $1 / \sqrt{n}$
+
+## 4.3 Adding the Online Channel
+
+If the RDC also fulfils the online channel ($D_{\text{online}} \sim \mathcal{N}(200, 60^2)$), the combined demand is:
+
+$$D_{\text{combined}} \sim \mathcal{N}(1400, \; 10 \cdot 40^2 + 60^2)$$
+
+1. Compute $Q^*_{\text{combined}}$
+2. Compare total cost (purchase + expected markdown + expected stockout cost) for:
+   - Decentralised stores + separate online order
+   - Pooled (stores + online via RDC)
+3. What is the annual inventory pooling benefit in euros?
+
+## 4.4 Operational Trade-offs
+
+Pooling is not free. The RDC model introduces:
+
+- Replenishment lead time: stores need daily restocking from the RDC
+- Additional handling cost: estimated €0.50/unit for inbound + pick/pack at RDC
+- Potential delay: online orders have a 48-hour promised delivery window; RDC must be located within 2-hour truck reach of all 10 Bavarian stores
+
+**Discussion tasks:**
+
+1. At what handling cost per unit does pooling become unprofitable?
+2. What minimum demand correlation between stores would reduce the pooling benefit by half?
+3. How does the pooling benefit change as the number of stores grows from 2 to 50? Plot this relationship.
+
+---
+
+# Task 5: Management Recommendations
+
+Prepare a concise management presentation for the TrendStyle leadership team. Your recommendation must address:
+
+1. **Winter Jackets**: Should TrendStyle change its ordering policy? By how much? What is the annual profit impact?
+
+2. **Trendy Parkas**: What order quantity do you recommend for AW 2024? What is the expected profit? What is the downside risk (worst-case scenario at 10th percentile demand)?
+
+3. **Quick-Response Trial**: Do you recommend investing in the pre-order mechanism? What conditions must hold for the investment to pay off?
+
+4. **Bavarian Store Cluster**: Do you recommend implementing pooled fulfilment via an RDC? What are the prerequisites?
+
+5. **Broader implications**: What changes to the buying process would you recommend for TrendStyle's overall fashion category, given the insights from this analysis?
+
+Your recommendations should be specific, quantified where possible, and acknowledge key assumptions.
+
+---
+
+# Grading Rubric
+
+| Criterion | Weight | Indicators of Strong Performance |
+|-----------|:------:|----------------------------------|
+| Problem formulation correctness | 25% | Correct critical ratio; correct Newsvendor formula applied; proper handling of outlier; pooling formula correct |
+| Solution methodology | 25% | All four tasks answered with correct R code; sensitivity analysis includes plot; EVBI correctly computed; pooling factor verified |
+| Interpretation and management recommendations | 30% | Clear, specific recommendations with numbers; trade-offs acknowledged; sensitivity of results discussed; online channel integration addressed |
+| Presentation quality | 20% | Concise slides; visual profit curves included; team answers questions about model assumptions; report within page limit |
+
+**Pass threshold**: minimum 50% total, with at least 40% in each criterion.
+
+---
+
+# Appendix: R Code Skeleton
+
+Below is a starter scaffold. Complete and extend this for your analysis.
+
+```r
+# ─── Setup ────────────────────────────────────────────────────────────────
+library(ggplot2)
+
+# Newsvendor expected profit function
+newsvendor_profit <- function(Q, mu, sigma, p, c, s) {
+  co <- c - s
+  z  <- (Q - mu) / sigma
+  L  <- function(zz) dnorm(zz) - zz * (1 - pnorm(zz))
+  exp_leftover <- sigma * L(-z)
+  exp_stockout <- sigma * L(z)
+  exp_sales    <- mu - exp_stockout
+  (p - c) * exp_sales - co * exp_leftover
+}
+
+# ─── Scenario 1: Winter Jackets ──────────────────────────────────────────
+demand_hist <- c(14820, 15340, 16100, 15680)
+mu_hat    <- mean(demand_hist)
+sigma_hat <- sd(demand_hist)
+c1 <- 45; p1 <- 89; s1 <- 29
+
+cr1     <- (p1 - c1) / (p1 - s1)
+q_star1 <- mu_hat + sigma_hat * qnorm(cr1)
+
+# Profit at optimal vs. current policy
+pi_opt     <- newsvendor_profit(q_star1, mu_hat, sigma_hat, p1, c1, s1)
+pi_current <- newsvendor_profit(15680,   mu_hat, sigma_hat, p1, c1, s1)
+cat(sprintf("Annual profit loss from naive policy: €%.0f\n", pi_opt - pi_current))
+
+# ─── Scenario 2: Trendy Parkas ────────────────────────────────────────────
+c2 <- 120; p2 <- 220; s2 <- 40
+mu2 <- 1200
+for (sigma2 in c(300, 500)) {
+  cr2     <- (p2 - c2) / (p2 - s2)
+  q_star2 <- mu2 + sigma2 * qnorm(cr2)
+  q_sl90  <- mu2 + sigma2 * qnorm(0.90)
+  pi2     <- newsvendor_profit(q_star2, mu2, sigma2, p2, c2, s2)
+  pi_sl   <- newsvendor_profit(q_sl90,  mu2, sigma2, p2, c2, s2)
+  cat(sprintf("sigma=%d | Q*=%.0f | E[Pi]=€%.0f | Q_SL90=%.0f | E[Pi]_SL=€%.0f\n",
+              sigma2, q_star2, pi2, q_sl90, pi_sl))
+}
+
+# ─── Task 3: Value of Information ─────────────────────────────────────────
+pi_no_trial <- newsvendor_profit(
+  mu2 + 300*qnorm(cr2), mu2, 300, p2, c2, s2)
+pi_trial    <- newsvendor_profit(
+  mu2 + 150*qnorm(cr2), mu2, 150, p2, c2, s2)
+evbi        <- pi_trial - pi_no_trial
+cat(sprintf("EVBI = €%.0f  |  Trial cost = €8,000  |  Net benefit = €%.0f\n",
+            evbi, evbi - 8000))
+
+# ─── Task 4: Pooling Analysis ──────────────────────────────────────────────
+c3 <- 18; p3 <- 35; s3 <- 8
+cr3 <- (p3 - c3) / (p3 - s3)
+n_stores   <- 10
+mu_store   <- 120; sigma_store <- 40
+
+# Decentralised
+q_indiv <- mu_store + sigma_store * qnorm(cr3)
+total_q_indiv <- n_stores * q_indiv
+
+# Pooled
+sigma_pool <- sqrt(n_stores) * sigma_store
+mu_pool    <- n_stores * mu_store
+q_pool     <- mu_pool + sigma_pool * qnorm(cr3)
+
+cat(sprintf("Decentralised total Q: %.0f  |  Pooled Q: %.0f  |  Saving: %.0f units\n",
+            total_q_indiv, q_pool, total_q_indiv - q_pool))
+
+# Pooling benefit as function of n
+n_range <- 1:50
+sigma_pool_n <- sqrt(n_range) * sigma_store
+q_pool_n     <- n_range * mu_store + sigma_pool_n * qnorm(cr3)
+q_indiv_n    <- n_range * (mu_store + sigma_store * qnorm(cr3))
+
+pooling_df <- data.frame(
+  n = n_range,
+  q_pool  = q_pool_n,
+  q_indiv = q_indiv_n,
+  saving  = q_indiv_n - q_pool_n,
+  saving_pct = (q_indiv_n - q_pool_n) / q_indiv_n * 100
+)
+
+ggplot(pooling_df, aes(x = n, y = saving_pct)) +
+  geom_line(color = "#01696F", linewidth = 1.2) +
+  labs(title = "Inventory Pooling Benefit vs. Number of Stores",
+       x = "Number of Stores", y = "Saving vs. Decentralised (%)") +
+  theme_minimal()
+```

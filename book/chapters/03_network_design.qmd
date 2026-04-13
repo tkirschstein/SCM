@@ -1,0 +1,376 @@
+# Network Design & Facility Location Models {#sec-network-design}
+
+## Introduction to Facility Location Problems
+
+Facility location problems ask: *Where should we open facilities, and which customers should each facility serve?* These are among the most studied problems in operations research, with direct application to warehouse and distribution center placement, plant location, and service network design.
+
+We distinguish two broad families:
+
+**Coverage models**: Determine the minimum number of facilities (or the maximum coverage with a fixed number) such that every customer is within a specified distance or time threshold.
+
+**Cost-minimization models**: Minimize the sum of fixed facility costs and variable transport costs, subject to demand satisfaction constraints.
+
+## Covering Problems
+
+### Maximum Coverage Location Problem (MCLP)
+
+The **Maximum Coverage Location Problem** (Church & ReVelle 1974) selects $p$ facilities from a set of candidate sites to maximize the total demand covered, where demand point $i$ is "covered" if at least one open facility is within distance threshold $S$.
+
+**Sets and parameters**:
+
+- $I$ = set of demand points (customers), $J$ = set of candidate sites
+- $w_i$ = demand/population at point $i$
+- $N_i = \{j \in J : d_{ij} \leq S\}$ = set of facilities that can cover demand point $i$
+- $p$ = number of facilities to open
+
+**Decision variables**:
+
+- $x_j \in \{0,1\}$: open facility at site $j$?
+- $y_i \in \{0,1\}$: is demand point $i$ covered?
+
+**MCLP formulation**:
+
+$$\max \sum_{i \in I} w_i y_i$$
+
+subject to:
+
+$$\sum_{j \in N_i} x_j \geq y_i \quad \forall i \in I \tag{1}$$
+
+$$\sum_{j \in J} x_j = p \tag{2}$$
+
+$$x_j, y_i \in \{0, 1\} \tag{3}$$
+
+Constraint (1) ensures $y_i = 1$ only if at least one covering facility is open. Constraint (2) fixes the number of open facilities.
+
+### Greedy Heuristic for MCLP
+
+The greedy heuristic iteratively selects the facility site that adds the most additional coverage at each step:
+
+1. Set $S_{\text{covered}} = \emptyset$, $F = \emptyset$ (open facilities)
+2. For $k = 1, \ldots, p$:
+   a. For each candidate site $j \notin F$: compute marginal coverage $\Delta_j = \sum_{i \in N_j \setminus S_{\text{covered}}} w_i$
+   b. Open $j^* = \arg\max_j \Delta_j$; add to $F$
+   c. Update $S_{\text{covered}} = S_{\text{covered}} \cup \{i : j^* \in N_i\}$
+3. Return $F$
+
+This heuristic guarantees a $(1 - 1/e) \approx 63\%$ approximation ratio — it finds a solution covering at least 63% of the optimal coverage.
+
+## Warehouse Location Problem (WLP)
+
+The **Warehouse Location Problem** (also called the Uncapacitated Facility Location Problem, UFLP) selects which warehouses to open and which customers each warehouse serves, minimizing total cost:
+
+$$\text{Total Cost} = \underbrace{\sum_{j \in J} f_j y_j}_{\text{Fixed cost}} + \underbrace{\sum_{i \in I} \sum_{j \in J} c_{ij} x_{ij}}_{\text{Transport cost}}$$
+
+**Sets and parameters**:
+
+- $I$ = set of customers, $J$ = set of candidate warehouse sites
+- $f_j$ = annual fixed cost of opening warehouse $j$
+- $c_{ij}$ = annual transport cost to serve all demand of customer $i$ from warehouse $j$
+- (Uncapacitated version assumes warehouses have unlimited capacity)
+
+**Decision variables**:
+
+- $y_j \in \{0,1\}$: open warehouse $j$?
+- $x_{ij} \in \{0,1\}$: serve customer $i$ from warehouse $j$?
+
+**MILP formulation**:
+
+$$\min \sum_{j \in J} f_j y_j + \sum_{i \in I} \sum_{j \in J} c_{ij} x_{ij} \tag{WLP}$$
+
+subject to:
+
+$$\sum_{j \in J} x_{ij} = 1 \quad \forall i \in I \tag{4}$$
+
+$$x_{ij} \leq y_j \quad \forall i \in I,\ j \in J \tag{5}$$
+
+$$y_j \in \{0,1\},\ x_{ij} \geq 0 \tag{6}$$
+
+Constraint (4): every customer is served by exactly one warehouse. Constraint (5): a customer can only be assigned to an open warehouse.
+
+**LP relaxation**: Dropping integrality on $y_j$ and $x_{ij}$ (allowing values in $[0,1]$) yields the LP relaxation. Its optimal value provides a lower bound on the true MILP optimum. The gap between the LP bound and the integer solution reflects the integrality gap.
+
+## Heuristic Methods for WLP
+
+### Add Heuristic
+
+The Add Heuristic starts with all warehouses closed and iteratively opens the warehouse that gives the greatest cost reduction.
+
+**Step-by-step procedure**:
+
+1. Start: $F = \emptyset$ (all warehouses closed); total cost $= \infty$
+2. For each warehouse $j \notin F$: compute $\Delta_j = \text{cost}(F) - \text{cost}(F \cup \{j\})$
+3. Open $j^* = \arg\max_j \Delta_j$ (largest cost savings); update $F$
+4. Recompute assignment: each customer served by cheapest open warehouse
+5. Repeat steps 2–4 until no further cost reduction is achievable (or all warehouses open)
+
+**Worked Example — 5 Warehouses, 7 Customers**
+
+Fixed costs: $f = (350, 280, 400, 310, 250)$ (€ thousands/year)
+
+Transport costs $c_{ij}$ (€ thousands/year, customer × warehouse):
+
+|  | W1 | W2 | W3 | W4 | W5 |
+|--|----|----|----|----|-----|
+| C1 | 40 | 80 | 70 | 60 | 90 |
+| C2 | 75 | 30 | 65 | 50 | 85 |
+| C3 | 55 | 60 | 35 | 70 | 45 |
+| C4 | 80 | 50 | 55 | 40 | 70 |
+| C5 | 65 | 40 | 50 | 75 | 30 |
+| C6 | 90 | 70 | 45 | 55 | 60 |
+| C7 | 50 | 85 | 60 | 35 | 75 |
+
+**Iteration 1**: Evaluate opening each warehouse alone. For warehouse $j$, cost = $f_j + \sum_i \min_k c_{ik}$ evaluated with only $j$ open = $f_j + \sum_i c_{ij}$.
+
+| Warehouse | Fixed cost | Transport cost | Total |
+|-----------|-----------|----------------|-------|
+| W1 | 350 | 40+75+55+80+65+90+50 = 455 | 805 |
+| W2 | 280 | 80+30+60+50+40+70+85 = 415 | 695 |
+| W3 | 400 | 70+65+35+55+50+45+60 = 380 | 780 |
+| W4 | 310 | 60+50+70+40+75+55+35 = 385 | 695 |
+| W5 | 250 | 90+85+45+70+30+60+75 = 455 | 705 |
+
+Best single warehouse: **W2 or W4** (both 695). Choose W2 (lower fixed cost for ties or lexicographically first). Open W2; current cost = 695.
+
+**Iteration 2**: With W2 open, evaluate adding each remaining warehouse. For each candidate $j$, customers switch to the cheaper of W2 vs. $j$:
+
+Adding W4: customers now choose min(W2, W4):
+- C1: min(80,60)=60, C2: min(30,50)=30, C3: min(60,70)=60, C4: min(50,40)=40, C5: min(40,75)=40, C6: min(70,55)=55, C7: min(85,35)=35
+- Transport = 320; Fixed = 280+310 = 590; Total = 910 → worse than W2 alone? No — 910 > 695. But wait: we must check the *marginal* saving from adding W4.
+
+Transport saving from adding W4 = 415 − 320 = 95. Fixed cost of W4 = 310. Net effect = 95 − 310 = −215 (cost *increases* by 215). Not worth it.
+
+Adding W5: customers choose min(W2, W5):
+- C1: min(80,90)=80, C2: min(30,85)=30, C3: min(60,45)=45, C4: min(50,70)=50, C5: min(40,30)=30, C6: min(70,60)=60, C7: min(85,75)=75
+- Transport = 370; Transport saving = 415−370 = 45; Fixed W5 = 250; Net = 45−250 = −205. Not worth it.
+
+**Adding W3**: customers choose min(W2, W3):
+- C1: min(80,70)=70, C2: min(30,65)=30, C3: min(60,35)=35, C4: min(50,55)=50, C5: min(40,50)=40, C6: min(70,45)=45, C7: min(85,60)=60
+- Transport = 330; Saving = 415−330 = 85; Fixed W3 = 400; Net = 85−400 = −315. Not worth it.
+
+**Adding W1**: customers choose min(W2, W1):
+- C1: min(80,40)=40, C2: min(30,75)=30, C3: min(60,55)=55, C4: min(50,80)=50, C5: min(40,65)=40, C6: min(70,90)=70, C7: min(85,50)=50
+- Transport = 335; Saving = 415−335 = 80; Fixed W1 = 350; Net = 80−350 = −270. Not worth it.
+
+No warehouse addition reduces cost. **Heuristic terminates with W2 open, total cost = 695**.
+
+::: {.callout-note}
+## Interpretation
+In this example, opening a single warehouse (W2) is the cost-minimizing solution under the Add Heuristic. The fixed costs of additional warehouses outweigh the transport savings from better geographic coverage. In larger, more geographically dispersed problems, the Add Heuristic typically opens 2–5 warehouses.
+:::
+
+### Drop Heuristic
+
+The Drop Heuristic is the mirror image: start with all warehouses open, then iteratively close the one whose closure increases total cost the least (or decreases it most).
+
+**Procedure**:
+
+1. Start: $F = J$ (all warehouses open); compute total cost
+2. For each $j \in F$: compute cost increase $\delta_j = \text{cost}(F \setminus \{j\}) - \text{cost}(F)$
+3. Close $j^* = \arg\min_j \delta_j$ (cheapest to close, or if $\delta_j < 0$: closing reduces cost)
+4. Repeat until closing any warehouse increases cost
+
+The Drop Heuristic often produces better solutions when the optimal number of open facilities is close to $|J|$.
+
+## MILP Solution with ompr/GLPK
+
+For exact solutions, we solve the WLP as a mixed-integer linear program using the `ompr` algebraic modeling package in R.
+
+```{r}
+#| label: wlp-milp
+#| echo: true
+#| message: false
+#| warning: false
+
+library(tidyverse)
+library(ompr)
+library(ompr.roi)
+library(ROI.plugin.glpk)
+
+# Data
+n_customers <- 7
+n_warehouses <- 5
+
+fixed_cost <- c(350, 280, 400, 310, 250)
+
+transport_cost <- matrix(c(
+  40, 80, 70, 60, 90,
+  75, 30, 65, 50, 85,
+  55, 60, 35, 70, 45,
+  80, 50, 55, 40, 70,
+  65, 40, 50, 75, 30,
+  90, 70, 45, 55, 60,
+  50, 85, 60, 35, 75
+), nrow = n_customers, ncol = n_warehouses, byrow = TRUE)
+
+# Build MILP model
+model <- MIPModel() |>
+  # y[j]: open warehouse j?
+  add_variable(y[j], j = 1:n_warehouses, type = "binary") |>
+  # x[i,j]: assign customer i to warehouse j?
+  add_variable(x[i, j], i = 1:n_customers, j = 1:n_warehouses, type = "binary") |>
+  # Minimize total cost
+  set_objective(
+    sum_expr(fixed_cost[j] * y[j], j = 1:n_warehouses) +
+    sum_expr(transport_cost[i, j] * x[i, j],
+             i = 1:n_customers, j = 1:n_warehouses),
+    sense = "min"
+  ) |>
+  # Each customer assigned to exactly one warehouse
+  add_constraint(
+    sum_expr(x[i, j], j = 1:n_warehouses) == 1,
+    i = 1:n_customers
+  ) |>
+  # Can only assign to open warehouse
+  add_constraint(
+    x[i, j] <= y[j],
+    i = 1:n_customers, j = 1:n_warehouses
+  )
+
+# Solve
+result <- solve_model(model, with_ROI(solver = "glpk", verbose = FALSE))
+
+cat("Solver status:", result$status, "\n")
+cat("Optimal total cost:", round(result$objective_value, 1), "k€/year\n\n")
+
+# Extract solution
+y_sol <- get_solution(result, y[j])
+x_sol <- get_solution(result, x[i, j])
+
+cat("Open warehouses:\n")
+open_wh <- y_sol |> filter(value > 0.5) |> pull(j)
+cat(paste("  W", open_wh, collapse = ", "), "\n\n")
+
+cat("Customer assignments:\n")
+assignments <- x_sol |>
+  filter(value > 0.5) |>
+  select(customer = i, warehouse = j) |>
+  arrange(customer)
+print(assignments)
+```
+
+```{r}
+#| label: wlp-add-heuristic
+#| echo: true
+
+# Add Heuristic Implementation
+add_heuristic_wlp <- function(fixed_cost, transport_cost) {
+  n_w <- length(fixed_cost)
+  n_c <- nrow(transport_cost)
+  open <- c()
+
+  # Compute cost for a given set of open warehouses
+  total_cost <- function(open_set) {
+    if (length(open_set) == 0) return(Inf)
+    transport <- sum(apply(transport_cost[, open_set, drop = FALSE], 1, min))
+    fixed <- sum(fixed_cost[open_set])
+    transport + fixed
+  }
+
+  current_cost <- Inf
+
+  repeat {
+    remaining <- setdiff(1:n_w, open)
+    if (length(remaining) == 0) break
+
+    # Find best warehouse to add
+    costs <- sapply(remaining, function(j) total_cost(c(open, j)))
+    best_idx <- which.min(costs)
+    best_cost <- costs[best_idx]
+
+    if (best_cost >= current_cost) break  # No improvement
+
+    open <- c(open, remaining[best_idx])
+    current_cost <- best_cost
+  }
+
+  # Compute final assignment
+  transport_sub <- transport_cost[, open, drop = FALSE]
+  assignment <- apply(transport_sub, 1, which.min)
+  warehouse_assigned <- open[assignment]
+
+  list(
+    open_warehouses = open,
+    assignments = warehouse_assigned,
+    total_cost = current_cost
+  )
+}
+
+heur <- add_heuristic_wlp(fixed_cost, transport_cost)
+
+cat("=== Add Heuristic Solution ===\n")
+cat("Open warehouses:", paste("W", heur$open_warehouses, collapse = ", "), "\n")
+cat("Customer assignments:", paste0("C", 1:n_customers, "→W", heur$assignments, collapse = ", "), "\n")
+cat("Total cost:", heur$total_cost, "k€/year\n\n")
+
+cat("=== Comparison ===\n")
+cat("Heuristic cost:", heur$total_cost, "| MILP optimal:", round(result$objective_value, 1), "\n")
+cat("Gap:", round((heur$total_cost - result$objective_value) / result$objective_value * 100, 1), "%\n")
+```
+
+## Comparing Heuristic vs. Optimal
+
+The MILP provides the globally optimal solution; the heuristic provides a feasible solution that may differ. The **optimality gap** quantifies solution quality:
+
+$$\text{Gap} = \frac{\text{Heuristic Cost} - \text{MILP Optimal}}{\text{MILP Optimal}} \times 100\%$$
+
+In practice:
+
+- Gaps below 5% are generally considered acceptable for strategic planning
+- The Add Heuristic typically achieves 2–8% gaps on medium-sized instances
+- For large networks (100+ sites, 1000+ customers), exact MILP solution may be impractical → heuristics or metaheuristics (Tabu Search, Simulated Annealing, Large Neighborhood Search) are preferred
+
+---
+
+## Exercises
+
+**Exercise 3.1 — MCLP Greedy Heuristic**
+
+Six towns (A–F) with populations (in thousands): A=25, B=40, C=15, D=30, E=20, F=35. A service facility covers all towns within 80 km. The distance matrix (km) is:
+
+|  | A | B | C | D | E | F |
+|--|---|---|---|---|---|---|
+| A | 0 | 60 | 90 | 75 | 100 | 85 |
+| B | 60 | 0 | 70 | 80 | 50 | 100 |
+| C | 90 | 70 | 0 | 55 | 80 | 60 |
+| D | 75 | 80 | 55 | 0 | 65 | 45 |
+| E | 100 | 50 | 80 | 65 | 0 | 90 |
+| F | 85 | 100 | 60 | 45 | 90 | 0 |
+
+a. Apply the greedy MCLP heuristic with $p = 2$ facilities. Which towns are selected? What percentage of total population is covered?
+b. Is there a 2-facility solution that achieves higher coverage? If so, identify it.
+c. Solve the MCLP exactly using the MILP formulation in R with `ompr`. Compare with the greedy solution.
+
+**Exercise 3.2 — WLP with Drop Heuristic**
+
+Using the same 5-warehouse/7-customer data from the chapter:
+
+a. Apply the Drop Heuristic starting with all 5 warehouses open. Show each iteration's cost calculation.
+b. Compare the Drop Heuristic solution with the Add Heuristic solution and the MILP optimum.
+c. Which heuristic performs better for this instance? Propose a reason.
+
+**Exercise 3.3 — Battery Logistics Case Study**
+
+A German manufacturer of industrial battery packs (for forklifts) currently ships directly from its single factory in Kassel to 8 regional customers:
+
+| Customer | Region | Annual demand (units) | x-coord | y-coord |
+|----------|--------|----------------------|---------|---------|
+| C1 | Hamburg | 800 | 15 | 175 |
+| C2 | Berlin | 650 | 145 | 150 |
+| C3 | Düsseldorf | 700 | 55 | 120 |
+| C4 | Frankfurt | 900 | 90 | 95 |
+| C5 | Stuttgart | 600 | 110 | 65 |
+| C6 | Munich | 1100 | 145 | 40 |
+| C7 | Leipzig | 500 | 130 | 130 |
+| C8 | Nuremberg | 750 | 130 | 75 |
+
+The manufacturer considers opening 1–3 regional DCs from 5 candidate sites: Hannover (50,155), Dortmund (60,130), Erfurt (120,120), Würzburg (115,90), Augsburg (135,55).
+
+DC fixed costs: Hannover €180k, Dortmund €200k, Erfurt €150k, Würzburg €160k, Augsburg €170k per year.
+
+Transport cost = 0.15 €/(unit·km).
+
+a. Formulate the WLP for this problem.
+b. Solve using the Add Heuristic (write the R function).
+c. Solve using `ompr` MILP. How many DCs should be opened and where?
+d. Compute the Center of Gravity solution. How close is it to the optimal DC location(s)?
+e. Sensitivity analysis: at what fixed cost level would it become optimal to open a 4th DC?

@@ -1,0 +1,987 @@
+---
+title: "SCM — Exercise Collection"
+subtitle: "with R Solutions"
+author: "Prof. Dr. Thomas Kirschstein"
+date: last-modified
+format:
+  html:
+    theme: cosmo
+    toc: true
+    toc-depth: 3
+    code-fold: true
+    code-summary: "Show solution"
+    number-sections: true
+  pdf:
+    documentclass: article
+    papersize: a4
+execute:
+  echo: true
+  warning: false
+bibliography: ../book/references.bib
+---
+
+# Preface {.unnumbered}
+
+This exercise collection accompanies the SCM Bachelor course at HS RheinMain. Each exercise block contains a problem statement, contextual hints, and a complete R solution. Work through the problems independently before revealing the solution code.
+
+---
+
+# DuPont Analysis
+
+## Problem Statement
+
+**FabCo GmbH** is a mid-sized manufacturing company. You have been provided with the following annual financial data (all figures in €1,000):
+
+| Item | Value (€K) |
+|------|-----------|
+| Revenue | 11,000 |
+| Material costs | 5,500 |
+| Personnel costs | 4,950 |
+| Fixed assets | 2,000 |
+| Cash | 500 |
+| Inventory | 3,300 |
+| Receivables | 1,075 |
+
+**Tasks:**
+
+a) Build the complete DuPont tree and calculate the Return on Investment (ROI). Show all intermediate components: Profit, ROS (Return on Sales), Total Assets, Asset Turnover, and ROI.
+
+b) FabCo's logistics manager proposes a 10% reduction in inventory through improved stock management. Calculate the new ROI and quantify the improvement.
+
+c) Transport costs of €200K are currently embedded in the material cost figure. What percentage reduction in transport costs would achieve *the same* ROI improvement as the inventory reduction in (b)?
+
+**Hints:**
+
+- DuPont decomposition: $\text{ROI} = \text{ROS} \times \text{Asset Turnover}$
+- $\text{ROS} = \text{Profit} / \text{Revenue}$
+- $\text{Asset Turnover} = \text{Revenue} / \text{Total Assets}$
+- $\text{Profit} = \text{Revenue} - \text{Material costs} - \text{Personnel costs}$
+- $\text{Total Assets} = \text{Fixed assets} + \text{Cash} + \text{Inventory} + \text{Receivables}$
+- Changing inventory only affects total assets (denominator path), not profit directly.
+- For (c), transport cost reduction reduces material costs → increases profit → affects ROS.
+
+## R Solution
+
+```{r dupont-analysis}
+# ─── DuPont Analysis for FabCo GmbH ────────────────────────────────────────
+
+#' Compute the full DuPont tree and return ROI components
+#'
+#' @param revenue     Total revenue (€K)
+#' @param mat_cost    Material costs (€K)
+#' @param pers_cost   Personnel costs (€K)
+#' @param fixed_assets Net fixed assets (€K)
+#' @param cash        Cash and equivalents (€K)
+#' @param inventory   Inventory (€K)
+#' @param receivables Trade receivables (€K)
+#' @return Named list with all DuPont components
+dupont_roi <- function(revenue, mat_cost, pers_cost,
+                       fixed_assets, cash, inventory, receivables) {
+  profit        <- revenue - mat_cost - pers_cost
+  total_assets  <- fixed_assets + cash + inventory + receivables
+  ros           <- profit / revenue
+  asset_turnover <- revenue / total_assets
+  roi           <- ros * asset_turnover   # equivalent to profit / total_assets
+
+  list(
+    revenue        = revenue,
+    mat_cost       = mat_cost,
+    pers_cost      = pers_cost,
+    profit         = profit,
+    total_assets   = total_assets,
+    fixed_assets   = fixed_assets,
+    cash           = cash,
+    inventory      = inventory,
+    receivables    = receivables,
+    ros            = ros,
+    asset_turnover = asset_turnover,
+    roi            = roi
+  )
+}
+
+# ── (a) Baseline scenario ──────────────────────────────────────────────────
+base <- dupont_roi(
+  revenue      = 11000,
+  mat_cost     = 5500,
+  pers_cost    = 4950,
+  fixed_assets = 2000,
+  cash         = 500,
+  inventory    = 3300,
+  receivables  = 1075
+)
+
+cat("=== FabCo GmbH — DuPont Analysis (Baseline) ===\n")
+cat(sprintf("Revenue:         €%8.1f K\n", base$revenue))
+cat(sprintf("Material costs:  €%8.1f K\n", base$mat_cost))
+cat(sprintf("Personnel costs: €%8.1f K\n", base$pers_cost))
+cat(sprintf("Profit:          €%8.1f K\n", base$profit))
+cat("-------------------------------------------\n")
+cat(sprintf("Fixed assets:    €%8.1f K\n", base$fixed_assets))
+cat(sprintf("Cash:            €%8.1f K\n", base$cash))
+cat(sprintf("Inventory:       €%8.1f K\n", base$inventory))
+cat(sprintf("Receivables:     €%8.1f K\n", base$receivables))
+cat(sprintf("Total assets:    €%8.1f K\n", base$total_assets))
+cat("-------------------------------------------\n")
+cat(sprintf("ROS:             %6.2f%%\n",   base$ros * 100))
+cat(sprintf("Asset turnover:  %6.4f\n",     base$asset_turnover))
+cat(sprintf("ROI:             %6.2f%%\n",   base$roi * 100))
+
+# ── (b) 10% inventory reduction ───────────────────────────────────────────
+inv_reduced <- dupont_roi(
+  revenue      = 11000,
+  mat_cost     = 5500,
+  pers_cost    = 4950,
+  fixed_assets = 2000,
+  cash         = 500,
+  inventory    = 3300 * 0.90,   # 10% reduction
+  receivables  = 1075
+)
+
+cat("\n=== After 10% Inventory Reduction ===\n")
+cat(sprintf("New inventory:   €%8.1f K  (saved: €%.1f K)\n",
+            inv_reduced$inventory, base$inventory - inv_reduced$inventory))
+cat(sprintf("New total assets:€%8.1f K\n", inv_reduced$total_assets))
+cat(sprintf("New ROI:         %6.2f%%\n",  inv_reduced$roi * 100))
+cat(sprintf("ROI improvement: %6.3f pp\n", (inv_reduced$roi - base$roi) * 100))
+
+target_roi_improvement <- inv_reduced$roi - base$roi
+cat(sprintf("\nTarget ROI improvement to match: %.6f (%.4f pp)\n",
+            target_roi_improvement, target_roi_improvement * 100))
+
+# ── (c) Find transport cost reduction achieving same ROI improvement ───────
+# Transport costs (€200K) are part of material costs.
+# Reducing them lowers mat_cost → raises profit → raises ROS → raises ROI.
+# Total assets unchanged (transport cost ≠ balance sheet item here).
+# Solve: dupont_roi(mat_cost = 5500 - delta)$roi - base$roi == target_roi_improvement
+
+# Analytical approach:
+# ROI_new = (profit + delta) / total_assets
+# Set ROI_new = base$roi + target_roi_improvement = inv_reduced$roi
+# => delta = inv_reduced$roi * base$total_assets - base$profit
+delta_needed <- inv_reduced$roi * base$total_assets - base$profit
+pct_transport_reduction <- (delta_needed / 200) * 100
+
+cat("\n=== Transport Cost Reduction Equivalent ===\n")
+cat(sprintf("Profit increase needed:       €%.2f K\n", delta_needed))
+cat(sprintf("Transport costs currently:    €200 K\n"))
+cat(sprintf("Required reduction:           €%.2f K  (%.2f%%)\n",
+            delta_needed, pct_transport_reduction))
+
+# Verify
+verify <- dupont_roi(
+  revenue      = 11000,
+  mat_cost     = 5500 - delta_needed,
+  pers_cost    = 4950,
+  fixed_assets = 2000,
+  cash         = 500,
+  inventory    = 3300,
+  receivables  = 1075
+)
+cat(sprintf("Verification — new ROI:       %.4f%%  (target: %.4f%%)\n",
+            verify$roi * 100, inv_reduced$roi * 100))
+
+# ── Sensitivity analysis: ±10% inventory ─────────────────────────────────
+cat("\n=== Sensitivity: Inventory ±10% ===\n")
+for (pct in c(-0.20, -0.10, 0, 0.10, 0.20)) {
+  s <- dupont_roi(
+    revenue = 11000, mat_cost = 5500, pers_cost = 4950,
+    fixed_assets = 2000, cash = 500,
+    inventory = 3300 * (1 + pct), receivables = 1075
+  )
+  cat(sprintf("Inventory %+5.0f%%: Total Assets = €%.0f K | ROI = %.3f%%\n",
+              pct * 100, s$total_assets, s$roi * 100))
+}
+```
+
+**Interpretation:** The DuPont decomposition reveals that FabCo's profit is very thin (only €550K on €11M revenue = 5% ROS). The high inventory-to-assets ratio means logistics efficiency improvements have a significant leverage effect on ROI, because total assets are dominated by working capital.
+
+---
+
+# Steiner-Weber and Center of Gravity
+
+## Problem Statement
+
+A logistics company plans a new distribution center for the **Rhine-Main region**. Five demand sites have been identified:
+
+| Site | City | x (km) | y (km) | Annual demand (t) |
+|------|------|---------|---------|------------------|
+| 1 | Frankfurt | 0 | 0 | 800 |
+| 2 | Wiesbaden | −13 | 3 | 450 |
+| 3 | Darmstadt | 5 | −25 | 600 |
+| 4 | Mainz | −18 | −5 | 350 |
+| 5 | Offenbach | 8 | −5 | 500 |
+
+**Tasks:**
+
+a) Calculate the **Center of Gravity (CoG)** of this demand pattern.
+
+b) Apply **5 iterations of the Weiszfeld algorithm**, starting from the CoG solution. Show intermediate results.
+
+c) Compare the **total weighted distance** (sum of demand × Euclidean distance to facility) for CoG vs. the Weiszfeld solution after 5 iterations.
+
+d) Create a **map-like scatter plot** showing the five demand sites (size proportional to demand), the CoG, and the Weiszfeld solution.
+
+**Hints:**
+
+- CoG: $x^* = \sum w_i x_i / \sum w_i$, analogously for $y^*$
+- Weiszfeld update: $x^{(k+1)} = \frac{\sum_i w_i x_i / d_i^{(k)}}{\sum_i w_i / d_i^{(k)}}$ where $d_i^{(k)} = \|s^{(k)} - p_i\|_2$
+- The Weiszfeld algorithm minimizes the sum of weighted Euclidean distances (the true Steiner-Weber objective), unlike CoG which minimizes weighted squared distances.
+
+## R Solution
+
+```{r steiner-weber}
+library(ggplot2)
+
+# ── Data ─────────────────────────────────────────────────────────────────
+sites <- data.frame(
+  city   = c("Frankfurt", "Wiesbaden", "Darmstadt", "Mainz", "Offenbach"),
+  x      = c(0, -13, 5, -18, 8),
+  y      = c(0,   3, -25,  -5, -5),
+  demand = c(800, 450, 600, 350, 500)
+)
+
+# ── (a) Center of Gravity ─────────────────────────────────────────────────
+cog_x <- sum(sites$demand * sites$x) / sum(sites$demand)
+cog_y <- sum(sites$demand * sites$y) / sum(sites$demand)
+
+cat("=== Center of Gravity ===\n")
+cat(sprintf("x* = %.4f km\n", cog_x))
+cat(sprintf("y* = %.4f km\n", cog_y))
+
+# ── Weighted distance function ────────────────────────────────────────────
+total_weighted_dist <- function(fx, fy, sites) {
+  dists <- sqrt((sites$x - fx)^2 + (sites$y - fy)^2)
+  sum(sites$demand * dists)
+}
+
+twd_cog <- total_weighted_dist(cog_x, cog_y, sites)
+cat(sprintf("Total weighted distance (CoG): %.2f t·km\n", twd_cog))
+
+# ── (b) Weiszfeld algorithm ───────────────────────────────────────────────
+weiszfeld_iter <- function(sites, max_iter = 5, tol = 1e-8) {
+  # Start from CoG
+  x <- sum(sites$demand * sites$x) / sum(sites$demand)
+  y <- sum(sites$demand * sites$y) / sum(sites$demand)
+
+  history <- data.frame(iter = 0, x = x, y = y,
+                        twd = total_weighted_dist(x, y, sites))
+
+  for (k in seq_len(max_iter)) {
+    # Distances from current estimate to all sites
+    d <- sqrt((sites$x - x)^2 + (sites$y - y)^2)
+
+    # Guard against coincidence with a demand site (d → 0)
+    d[d < 1e-10] <- 1e-10
+
+    # Weiszfeld update
+    w_d  <- sites$demand / d
+    x_new <- sum(w_d * sites$x) / sum(w_d)
+    y_new <- sum(w_d * sites$y) / sum(w_d)
+
+    twd_new <- total_weighted_dist(x_new, y_new, sites)
+    history <- rbind(history,
+                     data.frame(iter = k, x = x_new, y = y_new, twd = twd_new))
+
+    cat(sprintf("Iteration %d: x = %7.4f, y = %7.4f | TWD = %.2f t·km\n",
+                k, x_new, y_new, twd_new))
+
+    if (sqrt((x_new - x)^2 + (y_new - y)^2) < tol) {
+      cat("  → Converged.\n"); break
+    }
+    x <- x_new; y <- y_new
+  }
+  list(x = x, y = y, history = history)
+}
+
+cat("\n=== Weiszfeld Iterations (start = CoG) ===\n")
+result <- weiszfeld_iter(sites, max_iter = 5)
+
+# ── (c) Comparison ────────────────────────────────────────────────────────
+twd_ws <- total_weighted_dist(result$x, result$y, sites)
+cat(sprintf("\n=== Comparison ===\n"))
+cat(sprintf("CoG:       (%.4f, %.4f)  TWD = %.2f t·km\n", cog_x, cog_y, twd_cog))
+cat(sprintf("Weiszfeld: (%.4f, %.4f)  TWD = %.2f t·km\n", result$x, result$y, twd_ws))
+cat(sprintf("Improvement: %.2f t·km  (%.2f%%)\n",
+            twd_cog - twd_ws, (twd_cog - twd_ws) / twd_cog * 100))
+
+# ── (d) Map-like scatter plot ─────────────────────────────────────────────
+facilities <- data.frame(
+  label = c("CoG", "Weiszfeld (5 iter)"),
+  x     = c(cog_x, result$x),
+  y     = c(cog_y, result$y),
+  method = c("CoG", "Weiszfeld")
+)
+
+p <- ggplot() +
+  # Demand sites — size proportional to demand
+  geom_point(data = sites,
+             aes(x = x, y = y, size = demand),
+             color = "#1B2A4A", alpha = 0.7) +
+  geom_text(data = sites,
+            aes(x = x, y = y + 1.5, label = city),
+            size = 3.2, color = "#2D2D2D") +
+  # Facility locations
+  geom_point(data = facilities,
+             aes(x = x, y = y, shape = method, color = method),
+             size = 5, stroke = 1.5) +
+  geom_text(data = facilities,
+            aes(x = x, y = y - 2.5, label = label),
+            size = 3, color = "#01696F") +
+  scale_size_continuous(range = c(4, 14), name = "Annual demand (t)") +
+  scale_color_manual(values = c("CoG" = "#A84B2F", "Weiszfeld" = "#01696F"),
+                     name = "Method") +
+  scale_shape_manual(values = c("CoG" = 17, "Weiszfeld" = 15),
+                     name = "Method") +
+  labs(title = "Rhine-Main Region — Distribution Center Location",
+       subtitle = "Demand sites (size = annual demand) and candidate facility locations",
+       x = "x-coordinate (km, relative to Frankfurt)",
+       y = "y-coordinate (km, relative to Frankfurt)") +
+  theme_minimal(base_size = 12) +
+  theme(
+    plot.title    = element_text(face = "bold", color = "#1B2A4A"),
+    plot.subtitle = element_text(color = "#7A7974"),
+    legend.position = "bottom"
+  ) +
+  coord_equal()
+
+print(p)
+```
+
+**Interpretation:** The Weiszfeld algorithm converges toward the true Steiner-Weber minimum, which minimizes total weighted *Euclidean* distance. The CoG minimizes weighted *squared* distances. In this case, the difference is modest due to the relatively symmetric demand pattern, but in asymmetric layouts with one dominant demand site the gap can be substantial.
+
+---
+
+# Transportation Problem — Vogel's Approximation Method
+
+## Problem Statement
+
+**Pear Disk Drive** manufactures hard drives at three plants and distributes via four distribution centers (DCs). The cost matrix (€/unit), supply, and demand are:
+
+|           | DC Berlin | DC Zurich | DC Warsaw | DC Dublin | Supply |
+|-----------|-----------|-----------|-----------|-----------|--------|
+| **Plant Hamburg** | 2 | 3 | 1 | 7 | 120 |
+| **Plant Lyon** | 5 | 2 | 4 | 3 | 80 |
+| **Plant Athens** | 4 | 6 | 3 | 5 | 100 |
+| **Demand** | 70 | 90 | 60 | 80 | 300 |
+
+**Tasks:**
+
+a) Apply **Vogel's Approximation Method (VAM)** step by step. Show the penalty row/column for each iteration.
+
+b) Solve with `lpSolve::lp.transport()` in R to find the optimal solution.
+
+c) Compare total costs: is VAM optimal in this case?
+
+d) **Modified scenario**: Dublin plant capacity is reduced to **80 → 60**. Adjust the problem (add a dummy demand column) and find the new solution.
+
+**Hints:**
+
+- VAM penalty for a row/column = difference between the two smallest costs in that row/column.
+- At each step, allocate as much as possible to the cell with the minimum cost in the row/column with the highest penalty.
+- The problem is *balanced* (total supply = total demand = 300). If it becomes unbalanced, add a dummy source or destination.
+
+## R Solution
+
+```{r transportation-problem}
+# ── lpSolve is needed for the exact solution ─────────────────────────────
+if (!requireNamespace("lpSolve", quietly = TRUE)) {
+  install.packages("lpSolve", repos = "https://cloud.r-project.org")
+}
+library(lpSolve)
+
+# ── Data ─────────────────────────────────────────────────────────────────
+cost_mat <- matrix(
+  c(2, 3, 1, 7,
+    5, 2, 4, 3,
+    4, 6, 3, 5),
+  nrow = 3, byrow = TRUE,
+  dimnames = list(
+    c("Hamburg", "Lyon", "Athens"),
+    c("Berlin", "Zurich", "Warsaw", "Dublin")
+  )
+)
+
+supply <- c(Hamburg = 120, Lyon = 80, Athens = 100)
+demand <- c(Berlin = 70, Zurich = 90, Warsaw = 60, Dublin = 80)
+
+cat("=== Cost Matrix ===\n")
+print(cost_mat)
+cat(sprintf("\nSupply: %s\n", paste(names(supply), supply, sep = "=", collapse = ", ")))
+cat(sprintf("Demand: %s\n", paste(names(demand), demand, sep = "=", collapse = ", ")))
+
+# ── (a) Vogel's Approximation Method ─────────────────────────────────────
+#' Apply Vogel's Approximation Method
+#' @param cost_mat m×n cost matrix
+#' @param supply   supply vector (length m)
+#' @param demand   demand vector (length n)
+#' @return list with allocation matrix and total cost
+vogels_approximation <- function(cost_mat, supply, demand) {
+  m <- nrow(cost_mat); n <- ncol(cost_mat)
+  alloc   <- matrix(0, m, n,
+                    dimnames = list(rownames(cost_mat), colnames(cost_mat)))
+  sup     <- supply
+  dem     <- demand
+  active_rows <- seq_len(m)
+  active_cols <- seq_len(n)
+  iter <- 0
+
+  while (length(active_rows) > 0 && length(active_cols) > 0) {
+    iter <- iter + 1
+
+    # Compute row penalties (difference of two smallest costs in active cols)
+    row_pen <- sapply(active_rows, function(i) {
+      costs <- sort(cost_mat[i, active_cols])
+      if (length(costs) >= 2) costs[2] - costs[1] else 0
+    })
+
+    # Compute col penalties
+    col_pen <- sapply(active_cols, function(j) {
+      costs <- sort(cost_mat[active_rows, j])
+      if (length(costs) >= 2) costs[2] - costs[1] else 0
+    })
+
+    cat(sprintf("\n--- Iteration %d ---\n", iter))
+    cat("Row penalties:", setNames(row_pen, rownames(cost_mat)[active_rows]), "\n")
+    cat("Col penalties:", setNames(col_pen, colnames(cost_mat)[active_cols]), "\n")
+
+    max_row_pen <- max(row_pen, na.rm = TRUE)
+    max_col_pen <- max(col_pen, na.rm = TRUE)
+
+    if (max_row_pen >= max_col_pen) {
+      # Select row with max penalty
+      best_r_idx <- which.max(row_pen)
+      i <- active_rows[best_r_idx]
+      # Find minimum cost column in this row
+      costs_in_row <- cost_mat[i, active_cols]
+      best_c_idx   <- which.min(costs_in_row)
+      j <- active_cols[best_c_idx]
+    } else {
+      # Select column with max penalty
+      best_c_idx <- which.max(col_pen)
+      j <- active_cols[best_c_idx]
+      # Find minimum cost row in this column
+      costs_in_col <- cost_mat[active_rows, j]
+      best_r_idx   <- which.min(costs_in_col)
+      i <- active_rows[best_r_idx]
+    }
+
+    qty <- min(sup[i], dem[j])
+    alloc[i, j] <- alloc[i, j] + qty
+    sup[i] <- sup[i] - qty
+    dem[j] <- dem[j] - qty
+
+    cat(sprintf("Allocate %d units: %s → %s (cost = %d)\n",
+                qty, rownames(cost_mat)[i], colnames(cost_mat)[j], cost_mat[i, j]))
+
+    if (sup[i] == 0) {
+      active_rows <- setdiff(active_rows, i)
+      cat(sprintf("  Row '%s' exhausted.\n", rownames(cost_mat)[i]))
+    }
+    if (dem[j] == 0) {
+      active_cols <- setdiff(active_cols, j)
+      cat(sprintf("  Col '%s' satisfied.\n", colnames(cost_mat)[j]))
+    }
+  }
+
+  total_cost <- sum(alloc * cost_mat)
+  list(allocation = alloc, total_cost = total_cost)
+}
+
+cat("\n=== (a) Vogel's Approximation Method ===\n")
+vam_result <- vogels_approximation(cost_mat, supply, demand)
+
+cat("\n=== VAM Allocation Matrix ===\n")
+print(vam_result$allocation)
+cat(sprintf("VAM Total Cost: €%d\n", vam_result$total_cost))
+
+# ── (b) Optimal solution with lpSolve ────────────────────────────────────
+cat("\n=== (b) Optimal Solution (lpSolve) ===\n")
+lp_result <- lp.transport(
+  cost.mat   = cost_mat,
+  direction  = "min",
+  row.signs  = rep("<=", nrow(cost_mat)),
+  row.rhs    = as.numeric(supply),
+  col.signs  = rep(">=", ncol(cost_mat)),
+  col.rhs    = as.numeric(demand)
+)
+
+lp_alloc <- matrix(lp_result$solution, nrow = nrow(cost_mat),
+                   dimnames = list(rownames(cost_mat), colnames(cost_mat)))
+lp_cost  <- lp_result$objval
+
+cat("LP Optimal Allocation:\n")
+print(lp_alloc)
+cat(sprintf("LP Optimal Total Cost: €%.0f\n", lp_cost))
+
+# ── (c) Comparison ────────────────────────────────────────────────────────
+cat("\n=== (c) VAM vs. Optimal Comparison ===\n")
+cat(sprintf("VAM cost:     €%d\n", vam_result$total_cost))
+cat(sprintf("Optimal cost: €%.0f\n", lp_cost))
+cat(sprintf("Gap:          €%.0f  (%.2f%%)\n",
+            vam_result$total_cost - lp_cost,
+            (vam_result$total_cost - lp_cost) / lp_cost * 100))
+
+if (vam_result$total_cost == lp_cost) {
+  cat("VAM found the OPTIMAL solution in this case!\n")
+} else {
+  cat("VAM is near-optimal but not globally optimal.\n")
+}
+
+# ── (d) Modified: Dublin demand reduced from 80 to 60 ─────────────────────
+cat("\n=== (d) Modified Problem: Dublin demand = 60 ===\n")
+demand_mod <- c(Berlin = 70, Zurich = 90, Warsaw = 60, Dublin = 60)
+# Total supply = 300, total demand = 280 → add dummy demand column
+excess_supply <- sum(supply) - sum(demand_mod)
+cat(sprintf("Excess supply: %d → adding dummy destination\n", excess_supply))
+
+cost_mod <- cbind(cost_mat, Dummy = 0)   # dummy destination costs = 0
+demand_mod_bal <- c(demand_mod, Dummy = excess_supply)
+
+lp_mod <- lp.transport(
+  cost.mat   = cost_mod,
+  direction  = "min",
+  row.signs  = rep("<=", nrow(cost_mod)),
+  row.rhs    = as.numeric(supply),
+  col.signs  = rep(">=", ncol(cost_mod)),
+  col.rhs    = as.numeric(demand_mod_bal)
+)
+
+lp_alloc_mod <- matrix(lp_mod$solution, nrow = nrow(cost_mod),
+                       dimnames = list(rownames(cost_mod), names(demand_mod_bal)))
+cat("Modified LP Allocation (incl. dummy):\n")
+print(lp_alloc_mod)
+cat(sprintf("Modified Total Cost: €%.0f\n", lp_mod$objval))
+cat("(Dummy column = unshipped / idle capacity)\n")
+```
+
+**Interpretation:** Vogel's Approximation Method often finds solutions within 1–5% of optimal for balanced transportation problems. It is a reliable starting point for manual calculation and provides a warm start for iterative optimisation procedures such as the stepping-stone method.
+
+---
+
+# Newsvendor Model
+
+## Problem Statement
+
+A fashion retailer applies the single-period **Newsvendor Model** to three product categories:
+
+| Scenario | Product | Cost (€) | Price (€) | Salvage (€) | Demand dist. |
+|----------|---------|----------|-----------|-------------|--------------|
+| A | Winter Parka | 120 | 200 | 60 | N(500, 100²) |
+| B | Basic T-Shirt | 8 | 15 | 3 | N(2000, 300²) |
+| C | Designer Handbag | 400 | 900 | 150 | N(50, 20²) |
+
+**Tasks:**
+
+a) For each scenario, calculate the **critical ratio** CR and the **optimal order quantity** Q*.
+
+b) Calculate the **expected profit** at Q* for each scenario.
+
+c) Plot the **expected profit as a function of Q** for Scenario A, Q ∈ [200, 800].
+
+d) What order quantity achieves a **90% service level** (fill rate) for Scenario A?
+
+**Hints:**
+
+- $\text{CR} = \frac{p - c}{p - s}$ (underage cost / (underage + overage cost))
+- $Q^* = \mu + \sigma \cdot \Phi^{-1}(\text{CR})$ for normally distributed demand
+- Expected profit at Q*: $\Pi(Q^*) = (p - s) \cdot \left[\mu \cdot \Phi\left(\frac{Q^* - \mu}{\sigma}\right) - \sigma \cdot \phi\left(\frac{Q^* - \mu}{\sigma}\right)\right] + (p - s) \cdot Q^* \cdot \left[1 - \Phi\left(\frac{Q^* - \mu}{\sigma}\right)\right] - (c - s) \cdot Q^*$
+- Simpler formula: $\Pi(Q) = (p - c) \cdot \mu - (p - s) \cdot E[\max(Q - D, 0)] - (c - s) \cdot E[\max(D - Q, 0)]$
+- Service level (Type I): $P(D \leq Q^{SL}) = 0.90 \Rightarrow Q^{SL} = \mu + z_{0.90} \cdot \sigma$
+
+## R Solution
+
+```{r newsvendor}
+library(ggplot2)
+
+#' Newsvendor model with normal demand
+#'
+#' @param mu      Mean demand
+#' @param sigma   Standard deviation of demand
+#' @param p       Selling price (per unit)
+#' @param c       Purchase / production cost (per unit)
+#' @param s       Salvage value (per unit)
+#' @return Named list with CR, Q_star, expected profit, and service level info
+newsvendor_normal <- function(mu, sigma, p, c, s) {
+  # Critical ratio
+  cu  <- p - c    # underage cost (lost margin)
+  co  <- c - s    # overage cost  (cost of leftover)
+  cr  <- cu / (cu + co)    # = (p-c)/(p-s)
+
+  # Optimal order quantity
+  z_star <- qnorm(cr)
+  q_star <- mu + sigma * z_star
+
+  # Expected profit at Q*
+  # Pi(Q) = (p-s)*[mu*Phi(z) - sigma*phi(z)] + (p-c)*(mu - Q*Phi(z) - sigma*phi(z)) ← messy
+  # Use the clean decomposition via L(z) = E[max(z_std - z, 0)]
+  # E[max(D - Q, 0)] = sigma * L(z*)  where L(z) = phi(z) - z*(1-Phi(z))
+  L_z <- function(z) dnorm(z) - z * (1 - pnorm(z))
+
+  z_q <- (q_star - mu) / sigma
+  exp_leftover  <- sigma * L_z(-z_q)  # E[max(Q-D, 0)]
+  exp_stockout  <- sigma * L_z(z_q)   # E[max(D-Q, 0)]
+
+  # Expected sales = mu - E[stockout]
+  exp_sales     <- mu - exp_stockout
+  exp_profit    <- (p - c) * exp_sales - co * exp_leftover
+
+  # Type I service level (probability of no stockout)
+  sl <- pnorm(z_star)  # = CR by definition at Q*
+
+  list(
+    mu = mu, sigma = sigma, p = p, c = c, s = s,
+    cu = cu, co = co, cr = cr,
+    z_star = z_star, q_star = q_star,
+    exp_leftover = exp_leftover,
+    exp_stockout = exp_stockout,
+    exp_sales    = exp_sales,
+    exp_profit   = exp_profit,
+    service_level = sl
+  )
+}
+
+#' Expected profit at arbitrary Q (for plotting)
+newsvendor_profit <- function(Q, mu, sigma, p, c, s) {
+  co <- c - s
+  cu <- p - c
+  z  <- (Q - mu) / sigma
+  L  <- function(zz) dnorm(zz) - zz * (1 - pnorm(zz))
+  exp_leftover <- sigma * L(-z)
+  exp_stockout <- sigma * L(z)
+  exp_sales    <- mu - exp_stockout
+  (p - c) * exp_sales - co * exp_leftover
+}
+
+# ── Scenarios ─────────────────────────────────────────────────────────────
+scenarios <- list(
+  A = list(mu = 500,  sigma = 100, p = 200, c = 120, s = 60,  name = "Parka"),
+  B = list(mu = 2000, sigma = 300, p = 15,  c = 8,   s = 3,   name = "T-Shirt"),
+  C = list(mu = 50,   sigma = 20,  p = 900, c = 400, s = 150, name = "Handbag")
+)
+
+cat("=== (a) Critical Ratio and Q* ===\n\n")
+results <- lapply(names(scenarios), function(id) {
+  sc <- scenarios[[id]]
+  r  <- newsvendor_normal(sc$mu, sc$sigma, sc$p, sc$c, sc$s)
+  cat(sprintf("--- Scenario %s: %s ---\n", id, sc$name))
+  cat(sprintf("  Underage cost (cu):  €%.2f\n", r$cu))
+  cat(sprintf("  Overage cost  (co):  €%.2f\n", r$co))
+  cat(sprintf("  Critical ratio (CR): %.4f\n",   r$cr))
+  cat(sprintf("  z*:                  %.4f\n",   r$z_star))
+  cat(sprintf("  Q*:                  %.1f units\n", r$q_star))
+  cat(sprintf("  Service level at Q*: %.2f%%\n\n", r$service_level * 100))
+  r
+})
+names(results) <- names(scenarios)
+
+cat("\n=== (b) Expected Profit at Q* ===\n\n")
+for (id in names(results)) {
+  r <- results[[id]]
+  cat(sprintf("Scenario %s (%s):\n", id, scenarios[[id]]$name))
+  cat(sprintf("  E[sales]:     %.2f units\n",    r$exp_sales))
+  cat(sprintf("  E[leftover]:  %.2f units\n",    r$exp_leftover))
+  cat(sprintf("  E[stockout]:  %.2f units\n",    r$exp_stockout))
+  cat(sprintf("  E[Profit]:    €%.2f\n\n",       r$exp_profit))
+}
+
+# ── (c) Profit curve for Scenario A ──────────────────────────────────────
+q_grid  <- seq(200, 800, by = 5)
+profits <- sapply(q_grid, function(Q) {
+  newsvendor_profit(Q, mu = 500, sigma = 100, p = 200, c = 120, s = 60)
+})
+
+profit_df <- data.frame(Q = q_grid, profit = profits)
+q_star_A  <- results$A$q_star
+
+p_profit <- ggplot(profit_df, aes(x = Q, y = profit)) +
+  geom_line(color = "#01696F", linewidth = 1.2) +
+  geom_vline(xintercept = q_star_A, linetype = "dashed",
+             color = "#1B2A4A", linewidth = 0.8) +
+  annotate("point", x = q_star_A, y = results$A$exp_profit,
+           color = "#A84B2F", size = 4) +
+  annotate("text",
+           x = q_star_A + 20, y = results$A$exp_profit,
+           label = sprintf("Q* = %.0f\nE[Π] = €%.0f", q_star_A, results$A$exp_profit),
+           hjust = 0, color = "#A84B2F", size = 3.5) +
+  labs(title   = "Scenario A (Parka): Expected Profit vs. Order Quantity",
+       subtitle = "Demand ~ N(500, 100²)  |  c = €120, p = €200, s = €60",
+       x = "Order Quantity Q (units)",
+       y = "Expected Profit (€)") +
+  scale_y_continuous(labels = scales::comma) +
+  theme_minimal(base_size = 12) +
+  theme(
+    plot.title    = element_text(face = "bold", color = "#1B2A4A"),
+    plot.subtitle = element_text(color = "#7A7974")
+  )
+
+print(p_profit)
+
+# ── (d) 90% service level for Scenario A ─────────────────────────────────
+sl_target <- 0.90
+z_90 <- qnorm(sl_target)
+q_90 <- 500 + 100 * z_90
+
+cat(sprintf("=== (d) 90%% Service Level for Scenario A ===\n"))
+cat(sprintf("z(0.90)       = %.4f\n", z_90))
+cat(sprintf("Q(SL=90%%)    = %.1f units\n", q_90))
+cat(sprintf("Safety stock  = %.1f units above mean\n", q_90 - 500))
+prof_90 <- newsvendor_profit(q_90, 500, 100, 200, 120, 60)
+cat(sprintf("E[Profit] at Q_SL = €%.2f  (vs. €%.2f at Q*)\n",
+            prof_90, results$A$exp_profit))
+cat(sprintf("Profit loss from SL constraint = €%.2f\n",
+            results$A$exp_profit - prof_90))
+```
+
+**Interpretation:** The critical ratio captures the trade-off between underage and overage costs. Scenario C (designer handbag) has a very high CR (~0.87) because the margin loss from a stockout far exceeds the cost of holding unsold stock. Scenario B (t-shirt) has a more balanced CR because the overage and underage costs are comparable.
+
+---
+
+# Warehouse Location Problem — Add and Drop Heuristics
+
+## Problem Statement
+
+A company is evaluating **5 potential warehouse locations** to serve **7 customers**. Annual fixed costs (×€1,000) and a transport cost matrix (€/unit) are given:
+
+**Fixed costs** (€K/year): WH1 = 5, WH2 = 7, WH3 = 5, WH4 = 6, WH5 = 4
+
+**Customer annual demands** (units): C1=100, C2=80, C3=120, C4=60, C5=90, C6=70, C7=110
+
+**Transport cost matrix** (€/unit, warehouse × customer):
+
+|      | C1 | C2 | C3 | C4 | C5 | C6 | C7 |
+|------|----|----|----|----|----|----|-----|
+| WH1  |  2 |  3 |  1 |  5 |  4 |  6 |  8 |
+| WH2  |  3 |  2 |  4 |  3 |  5 |  7 |  1 |
+| WH3  |  1 |  4 |  2 |  6 |  3 |  5 |  9 |
+| WH4  |  5 |  3 |  7 |  2 |  6 |  4 |  3 |
+| WH5  |  4 |  1 |  3 |  4 |  2 |  8 |  5 |
+
+**Tasks:**
+
+a) Apply the **Add Heuristic** step by step. Show the net savings for each candidate warehouse at each iteration.
+
+b) Apply the **Drop Heuristic** starting from all warehouses open.
+
+c) Solve exactly with **MILP** using the `ompr` package.
+
+d) Compare all three solutions in terms of total cost and warehouse selection.
+
+**Hints:**
+
+- Add Heuristic: Start with no warehouses. At each step, open the warehouse that most reduces total cost (fixed + transport). Stop when no further improvement is possible.
+- Transport cost for a customer = min over open warehouses × demand.
+- Drop Heuristic: Start with all warehouses open. Close the one whose removal costs the least additional cost. Stop when closing any warehouse increases total cost.
+- MILP: binary variables $y_i$ (open/close), continuous $x_{ij}$ (fraction of customer $j$ served from $i$).
+
+## R Solution
+
+```{r warehouse-location}
+# ── Data ─────────────────────────────────────────────────────────────────
+fixed_costs <- c(WH1 = 5, WH2 = 7, WH3 = 5, WH4 = 6, WH5 = 4) * 1000  # €/year
+
+demand <- c(C1 = 100, C2 = 80, C3 = 120, C4 = 60, C5 = 90, C6 = 70, C7 = 110)
+
+transport_cost <- matrix(
+  c(2, 3, 1, 5, 4, 6, 8,
+    3, 2, 4, 3, 5, 7, 1,
+    1, 4, 2, 6, 3, 5, 9,
+    5, 3, 7, 2, 6, 4, 3,
+    4, 1, 3, 4, 2, 8, 5),
+  nrow = 5, byrow = TRUE,
+  dimnames = list(names(fixed_costs), names(demand))
+)
+
+# Total transport cost given a set of open warehouses
+total_cost_wlp <- function(open_wh, fixed_costs, transport_cost, demand) {
+  if (length(open_wh) == 0) return(Inf)
+  # Each customer is served by cheapest open warehouse
+  min_transport <- apply(transport_cost[open_wh, , drop = FALSE], 2, min)
+  fc  <- sum(fixed_costs[open_wh])
+  tc  <- sum(min_transport * demand)
+  list(fixed = fc, transport = tc, total = fc + tc,
+       assignments = apply(transport_cost[open_wh, , drop = FALSE], 2, which.min))
+}
+
+# ── (a) Add Heuristic ────────────────────────────────────────────────────
+cat("=== (a) Add Heuristic ===\n\n")
+open     <- c()
+all_wh   <- seq_along(fixed_costs)
+iteration <- 0
+
+# Baseline: all customers unserved, cost = Inf (or interpret as transport from none)
+# Actually: with no warehouse open, cost is undefined — first iteration must open one.
+while (TRUE) {
+  iteration <- iteration + 1
+  candidates <- setdiff(all_wh, open)
+  if (length(candidates) == 0) break
+
+  cat(sprintf("--- Iteration %d (currently open: {%s}) ---\n",
+              iteration,
+              if (length(open) > 0) paste(names(fixed_costs)[open], collapse = ", ")
+              else "none"))
+
+  # Evaluate each candidate
+  savings <- sapply(candidates, function(wh) {
+    new_set  <- c(open, wh)
+    cost_new <- total_cost_wlp(new_set, fixed_costs, transport_cost, demand)$total
+    cost_old <- if (length(open) > 0)
+      total_cost_wlp(open, fixed_costs, transport_cost, demand)$total
+    else Inf
+    # savings = reduction in total cost
+    cost_old - cost_new
+  })
+  names(savings) <- names(fixed_costs)[candidates]
+
+  cat("Net savings from adding each warehouse (€):\n")
+  print(round(savings))
+
+  best_saving <- max(savings)
+  if (best_saving <= 0 && length(open) > 0) {
+    cat("No further improvement possible. Stopping.\n\n")
+    break
+  }
+
+  best_wh <- candidates[which.max(savings)]
+  open    <- c(open, best_wh)
+  res_cur <- total_cost_wlp(open, fixed_costs, transport_cost, demand)
+  cat(sprintf("→ Open WH%d  |  Fixed: €%.0f  |  Transport: €%.0f  |  Total: €%.0f\n\n",
+              best_wh, res_cur$fixed, res_cur$transport, res_cur$total))
+}
+
+add_solution <- total_cost_wlp(open, fixed_costs, transport_cost, demand)
+cat(sprintf("=== Add Heuristic Solution ===\n"))
+cat(sprintf("Open warehouses: {%s}\n", paste(names(fixed_costs)[open], collapse = ", ")))
+cat(sprintf("Fixed cost:      €%.0f\n", add_solution$fixed))
+cat(sprintf("Transport cost:  €%.0f\n", add_solution$transport))
+cat(sprintf("Total cost:      €%.0f\n", add_solution$total))
+
+# ── (b) Drop Heuristic ──────────────────────────────────────────────────
+cat("\n=== (b) Drop Heuristic ===\n\n")
+open_drop <- seq_along(fixed_costs)   # start with all open
+
+base_drop  <- total_cost_wlp(open_drop, fixed_costs, transport_cost, demand)
+cat(sprintf("All open baseline: €%.0f\n\n", base_drop$total))
+
+iter_drop <- 0
+while (length(open_drop) > 1) {
+  iter_drop <- iter_drop + 1
+  cat(sprintf("--- Iteration %d (open: {%s}) ---\n",
+              iter_drop, paste(names(fixed_costs)[open_drop], collapse = ", ")))
+
+  cost_if_removed <- sapply(open_drop, function(wh) {
+    remaining <- setdiff(open_drop, wh)
+    if (length(remaining) == 0) return(Inf)
+    total_cost_wlp(remaining, fixed_costs, transport_cost, demand)$total
+  })
+  names(cost_if_removed) <- names(fixed_costs)[open_drop]
+  cat("Cost after removing each warehouse (€):\n")
+  print(round(cost_if_removed))
+
+  current_cost <- total_cost_wlp(open_drop, fixed_costs, transport_cost, demand)$total
+  best_drop_cost <- min(cost_if_removed)
+  wh_to_drop     <- open_drop[which.min(cost_if_removed)]
+
+  if (best_drop_cost >= current_cost) {
+    cat("Removing any warehouse increases cost. Stopping.\n\n")
+    break
+  }
+
+  open_drop <- setdiff(open_drop, wh_to_drop)
+  cat(sprintf("→ Drop WH%d  |  New total cost: €%.0f\n\n",
+              wh_to_drop, best_drop_cost))
+}
+
+drop_solution <- total_cost_wlp(open_drop, fixed_costs, transport_cost, demand)
+cat(sprintf("=== Drop Heuristic Solution ===\n"))
+cat(sprintf("Open warehouses: {%s}\n", paste(names(fixed_costs)[open_drop], collapse = ", ")))
+cat(sprintf("Fixed cost:      €%.0f\n", drop_solution$fixed))
+cat(sprintf("Transport cost:  €%.0f\n", drop_solution$transport))
+cat(sprintf("Total cost:      €%.0f\n", drop_solution$total))
+
+# ── (c) Exact MILP with ompr ─────────────────────────────────────────────
+# Install ompr if needed
+for (pkg in c("ompr", "ompr.roi", "ROI", "ROI.plugin.glpk")) {
+  if (!requireNamespace(pkg, quietly = TRUE)) {
+    install.packages(pkg, repos = "https://cloud.r-project.org")
+  }
+}
+
+tryCatch({
+  library(ompr)
+  library(ompr.roi)
+  library(ROI.plugin.glpk)
+
+  m <- length(fixed_costs)   # warehouses
+  n <- length(demand)         # customers
+
+  model <- MIPModel() |>
+    # y[i] = 1 if warehouse i is open
+    add_variable(y[i], i = 1:m, type = "binary") |>
+    # x[i,j] = fraction of customer j served from warehouse i
+    add_variable(x[i,j], i = 1:m, j = 1:n,
+                 type = "continuous", lb = 0, ub = 1) |>
+    # Minimize total cost
+    set_objective(
+      sum_expr(fixed_costs[i] * y[i], i = 1:m) +
+      sum_expr(transport_cost[i,j] * demand[j] * x[i,j], i = 1:m, j = 1:n),
+      sense = "min"
+    ) |>
+    # Each customer fully served
+    add_constraint(sum_expr(x[i,j], i = 1:m) == 1, j = 1:n) |>
+    # Can only serve from open warehouse
+    add_constraint(x[i,j] <= y[i], i = 1:m, j = 1:n)
+
+  result_milp <- solve_model(model, with_ROI(solver = "glpk", verbose = FALSE))
+
+  milp_y <- get_solution(result_milp, y[i])
+  milp_x <- get_solution(result_milp, x[i,j])
+  milp_open <- which(milp_y$value > 0.5)
+
+  milp_solution <- total_cost_wlp(milp_open, fixed_costs, transport_cost, demand)
+
+  cat("\n=== (c) MILP Exact Solution ===\n")
+  cat(sprintf("Open warehouses: {%s}\n", paste(names(fixed_costs)[milp_open], collapse = ", ")))
+  cat(sprintf("Fixed cost:      €%.0f\n", milp_solution$fixed))
+  cat(sprintf("Transport cost:  €%.0f\n", milp_solution$transport))
+  cat(sprintf("Total cost:      €%.0f\n", milp_solution$total))
+  cat(sprintf("Objective value: €%.0f\n", objective_value(result_milp)))
+
+  # ── (d) Comparison table ────────────────────────────────────────────────
+  cat("\n=== (d) Solution Comparison ===\n")
+  comparison <- data.frame(
+    Method = c("Add Heuristic", "Drop Heuristic", "MILP (Exact)"),
+    Open_WH = c(
+      paste(names(fixed_costs)[open], collapse = "+"),
+      paste(names(fixed_costs)[open_drop], collapse = "+"),
+      paste(names(fixed_costs)[milp_open], collapse = "+")
+    ),
+    Fixed_Cost = c(add_solution$fixed, drop_solution$fixed, milp_solution$fixed),
+    Transport_Cost = c(add_solution$transport, drop_solution$transport, milp_solution$transport),
+    Total_Cost = c(add_solution$total, drop_solution$total, milp_solution$total)
+  )
+  comparison$Gap_pct <- round(
+    (comparison$Total_Cost - min(comparison$Total_Cost)) /
+      min(comparison$Total_Cost) * 100, 2
+  )
+  print(comparison)
+
+}, error = function(e) {
+  cat(sprintf("\n[ompr/GLPK not available: %s]\n", e$message))
+  cat("Install with: install.packages(c('ompr','ompr.roi','ROI','ROI.plugin.glpk'))\n")
+
+  cat("\n=== (d) Heuristic Comparison (without MILP) ===\n")
+  comparison <- data.frame(
+    Method = c("Add Heuristic", "Drop Heuristic"),
+    Open_WH = c(
+      paste(names(fixed_costs)[open], collapse = "+"),
+      paste(names(fixed_costs)[open_drop], collapse = "+")
+    ),
+    Fixed_Cost    = c(add_solution$fixed,     drop_solution$fixed),
+    Transport_Cost = c(add_solution$transport, drop_solution$transport),
+    Total_Cost    = c(add_solution$total,      drop_solution$total)
+  )
+  print(comparison)
+})
+```
+
+**Interpretation:** The Add Heuristic builds a solution incrementally and is typically efficient for problems where the optimal number of facilities is small. The Drop Heuristic starts from the fully-open configuration and prunes. Both can get trapped in local optima. The MILP formulation guarantees global optimality but becomes computationally expensive for large-scale real-world instances (hundreds of warehouses, thousands of customers).

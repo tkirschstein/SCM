@@ -1,0 +1,151 @@
+# Transportation Planning {#sec-transport}
+
+## Introduction
+
+Transportation is typically the single largest cost component in a supply chain, accounting for 40–70% of total logistics expenditure. Transportation planning sits at the interface of strategic network design and daily operations.
+
+## Transportation Modes
+
+The choice of transport mode fundamentally shapes a supply chain's responsiveness-efficiency profile.
+
+### Value Density and Mode Selection
+
+**Value density** (product value per unit weight or volume) is the primary driver of mode selection:
+
+- **High value density** (electronics, pharmaceuticals, luxury goods): Can absorb air freight premiums
+- **Low value density** (bulk chemicals, agricultural commodities): Sea or rail only
+- **Medium** (consumer goods, machinery): Road or intermodal
+
+```{r}
+#| label: tbl-modes
+#| tbl-cap: "Transport mode comparison"
+library(kableExtra)
+
+modes <- data.frame(
+  Mode = c("Road (full truck)", "Rail (electric)", "Air cargo", "Sea (container)", "Inland waterway"),
+  Speed = c("Medium", "Slow", "Fast", "Very slow", "Very slow"),
+  `Cost_per_tkm` = c("€0.08–0.15", "€0.03–0.06", "€2–5", "€0.01–0.03", "€0.02–0.04"),
+  `CO2_g_per_tkm` = c(62, 6, 500, 8, 30),
+  check.names = FALSE
+)
+
+kbl(modes, booktabs = TRUE) |>
+  kable_styling(bootstrap_options = c("striped", "hover"))
+```
+
+## The Transportation Problem
+
+### Problem Formulation
+
+The **Transportation Problem (TP)** is a classic linear program that finds the minimum-cost allocation of flows from supply nodes to demand nodes.
+
+**Given:**
+- $m$ supply nodes $i = 1, \ldots, m$ with capacities $a_i$
+- $n$ demand nodes $j = 1, \ldots, n$ with requirements $b_j$
+- Unit transport cost $c_{ij}$ from $i$ to $j$
+
+**Decision:** Flow $x_{ij} \geq 0$ (units shipped from $i$ to $j$)
+
+$$\min \sum_{i=1}^m \sum_{j=1}^n c_{ij} x_{ij}$$
+
+Subject to:
+$$\sum_{j=1}^n x_{ij} \leq a_i \quad \forall i \quad \text{(supply)}$$
+$$\sum_{i=1}^m x_{ij} = b_j \quad \forall j \quad \text{(demand)}$$
+$$x_{ij} \geq 0$$
+
+::: {.callout-note}
+## Key Property: Integer Optimality
+The TP constraint matrix is **totally unimodular**, which means the LP relaxation always yields an integer solution. We do not need integer programming — a standard LP solver suffices.
+:::
+
+### Vogel's Approximation Method (VAM)
+
+VAM is a **regret-based greedy heuristic** that typically finds solutions within 5% of optimal.
+
+**Algorithm:**
+1. For each row and column, compute the **regret**: difference between 2nd cheapest and cheapest available cost
+2. Select the row/column with maximum regret
+3. Allocate maximum possible flow to the cheapest route in that row/column
+4. Update remaining capacities/demands; eliminate satisfied row/column
+5. Repeat until all flows assigned
+
+### Solving with R
+
+```{r}
+#| label: tp-solve
+#| echo: true
+library(lpSolve)
+
+# Pear Disk Drive example
+cost_mat <- matrix(c(250, 420, 380, 280,
+                     1280, 990, 1440, 1520,
+                     1550, 1420, 1660, 1730),
+                   nrow = 3, byrow = TRUE,
+                   dimnames = list(c("Sunnyvale", "Dublin", "Bangkok"),
+                                   c("Amarillo", "Teaneck", "Chicago", "Sioux Falls")))
+
+supply <- c(45, 120, 95)
+demand <- c(80, 78, 47, 55)
+
+solution <- lp.transport(cost_mat, "min",
+                         rep("<=", 3), supply,
+                         rep(">=", 4), demand)
+
+flow_mat <- matrix(solution$solution, nrow = 3,
+                   dimnames = dimnames(cost_mat))
+
+cat("Optimal total cost: $", solution$objval, "\n")
+print(flow_mat)
+```
+
+## The Transshipment Problem
+
+Real distribution networks often include **intermediate nodes** — cross-docks, ports, rail terminals — through which goods are routed but not consumed.
+
+The Transshipment Problem extends the TP by adding a third tier of nodes $V_T$ between supply and demand.
+
+### Transformation to Standard TP
+
+Key insight: Duplicate each transshipment node $j \in V_T$ into supply copy $j$ and demand copy $j'$. Set artificial capacity $L = \sum_i a_i$. Assign cost 0 for self-routing and $M$ (large penalty) for infeasible routes.
+
+The resulting $(|V_a| + |V_T|) \times (|V_T| + |V_d|)$ matrix can be solved as a standard TP.
+
+## Exercises
+
+1. Apply VAM to the Pear Disk Drive example. Show each iteration's regret calculation.
+
+2. Dublin's plant capacity is unexpectedly cut to 80 (000 units). How does the optimal solution change? What is the cost penalty?
+
+3. **Battery Logistics** (Case Study data): Using the Haversine distances, set up the TP for the 3-warehouse/11-plant configuration (Düren, Harsewinkel, Langenhagen). Solve with `lp.transport()`.
+
+```{r}
+#| eval: false
+#| echo: true
+# Haversine function for exercise
+haversine <- function(lat1, lon1, lat2, lon2) {
+  R <- 6371  # Earth radius in km
+  phi1 <- lat1 * pi / 180
+  phi2 <- lat2 * pi / 180
+  dphi <- (lat2 - lat1) * pi / 180
+  dlambda <- (lon2 - lon1) * pi / 180
+  a <- sin(dphi/2)^2 + cos(phi1) * cos(phi2) * sin(dlambda/2)^2
+  2 * R * asin(sqrt(a))
+}
+
+# Load plant and warehouse data
+plants <- read.csv("../../data/battery_plants.csv")
+warehouses <- read.csv("../../data/battery_warehouses.csv")
+
+# Subset to open warehouses
+open_wh <- warehouses[warehouses$id %in% c("L2", "L4", "L5"), ]
+
+# Build distance matrix
+dist_mat <- outer(1:nrow(open_wh), 1:nrow(plants), Vectorize(function(i, j) {
+  haversine(open_wh$latitude[i], open_wh$longitude[i],
+            plants$latitude[j], plants$longitude[j])
+}))
+
+# Transport cost: €0.08 per km per MWh
+cost_per_unit <- 0.08  # €/km/MWh
+cost_mat_battery <- dist_mat * cost_per_unit
+```

@@ -1,0 +1,346 @@
+---
+title: "Case Study 1: Battery Logistics Network Design"
+subtitle: "Team-Based Case Study — SCM Bachelor"
+format:
+  html:
+    theme: cosmo
+    toc: true
+    toc-depth: 3
+  pdf:
+    documentclass: article
+    papersize: a4
+execute:
+  echo: false
+---
+
+# Introduction and Learning Objectives
+
+This case study requires teams of 3–4 students to design a logistics network for lithium-ion battery distribution across northern Germany and Benelux. You will apply **three core methods** from the SCM module:
+
+1. **Warehouse Location Problem (WLP)**: decide which subset of candidate warehouses to open
+2. **Transportation Problem (TP)**: plan operational shipments from warehouses to plants
+3. **Inventory and Safety Stock Analysis**: quantify the cost of demand uncertainty
+
+On completion, students will be able to:
+
+- Formulate and solve a WLP using both heuristic and exact methods
+- Implement the Haversine formula to derive transport cost estimates from geographic data
+- Apply Vogel's Approximation Method and compare it to an MILP solution
+- Quantify the value of inventory pooling under uncertain demand
+
+**Submission**: Written report (max 12 pages) + R script. Team presentation: 10 minutes.
+
+---
+
+# Background
+
+A third-party logistics provider (3PL) has secured a contract to supply lithium-ion battery modules to automotive assembly plants across northern Germany and the Benelux region. Battery modules arrive by sea container at the port of Hamburg and must be distributed to eleven plants via regional warehouses.
+
+The 3PL operates six potential warehouse sites across the region. Each site requires capital investment and annual operating expenditure to comply with **dangerous goods regulations** for lithium-ion batteries (ADR/IMDG hazard class 9 — UN3480/UN3481). These compliance costs are reflected in the annual fixed costs below.
+
+The 3PL must decide:
+
+1. **Which warehouses to open** (strategic, multi-year horizon)
+2. **How to allocate plant deliveries to open warehouses** (operational, annual plan)
+3. **How much safety stock to hold** given uncertain plant demand (tactical)
+
+---
+
+# Data
+
+## Automotive Plant Locations and Annual Demand
+
+The following eleven assembly plants have placed framework contracts with the 3PL. Annual battery demand is in **MWh/year** (megawatt-hours — the standard unit for battery storage capacity in automotive logistics).
+
+| # | Plant | City | Latitude (°N) | Longitude (°E) | Demand (MWh/yr) |
+|---|-------|------|-------------:|---------------:|----------------:|
+| 1  | VW Wolfsburg          | Wolfsburg     | 52.432 | 10.787 | 28,000 |
+| 2  | VW Hannover           | Hannover      | 52.380 | 9.746  | 22,000 |
+| 3  | VW Emden              | Emden         | 53.365 | 7.213  | 18,500 |
+| 4  | VW Osnabrück          | Osnabrück     | 52.279 | 8.047  | 12,000 |
+| 5  | Mercedes-Benz Bremen  | Bremen        | 53.075 | 8.808  | 25,000 |
+| 6  | Ford Köln             | Köln          | 50.950 | 6.900  | 20,000 |
+| 7  | Opel Rüsselsheim      | Rüsselsheim   | 49.993 | 8.422  | 15,000 |
+| 8  | Volvo Cars Gent       | Gent (BE)     | 51.054 | 3.717  | 30,000 |
+| 9  | Volvo Trucks Gent     | Gent (BE)     | 51.040 | 3.730  | 14,000 |
+| 10 | Toyota Zaventem       | Zaventem (BE) | 50.898 | 4.480  | 16,000 |
+| 11 | VDL Nedcar Born       | Born (NL)     | 51.030 | 5.867  | 11,000 |
+
+**Total annual demand: 211,500 MWh/year**
+
+## Candidate Warehouse Locations and Fixed Costs
+
+| # | Location | City | Latitude (°N) | Longitude (°E) | Annual Fixed Cost (€K) |
+|---|----------|------|-------------:|---------------:|----------------------:|
+| 1 | Gütersloh     | Gütersloh   | 51.906 | 8.383 | 450 |
+| 2 | Düren         | Düren       | 50.804 | 6.493 | 480 |
+| 3 | Dorsten/Marl  | Dorsten     | 51.660 | 6.965 | 520 |
+| 4 | Harsewinkel   | Harsewinkel | 51.960 | 8.230 | 470 |
+| 5 | Langenhagen   | Langenhagen | 52.438 | 9.737 | 510 |
+| 6 | Hannover-Süd  | Hannover    | 52.350 | 9.800 | 460 |
+
+## Transport Cost Derivation
+
+Students derive the transport cost matrix using the **Haversine formula**. The rate agreed with the carrier is:
+
+$$c_{ij} = 0.08 \text{ €/km/MWh} \times d_{ij}^{\text{Haversine}} \text{ km}$$
+
+This gives a **cost per MWh per year** for each warehouse-to-plant lane. The R code skeleton below computes this matrix — complete it as part of your analysis:
+
+```r
+haversine <- function(lat1, lon1, lat2, lon2) {
+  R    <- 6371
+  phi1 <- lat1 * pi / 180
+  phi2 <- lat2 * pi / 180
+  dphi <- (lat2 - lat1) * pi / 180
+  dlam <- (lon2 - lon1) * pi / 180
+  a    <- sin(dphi/2)^2 + cos(phi1)*cos(phi2)*sin(dlam/2)^2
+  R * 2 * atan2(sqrt(a), sqrt(1-a))
+}
+
+# Warehouses: 6 rows; Plants: 11 columns
+# Build the 6×11 transport cost matrix (€/MWh)
+# cost_matrix[i,j] = 0.08 * haversine(wh_lat[i], wh_lon[i], plant_lat[j], plant_lon[j])
+```
+
+---
+
+# Part A: Strategic Network Design (Warehouse Location Problem)
+
+## A.1 Problem Formulation
+
+Formulate the WLP for this case as a binary integer programme. Define:
+
+- Decision variables: $y_i \in \{0,1\}$ for $i = 1, \ldots, 6$ (1 = open warehouse $i$)
+- Decision variables: $x_{ij} \in [0,1]$ for all $i, j$ (fraction of plant $j$'s demand served from warehouse $i$)
+- Objective function: minimise total annual cost (fixed + transport)
+- Constraints: (i) each plant is fully served, (ii) plants can only be served from open warehouses
+
+Write out the complete formulation with symbols, then translate to R.
+
+## A.2 Transport Cost Matrix
+
+Using the R skeleton above and the coordinate data provided:
+
+1. Compute all 66 Haversine distances (6 warehouses × 11 plants)
+2. Multiply by the transport rate €0.08/km/MWh to get the per-unit-demand annual cost
+3. Present the resulting cost matrix as a formatted table in your report
+
+**Discussion question:** What simplifications does this distance-based cost model make? How would you refine it for a real project?
+
+## A.3 Add Heuristic
+
+Apply the **Add Heuristic** to the transport cost matrix derived in A.2:
+
+1. Start with no warehouses open
+2. At each step, compute the net saving from opening each remaining candidate warehouse
+3. Open the warehouse with the highest net saving (if positive)
+4. Repeat until no further improvement is possible
+
+**Present:** the savings table for each iteration, the final set of open warehouses, and the total cost breakdown (fixed + transport).
+
+## A.4 Exact MILP Solution
+
+Solve the WLP exactly using `ompr` or `lpSolve` in R:
+
+```r
+# Sketch (complete this):
+library(ompr); library(ompr.roi); library(ROI.plugin.glpk)
+n_wh <- 6; n_pl <- 11
+
+model <- MIPModel() |>
+  add_variable(y[i], i = 1:n_wh, type = "binary") |>
+  add_variable(x[i,j], i = 1:n_wh, j = 1:n_pl,
+               type = "continuous", lb = 0, ub = 1) |>
+  set_objective(...) |>
+  add_constraint(...) |>
+  add_constraint(...)
+
+result <- solve_model(model, with_ROI(solver = "glpk"))
+```
+
+Report the optimal set of open warehouses and the total cost.
+
+## A.5 Comparison: Heuristic vs. Optimal
+
+| Criterion | Add Heuristic | MILP Optimal |
+|-----------|:------------:|:------------:|
+| Open warehouses | ? | ? |
+| Fixed cost (€K/yr) | ? | ? |
+| Transport cost (€K/yr) | ? | ? |
+| **Total cost (€K/yr)** | **?** | **?** |
+| Optimality gap | — | 0% |
+
+Answer: **How close is the heuristic?** In what situations might the gap be larger?
+
+---
+
+# Part B: Operational Transport Planning
+
+## Scenario
+
+The 3PL has reached a strategic decision (based on regulatory and operational considerations) to open the following three warehouses:
+
+| Warehouse | Location | Capacity (MWh/yr) |
+|-----------|----------|:-----------------:|
+| Düren       | Düren         | 150,000 |
+| Harsewinkel | Harsewinkel   |  50,000 |
+| Langenhagen | Langenhagen   | 100,000 |
+
+**Total warehouse capacity: 300,000 MWh/yr > 211,500 MWh/yr demand** (system is feasible)
+
+For operational planning, the annual demand figures have been updated following a new forecast round:
+
+| Plant | Updated Demand (MWh/yr) |
+|-------|:-----------------------:|
+| VW Wolfsburg | 29,500 |
+| VW Hannover | 21,000 |
+| VW Emden | 19,000 |
+| VW Osnabrück | 13,000 |
+| Mercedes-Benz Bremen | 26,000 |
+| Ford Köln | 21,500 |
+| Opel Rüsselsheim | 14,500 |
+| Volvo Cars Gent | 31,000 |
+| Volvo Trucks Gent | 14,500 |
+| Toyota Zaventem | 16,500 |
+| VDL Nedcar Born | 12,500 |
+| **Total** | **219,000** |
+
+## B.1 Transportation Problem Formulation
+
+Write out the balanced transportation problem. Because total capacity (300,000) exceeds total demand (219,000), you must add a dummy plant with demand = 81,000 MWh and zero transport cost to all warehouses.
+
+The cost matrix for this sub-problem should be derived from the Haversine distances computed in Part A.
+
+## B.2 Vogel's Approximation Method
+
+Apply VAM to the 3×12 (including dummy) transportation problem:
+
+1. Compute row and column penalties at each step
+2. Allocate to the cell with minimum cost in the highest-penalty row or column
+3. Eliminate exhausted supply/demand and repeat
+
+Show all intermediate steps in tabular form. Report the total transportation cost of your VAM solution.
+
+## B.3 Solve with lpSolve
+
+```r
+library(lpSolve)
+# Use lp.transport() — see Exercise Block 3 for reference
+result <- lp.transport(
+  cost.mat  = cost_sub,       # 3 x 12 (incl. dummy)
+  direction = "min",
+  row.signs = rep("<=", 3),
+  row.rhs   = capacity_vec,
+  col.signs = rep(">=", 12),
+  col.rhs   = demand_vec_bal
+)
+```
+
+Report the optimal allocation matrix and total cost.
+
+## B.4 Discussion
+
+1. Compare VAM and LP-optimal solutions. What is the gap?
+2. Is the chosen warehouse configuration (Düren/Harsewinkel/Langenhagen) cost-efficient? Would a different trio from Part A yield lower transport costs?
+3. Langenhagen has the highest fixed cost among the three. Under what conditions would it be worth replacing with Hannover-Süd (slightly lower fixed cost, similar location)?
+
+---
+
+# Part C: Uncertainty and Risk
+
+## C.1 Demand Uncertainty Model
+
+Battery demand from automotive plants is **uncertain**: programme ramp-ups, model changeovers, and supply chain disruptions all introduce variability. Based on historical data from comparable programmes, the 3PL's planning team models each plant's annual demand as **normally distributed**:
+
+$$D_j \sim \mathcal{N}(\mu_j, \, \sigma_j^2) \quad \text{with} \quad \sigma_j = 0.15 \cdot \mu_j$$
+
+This corresponds to a **coefficient of variation of 15%** — a moderate level of forecast uncertainty typical of 12-month rolling forecasts.
+
+**Task:** For each of the three open warehouses, compute the **aggregate demand** from its assigned plants (using the LP allocation from B.3). What is the standard deviation of this aggregate demand, assuming plant demands are **independent**?
+
+$$\sigma_{\text{WH}_k} = \sqrt{\sum_{j \in \mathcal{J}_k} \sigma_j^2}$$
+
+## C.2 Safety Stock at Each Warehouse
+
+For a **95% type-I service level** (probability of no stockout in a planning period), the required safety stock at warehouse $k$ is:
+
+$$SS_k = z_{0.95} \cdot \sigma_{\text{WH}_k} \cdot \sqrt{L}$$
+
+where $L$ is the replenishment lead time (assume $L = 2$ weeks = 2/52 year) and $z_{0.95} = 1.645$.
+
+1. Compute $SS_k$ for each of the three warehouses
+2. Convert safety stock from MWh to monetary value (assume battery cost €80/kWh = €80,000/MWh)
+3. Sum the total safety stock investment across all three warehouses
+
+## C.3 Centralised Inventory Alternative
+
+Consider the hypothetical alternative of supplying all 11 plants from a **single central warehouse** (e.g. located at the geometric centroid of all plants).
+
+Under full centralisation, the aggregate standard deviation becomes:
+
+$$\sigma_{\text{central}} = \sqrt{\sum_{j=1}^{11} \sigma_j^2}$$
+
+(independent demands). Compare this to the sum $\sum_k \sigma_{\text{WH}_k}$ from C.2.
+
+**Tasks:**
+
+1. Compute the safety stock under centralisation (same 95% SL, same lead time)
+2. Compare total safety stock investment: decentralised network vs. centralised alternative
+3. The **pooling factor** is $\sqrt{n_{\text{locations}}}$ — verify this holds approximately here
+
+**Discussion questions:**
+
+- What trade-offs does centralisation imply for transport costs, lead times, and service levels?
+- In the context of battery logistics (high unit value, hazardous goods), which argument weighs more heavily: pooling savings or proximity to customers?
+- How would the analysis change if plant demands were **correlated** (e.g. due to a common automotive market cycle)?
+
+---
+
+# Grading Rubric
+
+| Criterion | Weight | Indicators of Strong Performance |
+|-----------|:------:|----------------------------------|
+| Problem formulation correctness | 25% | Correct MILP formulation; balanced TP; proper use of Haversine; no logical errors in model setup |
+| Solution methodology | 25% | VAM steps shown in full; lpSolve used correctly; heuristic and MILP compared; safety stock formula applied correctly |
+| Interpretation and management recommendations | 30% | Logical conclusions drawn from results; trade-offs discussed; sensitivity to assumptions addressed; practical relevance of findings |
+| Presentation quality | 20% | Clear slides, results visualised; team presents confidently; answers audience questions; report is well-structured and within page limit |
+
+**Pass threshold**: minimum 50% total, with at least 40% in each individual criterion.
+
+---
+
+# Appendix A: Useful R Packages
+
+```r
+# Geographic distances
+# (no additional package needed — implement Haversine manually)
+
+# Transportation problem
+install.packages("lpSolve")
+library(lpSolve)
+
+# MILP / WLP
+install.packages(c("ompr", "ompr.roi", "ROI", "ROI.plugin.glpk"))
+library(ompr); library(ompr.roi); library(ROI.plugin.glpk)
+
+# Visualisation
+library(ggplot2)
+install.packages("sf")       # optional: for proper geographic maps
+install.packages("ggrepel")  # non-overlapping text labels
+```
+
+---
+
+# Appendix B: Report Structure Guidance
+
+Your written report should follow this structure (max 12 pages, excluding appendix):
+
+1. **Executive Summary** (max 1 page): key recommendation and headline cost figures
+2. **Part A: Network Design** — formulation, cost matrix, heuristic vs. MILP, recommendation
+3. **Part B: Transport Planning** — TP setup, VAM steps (summary table), LP solution, discussion
+4. **Part C: Risk and Inventory** — safety stock calculation, pooling comparison, managerial insight
+5. **Conclusion**: Which network do you recommend? What are the key uncertainties?
+6. **Appendix**: Full R code (not counted in 12 pages)
+
+**Note:** All figures must have a caption and be referenced in the text. All tables must be formatted (not R console output). Quantitative results must be explicitly stated in the text, not just shown in a table.

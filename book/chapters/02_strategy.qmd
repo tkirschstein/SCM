@@ -1,0 +1,358 @@
+# SC Strategy, Location Planning & Decision Methods {#sec-strategy}
+
+## Competitive Strategy and Strategic Fit
+
+A company's **competitive strategy** defines the set of customer needs it targets and how it intends to differentiate from competitors. Supply chain strategy must be aligned with competitive strategy — this alignment is called **strategic fit**.
+
+Chopra & Meindl (2022) frame this through the concept of implied demand uncertainty: different products and customer segments imply different uncertainty levels, requiring different SC designs.
+
+| Competitive Priority | Implied SC Design | Examples |
+|---------------------|-------------------|---------|
+| Low cost / efficiency | Lean, high utilization, low inventory | IKEA, Aldi, Amazon Basics |
+| High responsiveness | Short lead times, agility, flexibility | Zara, Dell BTO, emergency medical supply |
+| Product variety | Postponement, modular production | HP printers, automobile options |
+| Innovation | Fast NPI, flexible sourcing | Apple, Tesla |
+
+**Strategic misfit** occurs when the SC cannot deliver what the competitive strategy promises. A company competing on responsiveness but running a lean, low-inventory SC will consistently disappoint customers — at peak times, stockouts erode the service promise.
+
+## The Responsiveness-Efficiency Framework
+
+The **efficient frontier** of supply chain design represents the best achievable combination of responsiveness and efficiency for a given industry. Individual companies choose a position on this frontier based on their competitive strategy.
+
+Moving toward higher responsiveness requires:
+
+- Excess capacity (low utilization)
+- Safety stock (buffer inventory)
+- Faster (more expensive) transportation modes
+- More distribution points (local warehousing)
+
+Each of these increases cost — the fundamental trade-off between **responsiveness** and **efficiency** in SC design.
+
+## SC Drivers
+
+Chopra & Meindl identify six SC drivers, each representing a lever management can adjust:
+
+### 1. Production (Manufacturing)
+- Trade-off: Flexibility vs. efficiency
+- Key decisions: Batch sizes, process technology, make-or-buy, capacity levels
+- High responsiveness → invest in flexible capacity and excess buffer capacity
+
+### 2. Inventory
+- Trade-off: Availability vs. holding cost
+- Key decisions: Safety stock levels, cycle stock, finished goods vs. WIP vs. RM inventory
+- High responsiveness → maintain more inventory at more locations
+
+### 3. Location
+- Trade-off: Proximity to customer vs. economies of scale
+- Key decisions: Number and position of facilities, geographic footprint
+- High responsiveness → decentralize, locate near customers
+
+### 4. Transportation
+- Trade-off: Speed/reliability vs. cost
+- Key decisions: Mode (road, rail, air, sea), carrier selection, routing
+- High responsiveness → use faster (more expensive) modes
+
+### 5. Information
+- Trade-off: Timeliness/accuracy vs. systems investment
+- Key decisions: ERP, visibility platforms, demand sensing, data sharing
+- High responsiveness → invest in information infrastructure
+
+### 6. Sourcing
+- Trade-off: Efficiency (few, large suppliers) vs. resilience (many, diversified suppliers)
+- Key decisions: Single vs. dual sourcing, near- vs. offshore, contract structure
+
+## Location Planning — Introduction
+
+Location decisions are among the most capital-intensive and least reversible in supply chain management. Opening or closing a warehouse or plant locks in costs and capabilities for years or decades.
+
+**Objectives** in location planning:
+
+1. Minimize total cost (transport, facility fixed costs, operating costs)
+2. Maximize service level (coverage, delivery time to customers)
+3. Minimize risk (disruption exposure, concentration)
+
+Location planning operates at three levels:
+
+| Level | Decision | Typical Tools |
+|-------|----------|--------------|
+| Strategic | How many facilities? Which regions? | MILP, continuous models |
+| Tactical | Which facility serves which customer? | Transportation LP, assignment |
+| Operational | How to route between facilities? | VRP, TSP |
+
+## Weighted Scoring / Nutzwertanalyse
+
+**Weighted Scoring** (German: Nutzwertanalyse) is a structured multi-criteria decision method used when quantitative optimization is infeasible due to qualitative or incommensurable criteria.
+
+### Procedure
+
+1. Define evaluation criteria $k_1, \ldots, k_n$
+2. Assign weights $w_i$ with $\sum_i w_i = 1$
+3. Rate each alternative $a_j$ on each criterion using a scale (e.g., 1–10)
+4. Compute weighted score: $S_j = \sum_i w_i \cdot r_{ij}$
+5. Select the alternative with the highest weighted score
+
+### Worked Example — DC Location Selection
+
+Three candidate locations: **Frankfurt (FRA)**, **Leipzig (LEI)**, **Vienna (VIE)**
+
+Criteria and weights:
+
+| Criterion | Weight |
+|-----------|--------|
+| Transport cost | 0.30 |
+| Labor availability | 0.20 |
+| Infrastructure quality | 0.20 |
+| Real estate cost | 0.15 |
+| Regulatory environment | 0.15 |
+
+Ratings (1 = worst, 10 = best):
+
+| Criterion | Weight | Frankfurt | Leipzig | Vienna |
+|-----------|--------|-----------|---------|--------|
+| Transport cost | 0.30 | 8 | 7 | 6 |
+| Labor availability | 0.20 | 6 | 8 | 7 |
+| Infrastructure | 0.20 | 9 | 7 | 8 |
+| Real estate cost | 0.15 | 5 | 9 | 6 |
+| Regulatory | 0.15 | 8 | 8 | 7 |
+| **Weighted Score** | | **7.30** | **7.65** | **6.80** |
+
+Calculation for Leipzig: $0.30 \times 7 + 0.20 \times 8 + 0.20 \times 7 + 0.15 \times 9 + 0.15 \times 8 = 7.65$
+
+**Decision**: Leipzig has the highest weighted score. However, the analysis should be tested for weight sensitivity — if transport cost weight increases to 0.40, does Frankfurt take the lead?
+
+## AHP — Analytic Hierarchy Process
+
+The **Analytic Hierarchy Process** (Saaty 1980) extends weighted scoring by deriving weights from pairwise comparisons rather than direct assignment. This makes the weighting process more transparent and internally consistent.
+
+### Saaty's 9-Point Scale
+
+| Value | Meaning |
+|-------|---------|
+| 1 | Equal importance |
+| 3 | Moderate importance of one over another |
+| 5 | Strong importance |
+| 7 | Very strong importance |
+| 9 | Extreme importance |
+| 2, 4, 6, 8 | Intermediate values |
+
+### Worked 3-Site AHP Example
+
+We evaluate three potential warehouse locations — **A** (near Hamburg), **B** (Kassel), **C** (Munich) — on the criterion **Transport Cost to Customers**.
+
+**Pairwise comparison matrix** (row $i$ vs. column $j$: how much more important/better is row $i$?):
+
+$$C = \begin{pmatrix} 1 & 1/3 & 5 \\ 3 & 1 & 7 \\ 1/5 & 1/7 & 1 \end{pmatrix}$$
+
+Interpretation: B is 3× better than A on transport cost; A is 5× better than C; B is 7× better than C.
+
+**Step 1 — Column sums**:
+
+$$\text{col sum} = (4.20,\ 1.476,\ 13.0)$$
+
+**Step 2 — Normalize each entry** by its column sum:
+
+$$\hat{C} = \begin{pmatrix} 1/4.20 & (1/3)/1.476 & 5/13 \\ 3/4.20 & 1/1.476 & 7/13 \\ (1/5)/4.20 & (1/7)/1.476 & 1/13 \end{pmatrix} = \begin{pmatrix} 0.238 & 0.226 & 0.385 \\ 0.714 & 0.677 & 0.538 \\ 0.048 & 0.097 & 0.077 \end{pmatrix}$$
+
+**Step 3 — Row averages** = priority vector $\mathbf{w}$:
+
+$$w_A = \frac{0.238 + 0.226 + 0.385}{3} = 0.283, \quad w_B = \frac{0.714 + 0.677 + 0.538}{3} = 0.643, \quad w_C = \frac{0.048 + 0.097 + 0.077}{3} = 0.074$$
+
+**Step 4 — Consistency check**: Compute $\lambda_{\max}$, then $CI = (\lambda_{\max} - n)/(n-1)$ and $CR = CI/RI$.
+
+For $n=3$: $RI = 0.58$. A $CR < 0.10$ indicates acceptable consistency.
+
+$$\lambda_{\max} \approx 3.065, \quad CI = \frac{3.065 - 3}{2} = 0.033, \quad CR = \frac{0.033}{0.58} = 0.057 < 0.10 \checkmark$$
+
+**Result**: Location B (Kassel) has the highest priority weight of 0.643 — it is the preferred location on transport cost grounds.
+
+```{r}
+#| label: ahp-example
+#| echo: true
+
+ahp_priority <- function(C) {
+  # Normalize columns, then average rows
+  col_sums <- colSums(C)
+  C_norm <- sweep(C, 2, col_sums, FUN = "/")
+  w <- rowMeans(C_norm)
+  
+  # Consistency check
+  n <- nrow(C)
+  lambda_max <- mean((C %*% w) / w)
+  CI <- (lambda_max - n) / (n - 1)
+  RI <- c(0, 0, 0.58, 0.90, 1.12, 1.24, 1.32)[n]  # Random Index table
+  CR <- CI / RI
+  
+  list(weights = w, lambda_max = lambda_max, CI = CI, CR = CR,
+       consistent = CR < 0.10)
+}
+
+C <- matrix(c(1,   1/3, 5,
+              3,   1,   7,
+              1/5, 1/7, 1),
+            nrow = 3, byrow = TRUE)
+rownames(C) <- colnames(C) <- c("A (Hamburg)", "B (Kassel)", "C (Munich)")
+
+result <- ahp_priority(C)
+cat("Priority weights:\n")
+print(round(result$weights, 3))
+cat("\nConsistency Ratio:", round(result$CR, 3),
+    if(result$consistent) "— CONSISTENT" else "— INCONSISTENT")
+```
+
+## Continuous Location Models
+
+When candidate locations are not pre-specified, we can solve the location problem in continuous space.
+
+### Steiner-Weber Problem
+
+Given $n$ demand points with coordinates $(x_i, y_i)$ and demand weights $w_i$, find the facility location $(X, Y)$ minimizing total weighted distance:
+
+**Euclidean (straight-line distance)**:
+
+$$\min_{X,Y} \sum_{i=1}^n w_i \sqrt{(X - x_i)^2 + (Y - y_i)^2}$$
+
+**Manhattan (rectilinear distance)**:
+
+$$\min_{X,Y} \sum_{i=1}^n w_i \left(|X - x_i| + |Y - y_i|\right)$$
+
+The Manhattan version decomposes into two independent 1D weighted median problems — analytically solvable.
+
+### Center of Gravity Heuristic
+
+The **Center of Gravity (CoG)** places the facility at the weighted centroid of demand points:
+
+$$X^* = \frac{\sum_i w_i x_i}{\sum_i w_i}, \qquad Y^* = \frac{\sum_i w_i y_i}{\sum_i w_i}$$
+
+This minimizes squared Euclidean distance — not Euclidean distance — so it is an approximation, but it is fast and often used as a starting point for more refined methods.
+
+### Weiszfeld Algorithm
+
+The exact Euclidean Steiner-Weber solution can be found via the **Weiszfeld iteration**:
+
+$$X^{(k+1)} = \frac{\sum_i w_i x_i / d_i^{(k)}}{\sum_i w_i / d_i^{(k)}}, \qquad Y^{(k+1)} = \frac{\sum_i w_i y_i / d_i^{(k)}}{\sum_i w_i / d_i^{(k)}}$$
+
+where $d_i^{(k)} = \sqrt{(X^{(k)} - x_i)^2 + (Y^{(k)} - y_i)^2}$ is the distance to demand point $i$ at iteration $k$.
+
+This converges to the global optimum for the Euclidean case when no demand point coincides with the current estimate.
+
+```{r}
+#| label: fig-location
+#| fig-cap: "Continuous location planning: CoG and Weiszfeld solutions for 6 demand points"
+#| echo: true
+#| message: false
+
+library(tidyverse)
+library(plotly)
+
+# Demand points (x, y in km, w = demand weight)
+demands <- data.frame(
+  city = c("Hamburg", "Berlin", "Dortmund", "Frankfurt", "Munich", "Stuttgart"),
+  x = c(10, 140, 60, 90, 145, 110),
+  y = c(170, 145, 130, 90, 45, 70),
+  w = c(120, 200, 150, 180, 250, 130)
+)
+
+# Center of Gravity
+cog <- data.frame(
+  x = sum(demands$w * demands$x) / sum(demands$w),
+  y = sum(demands$w * demands$y) / sum(demands$w),
+  method = "Center of Gravity"
+)
+
+# Weiszfeld Algorithm
+weiszfeld <- function(demands, tol = 1e-6, max_iter = 1000) {
+  X <- cog$x; Y <- cog$y  # start from CoG
+  for (k in seq_len(max_iter)) {
+    d <- sqrt((X - demands$x)^2 + (Y - demands$y)^2)
+    d[d < 1e-10] <- 1e-10  # avoid division by zero
+    wd <- demands$w / d
+    X_new <- sum(wd * demands$x) / sum(wd)
+    Y_new <- sum(wd * demands$y) / sum(wd)
+    if (sqrt((X_new - X)^2 + (Y_new - Y)^2) < tol) break
+    X <- X_new; Y <- Y_new
+  }
+  data.frame(x = X, y = Y, method = "Weiszfeld (Euclidean)")
+}
+
+wz <- weiszfeld(demands)
+
+solutions <- bind_rows(cog, wz)
+
+# Plot
+fig <- plot_ly() |>
+  add_markers(data = demands, x = ~x, y = ~y,
+              size = ~w, sizes = c(30, 150),
+              text = ~paste0(city, "<br>Demand: ", w),
+              hoverinfo = "text",
+              marker = list(color = "#20808D", opacity = 0.7),
+              name = "Demand Points") |>
+  add_markers(data = solutions, x = ~x, y = ~y,
+              symbol = ~method,
+              symbols = c("star", "diamond"),
+              marker = list(size = 16, color = c("#A84B2F", "#1B474D"),
+                            line = list(width = 2, color = "white")),
+              text = ~paste0(method, "<br>x=", round(x,1), ", y=", round(y,1)),
+              hoverinfo = "text",
+              name = ~method) |>
+  layout(
+    title = "Continuous Location Planning — Germany Example",
+    xaxis = list(title = "East–West (km)"),
+    yaxis = list(title = "North–South (km)"),
+    legend = list(orientation = "h", y = -0.2)
+  )
+
+fig
+```
+
+---
+
+## Exercises
+
+**Exercise 2.1 — Strategic Fit**
+
+Classify each of the following companies by their primary competitive priority (efficiency vs. responsiveness) and describe what this implies for their supply chain design. Cite one observable SC characteristic that confirms your classification.
+
+a. Lidl supermarkets
+b. W.W. Grainger (industrial MRO distributor)
+c. McLaren Automotive
+d. H&M fast fashion
+
+**Exercise 2.2 — Weighted Scoring**
+
+A logistics company is selecting a new regional distribution center. Four locations are under consideration: **Erfurt (ERF)**, **Hannover (HAN)**, **Nürnberg (NUE)**, and **Dortmund (DOR)**. The evaluation criteria and weights are:
+
+| Criterion | Weight |
+|-----------|--------|
+| Proximity to motorway junction | 0.35 |
+| Available warehouse area (m²) | 0.25 |
+| Labor market (unemployment rate proxy) | 0.20 |
+| Land acquisition cost | 0.20 |
+
+Use the following ratings (1–10 scale):
+
+| Criterion | ERF | HAN | NUE | DOR |
+|-----------|-----|-----|-----|-----|
+| Motorway access | 8 | 7 | 9 | 8 |
+| Available area | 9 | 6 | 7 | 5 |
+| Labor market | 7 | 8 | 8 | 7 |
+| Land cost | 9 | 6 | 7 | 5 |
+
+a. Calculate the weighted score for each location.
+b. Which location is preferred?
+c. At what weight for "Land cost" would Hannover become preferred over Erfurt (assume all other weights scale proportionally)?
+
+**Exercise 2.3 — Weiszfeld Iteration**
+
+Four demand points with coordinates and weights:
+
+| Point | x | y | Weight |
+|-------|---|---|--------|
+| A | 10 | 80 | 200 |
+| B | 60 | 90 | 150 |
+| C | 80 | 20 | 300 |
+| D | 30 | 40 | 100 |
+
+a. Calculate the Center of Gravity solution.
+b. Perform 3 manual iterations of the Weiszfeld algorithm starting from the CoG solution.
+c. Implement in R and run to convergence. How many iterations are needed?
+d. Compare the total weighted Euclidean distance for CoG vs. Weiszfeld solutions.

@@ -1,0 +1,155 @@
+# Supply Chain Coordination {#sec-coordination}
+
+## The Coordination Problem
+
+When supply chain members act independently to maximize their own profits, the total supply chain profit is typically **less than what a centralized system could achieve**. This is the coordination problem.
+
+## Double Marginalization
+
+Consider a two-stage supply chain: supplier → retailer → market.
+
+With linear demand $p = a - bq$:
+
+- **Centralized optimum**: Set $MC_{\text{supplier}}$ = MR of final market → $q^* = \frac{a - c_s}{2b}$
+- **Decentralized**: Retailer maximizes own profit given wholesale price $w$ → Sets $w = MR_{\text{retailer}}$ → Results in $q^{dec} = \frac{a - w}{2b} < q^*$
+
+**Consequence**: The SC earns less than the centralized maximum — a deadweight loss from double marginalization.
+
+## Coordination Contracts
+
+The goal of coordination contracts is to align incentives so that decentralized decisions replicate the centralized optimum.
+
+### Buyback Contract
+
+**Mechanism**: Supplier charges wholesale price $w$ and agrees to buy back unsold units at $b$ per unit (where $s \leq b \leq w$).
+
+**Effect on retailer**: Higher salvage value $b$ reduces effective overage cost → Retailer orders more.
+
+**Coordination condition**: Choose $b$ and $w$ such that the retailer's critical ratio equals the SC-optimal critical ratio:
+
+$$\frac{p - w}{p - b} = \frac{p - c_s}{p - s}$$
+
+### Revenue Sharing Contract
+
+**Mechanism**: Retailer pays reduced wholesale price $w < c_s$ but shares fraction $\phi$ of revenue with supplier.
+
+**Effective price for retailer**: $(1-\phi) \cdot p$ → Lowers effective underage cost proportionally.
+
+**Advantage over buyback**: Does not require physical return of products — just financial transfer.
+
+### Quantity Flexibility (QF) Contract
+
+**Mechanism**: Retailer can return up to fraction $\delta$ of ordered quantity at full wholesale price.
+
+**Effect**: Retailer essentially has a partial buyback at $w$ for up to $\delta Q$ units.
+
+::: {.callout-tip}
+## When to Use Which Contract?
+
+- **Buyback**: Standard in publishing (book returns), fashion, pharmaceuticals
+- **Revenue sharing**: Works well when returns are costly (bulky goods, perishables)
+- **QF**: Common in electronics and seasonal goods where demand uncertainty is high
+:::
+
+## VMI and CPFR
+
+### Vendor Managed Inventory (VMI)
+
+In VMI, the **supplier** monitors the retailer's inventory and makes replenishment decisions:
+
+```
+Traditional: Retailer orders → Supplier ships
+VMI:         Supplier monitors inventory → Supplier decides when/how much
+```
+
+**Benefits**:
+- Supplier sees actual consumption, not orders → Better demand signal
+- Eliminates artificial order batching → Bullwhip reduction
+- Supplier can optimize across all accounts simultaneously
+
+**Requirements**: Real-time inventory visibility, service level agreements, trust.
+
+**Example**: P&G and Walmart implemented VMI in the 1980s, achieving 30% inventory reduction.
+
+### CPFR Framework
+
+Collaborative Planning, Forecasting & Replenishment goes beyond VMI by involving both parties in the planning process:
+
+1. Arrangement Agreement
+2. Joint Business Plan (promotions, events, product launches)
+3. Collaborative sales forecasting
+4. Order planning / forecasting
+5. Order generation against agreed plan
+6. Exception management
+
+CPFR typically achieves 10–30% inventory reduction and 5–15% service level improvement.
+
+## Demand Forecasting
+
+Forecasting accuracy directly determines safety stock levels. Every unit of forecast error translates to safety stock:
+
+$$\text{Safety Stock} = z_\alpha \cdot \sigma_{\text{forecast error}} \cdot \sqrt{L}$$
+
+### Forecasting Methods
+
+```{r}
+#| label: forecasting-comparison
+#| echo: true
+#| fig-cap: "Comparison of forecasting methods on synthetic demand"
+library(ggplot2)
+
+set.seed(123)
+n <- 36  # months
+t <- 1:n
+# Demand with trend + seasonality + noise
+demand <- 100 + 2 * t + 20 * sin(2 * pi * t / 12) + rnorm(n, 0, 10)
+
+# Simple Moving Average (k=3)
+sma <- function(x, k) {
+  sapply(seq_along(x), function(i) {
+    if (i < k) NA else mean(x[(i-k+1):i])
+  })
+}
+
+# Exponential Smoothing
+ses <- function(x, alpha) {
+  f <- numeric(length(x))
+  f[1] <- x[1]
+  for (i in 2:length(x)) f[i] <- alpha * x[i-1] + (1 - alpha) * f[i-1]
+  f
+}
+
+df_fc <- data.frame(
+  t      = t,
+  demand = demand,
+  sma3   = sma(demand, 3),
+  ses_02 = ses(demand, 0.2),
+  ses_06 = ses(demand, 0.6)
+)
+
+library(tidyr)
+df_long <- pivot_longer(df_fc, -t, names_to = "series", values_to = "value")
+
+ggplot(df_long, aes(t, value, color = series)) +
+  geom_line() +
+  scale_color_manual(
+    values = c(demand = "#2D2D2D", sma3 = "#01696F",
+               ses_02 = "#A84B2F", ses_06 = "#6E522B"),
+    labels = c(demand = "Actual demand", sma3 = "SMA(3)",
+               ses_02 = "SES α=0.2", ses_06 = "SES α=0.6")
+  ) +
+  labs(title = "Forecasting Methods: SMA vs. Exponential Smoothing",
+       x = "Month", y = "Units", color = NULL) +
+  theme_minimal()
+```
+
+## Exercises
+
+1. A newsstand sells newspapers. Wholesale price: €0.40, retail price: €0.90, unsold papers have zero value. Daily demand: Poisson(λ=80). Find Q* and expected daily profit.
+
+2. Manufacturer and retailer face market demand N(1000, 200²). Retail price: €100, manufacturer cost: €30. 
+   a) What is the centralized optimum Q*?
+   b) With wholesale price w = €60, what does the retailer order?
+   c) Design a buyback contract that achieves coordination.
+
+3. A retailer uses exponential smoothing with α = 0.3. Last period forecast: 450, actual demand: 520. What is next period's forecast? If lead time is 2 weeks, demand is IID weekly with σ = 30 — what safety stock is needed for 95% service level?

@@ -1,0 +1,733 @@
+---
+title: "Module 2: SC Strategy & Network Design"
+subtitle: "SCM — Bachelor 3rd Semester"
+author: "Prof. Dr. Thomas Kirschstein"
+date: last-modified
+format:
+  revealjs:
+    theme: [default, ../../_extensions/scm-theme.scss]
+    slide-number: true
+    chalkboard: true
+    preview-links: auto
+    footer: "SCM | Module 2 | HS RheinMain"
+    transition: slide
+    incremental: false
+    toc: true
+    toc-depth: 1
+execute:
+  echo: false
+  warning: false
+---
+
+# Part 1: Strategic Fit {background-color="#1B2A4A"}
+
+## Learning Objectives
+
+After this module, you will be able to:
+
+- **Explain** the concept of strategic fit between competitive and SC strategy
+- **Position** a supply chain on the responsiveness–efficiency spectrum
+- **Apply** the SC drivers framework to design decisions
+- **Formulate** facility location problems using weighted scoring and AHP
+- **Solve** the Steiner-Weber model and the Warehouse Location Problem
+- **Identify** trade-offs between centralisation and decentralisation
+
+::: {.notes}
+Module 2 bridges conceptual strategy (Part 1) with quantitative methods (Parts 2–3). Stress to students that the strategic fit concept motivates *why* we design networks in particular ways — the quantitative methods then tell us *how* to do it optimally. Both halves are needed.
+:::
+
+---
+
+## Competitive Strategy and SC Strategy
+
+**A firm's competitive strategy defines the customer value proposition:**
+
+| Competitive Strategy | SC Implication | Key SC Capability |
+|---------------------|----------------|-------------------|
+| **Cost leadership** | Efficient SC | High utilisation, lean inventory |
+| **Innovation leadership** | Responsive SC | Fast time-to-market, flexible capacity |
+| **Service leadership** | Customer-tailored SC | High variety, reliability, customisation |
+| **Quality leadership** | Reliable, controlled SC | Low defect rate, supplier quality management |
+| **Sustainability leadership** | Green SC | Low CO₂, circular flows, transparent sourcing |
+
+::: {.callout-note title="Strategic Fit (Chopra & Meindl)"}
+**Strategic Fit** exists when the SC strategy supports the competitive strategy — i.e., the supply chain is designed and managed to achieve the level of **responsiveness** that the target customer segment values and is willing to pay for.
+
+Lack of strategic fit is one of the most common causes of SC underperformance.
+:::
+
+::: {.notes}
+Ask students to think of a firm where the competitive strategy and SC strategy are clearly misaligned. Classic example: a luxury brand that outsources to the cheapest possible supplier to cut costs — the quality deteriorates and the brand promise is broken. Strategic fit is not just an academic concept; it is a discipline that prevents this kind of erosion.
+:::
+
+---
+
+## The Responsiveness–Efficiency Spectrum
+
+::: {.columns}
+::: {.column width="60%"}
+**Conceptual framework:**
+
+```
+SC Responsiveness
+    ↑
+    │  ●  Fashion / luxury        ← Responsive SC
+    │     (High uncertainty)
+    │
+    │        ● Computers / CE
+    │              (Medium-high)
+    │
+    │                ● Furniture
+    │                   (Medium-low)
+    │
+    │                       ● Staples / commodities
+    │                           (Low uncertainty)
+    └─────────────────────────────────────────→
+                Demand Uncertainty
+```
+
+**Zone of Strategic Fit**: the diagonal band.
+Above → over-investment in responsiveness.
+Below → SC too rigid for the market.
+:::
+::: {.column width="40%"}
+**Implied demand uncertainty** is high when:
+
+- Products have short life cycles
+- High variety / customisation required
+- Demand is difficult to forecast
+- Customer lead time tolerance is very short
+- High product innovation rate
+
+**Implied demand uncertainty** is low when:
+
+- Commodity-like, standard products
+- Long-standing, stable demand
+- Price-driven purchase decision
+- Customer willing to wait (MTO)
+:::
+:::
+
+::: {.notes}
+The Responsive–Efficient spectrum is the diagnostic framework. Before any network design decision, ask: "What does the market require?" Only then can you evaluate whether your SC delivers the right level of responsiveness. A common mistake is companies applying lean/efficient principles to high-uncertainty products — the result is chronic stockouts and lost sales.
+:::
+
+---
+
+## SC Drivers Framework
+
+**Five drivers determine the responsiveness–efficiency position** (Chopra & Meindl):
+
+| Driver | Efficient (Low Cost) | Responsive (High Service) |
+|--------|---------------------|---------------------------|
+| **Production** | Few plants, high utilisation, narrow product range | Many plants, excess capacity, broad range |
+| **Inventory** | Low levels, few SKUs | High safety stock, full SKU coverage everywhere |
+| **Location** | Centralised, few sites near cheap supply | Dense network, proximity to customers |
+| **Transportation** | Full truckloads, slow modes, long cycles | Frequent, fast, flexible; express capability |
+| **Information** | Shared selectively, batch-based | Deep real-time integration (EDI, API, IoT) |
+
+::: {.callout-tip title="Management Principle"}
+Each driver is a **lever**. Shifting a driver toward responsiveness increases service but also increases cost. The art of SC design is choosing the right combination of driver settings given the strategic fit requirement.
+
+There is no universally optimal setting — **context determines configuration**.
+:::
+
+::: {.notes}
+Walk through each driver with a concrete example. For inventory: Amazon holds ~40 days of inventory in its fulfillment centres (high service) while Aldi runs on ~10 days (low cost, standard products). For location: DHL has 400+ service points in Germany (responsive) while a steel manufacturer ships from 2 plants in Europe (efficient). The drivers framework provides a structured vocabulary for SC design discussions.
+:::
+
+---
+
+## Examples — Strategic Fit in Practice
+
+::: {.columns}
+::: {.column width="50%"}
+**Zara (Inditex)**
+
+- **Strategy**: Fast fashion → Responsive SC
+- In-house European production (Spain, Portugal)
+- 2-week design-to-shelf (industry avg: 6 months)
+- Accepts ~30% higher cost vs. offshore competitors
+- Replenishes stores twice per week
+- Result: <1% items marked down (industry: 30–40%)
+
+**H&M**
+
+- **Strategy**: Hybrid — price leadership + style
+- Offshore for basics (efficient)
+- Near-shore for fast-fashion lines (responsive)
+- Longer lead times, more markdowns → different margin structure
+:::
+::: {.column width="50%"}
+**Amazon**
+
+- **Strategy**: Service leadership → Dense responsive network
+- 200+ fulfillment centres in Europe alone
+- Multi-layer: large FCs → sortation centres → DSPs → last-mile
+- Pays for speed with massive fixed-cost infrastructure
+- Prime delivery time commitment drives entire network design
+
+**IKEA**
+
+- **Strategy**: Cost leadership → Efficient SC
+- Standardised products (flat-pack maximises cube utilisation)
+- Global low-cost sourcing (mainly Asia, Eastern Europe)
+- Store = DC (customer does last-mile themselves)
+- Very low inventory cost per unit of revenue
+:::
+:::
+
+::: {.notes}
+These four examples span the full spectrum. Ask students: "If Zara tried to copy IKEA's cost model, what would break?" They would lose their speed advantage — their competitive strategy depends on the responsive SC. And vice versa: IKEA cannot go responsive without destroying its price proposition. Strategic fit is not optional; it is the foundation of competitive advantage.
+:::
+
+---
+
+# Part 2: Location Planning Methods {background-color="#1B2A4A"}
+
+## Facility Location — The Strategic Decision
+
+::: {.columns}
+::: {.column width="55%"}
+**Why location decisions are special:**
+
+- **Long-term irreversible** → high switching costs, path dependencies
+- **Multi-dimensional** → qualitative (labour market, regulation, infrastructure) AND quantitative (transport cost, demand coverage)
+- **Multi-level** → global region → country → city → specific site
+- **Context-dependent** → a DC location differs fundamentally from a plant location
+
+**Key question:**
+
+*Where do we place factories, distribution centres, and stores to best serve customers at minimum total cost?*
+:::
+::: {.column width="45%"}
+**Relevant cost components:**
+
+```
+Total Network Cost
+  = Σ Fixed facility costs
+  + Σ Variable production / handling costs
+  + Σ Inbound transport costs
+  + Σ Outbound transport costs
+  + Σ Inventory holding costs
+  − Σ Revenue effects
+    (proximity → faster delivery → higher demand)
+```
+
+Location decisions affect **all** cost components simultaneously.
+:::
+:::
+
+::: {.notes}
+Location decisions are made infrequently — perhaps once per decade for a major facility — but they have consequences that last for the entire planning horizon. The 2022 energy crisis forced many German manufacturers to reconsider their facility locations because German energy costs suddenly became prohibitive. A DC built in 2015 assuming cheap energy looked very different economically by 2023. This illustrates the long-term, irreversible nature of location decisions.
+:::
+
+---
+
+## Classification of Location Methods
+
+| Method | Decision Space | # Facilities | Criteria Type |
+|--------|---------------|-------------|---------------|
+| **Weighted Scoring** *(Nutzwertanalyse)* | Discrete (given options) | Multiple | Multi-criteria |
+| **Analytic Hierarchy Process (AHP)** | Discrete | Multiple | Multi-criteria |
+| **Steiner-Weber (Euclidean)** | Continuous | Single | Single cost |
+| **Steiner-Weber (Manhattan)** | Continuous | Single | Single cost |
+| **Set Covering Model** | Discrete | Multiple | Single service |
+| **Max. Covering (MCLP)** | Discrete | Multiple | Single service |
+| **Warehouse Location Problem (WLP)** | Discrete | Multiple | Single cost |
+
+**Two fundamental dimensions:**
+
+- *Discrete* vs. *Continuous*: Is the solution space a finite set of candidates or all of ℝ²?
+- *Single-* vs. *Multi-criteria*: Is cost the only objective, or are qualitative factors included?
+
+::: {.notes}
+The choice of method depends on the problem structure and data availability. In practice, a two-stage approach is common: first use a qualitative method (AHP) to shortlist to 3–5 candidates, then use a quantitative model (WLP) to select the optimal set. The pure continuous models (Steiner-Weber) are useful for initial orientation but rarely used as the final decision tool.
+:::
+
+---
+
+## Weighted Scoring (Nutzwertanalyse)
+
+**Step-by-step procedure:**
+
+1. **Define evaluation criteria** relevant to the location decision
+2. **Assign weights** to criteria: $\sum_k w_k = 1$
+3. **Score each alternative** on each criterion (scale: 1–10 or 0–100)
+4. **Calculate weighted score** for each alternative:
+   $$S(i) = \sum_k w_k \cdot s_k(i)$$
+5. **Rank alternatives** by $S(i)$; select highest-scoring option
+
+**Example structure:**
+
+| Criterion | Weight | Site A | Site B | Site C |
+|-----------|--------|--------|--------|--------|
+| Labour market | 0.25 | 7 | 5 | 8 |
+| Infrastructure | 0.30 | 8 | 9 | 6 |
+| Proximity to customers | 0.35 | 6 | 7 | 9 |
+| Regulatory environment | 0.10 | 9 | 8 | 7 |
+| **Weighted Score** | | **7.10** | **7.15** | **7.75** |
+
+::: {.callout-warning title="Limitations"}
+- Assumes full **compensability** (a bad score on one criterion can be offset by a good score on another)
+- **Weight determination** is subjective and politically sensitive
+- **Scale dependency**: converting qualitative assessments to numbers introduces measurement error
+:::
+
+::: {.notes}
+The Nutzwertanalyse is widely used in practice, especially in German-speaking countries, precisely because it is transparent and auditable. The weights and scores are documented and can be reviewed. The main criticism is the compensability assumption — in some decisions, a fatal flaw on one dimension should disqualify a site regardless of other scores. In such cases, use hard constraints to eliminate dominated alternatives before applying the scoring.
+:::
+
+---
+
+## Analytic Hierarchy Process (AHP)
+
+**AHP improves on weighted scoring by deriving weights via pairwise comparisons:**
+
+::: {.columns}
+::: {.column width="55%"}
+**Procedure:**
+
+1. Build pairwise comparison matrix for **criteria**: "How much more important is criterion A than criterion B?"
+2. Use Saaty scale (1 = equal, 3 = moderate, 5 = strong, 7 = very strong, 9 = extreme)
+3. Derive criteria **priority vector** (eigenvector of comparison matrix)
+4. Repeat pairwise comparisons for **alternatives** under each criterion
+5. Compute **global priority** = weighted sum of local priorities
+
+**Key advantage — Consistency Check:**
+
+$$CI = \frac{\lambda_{max} - n}{n - 1}, \quad CR = \frac{CI}{RI}$$
+
+- $\lambda_{max}$: principal eigenvalue
+- $RI$: random index (tabulated by matrix size)
+- $CR < 0.10$ → judgments are acceptably consistent
+- $CR > 0.10$ → revisit pairwise comparisons
+:::
+::: {.column width="45%"}
+**Saaty scale:**
+
+| Value | Interpretation |
+|-------|---------------|
+| 1 | Equal importance |
+| 3 | Moderate importance |
+| 5 | Strong importance |
+| 7 | Very strong |
+| 9 | Extreme importance |
+| 2,4,6,8 | Intermediate values |
+
+**Random Index (RI) by matrix size:**
+
+| n | 3 | 4 | 5 | 6 |
+|---|---|---|---|---|
+| RI | 0.58 | 0.90 | 1.12 | 1.24 |
+:::
+:::
+
+::: {.notes}
+AHP was developed by Thomas Saaty at the University of Pittsburgh in the 1970s and is one of the most widely cited decision-making methods globally. The consistency ratio is its key innovation — it catches logical inconsistencies in human judgment. If a decision maker says "A is better than B, B is better than C, but C is better than A", the consistency check will flag this. Practical point: AHP is implemented in many decision support tools and can be exported from Excel add-ins.
+:::
+
+---
+
+## AHP Example — Shopping Centre Location
+
+**Three candidate sites (A, B, C); four criteria:**
+
+| Criterion | Weight | Interpretation |
+|-----------|--------|---------------|
+| Customer market size | 0.199 | Total addressable spending within 30 min drive |
+| Customer accessibility | **0.654** | Public transport + parking + road access |
+| Infrastructure quality | 0.086 | Building condition, tech infrastructure |
+| Transport access | 0.061 | Delivery logistics, supplier accessibility |
+
+**Local priority scores (from pairwise comparisons per criterion):**
+
+| Site | Market | Access | Infra. | Transport | **Global Score** |
+|------|--------|--------|--------|-----------|-----------------|
+| A | 0.558 | 0.153 | 0.633 | 0.122 | **0.241** |
+| B | 0.321 | 0.260 | 0.260 | 0.320 | **0.268** |
+| **C** | 0.122 | **0.587** | 0.106 | 0.558 | **0.490** ✓ |
+
+::: {.callout-tip title="Management Lesson"}
+**Site C wins** — despite having the smallest customer market, its dominant advantage on *customer accessibility* (weight = 0.654) overwhelms the other criteria.
+
+AHP makes trade-offs **explicit and auditable**, reducing "gut feeling" bias and political manipulation. The weights force decision makers to confront their true priorities.
+:::
+
+::: {.notes}
+Walk through the calculation for Site C: 0.199×0.122 + 0.654×0.587 + 0.086×0.106 + 0.061×0.558 = 0.024 + 0.384 + 0.009 + 0.034 = 0.490 ✓. Ask students: "Why does accessibility dominate so heavily?" Because a shopping centre with great products but hard to reach has an insurmountable competitive disadvantage. The AHP just makes this intuition rigorous.
+:::
+
+---
+
+## Steiner-Weber Model — Continuous Location
+
+**Problem:** Find location $(x, y)$ minimising weighted total transport distance to $n$ customer sites.
+
+$$\min_{x, y} \; Z(x, y) = \sum_{i=1}^{n} a_i \cdot d\!\left((x, y),\, (u_i, v_i)\right)$$
+
+**Where:**
+
+- $(u_i, v_i)$ = coordinates of customer site $i$
+- $a_i$ = demand weight at site $i$ (tonnes/year, shipments/year, etc.)
+- $d$ = distance function:
+  - **Euclidean:** $d = \sqrt{(x-u_i)^2 + (y-v_i)^2}$
+  - **Manhattan (rectilinear):** $d = |x-u_i| + |y-v_i|$
+
+::: {.callout-note title="When to use Steiner-Weber"}
+- Single-facility location in a region (one DC for a country, one plant for a market)
+- Demand concentrated at discrete points (customers, cities)
+- Transport cost proportional to distance and volume
+- Provides **initial orientation** before discrete network models are applied
+:::
+
+::: {.notes}
+The Steiner-Weber problem dates to 1909 (Weber's location theory) and is the classical model of industrial location theory. It assumes a flat plane, which is only an approximation of reality — road networks are not Euclidean. However, for large geographic scales (country-level), the approximation is often acceptable. The Manhattan metric is appropriate when transport follows a grid pattern (urban settings, North American city grids).
+:::
+
+---
+
+## Steiner-Weber — Solution Approaches
+
+::: {.columns}
+::: {.column width="55%"}
+**1. Center of Gravity (CoG)**
+
+Quick approximation — minimises *sum of squared distances* (not Euclidean):
+
+$$x^{CoG} = \frac{\sum_i a_i u_i}{\sum_i a_i}, \quad y^{CoG} = \frac{\sum_i a_i v_i}{\sum_i a_i}$$
+
+Fast, interpretable, but **not optimal** for Euclidean distances.
+
+**2. Weiszfeld Algorithm** *(for Euclidean — iterative)*
+
+Iterate until convergence (start from CoG):
+
+$$x^{(t+1)} = \frac{\sum_i \frac{a_i \, u_i}{d_i^{(t)}}}{\sum_i \frac{a_i}{d_i^{(t)}}}, \quad y^{(t+1)} = \frac{\sum_i \frac{a_i \, v_i}{d_i^{(t)}}}{\sum_i \frac{a_i}{d_i^{(t)}}}$$
+
+where $d_i^{(t)} = d\!\left((x^{(t)}, y^{(t)}),\, (u_i, v_i)\right)$.
+
+Guaranteed to converge (unless a customer site is optimal).
+
+**3. Manhattan Optimal Solution**
+
+Solve **independently per coordinate**: optimal = weighted median of $u_i$ (and separately $v_i$).
+:::
+::: {.column width="45%"}
+```{r}
+#| fig-height: 4
+#| fig-width: 4
+#| echo: false
+
+# Illustrative Steiner-Weber example
+sites <- data.frame(
+  u = c(2, 7, 5, 1, 9),
+  v = c(8, 3, 6, 2, 7),
+  a = c(500, 300, 800, 200, 400),
+  label = c("A","B","C","D","E")
+)
+cog_x <- sum(sites$a * sites$u) / sum(sites$a)
+cog_y <- sum(sites$a * sites$v) / sum(sites$a)
+
+par(mar = c(3,3,2,1), bg = "white")
+plot(sites$u, sites$v, 
+     cex = sites$a/200, pch = 19,
+     col = "#01696F",
+     xlim = c(0, 10), ylim = c(0, 10),
+     xlab = "x-coordinate", ylab = "y-coordinate",
+     main = "Customer Sites & Center of Gravity")
+text(sites$u, sites$v + 0.5, sites$label, cex = 0.7, col = "#1B2A4A")
+points(cog_x, cog_y, pch = 18, cex = 2.5, col = "#e05c2a")
+text(cog_x + 0.3, cog_y + 0.5, "CoG", cex = 0.8, col = "#e05c2a")
+for(i in 1:nrow(sites)) {
+  lines(c(cog_x, sites$u[i]), c(cog_y, sites$v[i]), 
+        col = adjustcolor("#01696F", 0.3), lty = 2)
+}
+```
+:::
+:::
+
+::: {.notes}
+The Weiszfeld algorithm is a classic example of an iterative re-weighted least squares method. In the weighted median interpretation for Manhattan distance: sort customer sites by u-coordinate, find the site where cumulative demand first exceeds 50% of total demand — that is the optimal x-coordinate. Same for y. This gives an exact solution for Manhattan in O(n log n) time.
+:::
+
+---
+
+## Exercise 2.1 — Center of Gravity {background-color="#1e2a38"}
+
+**Five customer locations with annual demands:**
+
+| Site | x | y | Demand (t/yr) |
+|------|---|---|--------------|
+| A | 2 | 8 | 500 |
+| B | 7 | 3 | 300 |
+| C | 5 | 6 | 800 |
+| D | 1 | 2 | 200 |
+| E | 9 | 7 | 400 |
+
+**Tasks:**
+
+1. Calculate the **Center of Gravity** $(x^{CoG}, y^{CoG})$
+2. Apply **one Weiszfeld iteration** starting from CoG:
+   - Calculate $d_i^{(0)}$ for each site (Euclidean distance from CoG)
+   - Apply the Weiszfeld update formula to get $(x^{(1)}, y^{(1)})$
+3. Does $(x^{(1)}, y^{(1)})$ improve on the CoG? Calculate $Z$ at both points.
+4. *Extension*: Find the optimal **Manhattan** location using the weighted median approach.
+
+::: {.callout-tip title="Hint"}
+Total demand: $\sum a_i = 2200$ t/yr.
+:::
+
+::: {.notes}
+Expected CoG: x = (500×2 + 300×7 + 800×5 + 200×1 + 400×9)/2200 = (1000+2100+4000+200+3600)/2200 = 10900/2200 = 4.955. y = (500×8 + 300×3 + 800×6 + 200×2 + 400×7)/2200 = (4000+900+4800+400+2800)/2200 = 12900/2200 = 5.864. For the weighted median: sort by x: D(1), A(2), C(5), B(7), E(9). Cumulative demands: 200, 700, 1500, 1800, 2200. 50% of 2200 = 1100. First exceeds at C (1500 > 1100), so optimal x = 5. Similarly for y.
+:::
+
+---
+
+# Part 3: Network Planning Models {background-color="#1B2A4A"}
+
+## Distribution Network Design
+
+**The fundamental trade-off in network design:**
+
+::: {.columns}
+::: {.column width="60%"}
+**More locations → Higher fixed costs, lower transport costs**
+
+$$TC(n) = \underbrace{n \cdot f}_{\text{fixed cost}} + \underbrace{g(n)}_{\text{transport cost}}$$
+
+where $g(n)$ decreases in $n$ (shorter average distance to customers).
+
+**→ An optimal number of facilities $n^*$ exists.**
+
+The optimal $n^*$ depends on:
+- Ratio of fixed to variable transport cost
+- Spatial distribution of demand
+- Required service level (max delivery time)
+- Product characteristics (weight, value density)
+:::
+::: {.column width="40%"}
+```
+Total Cost
+    ↑
+    │ TC = Fixed + Transport
+    │     ╲___________╱
+    │      ╲         ╱
+    │       ╲       ╱
+    │  Fixed─╲─────╱── 
+    │  Cost   ╲   /
+    │  Transport╲╱
+    │            n*         → n (# locations)
+```
+
+**Network design** = selecting *which* facilities to open AND *which* customers to assign to each.
+:::
+:::
+
+::: {.notes}
+This cost trade-off is the fundamental insight of network design theory. In practice, companies often have too many or too few facilities based on historical path dependencies rather than optimisation. German manufacturers that grew through acquisition often end up with 8–10 redundant small DCs that could be consolidated into 3 efficient ones. Network rationalisation programs regularly deliver 15–25% logistics cost savings.
+:::
+
+---
+
+## Covering Location Models
+
+::: {.columns}
+::: {.column width="50%"}
+**Set Covering Problem (SCP):**
+
+*Minimise the number of facilities to cover all demand within service radius $D$.*
+
+$$\min \sum_j y_j \quad \text{s.t.} \quad \sum_{j: d_{ij} \leq D} y_j \geq 1 \; \forall i$$
+
+- $y_j \in \{0,1\}$: open facility at site $j$
+- NP-hard, but good approximation via LP-relaxation or greedy heuristic
+
+**Maximum Covering (MCLP):**
+
+*Given budget of $p$ facilities, maximise covered demand.*
+
+$$\max \sum_i b_i z_i \quad \text{s.t.} \quad \sum_j y_j \leq p, \; z_i \leq \sum_{j:d_{ij}\leq D} y_j$$
+
+- $z_i \in \{0,1\}$: demand node $i$ covered
+- $b_i$ = demand volume at node $i$
+:::
+::: {.column width="50%"}
+**Applications:**
+
+- Emergency service location (ambulances, fire stations)
+- Retail store network with service radius guarantee
+- Mobile phone tower placement
+- Vaccine distribution centres
+
+**Greedy Heuristic for MCLP:**
+
+```
+MCLP_Greedy(p):
+  open_set = {}
+  for k = 1 to p:
+    best_j = argmax over j ∉ open_set of:
+               marginal demand covered by j
+    open_set = open_set ∪ {best_j}
+    update covered demand set
+  return open_set
+```
+
+Performance guarantee: $1 - (1 - 1/p)^p \approx 0.63$ of optimal.
+:::
+:::
+
+::: {.notes}
+The MCLP was introduced by Church & ReVelle (1974) and is one of the most cited facility location models. The greedy heuristic has a well-known theoretical performance bound. In practice, commercial solvers (CPLEX, Gurobi) can solve instances with hundreds of candidate locations and thousands of demand nodes to optimality in minutes. The covering models are particularly relevant for public service planning and retail expansion.
+:::
+
+---
+
+## Warehouse Location Problem (WLP)
+
+**Given:**
+
+- Set $J$ of potential warehouse locations with **fixed opening costs** $f_j$
+- Set $I$ of customers with **demands** $d_i$
+- **Unit transport costs** $c_{ij}$ per unit from warehouse $j$ to customer $i$
+
+**Decide:** Which warehouses to open ($y_j$) and how to assign customers to open warehouses ($x_{ij}$).
+
+**MILP Formulation:**
+
+$$\min \sum_{j \in J} f_j y_j + \sum_{i \in I}\sum_{j \in J} c_{ij} x_{ij}$$
+
+Subject to:
+
+$$\sum_{j \in J} x_{ij} = d_i \quad \forall i \in I \quad \text{(demand fulfillment)}$$
+
+$$x_{ij} \leq d_i \cdot y_j \quad \forall i \in I, j \in J \quad \text{(only open warehouses serve customers)}$$
+
+$$y_j \in \{0,1\\}, \quad x_{ij} \geq 0$$
+
+::: {.notes}
+The WLP (also called the Uncapacitated Facility Location Problem, UFLP) is NP-hard in general but has very tight LP relaxations — branch-and-bound methods solve practical instances quickly. The capacitated variant (CFLP) adds capacity limits on each warehouse, making it harder but more realistic. Commercial solvers handle CFLP instances with hundreds of potential locations in seconds. For very large instances (thousands of locations), Lagrangian relaxation heuristics are used.
+:::
+
+---
+
+## WLP Heuristics — Add and Drop
+
+::: {.columns}
+::: {.column width="50%"}
+**Add Heuristic** *(Kühn & Hamburger, 1963)*
+
+```
+ADD():
+  open_set = {}   # start: no warehouses open
+  while improvement:
+    savings_j = Σ max(0, current_cost_i
+                      - cost_from_j_i)
+                - f_j    for all j ∉ open_set
+    best_j = argmax savings_j
+    if savings_best > 0:
+      open_set ∪= {best_j}
+      reassign customers optimally
+    else: STOP
+  return open_set
+```
+
+**Typical performance:** 2–5% above optimal for well-structured instances.
+:::
+::: {.column width="50%"}
+**Drop Heuristic** *(Feldman, Lehrer & Ray, 1966)*
+
+```
+DROP():
+  open_set = J   # start: ALL warehouses open
+  while improvement:
+    cost_increase_j = cost_increase if j
+                      is closed  for all j
+    worst_j = argmin cost_increase_j
+    if cost_increase_worst < 0:
+      open_set \ = {worst_j}
+      reassign affected customers
+    else: STOP
+  return open_set
+```
+
+**Neither guarantees optimality.** Combined Add+Drop heuristic: run Add, then refine with Drop passes.
+:::
+:::
+
+::: {.callout-tip title="Practical Guidance"}
+**Add** tends to find cheaper solutions for sparse networks; **Drop** can get stuck in local optima where interaction effects between warehouses are complex. For real applications, use a commercial MILP solver if $|I| \times |J| < 10^6$ — it will find the optimum in seconds and the heuristics are unnecessary.
+:::
+
+::: {.notes}
+The Add and Drop heuristics are important historically and conceptually, but in modern practice they are rarely used because MILP solvers have become fast enough to handle realistic problem sizes. However, they are important for students to understand because (1) they illustrate greedy construction logic, (2) they reveal why the order of decisions matters, and (3) they provide a baseline for evaluating more sophisticated meta-heuristics.
+:::
+
+---
+
+## Exercise 2.2 — WLP with Add Heuristic {background-color="#1e2a38"}
+
+**5 potential warehouses, 7 customers. Fixed costs (€1,000/yr):** $f = [5, 7, 5, 6, 4]$
+
+**Transport cost matrix $c_{ij}$ (€/unit per year):**
+
+| Customer\Warehouse | W1 | W2 | W3 | W4 | W5 |
+|--------------------|----|----|----|----|-----|
+| C1 (demand=100) | 8 | 2 | 7 | 5 | 9 |
+| C2 (demand=80) | 4 | 6 | 3 | 7 | 5 |
+| C3 (demand=120) | 9 | 4 | 2 | 6 | 3 |
+| C4 (demand=60) | 6 | 8 | 5 | 3 | 7 |
+| C5 (demand=90) | 3 | 5 | 8 | 4 | 6 |
+| C6 (demand=70) | 7 | 3 | 6 | 8 | 2 |
+| C7 (demand=110) | 5 | 7 | 4 | 2 | 8 |
+
+**Tasks:**
+
+1. Apply the **Add Heuristic** — which warehouse opens first? Second? When does the heuristic stop?
+2. Apply the **Drop Heuristic** — same question in reverse
+3. Compare total costs of both solutions
+4. *Extension*: Solve with R (`ompr` or `lpSolve`) and compare to optimal
+
+::: {.notes}
+For the Add heuristic, start with no warehouses. Each customer is served at infinite cost (or from the most expensive option). Compute marginal savings for opening each warehouse. W3 and W5 typically open early due to covering multiple customers cheaply. Expected optimal solution: open W3 and W5, total cost = 5000 + 4000 + [transport costs]. Walk through the first step with students to ensure they understand the marginal savings calculation, then let them continue in pairs.
+:::
+
+---
+
+## Key Takeaways — Module 2
+
+::: {.columns}
+::: {.column width="60%"}
+**Core concepts:**
+
+1. **Strategic fit** aligns SC design with competitive positioning — the responsive–efficient spectrum is the diagnostic framework
+
+2. **Five SC drivers** (production, inventory, location, transportation, information) are the levers for positioning on the spectrum
+
+3. **Location decisions** are irreversible — use systematic methods (AHP, Nutzwertanalyse) to make trade-offs explicit
+
+4. **AHP** makes subjective preferences explicit, measurable, and consistent — the consistency ratio is a critical quality check
+
+5. **Steiner-Weber / CoG** for single-facility continuous problems; **WLP** for discrete multi-facility network design
+
+6. **Add/Drop heuristics** provide good solutions fast; commercial solvers find optimal solutions for realistic problem sizes
+:::
+::: {.column width="40%"}
+**Coming up — Module 3:**
+
+- Transportation Problem
+- Vogel's Approximation Method (VAM)
+- Transshipment Problem
+- R code for LP-based transport planning
+
+**Preparation:**
+
+- Read Chopra & Meindl, Chapter 5 (Network Design in the SC)
+- Review linear programming fundamentals (LP formulation, simplex concept)
+- Install `lpSolve` package in R: `install.packages("lpSolve")`
+:::
+:::
+
+::: {.notes}
+Summarise by linking back to Module 1: the strategic decisions made in Module 2 (network design, location, strategic fit) operate at the strategic planning horizon. They set the context for the tactical and operational decisions we will study in Modules 3 and 4 (transport planning, demand forecasting, inventory management). A well-designed network is a prerequisite for operational efficiency.
+:::

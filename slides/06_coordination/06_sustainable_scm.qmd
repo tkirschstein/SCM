@@ -1,0 +1,113 @@
+---
+title: "Module 6: Sustainable Supply Chain Management"
+subtitle: "SCM — Bachelor 3rd Semester"
+author: "Prof. Dr. Thomas Kirschstein"
+date: last-modified
+format:
+  revealjs:
+    theme: [default, ../../_extensions/scm-theme.scss]
+    slide-number: true
+    chalkboard: true
+    preview-links: auto
+    footer: "SCM | Module 6 | HS RheinMain"
+    transition: slide
+    incremental: false
+    toc: true
+    toc-depth: 1
+execute:
+  echo: false
+  warning: false
+---
+
+## Learning Objectives
+
+- Define sustainability dimensions in SCM context
+- Analyze circular supply chains and reverse logistics
+- Apply carbon footprint calculation to transport decisions
+- Evaluate ESG reporting requirements for supply chains
+- Identify sustainability strategies (green procurement, CO₂-neutral logistics)
+
+## Sustainability in SCM — The Triple Bottom Line
+
+**Economic sustainability**: Long-term profitability, resilience, cost efficiency
+
+**Environmental sustainability**: Carbon footprint, resource consumption, waste, biodiversity
+
+**Social sustainability**: Labor conditions, community impact, health & safety
+
+UN SDGs most relevant: SDG 8, 12, 13, 15, 17
+
+::: {.callout-note}
+## Why Sustainability Is a SCM Responsibility
+~70% of a company's carbon emissions come from its supply chain (Scope 3 emissions).
+The Paris Agreement and EU CSRD make SC sustainability reporting mandatory from 2025.
+:::
+
+## Carbon Footprint in Transportation
+
+CO₂ equivalent emissions by mode (per tonne-km, approximate):
+
+| Mode | CO₂e (g/tkm) |
+|------|-------------|
+| Road (full truck) | 62 |
+| Rail (electric) | 6 |
+| Sea (container) | 8 |
+| Air | 500 |
+| Inland waterway | 30 |
+
+Transport mode choice → direct environmental impact
+
+**Carbon cost calculation**: CO₂ tons × carbon price (€/tCO₂) → Internalize externality
+
+## Circular Supply Chains
+
+Traditional linear model: Take → Make → Use → Dispose
+
+Circular model: Reduce → Reuse → Recycle → Recover
+
+**Reverse logistics** components:
+
+- Product returns management
+- Remanufacturing (automotive, electronics)
+- Recycling flows
+- End-of-life take-back programs
+
+EU Extended Producer Responsibility (EPR) legislation: Manufacturers responsible for product end-of-life.
+
+## Green Procurement Strategies
+
+**Supplier environmental auditing**: ISO 14001, SA8000
+
+**Green supplier development**: Capacity building vs. selection
+
+**Life cycle assessment (LCA)**: Evaluate environmental impact over full product life
+
+**Total cost of ownership**: Include carbon cost, regulatory risk, reputational risk
+
+Example: BMW's supplier code of conduct covers environmental AND social standards — disqualification risk for violations.
+
+## Exercise 6.1 — Carbon-Aware Transport Planning
+
+A retailer ships 10,000 tonnes of goods annually from Hamburg to a DC in Munich (800 km).
+
+Current: 100% road transport
+
+Options considered:
+
+- Rail (electric): 80% of volume (slower but feasible)
+- Modal shift analysis
+
+**Tasks**:
+
+1. Calculate current annual CO₂ emissions
+2. Calculate emissions after modal shift
+3. At EU ETS price of €65/tCO₂ — what is the annual carbon cost saving?
+4. If rail costs €0.04/tkm more than road — what is the break-even carbon price?
+
+## Key Takeaways — Module 6
+
+- Sustainability is a strategic imperative AND regulatory requirement (CSRD from 2025)
+- Transport mode selection has direct and quantifiable environmental impact
+- Circular SC design reduces material costs and regulatory risk
+- Green procurement extends corporate sustainability responsibility upstream
+- Carbon pricing will increasingly be internalized into SC optimization models

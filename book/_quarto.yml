@@ -1,0 +1,46 @@
+project:
+  type: book
+  output-dir: ../docs/book
+
+book:
+  title: "Supply Chain Management"
+  subtitle: "A Quantitative Approach — Bachelor Level"
+  author: "Prof. Dr. Thomas Kirschstein"
+  date: last-modified
+  description: "Course reader for SCM Bachelor 3rd Semester, HS RheinMain"
+  repo-url: https://github.com/tkirschstein/SCM
+  repo-actions: [edit, issue]
+  chapters:
+    - index.qmd
+    - chapters/01_foundations.qmd
+    - chapters/02_strategy.qmd
+    - chapters/03_network_design.qmd
+    - chapters/04_transport.qmd
+    - chapters/05_uncertainty.qmd
+    - chapters/06_coordination.qmd
+    - chapters/07_sustainability.qmd
+    - references.qmd
+
+format:
+  html:
+    theme: cosmo
+    toc: true
+    toc-depth: 3
+    number-sections: true
+    code-fold: true
+    code-tools: true
+    fig-align: center
+    highlight-style: github
+    css: custom.css
+  pdf:
+    documentclass: scrbook
+    papersize: a4
+    fontsize: 11pt
+    geometry: margin=2.5cm
+
+execute:
+  echo: true
+  warning: false
+  message: false
+
+bibliography: references.bib

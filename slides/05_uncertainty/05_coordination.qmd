@@ -1,0 +1,132 @@
+---
+title: "Module 5: SC Coordination & Information"
+subtitle: "SCM — Bachelor 3rd Semester"
+author: "Prof. Dr. Thomas Kirschstein"
+date: last-modified
+format:
+  revealjs:
+    theme: [default, ../../_extensions/scm-theme.scss]
+    slide-number: true
+    chalkboard: true
+    preview-links: auto
+    footer: "SCM | Module 5 | HS RheinMain"
+    transition: slide
+    incremental: false
+    toc: true
+    toc-depth: 1
+execute:
+  echo: false
+  warning: false
+---
+
+## Learning Objectives
+
+- Explain double marginalization and its cost to SC performance
+- Analyze coordination contracts (buyback, revenue sharing, quantity flexibility)
+- Describe VMI, CPFR, and ECR as coordination mechanisms
+- Evaluate the role of information systems in SC coordination
+
+## The Double Marginalization Problem
+
+Two-stage SC: Supplier → Retailer → Market
+
+Without coordination:
+
+- Retailer maximizes own profit: orders quantity that ignores supplier's margin
+- This leads to **under-ordering** relative to the SC-optimal quantity
+
+Example with deterministic linear demand $p = a - bq$:
+
+- Centralized SC: Orders $q^*$ where $MR = c_{\text{supplier}}$
+- Decentralized: Retailer orders $\hat{q} < q^*$ (double markup)
+
+Result: Total SC profit < achievable SC profit → **deadweight loss**
+
+## Coordination Contracts
+
+**Buyback Contract**: Supplier buys back unsold units at price $b > s$
+
+→ Shifts overstock risk from retailer to supplier
+
+→ Retailer increases order quantity toward SC-optimal
+
+**Revenue Sharing Contract**: Retailer pays lower wholesale price $w < c$ but shares fraction $\phi$ of revenue with supplier
+
+→ Retailer internalizes SC-wide revenue impact
+
+**Quantity Flexibility (QF) Contract**: Retailer can return up to $\delta$ fraction of ordered quantity at full price
+
+→ Flexibility improves retailer's risk position, encouraging larger orders
+
+All three can achieve **supply chain coordination** (first-best outcome) with proper parameter calibration.
+
+## VMI — Vendor Managed Inventory
+
+**Traditional**: Retailer places orders → Supplier fills
+
+**VMI**: Supplier monitors retailer inventory → Supplier decides when/how much to replenish
+
+Benefits:
+
+- Supplier sees actual consumption → Better forecast
+- Eliminates ordering batching → Reduces bullwhip
+- Supplier can optimize replenishment across all accounts
+
+Requirements:
+
+- Real-time inventory visibility
+- Trust and information sharing
+- Service level agreements
+
+> Example: P&G and Walmart pioneered VMI in the 1980s — reduced inventory by 30%
+
+## CPFR — Collaborative Planning, Forecasting & Replenishment
+
+Structured collaboration framework (VICS 1998, later GS1):
+
+1. **Arrangement Agreement**: Define collaboration scope
+2. **Joint Business Plan**: Agree on promotions, events
+3. **Sales Forecasting**: Independently generate, then reconcile
+4. **Order Planning/Forecasting**: Translate demand to replenishment
+5. **Order Generation**: Place orders against agreed plan
+6. **Exception Management**: Handle deviations
+
+> CPFR goes beyond VMI: both parties share planning information, not just inventory levels.
+
+## Information Systems in SCM
+
+Key systems:
+
+| System | Function | Horizon |
+|--------|----------|---------|
+| ERP | Transactional backbone, order management | Operational |
+| WMS | Warehouse management, pick/pack | Operational |
+| TMS | Transport planning, carrier management | Operational/Tactical |
+| APS | Advanced Planning & Scheduling | Tactical/Strategic |
+| SCM Tower / Control Tower | End-to-end visibility, exception management | All levels |
+| Digital Twin | Virtual simulation of SC | Strategic/Tactical |
+
+## Demand Forecasting Methods
+
+**Moving Average**: $F_{t+1} = \frac{1}{n} \sum_{i=0}^{n-1} D_{t-i}$
+
+- Simple, lagging, good for stable demand
+
+**Exponential Smoothing (SES)**: $F_{t+1} = \alpha D_t + (1 - \alpha) F_t$
+
+- $\alpha \in (0, 1)$: smoothing parameter
+- Fast to react (high $\alpha$) vs. stable (low $\alpha$)
+
+**Holt-Winters**: Extends SES with trend and seasonality components
+
+**Machine Learning**: LSTM, XGBoost — increasingly used for complex patterns
+
+Key metric: $\text{MAPE} = \frac{1}{n} \sum \frac{|A_t - F_t|}{A_t}$
+
+## Key Takeaways — Module 5
+
+- Double marginalization: decentralized SC is suboptimal vs. centralized
+- Coordination contracts (buyback, revenue sharing, QF) can restore SC optimality
+- VMI and CPFR are operational coordination mechanisms for continuous replenishment
+- Information systems are the nervous system of the SC — visibility enables optimization
+- Forecasting accuracy directly impacts inventory levels and SC cost

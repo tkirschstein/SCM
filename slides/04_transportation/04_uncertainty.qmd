@@ -1,0 +1,210 @@
+---
+title: "Module 4: Uncertainty & Inventory Management"
+subtitle: "SCM — Bachelor 3rd Semester"
+author: "Prof. Dr. Thomas Kirschstein"
+date: last-modified
+format:
+  revealjs:
+    theme: [default, ../../_extensions/scm-theme.scss]
+    slide-number: true
+    chalkboard: true
+    preview-links: auto
+    footer: "SCM | Module 4 | HS RheinMain"
+    transition: slide
+    incremental: false
+    toc: true
+    toc-depth: 1
+execute:
+  echo: false
+  warning: false
+---
+
+## Learning Objectives
+
+- Quantify the cost of demand uncertainty using the Newsvendor model
+- Calculate optimal order quantities under stochastic demand
+- Explain the Bullwhip effect and its causes
+- Apply inventory pooling to reduce safety stock requirements
+- Use the EOQ model for deterministic inventory management
+
+## The Nature of Uncertainty in Supply Chains
+
+Demand uncertainty is unavoidable. Its consequences:
+
+- **Overstock**: Excess inventory → capital tied up, possible markdowns
+- **Stockout**: Lost sales, customer dissatisfaction, emergency procurement
+
+The cost of uncertainty = E[lost revenue from stockouts] + E[holding cost for overstock]
+
+::: {.callout-tip}
+## Management Insight
+The fashion industry is the canonical example: H&M, Zara, and Primark face 100% uncertainty on trendy items. The difference in their strategies directly reflects their tolerance for over/understock.
+:::
+
+## Capacity Pooling — The Value of Flexibility
+
+Consider GM: 10 plants, 10 vehicle models. Each plant dedicated to one model.
+
+- Each plant capacity = 90 units
+- Demand per model: Uniform[80, 100]
+
+**Without flexibility**: Each plant serves only its model → expected unmet demand is high
+
+**With flexibility** (chaining): Adjacent plants can produce for each other → demand balanced across chain
+
+Key result: **Longer chains** (A→1→B→2→C→3...) outperform **short chains** because unmet demand can cascade to adjacent capacity.
+
+::: {.callout-note}
+## Chaining Effect
+Short supply chains balance demand only among adjacent nodes. Long chains allow sequential demand reallocation — exponentially more effective at buffering uncertainty.
+:::
+
+## The Newsvendor Model
+
+**Setting**: Order quantity $Q$ before demand $D$ is realized. Single period.
+
+**Parameters**:
+
+- $p$ = selling price, $c$ = purchase cost, $s$ = salvage value ($s < c < p$)
+- $c_u = p - c$ (underage cost / lost margin)
+- $c_o = c - s$ (overage cost / disposal loss)
+- $D \sim F(d)$, with density $f(d)$
+
+**Optimal order quantity $Q^*$** — the critical ratio (critical fractile):
+
+$$F(Q^*) = \frac{c_u}{c_u + c_o} = \frac{p - c}{p - s}$$
+
+Interpretation: Order $Q^*$ such that the probability of demand $\leq Q^*$ equals the critical ratio CR.
+
+## Newsvendor — Normal Demand
+
+If $D \sim \mathcal{N}(\mu, \sigma^2)$:
+
+$$Q^* = \mu + z_{CR} \cdot \sigma$$
+
+Where $z_{CR} = \Phi^{-1}(CR)$ is the standard normal quantile.
+
+Expected profit:
+
+$$E[\pi(Q^*)] = (p - s) \cdot \mu - (p - s) \cdot \sigma \cdot \phi(z_{CR}) - (c - s) \cdot Q^*$$
+
+($\phi$ = standard normal density)
+
+::: {.callout-tip}
+## Management Insight
+Higher demand variability ($\sigma$) → Higher optimal order quantity relative to mean → More safety stock needed. Reducing demand variability through better forecasting or postponement directly improves profitability.
+:::
+
+## R Code — Newsvendor Solver
+
+```{r}
+#| echo: true
+newsvendor_normal <- function(mu, sigma, p, c, s) {
+  cu <- p - c   # underage cost
+  co <- c - s   # overage cost
+  CR <- cu / (cu + co)  # critical ratio
+  Q_star <- qnorm(CR, mean = mu, sd = sigma)
+
+  # Expected profit
+  z <- (Q_star - mu) / sigma
+  E_profit <- (p - s) * mu - (p - s) * sigma * dnorm(z) - (c - s) * Q_star
+
+  list(critical_ratio = CR, Q_star = Q_star,
+       z_score = z, expected_profit = E_profit)
+}
+
+# Example: Fashion retailer
+result <- newsvendor_normal(mu = 1000, sigma = 200, p = 80, c = 40, s = 10)
+cat("Critical Ratio:", round(result$critical_ratio, 3), "\n")
+cat("Optimal Order Quantity:", round(result$Q_star), "\n")
+cat("Expected Profit: €", round(result$expected_profit), "\n")
+```
+
+## Exercise 4.1 — Newsvendor Application
+
+A ski equipment retailer orders parkas for the upcoming season.
+
+- Cost price: €120/parka
+- Retail price: €200/parka
+- End-of-season salvage: €60/parka
+- Demand forecast: $\mathcal{N}(500,\, 100^2)$
+
+**Tasks**:
+
+1. Calculate the critical ratio
+2. Find the optimal order quantity $Q^*$
+3. What is the expected profit?
+4. How does $Q^*$ change if $\sigma$ increases to 150?
+5. Management wants to capture 95% of demand. What quantity is needed?
+
+## Inventory Pooling — Safety Stock Reduction
+
+**Problem**: Two stores each face demand $D_i \sim \mathcal{N}(\mu, \sigma^2)$, independent.
+Each maintains safety stock $z \cdot \sigma$ (for service level $\Phi(z)$).
+
+**Without pooling**: Total safety stock $= 2 \cdot z \cdot \sigma$
+
+**With centralized inventory**: Combined demand $D = D_1 + D_2 \sim \mathcal{N}(2\mu,\, 2\sigma^2)$
+Safety stock needed $= z \cdot \sqrt{2} \cdot \sigma$
+
+**Pooling benefit**: Safety stock reduction $= (2 - \sqrt{2}) \cdot z \cdot \sigma \approx 29\%$ reduction
+
+Generalization for $n$ stores: $\text{SS}(n) = z \cdot \sqrt{n} \cdot \sigma$ vs. $n \cdot z \cdot \sigma$ without pooling → Factor $\sqrt{n}$ improvement
+
+::: {.callout-tip}
+## Management Insight
+Amazon's fulfillment center consolidation strategy is an application of pooling theory. Fewer, larger FCs reduce total safety stock while maintaining service levels — but at the cost of longer average transport distances.
+:::
+
+## The Bullwhip Effect
+
+**Observation**: Demand variability amplifies as you move upstream in the supply chain.
+
+**Causes** (Lee et al. 1997):
+
+1. **Demand signal processing**: Each stage updates forecasts → adds variability
+2. **Order batching**: Infrequent large orders vs. frequent small orders
+3. **Price fluctuations**: Forward buying during promotions
+4. **Shortage gaming**: Over-ordering during scarcity
+
+**Quantification**: If AR(1) demand with autocorrelation $\rho$ and lead time $L$:
+
+$$\frac{\text{Var}(Q_t)}{\text{Var}(D_t)} \geq 1 + \frac{2L}{p} + \frac{2L^2}{p^2}$$
+
+Where $p$ = forecast window length.
+
+## Bullwhip Effect — Mitigation Strategies
+
+| Cause | Mitigation Strategy |
+|-------|-------------------|
+| Demand signal processing | Information sharing, POS data |
+| Order batching | EDI, smaller/frequent orders, VMI |
+| Price fluctuations | EDLP (everyday low pricing), contract stability |
+| Shortage gaming | Allocation based on historical demand |
+
+> Case: P&G's "Efficient Consumer Response" (ECR) eliminated most of their bullwhip effect by sharing POS data with retail partners.
+
+## EOQ Model — Deterministic Inventory
+
+When demand is deterministic (rate $D$ per period):
+
+- Order cost per order: $K$
+- Holding cost: $h$ per unit per period
+
+**EOQ**:
+
+$$Q^* = \sqrt{\frac{2KD}{h}}$$
+
+**Minimum total cost**:
+
+$$TC^* = \sqrt{2KDh}$$
+
+**Reorder Point**: $r = d \cdot L$ where $d$ = daily demand rate, $L$ = lead time
+
+## Key Takeaways — Module 4
+
+- Newsvendor model is the fundamental tool for single-period stochastic ordering
+- Critical ratio balances over/under-stock costs — higher margin → order more
+- Inventory pooling reduces total safety stock by factor $\sqrt{n}$
+- Bullwhip effect is a systemic SC phenomenon caused by information distortion
+- EOQ balances fixed ordering vs. holding cost for deterministic demand

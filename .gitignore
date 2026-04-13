@@ -1,0 +1,26 @@
+# R
+.Rhistory
+.RData
+.Rproj.user/
+*.Rproj
+
+# Quarto
+/.quarto/
+/_site/
+/docs/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Temp
+*~
+*.swp
+*.log
+
+# Rendered outputs (generated, not tracked)
+book/_book/
+slides/**/*_files/
+slides/**/*.html
+exercises/*.html
+case_studies/*.html

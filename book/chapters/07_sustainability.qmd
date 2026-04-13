@@ -1,0 +1,110 @@
+# Sustainable Supply Chain Management {#sec-sustainability}
+
+## Why Sustainability Matters in SCM
+
+Approximately **70% of a company's carbon emissions** come from its supply chain (Scope 3 emissions under the GHG Protocol). This makes supply chain managers directly responsible for sustainability outcomes.
+
+**Regulatory drivers**:
+- EU Corporate Sustainability Reporting Directive (CSRD): Mandatory SC sustainability reporting from 2025
+- EU Supply Chain Act (CSDDD): Due diligence on human rights and environment in supply chains
+- EU ETS (Emissions Trading System): Carbon pricing increasingly internalized
+
+## The Triple Bottom Line in SCM
+
+| Dimension | Key Metrics | SCM Levers |
+|-----------|-------------|------------|
+| **Economic** | Cost, ROI, resilience | Efficiency optimization, risk management |
+| **Environmental** | CO₂e, water, waste | Mode shift, green procurement, circular design |
+| **Social** | Labor standards, safety | Supplier auditing, fair trade, EPR |
+
+## Carbon Accounting in Transport
+
+### Emission Factors by Mode
+
+```{r}
+#| label: tbl-emissions
+#| tbl-cap: "CO₂ equivalent emission factors by transport mode"
+library(kableExtra)
+
+ef <- data.frame(
+  Mode = c("Road truck (full)", "Rail (EU avg electric)", "Sea (container)", 
+           "Air cargo (long haul)", "Inland waterway"),
+  `CO2e (g/tkm)` = c(62, 6, 8, 500, 30),
+  Source = c("UBA 2023", "UIC 2022", "IMO 2022", "ICAO 2022", "EEA 2023"),
+  check.names = FALSE
+)
+kbl(ef, booktabs = TRUE) |> kable_styling(bootstrap_options = "striped")
+```
+
+### Carbon Cost Calculation
+
+With EU ETS carbon price $p_C$ (currently ~€60–80/tCO₂):
+
+$$\text{Carbon cost} = \text{distance} \times \text{volume} \times \text{emission factor} \times p_C$$
+
+```{r}
+#| label: carbon-calc
+#| echo: true
+# Annual carbon cost comparison for Hamburg → Munich (800 km, 10,000 t/yr)
+route_km <- 800
+volume_t <- 10000
+
+modes <- data.frame(
+  mode    = c("100% Road", "80% Rail + 20% Road", "100% Rail"),
+  ef_road = c(62, 12.4, 0),   # road component (g/tkm)
+  ef_rail = c(0,  4.8,  60),  # rail component (g/tkm)
+  stringsAsFactors = FALSE
+)
+
+carbon_price <- 70  # €/tCO2
+
+modes$total_co2_t <- (modes$ef_road + modes$ef_rail) * route_km * volume_t / 1e9 * 1e6
+# grams to tonnes: g/tkm * km * t = g; / 1e6 = kg; / 1e3 = t
+modes$total_co2_t <- (modes$ef_road + modes$ef_rail) * route_km * volume_t / 1e6
+
+modes$carbon_cost_eur <- modes$total_co2_t * carbon_price
+
+print(modes[, c("mode", "total_co2_t", "carbon_cost_eur")])
+```
+
+## Circular Supply Chains
+
+### From Linear to Circular
+
+```
+Linear:   Extract → Produce → Use → Dispose
+Circular: Design for longevity → Reuse → Remanufacture → Recycle → Recover
+```
+
+**Reverse logistics** is the operational backbone of circular supply chains:
+- **Returns management**: Consumer/B2B returns processing
+- **Remanufacturing**: Restore used products to "as-new" condition (automotive, electronics)
+- **Recycling flows**: Material recovery
+- **Take-back programs**: EPR compliance (packaging, batteries, WEEE)
+
+### Business Case for Circularity
+
+Circular design creates value through:
+1. **Retained material value**: Remanufactured parts sell at 30–70% of new part prices but cost 40–60% less to produce
+2. **Customer loyalty**: Take-back programs build brand relationships
+3. **Regulatory compliance**: Avoid EPR fees and penalties
+4. **Resource security**: Reduce dependence on primary raw materials
+
+## Green Procurement
+
+Key elements:
+- **Environmental criteria in supplier selection**: ISO 14001 certification, carbon footprint disclosure
+- **Life Cycle Assessment (LCA)**: Evaluate environmental impact cradle-to-grave
+- **Green supplier development**: Build supplier capability vs. pure selection
+- **Total cost of ownership**: Include environmental and social costs
+
+## Exercise
+
+A manufacturer ships 50,000 tonnes of components annually from Hamburg to five European destinations. Current split: 100% road truck.
+
+Proposed: Shift 60% to rail (electric) for destinations ≥ 400 km.
+
+1. Using the emission factors from the table, calculate the annual CO₂ reduction.
+2. If rail costs €0.05/tkm more than road and the average road distance is 650 km — what is the annual cost premium?
+3. At what carbon price does the modal shift break even financially?
+4. With EU ETS at €70/tCO₂, is the modal shift economically justified?

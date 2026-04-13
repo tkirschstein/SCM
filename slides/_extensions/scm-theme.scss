@@ -1,0 +1,310 @@
+/*-- SCM Theme for Reveal.js (Quarto) --*/
+/*-- Accent: #01696F (teal), Headers: #1B2A4A (dark navy) --*/
+
+// ─── Fonts ────────────────────────────────────────────────────────────────────
+$font-family-sans-serif: "Calibri", "Arial", "Helvetica Neue", sans-serif !default;
+$font-family-monospace: "Consolas", "Courier New", monospace !default;
+$presentation-font-size-root: 38px !default;
+
+// ─── Colors ───────────────────────────────────────────────────────────────────
+$teal:      #01696F;
+$teal-dark: #014d52;
+$navy:      #1B2A4A;
+$navy-light:#2c4070;
+$white:     #ffffff;
+$off-white: #f5f7fa;
+$light-gray:#e8ecf0;
+$mid-gray:  #8898aa;
+$body-text: #2d3748;
+
+// ─── Reveal Overrides ─────────────────────────────────────────────────────────
+$body-bg:              $white !default;
+$body-color:           $body-text !default;
+$link-color:           $teal !default;
+$selection-bg:         rgba($teal, 0.25) !default;
+
+.reveal {
+  font-family: $font-family-sans-serif;
+  font-size: $presentation-font-size-root;
+  color: $body-color;
+}
+
+// ─── Title Slide ──────────────────────────────────────────────────────────────
+.reveal .slides section.title-slide,
+.reveal .slides > section:first-child {
+  background-color: $navy;
+  color: $white;
+
+  h1.title {
+    font-size: 1.6em;
+    font-weight: 700;
+    color: $white;
+    line-height: 1.2;
+    text-shadow: none;
+    border-bottom: 3px solid $teal;
+    padding-bottom: 0.25em;
+    margin-bottom: 0.3em;
+  }
+
+  .subtitle {
+    font-size: 0.85em;
+    color: rgba($white, 0.8);
+    font-weight: 400;
+    letter-spacing: 0.04em;
+    margin-bottom: 0.6em;
+  }
+
+  .author, .date {
+    font-size: 0.65em;
+    color: rgba($white, 0.65);
+  }
+}
+
+// ─── Slide Headers ─────────────────────────────────────────────────────────────
+.reveal h1,
+.reveal h2 {
+  font-family: $font-family-sans-serif;
+  font-weight: 700;
+  color: $navy;
+  text-shadow: none;
+  margin-bottom: 0.5em;
+}
+
+.reveal h1 { font-size: 1.4em; }
+.reveal h2 { font-size: 1.1em; border-bottom: 2px solid $teal; padding-bottom: 0.2em; }
+
+.reveal h3 {
+  font-size: 0.9em;
+  font-weight: 600;
+  color: $teal;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+// ─── Section Title Slides (### Part N) ─────────────────────────────────────────
+.reveal .slides section[data-background-color] h2 {
+  color: $white;
+  border-bottom-color: rgba($white, 0.4);
+}
+
+// ─── Body Text ────────────────────────────────────────────────────────────────
+.reveal p,
+.reveal li {
+  font-size: 0.78em;
+  line-height: 1.55;
+  color: $body-text;
+}
+
+.reveal ul, .reveal ol {
+  margin-left: 1.2em;
+}
+
+.reveal ul li::marker {
+  color: $teal;
+}
+
+.reveal strong {
+  color: $navy;
+  font-weight: 700;
+}
+
+// ─── Tables ───────────────────────────────────────────────────────────────────
+.reveal table {
+  font-size: 0.68em;
+  border-collapse: collapse;
+  width: 100%;
+  margin: 0.5em 0;
+}
+
+.reveal table th {
+  background-color: $navy;
+  color: $white;
+  padding: 0.45em 0.7em;
+  font-weight: 600;
+  text-align: left;
+  border: 1px solid rgba($white, 0.15);
+}
+
+.reveal table td {
+  padding: 0.35em 0.7em;
+  border: 1px solid $light-gray;
+  color: $body-text;
+}
+
+.reveal table tr:nth-child(even) td {
+  background-color: $off-white;
+}
+
+.reveal table tr:hover td {
+  background-color: rgba($teal, 0.08);
+}
+
+// ─── Blockquotes / Callouts ───────────────────────────────────────────────────
+.reveal blockquote {
+  background-color: rgba($teal, 0.08);
+  border-left: 4px solid $teal;
+  border-radius: 4px;
+  margin: 0.6em 0;
+  padding: 0.5em 0.9em;
+  font-size: 0.72em;
+  font-style: italic;
+  color: $navy;
+  box-shadow: none;
+  width: 95%;
+}
+
+// Callout: tip (management insight)
+.callout-tip {
+  border-left: 4px solid $teal !important;
+  background-color: rgba($teal, 0.07) !important;
+
+  .callout-title {
+    background-color: rgba($teal, 0.15) !important;
+    color: $teal-dark !important;
+    font-weight: 700;
+  }
+}
+
+// Callout: note (definition)
+.callout-note {
+  border-left: 4px solid $navy !important;
+  background-color: rgba($navy, 0.05) !important;
+
+  .callout-title {
+    background-color: rgba($navy, 0.12) !important;
+    color: $navy !important;
+    font-weight: 700;
+  }
+}
+
+// Callout: warning
+.callout-warning {
+  border-left: 4px solid #d97706 !important;
+  background-color: rgba(#d97706, 0.07) !important;
+}
+
+// ─── Code Blocks ──────────────────────────────────────────────────────────────
+.reveal pre {
+  background-color: #1e2a38;
+  border-radius: 6px;
+  padding: 0.6em 0.9em;
+  font-size: 0.58em;
+  box-shadow: 0 3px 12px rgba(0,0,0,0.25);
+  border: none;
+}
+
+.reveal code {
+  font-family: $font-family-monospace;
+  color: #7dd3d8;
+  background-color: rgba($teal, 0.08);
+  padding: 0.1em 0.3em;
+  border-radius: 3px;
+  font-size: 0.85em;
+}
+
+.reveal pre code {
+  color: #d4e2f0;
+  background: none;
+  padding: 0;
+}
+
+// ─── Footer & Progress ────────────────────────────────────────────────────────
+.reveal .footer {
+  font-size: 0.5em;
+  color: $mid-gray;
+  font-family: $font-family-sans-serif;
+}
+
+.reveal .progress {
+  color: $teal;
+  height: 3px;
+}
+
+// ─── Slide Numbers ────────────────────────────────────────────────────────────
+.reveal .slide-number {
+  background-color: rgba($navy, 0.7);
+  color: $white;
+  font-size: 0.5em;
+  border-radius: 3px;
+  padding: 0.15em 0.4em;
+}
+
+// ─── TOC Slides ───────────────────────────────────────────────────────────────
+.reveal .toc-slide {
+  background-color: $off-white;
+}
+
+// ─── Part Header Slides (background color override) ────────────────────────────
+.part-slide {
+  background-color: $navy !important;
+  color: $white !important;
+
+  h2 {
+    color: $white !important;
+    border-bottom-color: $teal !important;
+    font-size: 1.3em;
+  }
+
+  p {
+    color: rgba($white, 0.75) !important;
+  }
+}
+
+// ─── Highlight Box ────────────────────────────────────────────────────────────
+.highlight-box {
+  background-color: $teal;
+  color: $white;
+  padding: 0.4em 0.8em;
+  border-radius: 5px;
+  font-weight: 600;
+  font-size: 0.75em;
+}
+
+// ─── Two-column Layout ────────────────────────────────────────────────────────
+.columns > .column {
+  padding: 0 0.4em;
+}
+
+// ─── Math ─────────────────────────────────────────────────────────────────────
+.reveal .math {
+  font-size: 0.82em;
+}
+
+// ─── Speaker Notes ────────────────────────────────────────────────────────────
+.reveal .speaker-notes {
+  font-family: $font-family-sans-serif;
+  font-size: 0.6em;
+  color: #333;
+}
+
+// ─── Incremental Lists ────────────────────────────────────────────────────────
+.reveal ul.incremental > li,
+.reveal ol.incremental > li {
+  opacity: 0.25;
+}
+
+.reveal ul.incremental > li.current-fragment,
+.reveal ol.incremental > li.current-fragment {
+  opacity: 1;
+}
+
+// ─── Exercise Boxes ───────────────────────────────────────────────────────────
+.exercise {
+  background-color: rgba(#f59e0b, 0.1);
+  border: 1.5px solid #f59e0b;
+  border-radius: 6px;
+  padding: 0.6em 0.9em;
+  margin: 0.5em 0;
+  font-size: 0.72em;
+}
+
+.exercise::before {
+  content: "Exercise";
+  display: block;
+  font-weight: 700;
+  color: #b45309;
+  font-size: 0.85em;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 0.3em;
+}

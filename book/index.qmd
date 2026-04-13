@@ -1,0 +1,57 @@
+# Preface {.unnumbered}
+
+This reader accompanies the lecture **Supply Chain Management (SCM)** at Hochschule RheinMain, taught in the 3rd semester of the Bachelor program.
+
+## Course Philosophy
+
+Supply chain management sits at the intersection of strategy, operations, and quantitative modeling. This course takes a deliberate dual approach:
+
+- **Quantitative rigor**: We formulate mathematical models, derive analytical solutions, and implement algorithms in R. Understanding the math is not optional — it is the foundation for sound management decisions.
+- **Management relevance**: Every model has a story. We always ask: *What does this solution mean for the manager?* *What are the limits of the model?* *What happens when assumptions break down?*
+
+## How to Use This Reader
+
+Each chapter corresponds to one lecture module. You will find:
+
+- **Conceptual explanations** with examples from practice
+- **Mathematical formulations** in clean notation
+- **R code** implementing models and visualizations — all code is reproducible
+- **Exercises** at the end of each chapter for practice
+- **Further reading** pointers to Chopra & Meindl chapters
+
+## Prerequisites
+
+- Basic linear algebra and probability theory
+- Introductory R programming (or willingness to learn)
+- First-semester microeconomics (optimization concepts)
+
+## Main Textbook
+
+Chopra, S., & Meindl, P. (latest edition). *Supply Chain Management: Strategy, Planning, and Operation*. Pearson.
+
+Supplementary:
+
+- Silver, E., Pyke, D., & Thomas, D. — *Inventory and Production Management in Supply Chains* (CRC Press)
+- Simchi-Levi, D. — *Operations Rules* (MIT Press)
+- Thonemann, U. — *Operations Management* (Pearson Studium)
+
+## Software
+
+All R code in this reader uses:
+
+```r
+library(tidyverse)        # data wrangling and visualization
+library(lpSolve)          # linear and transportation problems
+library(ompr)             # MILP modeling (DIY algebraic modeling)
+library(ompr.roi)         # solver interface
+library(ROI.plugin.glpk)  # GLPK solver
+library(plotly)           # interactive visualizations
+library(kableExtra)       # formatted tables
+```
+
+Install with:
+
+```r
+install.packages(c("tidyverse", "lpSolve", "ompr", "ompr.roi",
+                   "ROI.plugin.glpk", "plotly", "kableExtra"))
+```
