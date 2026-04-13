@@ -9,7 +9,7 @@ format:
     slide-number: true
     chalkboard: true
     preview-links: auto
-    footer: "SCM | Module 1 | HS RheinMain"
+    footer: "Supply Chain Management | T. Kirschstein | Summer term 2026 | HS RheinMain"
     logo: ../../data/logo.png
     transition: slide
     incremental: false
@@ -19,96 +19,163 @@ format:
 execute:
   echo: false
   warning: false
+editor: 
+  markdown: 
+    wrap: 72
 ---
 
-# Part 1: What is a Supply Chain? {background-color="#5E3EE1"}
+# Part 1: What is a Supply Chain?
 
 ## Learning Objectives
 
 After this module, you will be able to:
 
-- **Define** supply chain and supply chain management
-- **Explain** the three flows in a supply chain
-- **Describe** the SC cycle view and push/pull distinction
-- **Apply** the DuPont framework to SC financial impact
-- **Identify** SC performance dimensions and trade-offs
+-   **Define** supply chain and supply chain management
+-   **Explain** the three flows in a supply chain
+-   **Describe** the SC cycle view and push/pull distinction
+-   **Apply** the DuPont framework to SC financial impact
+-   **Identify** SC performance dimensions and trade-offs
 
-::: {.notes}
-Briefly walk through the module structure. Emphasise that students will encounter both conceptual frameworks and quantitative tools — the DuPont analysis in particular links operational decisions directly to financial returns. Ask students what they already know about supply chains to activate prior knowledge.
+::: notes
+Briefly walk through the module structure. Emphasise that students will
+encounter both conceptual frameworks and quantitative tools — the DuPont
+analysis in particular links operational decisions directly to financial
+returns. Ask students what they already know about supply chains to
+activate prior knowledge.
 :::
 
----
+------------------------------------------------------------------------
 
-## Logistics Masterpieces of the Ancient World
+## Logistics Masterpieces of the Ancient World (I)
 
-::: {.columns}
-::: {.column width="60%"}
-**Cheops Pyramid** *(2620 BC)*
+### Cheops Pyramid *(2620 BC)*
 
-- 2.3 million stone blocks, avg. 2.5 t each
-- Required coordinated transport, tool inventory, and mass catering for ~100,000 workers
-- Quarries in Aswan — over 900 km away
+-   2.3 million stone blocks, avg. 2.5 t each
 
-**Hannibal's Alpine Crossing** *(218 BC)*
+-   Required coordinated transport, tool inventory, and mass catering
+    for \~100,000 workers
 
-- 37 war elephants + 40,000 troops
-- Multi-modal: sea, mountain, river
-- Supply lines stretched from Carthage to the Po Valley
+-   Quarries in Aswan — over 900 km away
 
-**Alexander's Campaign** *(334–323 BC)*
+    ::::: columns
+    ::: {.column width="45%"}
+    [![Cheops
+    pyramide](https://upload.wikimedia.org/wikipedia/commons/e/e3/Kheops-Pyramid.jpg)](https://upload.wikimedia.org/wikipedia/commons/e/e3/Kheops-Pyramid.jpg)
+    :::
 
-- 25,000+ km over 12 years
-- Continuous replenishment of arms, food, medical supplies
-:::
-::: {.column width="40%"}
+    ::: {.column width="45%"}
+    [![Waterways at
+    Gizeh](images/clipboard-1866342598.png)](https://www.secretofthepyramids.com/)
+    :::
+    :::::
+
+------------------------------------------------------------------------
+
+## Logistics Masterpieces of the Ancient World (II)
+
+### Hannibal's Alpine Crossing *(218 BC)*
+
+-   37 war elephants + 40,000 troops
+
+-   Multi-modal: sea, mountain, river
+
+-   Supply lines stretched from Carthage to the Po Valley
+
+    ::::: columns
+    ::: {.column width="45%"}
+    ![](images/clipboard-2434824639.png)
+    :::
+
+    ::: {.column width="45%"}
+    ![](images/clipboard-3430740517.png)
+    :::
+    :::::
+
+------------------------------------------------------------------------
+
+## Logistics Masterpieces of the Ancient World (III)
+
+### Alexander's Campaign *(334–323 BC)*
+
+-   25,000+ km over 12 years
+
+-   Continuous replenishment of arms, food, medical supplies
+
+    ::::: columns
+    ::: {.column width="45%"}
+    ![](images/clipboard-3206989332.png)
+    :::
+
+    ::: {.column width="45%"}
+    [![](images/clipboard-2179609373.png)](https://exploration.marinersmuseum.org/event/alexander-the-great-interactive-map/)
+    :::
+    :::::
+
+    :::
 
 > **Key insight**
 >
-> SCM is not new. Coordinating flows of materials, information, and money across distances and time has been a decisive competitive advantage since antiquity.
+> SCM is not new. Coordinating flows of materials, information, and
+> money across distances and time has been a decisive competitive
+> advantage since antiquity.
 >
 > The difference today: **scale, speed, and complexity.**
-:::
+
+
+::: notes
+Use this slide as a hook. Students often think SCM is a modern corporate
+invention. The historical examples illustrate that the core problem —
+getting the right thing to the right place at the right time — is
+timeless. You can ask: "What would happen to Hannibal's campaign if his
+supply chain failed?" The elephants would die, the army would starve.
+Same principle applies to a modern production line.
 :::
 
-::: {.notes}
-Use this slide as a hook. Students often think SCM is a modern corporate invention. The historical examples illustrate that the core problem — getting the right thing to the right place at the right time — is timeless. You can ask: "What would happen to Hannibal's campaign if his supply chain failed?" The elephants would die, the army would starve. Same principle applies to a modern production line.
-:::
-
----
+------------------------------------------------------------------------
 
 ## What Is a Supply Chain?
 
 ::: {.callout-note title="Definition"}
-A **supply chain** encompasses all parties involved — directly or indirectly — in fulfilling a customer request. This includes not only manufacturers and suppliers, but also transporters, warehouses, retailers, and customers themselves.
+A **supply chain** encompasses all parties involved — directly or
+indirectly — in fulfilling a customer request. This includes not only
+manufacturers and suppliers, but also transporters, warehouses,
+retailers, and customers themselves.
 
 *(Chopra & Meindl, Supply Chain Management, 7th ed.)*
 :::
 
-The supply chain includes every stage from raw material extraction to end-customer delivery — and the reverse logistics flows beyond.
+The supply chain includes every stage from raw material extraction to
+end-customer delivery — and the reverse logistics flows beyond.
 
-**Hugos (2018) on SCM:**
-> "Supply Chain Management is the coordination of production, inventory, location, transportation, and information among the participants in a supply chain to achieve the **best mix of responsiveness and efficiency** for the market being served."
+**Hugos (2018) on SCM:** \> "Supply Chain Management is the coordination
+of production, inventory, location, transportation, and information
+among the participants in a supply chain to achieve the **best mix of
+responsiveness and efficiency** for the market being served."
 
 **A simple SC structure:**
 
-```
+```         
 Raw Materials → Supplier → Manufacturer → Distributor → Retailer → Customer
      ↑____________________ Information ______________________________↑
      ↑________________________ Finance ________________________________↑
 ```
 
-::: {.notes}
-Stress that the definition is deliberately broad — "all parties" includes actors the firm does not directly control or own. That is precisely what makes SCM challenging. Ask students: "Is the end consumer part of the supply chain?" Yes — consumer behaviour drives demand signals upstream.
+::: notes
+Stress that the definition is deliberately broad — "all parties"
+includes actors the firm does not directly control or own. That is
+precisely what makes SCM challenging. Ask students: "Is the end consumer
+part of the supply chain?" Yes — consumer behaviour drives demand
+signals upstream.
 :::
 
----
+------------------------------------------------------------------------
 
 ## The Three Flows
 
 Every supply chain manages **three flows simultaneously**:
 
 | Flow | Direction | Examples |
-|------|-----------|---------|
+|------------------|-----------------------------|-------------------------|
 | **Material / Product** | Downstream ↓ | Raw materials, WIP, finished goods, returns |
 | **Information** | Both directions ↕ | Forecasts, purchase orders, capacity data, POS data |
 | **Financial** | Upstream ↑ | Payments, credit terms, revenue sharing, penalties |
@@ -116,38 +183,45 @@ Every supply chain manages **three flows simultaneously**:
 ::: {.callout-tip title="Management Insight"}
 Disruptions in **any** flow cascade through the entire chain.
 
-The COVID-19 pandemic demonstrated how information flow breakdowns (opacity about real demand) amplified material shortages — the bullwhip effect in its most extreme form. Semiconductor shortages in 2021–22 were worsened by panic ordering that no one in the chain could see clearly.
+The COVID-19 pandemic demonstrated how information flow breakdowns
+(opacity about real demand) amplified material shortages — the bullwhip
+effect in its most extreme form. Semiconductor shortages in 2021–22 were
+worsened by panic ordering that no one in the chain could see clearly.
 :::
 
-::: {.notes}
-Draw the three flows on the board as arrows. Ask students: "Which flow is usually managed best? Which is usually managed worst?" Information is typically the most neglected — firms invest heavily in physical logistics but underinvest in information sharing. Financial flows are often separated into a different department (treasury/AP) which creates coordination problems.
+::: notes
+Draw the three flows on the board as arrows. Ask students: "Which flow
+is usually managed best? Which is usually managed worst?" Information is
+typically the most neglected — firms invest heavily in physical
+logistics but underinvest in information sharing. Financial flows are
+often separated into a different department (treasury/AP) which creates
+coordination problems.
 :::
 
----
+------------------------------------------------------------------------
 
 ## The Cycle View of Supply Chains
 
 SC processes are organised as **four nested cycles** (Chopra & Meindl):
 
-::: {.columns}
+::::: columns
 ::: {.column width="55%"}
-**1. Customer Order Cycle**
-Retailer ↔ Customer — triggered by actual demand
+**1. Customer Order Cycle** Retailer ↔ Customer — triggered by actual
+demand
 
-**2. Replenishment Cycle**
-Distributor ↔ Retailer — triggered by inventory level
+**2. Replenishment Cycle** Distributor ↔ Retailer — triggered by
+inventory level
 
-**3. Manufacturing Cycle**
-Manufacturer ↔ Distributor — batch production trigger
+**3. Manufacturing Cycle** Manufacturer ↔ Distributor — batch production
+trigger
 
-**4. Procurement Cycle**
-Supplier ↔ Manufacturer — material sourcing
+**4. Procurement Cycle** Supplier ↔ Manufacturer — material sourcing
 
-Each cycle follows the same sub-process:
-**Order → Supply → Receive**
+Each cycle follows the same sub-process: **Order → Supply → Receive**
 :::
+
 ::: {.column width="45%"}
-```
+```         
 ┌─────────────────────────┐
 │   Customer Order Cycle  │  ← customer
 │  ┌───────────────────┐  │
@@ -162,45 +236,61 @@ Each cycle follows the same sub-process:
 └─────────────────────────┘
 ```
 :::
-:::
+:::::
 
 ::: {.callout-note title="Why the Cycle View Matters"}
-Each cycle has **different actors, time horizons, and decision variables**. Distinguishing them prevents confusion between, e.g., order replenishment policies and production lot-sizing decisions.
+Each cycle has **different actors, time horizons, and decision
+variables**. Distinguishing them prevents confusion between, e.g., order
+replenishment policies and production lot-sizing decisions.
 :::
 
-::: {.notes}
-The cycle view is complementary to the push/pull view (next slide). The cycle view focuses on *who* interacts *with whom*; the push/pull view focuses on *when* demand information is used. Chopra & Meindl use both frameworks — make sure students understand the two perspectives are not competing.
+::: notes
+The cycle view is complementary to the push/pull view (next slide). The
+cycle view focuses on *who* interacts *with whom*; the push/pull view
+focuses on *when* demand information is used. Chopra & Meindl use both
+frameworks — make sure students understand the two perspectives are not
+competing.
 :::
 
----
+------------------------------------------------------------------------
 
 ## Push vs. Pull — The Decoupling Point
 
-| | **Push** | **Pull** |
-|--|----------|----------|
-| **Basis** | Forecast | Actual demand |
-| **Inventory position** | Higher (pre-built) | Lower (built to order) |
-| **Lead time to customer** | Short | Longer |
-| **Primary risk** | Overstock / understock | Stockout / slow response |
-| **Cost driver** | Inventory holding | Capacity flexibility |
+|                           | **Push**               | **Pull**                 |
+|-------------------------|-----------------------|------------------------|
+| **Basis**                 | Forecast               | Actual demand            |
+| **Inventory position**    | Higher (pre-built)     | Lower (built to order)   |
+| **Lead time to customer** | Short                  | Longer                   |
+| **Primary risk**          | Overstock / understock | Stockout / slow response |
+| **Cost driver**           | Inventory holding      | Capacity flexibility     |
 
-**Manufacturing strategy spectrum** — the decoupling point moves upstream:
+**Manufacturing strategy spectrum** — the decoupling point moves
+upstream:
 
-```
+```         
 MTS ──────────── ATO ──────────── MTO ──────────── ETO
 Make-to-Stock  Assemble-to-Order  Make-to-Order  Engineer-to-Order
    (Push)           (Hybrid)          (Pull)         (Pull)
 ```
 
 ::: {.callout-tip title="Real-World Example"}
-**Dell (1990s):** Revolutionised PC manufacturing by shifting from MTS to MTO — customers configured online, components sourced on demand. Inventory turns went from ~20 days to ~4 days, generating massive working capital savings. Competitors Compaq and HP took years to respond.
+**Dell (1990s):** Revolutionised PC manufacturing by shifting from MTS
+to MTO — customers configured online, components sourced on demand.
+Inventory turns went from \~20 days to \~4 days, generating massive
+working capital savings. Competitors Compaq and HP took years to
+respond.
 :::
 
-::: {.notes}
-Ask students to name the decoupling point position for IKEA (mostly MTS — flat-pack products pre-produced), a custom industrial machine manufacturer (ETO), and a fast-food burger chain (ATO — burger assembled from pre-made components when ordered). This exercise solidifies the concept. The key trade-off: responsiveness vs. efficiency, which we will revisit in Module 2 as the strategic fit framework.
+::: notes
+Ask students to name the decoupling point position for IKEA (mostly MTS
+— flat-pack products pre-produced), a custom industrial machine
+manufacturer (ETO), and a fast-food burger chain (ATO — burger assembled
+from pre-made components when ordered). This exercise solidifies the
+concept. The key trade-off: responsiveness vs. efficiency, which we will
+revisit in Module 2 as the strategic fit framework.
 :::
 
----
+------------------------------------------------------------------------
 
 ## Exercise 1.1 — Mapping a Supply Chain {background-color="#361E47"}
 
@@ -208,43 +298,47 @@ Ask students to name the decoupling point position for IKEA (mostly MTS — flat
 
 Choose **one** product:
 
-::: {.columns}
+:::::: columns
 ::: {.column width="33%"}
 **Option A**
 
-IKEA LACK side table
-*(flat-pack furniture)*
+IKEA LACK side table *(flat-pack furniture)*
 :::
+
 ::: {.column width="33%"}
 **Option B**
 
-Ritter Sport hazelnut chocolate
-*(FMCG food product)*
+Ritter Sport hazelnut chocolate *(FMCG food product)*
 :::
+
 ::: {.column width="33%"}
 **Option C**
 
-Canyon Endurace CF 7 road bike
-*(direct-to-consumer)*
+Canyon Endurace CF 7 road bike *(direct-to-consumer)*
 :::
-:::
+::::::
 
 **For your chosen product, describe:**
 
-1. Key raw materials and major production steps
-2. Approximate geographic locations of each SC stage
-3. Logistics processes and transport modes connecting stages
-4. Classify the SC structure:
-   - **Hierarchical-pyramidal** (one dominant orchestrator)
-   - **Polycentric / network** (multiple equal partners)
+1.  Key raw materials and major production steps
+2.  Approximate geographic locations of each SC stage
+3.  Logistics processes and transport modes connecting stages
+4.  Classify the SC structure:
+    -   **Hierarchical-pyramidal** (one dominant orchestrator)
+    -   **Polycentric / network** (multiple equal partners)
 
 **Present your findings in 5 minutes.**
 
-::: {.notes}
-Walk around during group work. Common mistakes: students focus only on the physical product flow and forget information and financial flows. Prompt groups to consider: "Who sends demand forecasts upstream? Who pays whom, and on what credit terms?" For the Canyon bike, note the disintermediation — Canyon sells direct, bypassing traditional retailers. What are the SC implications?
+::: notes
+Walk around during group work. Common mistakes: students focus only on
+the physical product flow and forget information and financial flows.
+Prompt groups to consider: "Who sends demand forecasts upstream? Who
+pays whom, and on what credit terms?" For the Canyon bike, note the
+disintermediation — Canyon sells direct, bypassing traditional
+retailers. What are the SC implications?
 :::
 
----
+------------------------------------------------------------------------
 
 # Part 2: SC Goals and Trade-offs {background-color="#5E3EE1"}
 
@@ -254,28 +348,30 @@ Walk around during group work. Common mistakes: students focus only on the physi
 **SC Profit = Customer Revenue − Total SC Cost (all partners combined)**
 :::
 
-::: {.columns}
+::::: columns
 ::: {.column width="55%"}
 **The double-marginalisation problem:**
 
-When each SC partner maximises *own* profit independently, the result is **sub-optimal for the chain as a whole**.
+When each SC partner maximises *own* profit independently, the result is
+**sub-optimal for the chain as a whole**.
 
-- Each adds its own mark-up
-- Each holds safety stock independently
-- Information is not shared freely
+-   Each adds its own mark-up
+-   Each holds safety stock independently
+-   Information is not shared freely
 
 → Total SC cost is higher than if the chain were one integrated firm.
 
 **Solution approaches:**
 
-- Vendor-managed inventory (VMI)
-- Revenue sharing contracts
-- Collaborative planning (CPFR)
+-   Vendor-managed inventory (VMI)
+-   Revenue sharing contracts
+-   Collaborative planning (CPFR)
 :::
+
 ::: {.column width="45%"}
 **DuPont decomposition links SC decisions to ROI:**
 
-```
+```         
          Net Income
 ROI = ─────────────────
          Total Assets
@@ -290,120 +386,152 @@ Asset Turnover:
   ↑ Reduce fixed assets (outsourcing)
 ```
 :::
+:::::
+
+::: notes
+The DuPont link is crucial for building a business case for SC
+investments. Students need to understand that a logistics manager who
+reduces inventory by €1 million is not just saving storage cost — they
+are improving the firm's return on assets. This is the language of the
+CFO, and SC managers need to speak it. The double marginalisation
+problem is a classic result from game theory / industrial organisation —
+you may want to explain it with a simple 2-player numerical example.
 :::
 
-::: {.notes}
-The DuPont link is crucial for building a business case for SC investments. Students need to understand that a logistics manager who reduces inventory by €1 million is not just saving storage cost — they are improving the firm's return on assets. This is the language of the CFO, and SC managers need to speak it. The double marginalisation problem is a classic result from game theory / industrial organisation — you may want to explain it with a simple 2-player numerical example.
-:::
-
----
+------------------------------------------------------------------------
 
 ## Exercise 1.2 — DuPont Analysis {background-color="#361E47"}
 
 **FabCo GmbH — Annual Financial Data (€ thousands)**
 
-| Income Statement | | Balance Sheet | |
-|-----------------|---|---------------|---|
-| Revenue | 11,000 | Fixed assets | 2,000 |
-| Material costs | 5,500 | Cash | 500 |
-| Personnel costs | 4,950 | Inventory | 3,300 |
-| | | Receivables | 1,075 |
+| Income Statement |        | Balance Sheet |       |
+|------------------|--------|---------------|-------|
+| Revenue          | 11,000 | Fixed assets  | 2,000 |
+| Material costs   | 5,500  | Cash          | 500   |
+| Personnel costs  | 4,950  | Inventory     | 3,300 |
+|                  |        | Receivables   | 1,075 |
 
 **Tasks:**
 
-1. Build the full **DuPont schema** and calculate ROI
-   *(ROI = Net Income / Total Assets)*
-2. What is the ROI impact of a **5% inventory reduction**?
-3. What happens if **transport costs rise by €200k** (shift from material to operating cost)?
-4. Which lever has the greater ROI impact — inventory reduction or transport optimisation? Why?
+1.  Build the full **DuPont schema** and calculate ROI *(ROI = Net
+    Income / Total Assets)*
+2.  What is the ROI impact of a **5% inventory reduction**?
+3.  What happens if **transport costs rise by €200k** (shift from
+    material to operating cost)?
+4.  Which lever has the greater ROI impact — inventory reduction or
+    transport optimisation? Why?
 
 ::: {.callout-tip title="Hint"}
-Net Income = Revenue − Material − Personnel. Total Assets = Fixed assets + Cash + Inventory + Receivables.
+Net Income = Revenue − Material − Personnel. Total Assets = Fixed
+assets + Cash + Inventory + Receivables.
 :::
 
-::: {.notes}
-Expected results: Net Income = 550; Total Assets = 6,875; ROI = 8.0%. With 5% inventory reduction (−165): Total Assets = 6,710; ROI = 8.2%. With transport cost +200: Net Income = 350; ROI = 5.1%. This shows inventory reduction has a smaller absolute ROI impact than a cost spike — useful for discussing the asymmetry between cost reduction and cost increase scenarios. Extend to discuss: what if we could reduce receivables as well (supply chain finance)?
+::: notes
+Expected results: Net Income = 550; Total Assets = 6,875; ROI = 8.0%.
+With 5% inventory reduction (−165): Total Assets = 6,710; ROI = 8.2%.
+With transport cost +200: Net Income = 350; ROI = 5.1%. This shows
+inventory reduction has a smaller absolute ROI impact than a cost spike
+— useful for discussing the asymmetry between cost reduction and cost
+increase scenarios. Extend to discuss: what if we could reduce
+receivables as well (supply chain finance)?
 :::
 
----
+------------------------------------------------------------------------
 
 ## SC Performance Dimensions
 
 **Traditional logistics service metrics:**
 
 | Dimension | Definition | Typical KPI |
-|-----------|-----------|-------------|
+|-----------------------|-----------------------|---------------------------|
 | **Delivery time** | Order-to-delivery lead time | Average LT in days |
-| **Delivery reliability** | % orders on time | OTIF (On Time In Full) |
-| **Delivery quality** | % damage-free, complete orders | Perfect Order Rate |
-| **Flexibility / Resilience** | Response to short-notice demand changes | % urgent orders fulfilled |
+| **Delivery reliability** | \% orders on time | OTIF (On Time In Full) |
+| **Delivery quality** | \% damage-free, complete orders | Perfect Order Rate |
+| **Flexibility / Resilience** | Response to short-notice demand changes | \% urgent orders fulfilled |
 | **Information quality** | Transparency across all order phases | Track & trace coverage |
 | **Cost** | Efficiency of all logistics activities | Cost per unit shipped |
 
 ::: {.callout-tip title="The Trade-off Space"}
 Improving one dimension often **degrades another**:
 
-- Higher reliability → higher inventory → higher cost
-- Faster delivery → more frequent shipments → higher transport cost
-- More flexibility → lower utilisation → higher unit cost
+-   Higher reliability → higher inventory → higher cost
+-   Faster delivery → more frequent shipments → higher transport cost
+-   More flexibility → lower utilisation → higher unit cost
 
-**Strategic choices determine where on this trade-off surface the firm positions itself.**
+**Strategic choices determine where on this trade-off surface the firm
+positions itself.**
 :::
 
-::: {.notes}
-Industry context: Amazon has systematically pushed the trade-off frontier outward — they deliver faster AND at lower cost by investing in network density and automation. This is not a free lunch; it requires enormous capital. For most firms, the trade-off is real. Ask students: "What does a German B2B industrial components supplier prioritise?" Likely reliability and quality over speed, at a cost premium. Compare to a fast-fashion retailer.
+::: notes
+Industry context: Amazon has systematically pushed the trade-off
+frontier outward — they deliver faster AND at lower cost by investing in
+network density and automation. This is not a free lunch; it requires
+enormous capital. For most firms, the trade-off is real. Ask students:
+"What does a German B2B industrial components supplier prioritise?"
+Likely reliability and quality over speed, at a cost premium. Compare to
+a fast-fashion retailer.
 :::
 
----
+------------------------------------------------------------------------
 
 ## Sustainability as a Strategic Dimension
 
 **The Triple Bottom Line in SCM:**
 
-::: {.columns}
+:::::: columns
 ::: {.column width="33%"}
 **Economic**
 
-- Cost efficiency and profitability
-- Supply chain resilience
-- Long-term partner stability
-- Working capital optimisation
+-   Cost efficiency and profitability
+-   Supply chain resilience
+-   Long-term partner stability
+-   Working capital optimisation
 :::
+
 ::: {.column width="33%"}
 **Environmental**
 
-- CO₂ / Scope 3 emissions
-- Resource consumption and circular flows
-- Waste reduction
-- Packaging and reverse logistics
+-   CO₂ / Scope 3 emissions
+-   Resource consumption and circular flows
+-   Waste reduction
+-   Packaging and reverse logistics
 :::
+
 ::: {.column width="33%"}
 **Social**
 
-- Fair labour standards (own + supplier)
-- Community impact
-- Safety and health standards
-- Diversity and inclusion in the chain
+-   Fair labour standards (own + supplier)
+-   Community impact
+-   Safety and health standards
+-   Diversity and inclusion in the chain
 :::
-:::
+::::::
 
 **UN SDGs most relevant to SCM:**
 
-- **SDG 8** — Decent work and economic growth
-- **SDG 12** — Responsible consumption and production
-- **SDG 13** — Climate action
+-   **SDG 8** — Decent work and economic growth
+-   **SDG 12** — Responsible consumption and production
+-   **SDG 13** — Climate action
 
 ::: {.callout-tip title="Management Challenge"}
 How do you build a **business case** for sustainable SC practices?
 
-Approaches: carbon tax anticipation, customer willingness-to-pay premium, regulatory compliance cost avoidance (CSRD, CBAM), risk reduction (supplier disruption due to climate events), talent attraction.
+Approaches: carbon tax anticipation, customer willingness-to-pay
+premium, regulatory compliance cost avoidance (CSRD, CBAM), risk
+reduction (supplier disruption due to climate events), talent
+attraction.
 :::
 
-::: {.notes}
-The EU Corporate Sustainability Reporting Directive (CSRD) and the Supply Chain Act (Lieferkettensorgfaltspflichtengesetz) in Germany now make sustainability in supply chains a compliance matter, not just voluntary CSR. Large German companies must report Scope 3 emissions and conduct due diligence on suppliers. This transforms sustainability from a "nice to have" to a strategic necessity.
+::: notes
+The EU Corporate Sustainability Reporting Directive (CSRD) and the
+Supply Chain Act (Lieferkettensorgfaltspflichtengesetz) in Germany now
+make sustainability in supply chains a compliance matter, not just
+voluntary CSR. Large German companies must report Scope 3 emissions and
+conduct due diligence on suppliers. This transforms sustainability from
+a "nice to have" to a strategic necessity.
 :::
 
----
+------------------------------------------------------------------------
 
 # Part 3: SC Management Levels {background-color="#5E3EE1"}
 
@@ -412,7 +540,7 @@ The EU Corporate Sustainability Reporting Directive (CSRD) and the Supply Chain 
 **Three time horizons require different tools and decision authority:**
 
 | Horizon | Time Frame | Planning Tasks | Decision Makers |
-|---------|-----------|----------------|-----------------|
+|------------------|------------------|------------------|-------------------|
 | **Strategic** | 1–10 years | Network design, facility location, make-or-buy, partner selection | C-suite, Board |
 | **Tactical** | 3–18 months | Demand planning, lot sizing, distribution planning, supplier contracts | SC / Ops directors |
 | **Operational** | Days – weeks | Transport scheduling, order fulfillment, ATP, exception management | Planners, dispatchers |
@@ -420,91 +548,121 @@ The EU Corporate Sustainability Reporting Directive (CSRD) and the Supply Chain 
 *(Framework: Stadtler, Kilger & Meyr, 2012)*
 
 ::: {.callout-note title="Key Principle"}
-Decisions at each horizon **constrain** the decisions at the level below. A poor strategic network design makes operational excellence very difficult.
+Decisions at each horizon **constrain** the decisions at the level
+below. A poor strategic network design makes operational excellence very
+difficult.
 
 "Structure follows strategy — but *poor* structure constrains strategy."
 :::
 
-::: {.notes}
-Use the analogy of urban planning: strategic = where to build roads and cities; tactical = traffic signal timing cycles; operational = GPS routing for individual drivers. Each level operates within the constraints set by the level above. Advanced Planning Systems (APS) attempt to bridge these levels with coordinated models. Key examples of APS vendors: SAP IBP, Oracle ASCP, Kinaxis RapidResponse.
+::: notes
+Use the analogy of urban planning: strategic = where to build roads and
+cities; tactical = traffic signal timing cycles; operational = GPS
+routing for individual drivers. Each level operates within the
+constraints set by the level above. Advanced Planning Systems (APS)
+attempt to bridge these levels with coordinated models. Key examples of
+APS vendors: SAP IBP, Oracle ASCP, Kinaxis RapidResponse.
 :::
 
----
+------------------------------------------------------------------------
 
 ## SC as a Strategic Concept
 
-**SCM is not just logistics coordination — it is a strategic instrument:**
+**SCM is not just logistics coordination — it is a strategic
+instrument:**
 
-::: {.columns}
+::::: columns
 ::: {.column width="50%"}
 **Strategic SC decisions:**
 
-1. **Competitive strategy alignment** (Strategic Fit — Module 2)
-2. **Network design** — facility number, size, location
-3. **Vertical integration** — make vs. buy decisions
-4. **Partner selection** — preferred suppliers, LSPs
-5. **Information system integration** — ERP, EDI, cloud platforms
-6. **Planning and forecasting capability** — APS, AI/ML
+1.  **Competitive strategy alignment** (Strategic Fit — Module 2)
+2.  **Network design** — facility number, size, location
+3.  **Vertical integration** — make vs. buy decisions
+4.  **Partner selection** — preferred suppliers, LSPs
+5.  **Information system integration** — ERP, EDI, cloud platforms
+6.  **Planning and forecasting capability** — APS, AI/ML
 
 These decisions are **path-dependent** — switching costs are high.
 :::
+
 ::: {.column width="50%"}
-> "Strategy is the fundamental, long-term behaviour of the firm toward its environment to achieve long-term goals."
+> "Strategy is the fundamental, long-term behaviour of the firm toward
+> its environment to achieve long-term goals."
 >
 > *(Gabler Wirtschaftslexikon)*
 
 **Strategic SC questions:**
 
-- *Should we manufacture in-house or outsource to Asia?*
-- *How many European DCs do we need?*
-- *Should we acquire our key logistics provider?*
-- *Do we invest in blockchain for supply chain transparency?*
+-   *Should we manufacture in-house or outsource to Asia?*
+-   *How many European DCs do we need?*
+-   *Should we acquire our key logistics provider?*
+-   *Do we invest in blockchain for supply chain transparency?*
 :::
-:::
+:::::
 
 ::: {.callout-tip title="Why Strategy Matters for SC Managers"}
-SC managers increasingly sit in the boardroom. Resilience, sustainability, and geopolitical risk have elevated SC strategy to board-level agenda items — especially after COVID-19 and the Russia-Ukraine conflict.
+SC managers increasingly sit in the boardroom. Resilience,
+sustainability, and geopolitical risk have elevated SC strategy to
+board-level agenda items — especially after COVID-19 and the
+Russia-Ukraine conflict.
 :::
 
-::: {.notes}
-Discuss the "reshoring / nearshoring" trend post-COVID. Many German companies that had sourced exclusively from Asia are diversifying their supplier base toward Eastern Europe, Turkey, and Morocco. This is a strategic SC decision driven by resilience and geopolitical risk considerations — not just cost. Ask students: "What are the SC trade-offs of reshoring?" Higher cost, lower lead times, less vulnerability to long-haul disruptions.
+::: notes
+Discuss the "reshoring / nearshoring" trend post-COVID. Many German
+companies that had sourced exclusively from Asia are diversifying their
+supplier base toward Eastern Europe, Turkey, and Morocco. This is a
+strategic SC decision driven by resilience and geopolitical risk
+considerations — not just cost. Ask students: "What are the SC
+trade-offs of reshoring?" Higher cost, lower lead times, less
+vulnerability to long-haul disruptions.
 :::
 
----
+------------------------------------------------------------------------
 
 ## Key Takeaways — Module 1
 
-::: {.columns}
+::::: columns
 ::: {.column width="60%"}
 **Core concepts:**
 
-1. Supply chains are **networks** coordinating material, information, and financial flows across multiple organisations
+1.  Supply chains are **networks** coordinating material, information,
+    and financial flows across multiple organisations
 
-2. The **SC profit equation** drives toward total chain optimisation — not local partner optimisation (→ double marginalisation)
+2.  The **SC profit equation** drives toward total chain optimisation —
+    not local partner optimisation (→ double marginalisation)
 
-3. **Push/pull** distinction and decoupling point determine inventory levels and customer responsiveness trade-offs
+3.  **Push/pull** distinction and decoupling point determine inventory
+    levels and customer responsiveness trade-offs
 
-4. **Three planning horizons** (strategic / tactical / operational) require different tools and decision timeframes
+4.  **Three planning horizons** (strategic / tactical / operational)
+    require different tools and decision timeframes
 
-5. **Sustainability** is an emerging fourth performance dimension — and increasingly a legal obligation
+5.  **Sustainability** is an emerging fourth performance dimension — and
+    increasingly a legal obligation
 :::
+
 ::: {.column width="40%"}
 **Coming up — Module 2:**
 
-- Strategic Fit framework
-- SC Drivers (Chopra & Meindl)
-- Facility location methods
-  - Weighted Scoring / AHP
-  - Steiner-Weber model
-  - Warehouse Location Problem
-- Network design heuristics
+-   Strategic Fit framework
+-   SC Drivers (Chopra & Meindl)
+-   Facility location methods
+    -   Weighted Scoring / AHP
+    -   Steiner-Weber model
+    -   Warehouse Location Problem
+-   Network design heuristics
 
 **Preparation:**
 
 Read Chopra & Meindl, Chapters 2–3 (Strategic Fit and SC Drivers).
 :::
-:::
+:::::
 
-::: {.notes}
-Summarise the module by drawing the key linkages on the board: three flows → cycle view → push/pull → planning matrix → strategic SC. These concepts form the conceptual backbone for everything that follows. The DuPont exercise should have made clear that SC decisions have direct financial consequences — this is the management relevance that motivates the more technical content in subsequent modules.
+::: notes
+Summarise the module by drawing the key linkages on the board: three
+flows → cycle view → push/pull → planning matrix → strategic SC. These
+concepts form the conceptual backbone for everything that follows. The
+DuPont exercise should have made clear that SC decisions have direct
+financial consequences — this is the management relevance that motivates
+the more technical content in subsequent modules.
 :::
