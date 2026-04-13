@@ -4,12 +4,6 @@ project:
     - "slides/**/*.qmd"
     - "exercises/*.qmd"
     - "case_studies/*.qmd"
-    - "book/*.qmd"
-    - "book/chapters/*.qmd"
 
 execute:
   freeze: auto
-
-format:
-  revealjs:
-    theme: [default, _extensions/scm-theme.scss]
