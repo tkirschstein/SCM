@@ -237,71 +237,74 @@ This converges to the global optimum for the Euclidean case when no demand point
 
 ```{r}
 #| label: fig-location
-#| fig-cap: "Continuous location planning: CoG and Weiszfeld solutions for 6 demand points"
+#| fig-cap: "Continuous location planning: CoG and Weiszfeld solutions for 6 German demand points"
 #| echo: true
 #| message: false
+#| warning: false
 
-library(tidyverse)
-library(plotly)
+library(ggplot2)
+library(dplyr)
 
-# Demand points (x, y in km, w = demand weight)
+# Demand points (schematic x/y in km, w = annual demand weight)
 demands <- data.frame(
   city = c("Hamburg", "Berlin", "Dortmund", "Frankfurt", "Munich", "Stuttgart"),
-  x = c(10, 140, 60, 90, 145, 110),
-  y = c(170, 145, 130, 90, 45, 70),
-  w = c(120, 200, 150, 180, 250, 130)
+  x    = c(10, 140, 60,  90, 145, 110),
+  y    = c(170, 145, 130, 90,  45,  70),
+  w    = c(120, 200, 150, 180, 250, 130)
 )
 
 # Center of Gravity
-cog <- data.frame(
-  x = sum(demands$w * demands$x) / sum(demands$w),
-  y = sum(demands$w * demands$y) / sum(demands$w),
-  method = "Center of Gravity"
-)
+cog_x <- sum(demands$w * demands$x) / sum(demands$w)
+cog_y <- sum(demands$w * demands$y) / sum(demands$w)
 
 # Weiszfeld Algorithm
-weiszfeld <- function(demands, tol = 1e-6, max_iter = 1000) {
-  X <- cog$x; Y <- cog$y  # start from CoG
-  for (k in seq_len(max_iter)) {
-    d <- sqrt((X - demands$x)^2 + (Y - demands$y)^2)
-    d[d < 1e-10] <- 1e-10  # avoid division by zero
-    wd <- demands$w / d
-    X_new <- sum(wd * demands$x) / sum(wd)
-    Y_new <- sum(wd * demands$y) / sum(wd)
-    if (sqrt((X_new - X)^2 + (Y_new - Y)^2) < tol) break
-    X <- X_new; Y <- Y_new
-  }
-  data.frame(x = X, y = Y, method = "Weiszfeld (Euclidean)")
+X <- cog_x; Y <- cog_y
+for (k in seq_len(1000)) {
+  d <- sqrt((X - demands$x)^2 + (Y - demands$y)^2)
+  d[d < 1e-10] <- 1e-10
+  wd <- demands$w / d
+  X_new <- sum(wd * demands$x) / sum(wd)
+  Y_new <- sum(wd * demands$y) / sum(wd)
+  if (sqrt((X_new - X)^2 + (Y_new - Y)^2) < 1e-6) break
+  X <- X_new; Y <- Y_new
 }
 
-wz <- weiszfeld(demands)
+solutions <- data.frame(
+  method = c("Center of Gravity", "Weiszfeld (Euclidean)"),
+  x = c(cog_x, X), y = c(cog_y, Y)
+)
 
-solutions <- bind_rows(cog, wz)
+p <- ggplot() +
+  geom_point(data = demands,
+             aes(x = x, y = y, size = w),
+             colour = "#20808D", alpha = 0.75) +
+  geom_text(data = demands,
+            aes(x = x, y = y, label = city),
+            vjust = -1.1, size = 3, colour = "#2D3748") +
+  geom_point(data = solutions,
+             aes(x = x, y = y, shape = method, colour = method),
+             size = 5, stroke = 1.5) +
+  geom_text(data = solutions,
+            aes(x = x, y = y,
+                label = paste0(method, "\n(", round(x,1), ", ", round(y,1), ")")),
+            vjust = 2.4, size = 2.8) +
+  scale_shape_manual(values = c("Center of Gravity" = 18,
+                                "Weiszfeld (Euclidean)" = 17)) +
+  scale_colour_manual(values = c("Center of Gravity" = "#A84B2F",
+                                 "Weiszfeld (Euclidean)" = "#1B474D")) +
+  scale_size_continuous(range = c(4, 14), name = "Annual demand") +
+  labs(title = "Continuous Location Planning — Germany (schematic)",
+       x = "East–West (km, schematic)",
+       y = "North–South (km, schematic)",
+       shape = "Solution", colour = "Solution") +
+  theme_minimal(base_size = 11)
 
-# Plot
-fig <- plot_ly() |>
-  add_markers(data = demands, x = ~x, y = ~y,
-              size = ~w, sizes = c(30, 150),
-              text = ~paste0(city, "<br>Demand: ", w),
-              hoverinfo = "text",
-              marker = list(color = "#20808D", opacity = 0.7),
-              name = "Demand Points") |>
-  add_markers(data = solutions, x = ~x, y = ~y,
-              symbol = ~method,
-              symbols = c("star", "diamond"),
-              marker = list(size = 16, color = c("#A84B2F", "#1B474D"),
-                            line = list(width = 2, color = "white")),
-              text = ~paste0(method, "<br>x=", round(x,1), ", y=", round(y,1)),
-              hoverinfo = "text",
-              name = ~method) |>
-  layout(
-    title = "Continuous Location Planning — Germany Example",
-    xaxis = list(title = "East–West (km)"),
-    yaxis = list(title = "North–South (km)"),
-    legend = list(orientation = "h", y = -0.2)
-  )
-
-fig
+# Interactive in HTML, static in PDF
+if (knitr::is_html_output()) {
+  plotly::ggplotly(p)
+} else {
+  p
+}
 ```
 
 ---

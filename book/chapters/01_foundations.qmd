@@ -111,59 +111,60 @@ A 5% inventory reduction increases ROI by 130 basis points — without any chang
 
 ```{r}
 #| label: fig-dupont
-#| fig-cap: "DuPont tree: impact of 5% inventory reduction on ROI"
+#| fig-cap: "DuPont analysis: effect of 5% inventory reduction on key metrics"
 #| message: false
 #| warning: false
 
-library(plotly)
+library(ggplot2)
+library(tidyr)
 
 # Base case values
 base <- list(
   revenue = 11000, material = 5500, personnel = 4950,
   fixed_assets = 2000, cash = 500, inventory = 3300, receivables = 1075
 )
-
-# Scenario: 5% inventory reduction, holding cost saving €50k
 scen <- base
 scen$inventory <- base$inventory * 0.95
-holding_saving <- 50  # €50k holding cost saving
+holding_saving <- 50
 
 calc_dupont <- function(p) {
-  total_cost <- p$material + p$personnel
-  net_income <- p$revenue - total_cost + holding_saving * (p$inventory < base$inventory)
+  net_income  <- p$revenue - p$material - p$personnel +
+                 holding_saving * (p$inventory < base$inventory)
   total_assets <- p$fixed_assets + p$cash + p$inventory + p$receivables
-  pm <- net_income / p$revenue
-  at <- p$revenue / total_assets
-  roi <- pm * at
-  list(net_income = net_income, total_assets = total_assets,
-       pm = pm, at = at, roi = roi)
+  list(pm = net_income / p$revenue * 100,
+       at = p$revenue / total_assets,
+       roi = net_income / total_assets * 100)
 }
 
 b <- calc_dupont(base)
 s <- calc_dupont(scen)
 
-# Build comparison bar chart
-metrics <- c("Profit Margin (%)", "Asset Turnover", "ROI (%)")
-base_vals <- c(b$pm * 100, b$at, b$roi * 100)
-scen_vals <- c(s$pm * 100, s$at, s$roi * 100)
+df <- data.frame(
+  Metric   = rep(c("Profit Margin (%)", "Asset Turnover", "ROI (%)"), 2),
+  Scenario = rep(c("Base Case", "5% Inventory Reduction"), each = 3),
+  Value    = c(b$pm, b$at, b$roi, s$pm, s$at, s$roi)
+)
+df$Metric <- factor(df$Metric,
+                    levels = c("Profit Margin (%)", "Asset Turnover", "ROI (%)"))
 
-fig <- plot_ly() |>
-  add_bars(x = metrics, y = base_vals, name = "Base Case",
-           marker = list(color = "#20808D")) |>
-  add_bars(x = metrics, y = scen_vals, name = "5% Inventory Reduction",
-           marker = list(color = "#A84B2F")) |>
-  layout(
-    barmode = "group",
-    title = list(text = "DuPont Analysis: Effect of 5% Inventory Reduction",
-                 font = list(size = 14)),
-    xaxis = list(title = ""),
-    yaxis = list(title = "Value"),
-    legend = list(orientation = "h", y = -0.2),
-    plot_bgcolor = "#FAFAFA",
-    paper_bgcolor = "#FFFFFF"
-  )
+p <- ggplot(df, aes(x = Metric, y = Value, fill = Scenario)) +
+  geom_col(position = "dodge", width = 0.6) +
+  geom_text(aes(label = round(Value, 2)),
+            position = position_dodge(width = 0.6),
+            vjust = -0.4, size = 3.2) +
+  scale_fill_manual(values = c("Base Case" = "#20808D",
+                               "5% Inventory Reduction" = "#A84B2F")) +
+  labs(title = "DuPont Analysis: Effect of 5% Inventory Reduction",
+       x = NULL, y = "Value", fill = NULL) +
+  theme_minimal(base_size = 11) +
+  theme(legend.position = "bottom")
 
-fig
+# Interactive in HTML, static in PDF
+if (knitr::is_html_output()) {
+  plotly::ggplotly(p)
+} else {
+  p
+}
 ```
 
 ## SC Performance Metrics
