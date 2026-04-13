@@ -1,28 +1,30 @@
-/*-- SCM Theme for Reveal.js (Quarto) --*/
-/*-- Accent: #01696F (teal), Headers: #1B2A4A (dark navy) --*/
+/*-- scss:defaults --*/
 
 // ─── Fonts ────────────────────────────────────────────────────────────────────
 $font-family-sans-serif: "Calibri", "Arial", "Helvetica Neue", sans-serif !default;
-$font-family-monospace: "Consolas", "Courier New", monospace !default;
+$font-family-monospace:  "Consolas", "Courier New", monospace !default;
 $presentation-font-size-root: 38px !default;
 
-// ─── Colors ───────────────────────────────────────────────────────────────────
-$teal:      #01696F;
-$teal-dark: #014d52;
-$navy:      #1B2A4A;
-$navy-light:#2c4070;
-$white:     #ffffff;
-$off-white: #f5f7fa;
-$light-gray:#e8ecf0;
-$mid-gray:  #8898aa;
-$body-text: #2d3748;
+// ─── Brand Colors ─────────────────────────────────────────────────────────────
+$teal:       #01696F;
+$teal-dark:  #014d52;
+$navy:       #1B2A4A;
+$navy-light: #2c4070;
+$white:      #ffffff;
+$off-white:  #f5f7fa;
+$light-gray: #e8ecf0;
+$mid-gray:   #8898aa;
+$body-text:  #2d3748;
 
-// ─── Reveal Overrides ─────────────────────────────────────────────────────────
-$body-bg:              $white !default;
-$body-color:           $body-text !default;
-$link-color:           $teal !default;
-$selection-bg:         rgba($teal, 0.25) !default;
+// ─── Reveal Variable Overrides ────────────────────────────────────────────────
+$body-bg:       $white      !default;
+$body-color:    $body-text  !default;
+$link-color:    $teal       !default;
+$selection-bg:  rgba($teal, 0.25) !default;
 
+/*-- scss:rules --*/
+
+// ─── Base Reveal ──────────────────────────────────────────────────────────────
 .reveal {
   font-family: $font-family-sans-serif;
   font-size: $presentation-font-size-root;
@@ -60,7 +62,7 @@ $selection-bg:         rgba($teal, 0.25) !default;
   }
 }
 
-// ─── Slide Headers ─────────────────────────────────────────────────────────────
+// ─── Slide Headers ────────────────────────────────────────────────────────────
 .reveal h1,
 .reveal h2 {
   font-family: $font-family-sans-serif;
@@ -81,7 +83,7 @@ $selection-bg:         rgba($teal, 0.25) !default;
   letter-spacing: 0.06em;
 }
 
-// ─── Section Title Slides (### Part N) ─────────────────────────────────────────
+// ─── Section Title Slides ─────────────────────────────────────────────────────
 .reveal .slides section[data-background-color] h2 {
   color: $white;
   border-bottom-color: rgba($white, 0.4);
@@ -95,18 +97,9 @@ $selection-bg:         rgba($teal, 0.25) !default;
   color: $body-text;
 }
 
-.reveal ul, .reveal ol {
-  margin-left: 1.2em;
-}
-
-.reveal ul li::marker {
-  color: $teal;
-}
-
-.reveal strong {
-  color: $navy;
-  font-weight: 700;
-}
+.reveal ul, .reveal ol { margin-left: 1.2em; }
+.reveal ul li::marker   { color: $teal; }
+.reveal strong          { color: $navy; font-weight: 700; }
 
 // ─── Tables ───────────────────────────────────────────────────────────────────
 .reveal table {
@@ -131,15 +124,10 @@ $selection-bg:         rgba($teal, 0.25) !default;
   color: $body-text;
 }
 
-.reveal table tr:nth-child(even) td {
-  background-color: $off-white;
-}
+.reveal table tr:nth-child(even) td { background-color: $off-white; }
+.reveal table tr:hover td           { background-color: rgba($teal, 0.08); }
 
-.reveal table tr:hover td {
-  background-color: rgba($teal, 0.08);
-}
-
-// ─── Blockquotes / Callouts ───────────────────────────────────────────────────
+// ─── Blockquotes ──────────────────────────────────────────────────────────────
 .reveal blockquote {
   background-color: rgba($teal, 0.08);
   border-left: 4px solid $teal;
@@ -153,7 +141,7 @@ $selection-bg:         rgba($teal, 0.25) !default;
   width: 95%;
 }
 
-// Callout: tip (management insight)
+// ─── Callout Boxes ────────────────────────────────────────────────────────────
 .callout-tip {
   border-left: 4px solid $teal !important;
   background-color: rgba($teal, 0.07) !important;
@@ -165,7 +153,6 @@ $selection-bg:         rgba($teal, 0.25) !default;
   }
 }
 
-// Callout: note (definition)
 .callout-note {
   border-left: 4px solid $navy !important;
   background-color: rgba($navy, 0.05) !important;
@@ -177,7 +164,6 @@ $selection-bg:         rgba($teal, 0.25) !default;
   }
 }
 
-// Callout: warning
 .callout-warning {
   border-left: 4px solid #d97706 !important;
   background-color: rgba(#d97706, 0.07) !important;
@@ -202,11 +188,7 @@ $selection-bg:         rgba($teal, 0.25) !default;
   font-size: 0.85em;
 }
 
-.reveal pre code {
-  color: #d4e2f0;
-  background: none;
-  padding: 0;
-}
+.reveal pre code { color: #d4e2f0; background: none; padding: 0; }
 
 // ─── Footer & Progress ────────────────────────────────────────────────────────
 .reveal .footer {
@@ -215,10 +197,7 @@ $selection-bg:         rgba($teal, 0.25) !default;
   font-family: $font-family-sans-serif;
 }
 
-.reveal .progress {
-  color: $teal;
-  height: 3px;
-}
+.reveal .progress { color: $teal; height: 3px; }
 
 // ─── Slide Numbers ────────────────────────────────────────────────────────────
 .reveal .slide-number {
@@ -229,12 +208,7 @@ $selection-bg:         rgba($teal, 0.25) !default;
   padding: 0.15em 0.4em;
 }
 
-// ─── TOC Slides ───────────────────────────────────────────────────────────────
-.reveal .toc-slide {
-  background-color: $off-white;
-}
-
-// ─── Part Header Slides (background color override) ────────────────────────────
+// ─── Part Header Slides ───────────────────────────────────────────────────────
 .part-slide {
   background-color: $navy !important;
   color: $white !important;
@@ -245,9 +219,7 @@ $selection-bg:         rgba($teal, 0.25) !default;
     font-size: 1.3em;
   }
 
-  p {
-    color: rgba($white, 0.75) !important;
-  }
+  p { color: rgba($white, 0.75) !important; }
 }
 
 // ─── Highlight Box ────────────────────────────────────────────────────────────
@@ -261,14 +233,10 @@ $selection-bg:         rgba($teal, 0.25) !default;
 }
 
 // ─── Two-column Layout ────────────────────────────────────────────────────────
-.columns > .column {
-  padding: 0 0.4em;
-}
+.columns > .column { padding: 0 0.4em; }
 
 // ─── Math ─────────────────────────────────────────────────────────────────────
-.reveal .math {
-  font-size: 0.82em;
-}
+.reveal .math { font-size: 0.82em; }
 
 // ─── Speaker Notes ────────────────────────────────────────────────────────────
 .reveal .speaker-notes {
@@ -279,14 +247,9 @@ $selection-bg:         rgba($teal, 0.25) !default;
 
 // ─── Incremental Lists ────────────────────────────────────────────────────────
 .reveal ul.incremental > li,
-.reveal ol.incremental > li {
-  opacity: 0.25;
-}
-
+.reveal ol.incremental > li              { opacity: 0.25; }
 .reveal ul.incremental > li.current-fragment,
-.reveal ol.incremental > li.current-fragment {
-  opacity: 1;
-}
+.reveal ol.incremental > li.current-fragment { opacity: 1; }
 
 // ─── Exercise Boxes ───────────────────────────────────────────────────────────
 .exercise {
