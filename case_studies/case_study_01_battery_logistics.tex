@@ -1,0 +1,826 @@
+% Options for packages loaded elsewhere
+% Options for packages loaded elsewhere
+\PassOptionsToPackage{unicode}{hyperref}
+\PassOptionsToPackage{hyphens}{url}
+\PassOptionsToPackage{dvipsnames,svgnames,x11names}{xcolor}
+%
+\documentclass[
+  a4paper,
+]{article}
+\usepackage{xcolor}
+\usepackage{amsmath,amssymb}
+\setcounter{secnumdepth}{-\maxdimen} % remove section numbering
+\usepackage{iftex}
+\ifPDFTeX
+  \usepackage[T1]{fontenc}
+  \usepackage[utf8]{inputenc}
+  \usepackage{textcomp} % provide euro and other symbols
+\else % if luatex or xetex
+  \usepackage{unicode-math} % this also loads fontspec
+  \defaultfontfeatures{Scale=MatchLowercase}
+  \defaultfontfeatures[\rmfamily]{Ligatures=TeX,Scale=1}
+\fi
+\usepackage{lmodern}
+\ifPDFTeX\else
+  % xetex/luatex font selection
+\fi
+% Use upquote if available, for straight quotes in verbatim environments
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+\IfFileExists{microtype.sty}{% use microtype if available
+  \usepackage[]{microtype}
+  \UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
+}{}
+\makeatletter
+\@ifundefined{KOMAClassName}{% if non-KOMA class
+  \IfFileExists{parskip.sty}{%
+    \usepackage{parskip}
+  }{% else
+    \setlength{\parindent}{0pt}
+    \setlength{\parskip}{6pt plus 2pt minus 1pt}}
+}{% if KOMA class
+  \KOMAoptions{parskip=half}}
+\makeatother
+% Make \paragraph and \subparagraph free-standing
+\makeatletter
+\ifx\paragraph\undefined\else
+  \let\oldparagraph\paragraph
+  \renewcommand{\paragraph}{
+    \@ifstar
+      \xxxParagraphStar
+      \xxxParagraphNoStar
+  }
+  \newcommand{\xxxParagraphStar}[1]{\oldparagraph*{#1}\mbox{}}
+  \newcommand{\xxxParagraphNoStar}[1]{\oldparagraph{#1}\mbox{}}
+\fi
+\ifx\subparagraph\undefined\else
+  \let\oldsubparagraph\subparagraph
+  \renewcommand{\subparagraph}{
+    \@ifstar
+      \xxxSubParagraphStar
+      \xxxSubParagraphNoStar
+  }
+  \newcommand{\xxxSubParagraphStar}[1]{\oldsubparagraph*{#1}\mbox{}}
+  \newcommand{\xxxSubParagraphNoStar}[1]{\oldsubparagraph{#1}\mbox{}}
+\fi
+\makeatother
+
+\usepackage{color}
+\usepackage{fancyvrb}
+\newcommand{\VerbBar}{|}
+\newcommand{\VERB}{\Verb[commandchars=\\\{\}]}
+\DefineVerbatimEnvironment{Highlighting}{Verbatim}{commandchars=\\\{\}}
+% Add ',fontsize=\small' for more characters per line
+\usepackage{framed}
+\definecolor{shadecolor}{RGB}{241,243,245}
+\newenvironment{Shaded}{\begin{snugshade}}{\end{snugshade}}
+\newcommand{\AlertTok}[1]{\textcolor[rgb]{0.68,0.00,0.00}{#1}}
+\newcommand{\AnnotationTok}[1]{\textcolor[rgb]{0.37,0.37,0.37}{#1}}
+\newcommand{\AttributeTok}[1]{\textcolor[rgb]{0.40,0.45,0.13}{#1}}
+\newcommand{\BaseNTok}[1]{\textcolor[rgb]{0.68,0.00,0.00}{#1}}
+\newcommand{\BuiltInTok}[1]{\textcolor[rgb]{0.00,0.23,0.31}{#1}}
+\newcommand{\CharTok}[1]{\textcolor[rgb]{0.13,0.47,0.30}{#1}}
+\newcommand{\CommentTok}[1]{\textcolor[rgb]{0.37,0.37,0.37}{#1}}
+\newcommand{\CommentVarTok}[1]{\textcolor[rgb]{0.37,0.37,0.37}{\textit{#1}}}
+\newcommand{\ConstantTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{#1}}
+\newcommand{\ControlFlowTok}[1]{\textcolor[rgb]{0.00,0.23,0.31}{\textbf{#1}}}
+\newcommand{\DataTypeTok}[1]{\textcolor[rgb]{0.68,0.00,0.00}{#1}}
+\newcommand{\DecValTok}[1]{\textcolor[rgb]{0.68,0.00,0.00}{#1}}
+\newcommand{\DocumentationTok}[1]{\textcolor[rgb]{0.37,0.37,0.37}{\textit{#1}}}
+\newcommand{\ErrorTok}[1]{\textcolor[rgb]{0.68,0.00,0.00}{#1}}
+\newcommand{\ExtensionTok}[1]{\textcolor[rgb]{0.00,0.23,0.31}{#1}}
+\newcommand{\FloatTok}[1]{\textcolor[rgb]{0.68,0.00,0.00}{#1}}
+\newcommand{\FunctionTok}[1]{\textcolor[rgb]{0.28,0.35,0.67}{#1}}
+\newcommand{\ImportTok}[1]{\textcolor[rgb]{0.00,0.46,0.62}{#1}}
+\newcommand{\InformationTok}[1]{\textcolor[rgb]{0.37,0.37,0.37}{#1}}
+\newcommand{\KeywordTok}[1]{\textcolor[rgb]{0.00,0.23,0.31}{\textbf{#1}}}
+\newcommand{\NormalTok}[1]{\textcolor[rgb]{0.00,0.23,0.31}{#1}}
+\newcommand{\OperatorTok}[1]{\textcolor[rgb]{0.37,0.37,0.37}{#1}}
+\newcommand{\OtherTok}[1]{\textcolor[rgb]{0.00,0.23,0.31}{#1}}
+\newcommand{\PreprocessorTok}[1]{\textcolor[rgb]{0.68,0.00,0.00}{#1}}
+\newcommand{\RegionMarkerTok}[1]{\textcolor[rgb]{0.00,0.23,0.31}{#1}}
+\newcommand{\SpecialCharTok}[1]{\textcolor[rgb]{0.37,0.37,0.37}{#1}}
+\newcommand{\SpecialStringTok}[1]{\textcolor[rgb]{0.13,0.47,0.30}{#1}}
+\newcommand{\StringTok}[1]{\textcolor[rgb]{0.13,0.47,0.30}{#1}}
+\newcommand{\VariableTok}[1]{\textcolor[rgb]{0.07,0.07,0.07}{#1}}
+\newcommand{\VerbatimStringTok}[1]{\textcolor[rgb]{0.13,0.47,0.30}{#1}}
+\newcommand{\WarningTok}[1]{\textcolor[rgb]{0.37,0.37,0.37}{\textit{#1}}}
+
+\usepackage{longtable,booktabs,array}
+\usepackage{calc} % for calculating minipage widths
+% Correct order of tables after \paragraph or \subparagraph
+\usepackage{etoolbox}
+\makeatletter
+\patchcmd\longtable{\par}{\if@noskipsec\mbox{}\fi\par}{}{}
+\makeatother
+% Allow footnotes in longtable head/foot
+\IfFileExists{footnotehyper.sty}{\usepackage{footnotehyper}}{\usepackage{footnote}}
+\makesavenoteenv{longtable}
+\usepackage{graphicx}
+\makeatletter
+\newsavebox\pandoc@box
+\newcommand*\pandocbounded[1]{% scales image to fit in text height/width
+  \sbox\pandoc@box{#1}%
+  \Gscale@div\@tempa{\textheight}{\dimexpr\ht\pandoc@box+\dp\pandoc@box\relax}%
+  \Gscale@div\@tempb{\linewidth}{\wd\pandoc@box}%
+  \ifdim\@tempb\p@<\@tempa\p@\let\@tempa\@tempb\fi% select the smaller of both
+  \ifdim\@tempa\p@<\p@\scalebox{\@tempa}{\usebox\pandoc@box}%
+  \else\usebox{\pandoc@box}%
+  \fi%
+}
+% Set default figure placement to htbp
+\def\fps@figure{htbp}
+\makeatother
+
+
+
+
+
+\setlength{\emergencystretch}{3em} % prevent overfull lines
+
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+
+
+
+ 
+
+
+\makeatletter
+\@ifpackageloaded{caption}{}{\usepackage{caption}}
+\AtBeginDocument{%
+\ifdefined\contentsname
+  \renewcommand*\contentsname{Table of contents}
+\else
+  \newcommand\contentsname{Table of contents}
+\fi
+\ifdefined\listfigurename
+  \renewcommand*\listfigurename{List of Figures}
+\else
+  \newcommand\listfigurename{List of Figures}
+\fi
+\ifdefined\listtablename
+  \renewcommand*\listtablename{List of Tables}
+\else
+  \newcommand\listtablename{List of Tables}
+\fi
+\ifdefined\figurename
+  \renewcommand*\figurename{Figure}
+\else
+  \newcommand\figurename{Figure}
+\fi
+\ifdefined\tablename
+  \renewcommand*\tablename{Table}
+\else
+  \newcommand\tablename{Table}
+\fi
+}
+\@ifpackageloaded{float}{}{\usepackage{float}}
+\floatstyle{ruled}
+\@ifundefined{c@chapter}{\newfloat{codelisting}{h}{lop}}{\newfloat{codelisting}{h}{lop}[chapter]}
+\floatname{codelisting}{Listing}
+\newcommand*\listoflistings{\listof{codelisting}{List of Listings}}
+\makeatother
+\makeatletter
+\makeatother
+\makeatletter
+\@ifpackageloaded{caption}{}{\usepackage{caption}}
+\@ifpackageloaded{subcaption}{}{\usepackage{subcaption}}
+\makeatother
+\usepackage{bookmark}
+\IfFileExists{xurl.sty}{\usepackage{xurl}}{} % add URL line breaks if available
+\urlstyle{same}
+\hypersetup{
+  pdftitle={Case Study 1: Battery Logistics Network Design},
+  colorlinks=true,
+  linkcolor={blue},
+  filecolor={Maroon},
+  citecolor={Blue},
+  urlcolor={Blue},
+  pdfcreator={LaTeX via pandoc}}
+
+
+\title{Case Study 1: Battery Logistics Network Design}
+\usepackage{etoolbox}
+\makeatletter
+\providecommand{\subtitle}[1]{% add subtitle to \maketitle
+  \apptocmd{\@title}{\par {\large #1 \par}}{}{}
+}
+\makeatother
+\subtitle{Team-Based Case Study --- SCM Bachelor}
+\author{}
+\date{}
+\begin{document}
+\maketitle
+
+
+\section{Introduction and Learning
+Objectives}\label{introduction-and-learning-objectives}
+
+This case study requires teams of 3--4 students to design a logistics
+network for lithium-ion battery distribution across northern Germany and
+Benelux. You will apply \textbf{three core methods} from the SCM module:
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\tightlist
+\item
+  \textbf{Warehouse Location Problem (WLP)}: decide which subset of
+  candidate warehouses to open
+\item
+  \textbf{Transportation Problem (TP)}: plan operational shipments from
+  warehouses to plants
+\item
+  \textbf{Inventory and Safety Stock Analysis}: quantify the cost of
+  demand uncertainty
+\end{enumerate}
+
+On completion, students will be able to:
+
+\begin{itemize}
+\tightlist
+\item
+  Formulate and solve a WLP using both heuristic and exact methods
+\item
+  Implement the Haversine formula to derive transport cost estimates
+  from geographic data
+\item
+  Apply Vogel's Approximation Method and compare it to an MILP solution
+\item
+  Quantify the value of inventory pooling under uncertain demand
+\end{itemize}
+
+\textbf{Submission}: Written report (max 12 pages) + R script. Team
+presentation: 10 minutes.
+
+\begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
+
+\section{Background}\label{background}
+
+A third-party logistics provider (3PL) has secured a contract to supply
+lithium-ion battery modules to automotive assembly plants across
+northern Germany and the Benelux region. Battery modules arrive by sea
+container at the port of Hamburg and must be distributed to eleven
+plants via regional warehouses.
+
+The 3PL operates six potential warehouse sites across the region. Each
+site requires capital investment and annual operating expenditure to
+comply with \textbf{dangerous goods regulations} for lithium-ion
+batteries (ADR/IMDG hazard class 9 --- UN3480/UN3481). These compliance
+costs are reflected in the annual fixed costs below.
+
+The 3PL must decide:
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\tightlist
+\item
+  \textbf{Which warehouses to open} (strategic, multi-year horizon)
+\item
+  \textbf{How to allocate plant deliveries to open warehouses}
+  (operational, annual plan)
+\item
+  \textbf{How much safety stock to hold} given uncertain plant demand
+  (tactical)
+\end{enumerate}
+
+\begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
+
+\section{Data}\label{data}
+
+\subsection{Automotive Plant Locations and Annual
+Demand}\label{automotive-plant-locations-and-annual-demand}
+
+The following eleven assembly plants have placed framework contracts
+with the 3PL. Annual battery demand is in \textbf{MWh/year}
+(megawatt-hours --- the standard unit for battery storage capacity in
+automotive logistics).
+
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\linewidth - 10\tabcolsep) * \real{0.0476}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 10\tabcolsep) * \real{0.1111}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 10\tabcolsep) * \real{0.0952}}
+  >{\raggedleft\arraybackslash}p{(\linewidth - 10\tabcolsep) * \real{0.2222}}
+  >{\raggedleft\arraybackslash}p{(\linewidth - 10\tabcolsep) * \real{0.2540}}
+  >{\raggedleft\arraybackslash}p{(\linewidth - 10\tabcolsep) * \real{0.2698}}@{}}
+\toprule\noalign{}
+\begin{minipage}[b]{\linewidth}\raggedright
+\#
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Plant
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+City
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedleft
+Latitude (°N)
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedleft
+Longitude (°E)
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedleft
+Demand (MWh/yr)
+\end{minipage} \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+1 & VW Wolfsburg & Wolfsburg & 52.432 & 10.787 & 28,000 \\
+2 & VW Hannover & Hannover & 52.380 & 9.746 & 22,000 \\
+3 & VW Emden & Emden & 53.365 & 7.213 & 18,500 \\
+4 & VW Osnabrück & Osnabrück & 52.279 & 8.047 & 12,000 \\
+5 & Mercedes-Benz Bremen & Bremen & 53.075 & 8.808 & 25,000 \\
+6 & Ford Köln & Köln & 50.950 & 6.900 & 20,000 \\
+7 & Opel Rüsselsheim & Rüsselsheim & 49.993 & 8.422 & 15,000 \\
+8 & Volvo Cars Gent & Gent (BE) & 51.054 & 3.717 & 30,000 \\
+9 & Volvo Trucks Gent & Gent (BE) & 51.040 & 3.730 & 14,000 \\
+10 & Toyota Zaventem & Zaventem (BE) & 50.898 & 4.480 & 16,000 \\
+11 & VDL Nedcar Born & Born (NL) & 51.030 & 5.867 & 11,000 \\
+\end{longtable}
+
+\textbf{Total annual demand: 211,500 MWh/year}
+
+\subsection{Candidate Warehouse Locations and Fixed
+Costs}\label{candidate-warehouse-locations-and-fixed-costs}
+
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\linewidth - 10\tabcolsep) * \real{0.0417}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 10\tabcolsep) * \real{0.1389}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 10\tabcolsep) * \real{0.0833}}
+  >{\raggedleft\arraybackslash}p{(\linewidth - 10\tabcolsep) * \real{0.1944}}
+  >{\raggedleft\arraybackslash}p{(\linewidth - 10\tabcolsep) * \real{0.2222}}
+  >{\raggedleft\arraybackslash}p{(\linewidth - 10\tabcolsep) * \real{0.3194}}@{}}
+\toprule\noalign{}
+\begin{minipage}[b]{\linewidth}\raggedright
+\#
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Location
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+City
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedleft
+Latitude (°N)
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedleft
+Longitude (°E)
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedleft
+Annual Fixed Cost (€K)
+\end{minipage} \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+1 & Gütersloh & Gütersloh & 51.906 & 8.383 & 450 \\
+2 & Düren & Düren & 50.804 & 6.493 & 480 \\
+3 & Dorsten/Marl & Dorsten & 51.660 & 6.965 & 520 \\
+4 & Harsewinkel & Harsewinkel & 51.960 & 8.230 & 470 \\
+5 & Langenhagen & Langenhagen & 52.438 & 9.737 & 510 \\
+6 & Hannover-Süd & Hannover & 52.350 & 9.800 & 460 \\
+\end{longtable}
+
+\subsection{Transport Cost Derivation}\label{transport-cost-derivation}
+
+Students derive the transport cost matrix using the \textbf{Haversine
+formula}. The rate agreed with the carrier is:
+
+\[c_{ij} = 0.08 \text{ €/km/MWh} \times d_{ij}^{\text{Haversine}} \text{ km}\]
+
+This gives a \textbf{cost per MWh per year} for each warehouse-to-plant
+lane. The R code skeleton below computes this matrix --- complete it as
+part of your analysis:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{haversine }\OtherTok{\textless{}{-}} \ControlFlowTok{function}\NormalTok{(lat1, lon1, lat2, lon2) \{}
+\NormalTok{  R    }\OtherTok{\textless{}{-}} \DecValTok{6371}
+\NormalTok{  phi1 }\OtherTok{\textless{}{-}}\NormalTok{ lat1 }\SpecialCharTok{*}\NormalTok{ pi }\SpecialCharTok{/} \DecValTok{180}
+\NormalTok{  phi2 }\OtherTok{\textless{}{-}}\NormalTok{ lat2 }\SpecialCharTok{*}\NormalTok{ pi }\SpecialCharTok{/} \DecValTok{180}
+\NormalTok{  dphi }\OtherTok{\textless{}{-}}\NormalTok{ (lat2 }\SpecialCharTok{{-}}\NormalTok{ lat1) }\SpecialCharTok{*}\NormalTok{ pi }\SpecialCharTok{/} \DecValTok{180}
+\NormalTok{  dlam }\OtherTok{\textless{}{-}}\NormalTok{ (lon2 }\SpecialCharTok{{-}}\NormalTok{ lon1) }\SpecialCharTok{*}\NormalTok{ pi }\SpecialCharTok{/} \DecValTok{180}
+\NormalTok{  a    }\OtherTok{\textless{}{-}} \FunctionTok{sin}\NormalTok{(dphi}\SpecialCharTok{/}\DecValTok{2}\NormalTok{)}\SpecialCharTok{\^{}}\DecValTok{2} \SpecialCharTok{+} \FunctionTok{cos}\NormalTok{(phi1)}\SpecialCharTok{*}\FunctionTok{cos}\NormalTok{(phi2)}\SpecialCharTok{*}\FunctionTok{sin}\NormalTok{(dlam}\SpecialCharTok{/}\DecValTok{2}\NormalTok{)}\SpecialCharTok{\^{}}\DecValTok{2}
+\NormalTok{  R }\SpecialCharTok{*} \DecValTok{2} \SpecialCharTok{*} \FunctionTok{atan2}\NormalTok{(}\FunctionTok{sqrt}\NormalTok{(a), }\FunctionTok{sqrt}\NormalTok{(}\DecValTok{1}\SpecialCharTok{{-}}\NormalTok{a))}
+\NormalTok{\}}
+
+\CommentTok{\# Warehouses: 6 rows; Plants: 11 columns}
+\CommentTok{\# Build the 6×11 transport cost matrix (€/MWh)}
+\CommentTok{\# cost\_matrix[i,j] = 0.08 * haversine(wh\_lat[i], wh\_lon[i], plant\_lat[j], plant\_lon[j])}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
+
+\section{Part A: Strategic Network Design (Warehouse Location
+Problem)}\label{part-a-strategic-network-design-warehouse-location-problem}
+
+\subsection{A.1 Problem Formulation}\label{a.1-problem-formulation}
+
+Formulate the WLP for this case as a binary integer programme. Define:
+
+\begin{itemize}
+\tightlist
+\item
+  Decision variables: \(y_i \in \{0,1\}\) for \(i = 1, \ldots, 6\) (1 =
+  open warehouse \(i\))
+\item
+  Decision variables: \(x_{ij} \in [0,1]\) for all \(i, j\) (fraction of
+  plant \(j\)'s demand served from warehouse \(i\))
+\item
+  Objective function: minimise total annual cost (fixed + transport)
+\item
+  Constraints: (i) each plant is fully served, (ii) plants can only be
+  served from open warehouses
+\end{itemize}
+
+Write out the complete formulation with symbols, then translate to R.
+
+\subsection{A.2 Transport Cost Matrix}\label{a.2-transport-cost-matrix}
+
+Using the R skeleton above and the coordinate data provided:
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\tightlist
+\item
+  Compute all 66 Haversine distances (6 warehouses × 11 plants)
+\item
+  Multiply by the transport rate €0.08/km/MWh to get the per-unit-demand
+  annual cost
+\item
+  Present the resulting cost matrix as a formatted table in your report
+\end{enumerate}
+
+\textbf{Discussion question:} What simplifications does this
+distance-based cost model make? How would you refine it for a real
+project?
+
+\subsection{A.3 Add Heuristic}\label{a.3-add-heuristic}
+
+Apply the \textbf{Add Heuristic} to the transport cost matrix derived in
+A.2:
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\tightlist
+\item
+  Start with no warehouses open
+\item
+  At each step, compute the net saving from opening each remaining
+  candidate warehouse
+\item
+  Open the warehouse with the highest net saving (if positive)
+\item
+  Repeat until no further improvement is possible
+\end{enumerate}
+
+\textbf{Present:} the savings table for each iteration, the final set of
+open warehouses, and the total cost breakdown (fixed + transport).
+
+\subsection{A.4 Exact MILP Solution}\label{a.4-exact-milp-solution}
+
+Solve the WLP exactly using \texttt{ompr} or \texttt{lpSolve} in R:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# Sketch (complete this):}
+\FunctionTok{library}\NormalTok{(ompr); }\FunctionTok{library}\NormalTok{(ompr.roi); }\FunctionTok{library}\NormalTok{(ROI.plugin.glpk)}
+\NormalTok{n\_wh }\OtherTok{\textless{}{-}} \DecValTok{6}\NormalTok{; n\_pl }\OtherTok{\textless{}{-}} \DecValTok{11}
+
+\NormalTok{model }\OtherTok{\textless{}{-}} \FunctionTok{MIPModel}\NormalTok{() }\SpecialCharTok{|\textgreater{}}
+  \FunctionTok{add\_variable}\NormalTok{(y[i], }\AttributeTok{i =} \DecValTok{1}\SpecialCharTok{:}\NormalTok{n\_wh, }\AttributeTok{type =} \StringTok{"binary"}\NormalTok{) }\SpecialCharTok{|\textgreater{}}
+  \FunctionTok{add\_variable}\NormalTok{(x[i,j], }\AttributeTok{i =} \DecValTok{1}\SpecialCharTok{:}\NormalTok{n\_wh, }\AttributeTok{j =} \DecValTok{1}\SpecialCharTok{:}\NormalTok{n\_pl,}
+               \AttributeTok{type =} \StringTok{"continuous"}\NormalTok{, }\AttributeTok{lb =} \DecValTok{0}\NormalTok{, }\AttributeTok{ub =} \DecValTok{1}\NormalTok{) }\SpecialCharTok{|\textgreater{}}
+  \FunctionTok{set\_objective}\NormalTok{(...) }\SpecialCharTok{|\textgreater{}}
+  \FunctionTok{add\_constraint}\NormalTok{(...) }\SpecialCharTok{|\textgreater{}}
+  \FunctionTok{add\_constraint}\NormalTok{(...)}
+
+\NormalTok{result }\OtherTok{\textless{}{-}} \FunctionTok{solve\_model}\NormalTok{(model, }\FunctionTok{with\_ROI}\NormalTok{(}\AttributeTok{solver =} \StringTok{"glpk"}\NormalTok{))}
+\end{Highlighting}
+\end{Shaded}
+
+Report the optimal set of open warehouses and the total cost.
+
+\subsection{A.5 Comparison: Heuristic
+vs.~Optimal}\label{a.5-comparison-heuristic-vs.-optimal}
+
+\begin{longtable}[]{@{}lcc@{}}
+\toprule\noalign{}
+Criterion & Add Heuristic & MILP Optimal \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+Open warehouses & ? & ? \\
+Fixed cost (€K/yr) & ? & ? \\
+Transport cost (€K/yr) & ? & ? \\
+\textbf{Total cost (€K/yr)} & \textbf{?} & \textbf{?} \\
+Optimality gap & --- & 0\% \\
+\end{longtable}
+
+Answer: \textbf{How close is the heuristic?} In what situations might
+the gap be larger?
+
+\begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
+
+\section{Part B: Operational Transport
+Planning}\label{part-b-operational-transport-planning}
+
+\subsection{Scenario}\label{scenario}
+
+The 3PL has reached a strategic decision (based on regulatory and
+operational considerations) to open the following three warehouses:
+
+\begin{longtable}[]{@{}llc@{}}
+\toprule\noalign{}
+Warehouse & Location & Capacity (MWh/yr) \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+Düren & Düren & 150,000 \\
+Harsewinkel & Harsewinkel & 50,000 \\
+Langenhagen & Langenhagen & 100,000 \\
+\end{longtable}
+
+\textbf{Total warehouse capacity: 300,000 MWh/yr \textgreater{} 211,500
+MWh/yr demand} (system is feasible)
+
+For operational planning, the annual demand figures have been updated
+following a new forecast round:
+
+\begin{longtable}[]{@{}lc@{}}
+\toprule\noalign{}
+Plant & Updated Demand (MWh/yr) \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+VW Wolfsburg & 29,500 \\
+VW Hannover & 21,000 \\
+VW Emden & 19,000 \\
+VW Osnabrück & 13,000 \\
+Mercedes-Benz Bremen & 26,000 \\
+Ford Köln & 21,500 \\
+Opel Rüsselsheim & 14,500 \\
+Volvo Cars Gent & 31,000 \\
+Volvo Trucks Gent & 14,500 \\
+Toyota Zaventem & 16,500 \\
+VDL Nedcar Born & 12,500 \\
+\textbf{Total} & \textbf{219,000} \\
+\end{longtable}
+
+\subsection{B.1 Transportation Problem
+Formulation}\label{b.1-transportation-problem-formulation}
+
+Write out the balanced transportation problem. Because total capacity
+(300,000) exceeds total demand (219,000), you must add a dummy plant
+with demand = 81,000 MWh and zero transport cost to all warehouses.
+
+The cost matrix for this sub-problem should be derived from the
+Haversine distances computed in Part A.
+
+\subsection{B.2 Vogel's Approximation
+Method}\label{b.2-vogels-approximation-method}
+
+Apply VAM to the 3×12 (including dummy) transportation problem:
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\tightlist
+\item
+  Compute row and column penalties at each step
+\item
+  Allocate to the cell with minimum cost in the highest-penalty row or
+  column
+\item
+  Eliminate exhausted supply/demand and repeat
+\end{enumerate}
+
+Show all intermediate steps in tabular form. Report the total
+transportation cost of your VAM solution.
+
+\subsection{B.3 Solve with lpSolve}\label{b.3-solve-with-lpsolve}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{library}\NormalTok{(lpSolve)}
+\CommentTok{\# Use lp.transport() — see Exercise Block 3 for reference}
+\NormalTok{result }\OtherTok{\textless{}{-}} \FunctionTok{lp.transport}\NormalTok{(}
+  \AttributeTok{cost.mat  =}\NormalTok{ cost\_sub,       }\CommentTok{\# 3 x 12 (incl. dummy)}
+  \AttributeTok{direction =} \StringTok{"min"}\NormalTok{,}
+  \AttributeTok{row.signs =} \FunctionTok{rep}\NormalTok{(}\StringTok{"\textless{}="}\NormalTok{, }\DecValTok{3}\NormalTok{),}
+  \AttributeTok{row.rhs   =}\NormalTok{ capacity\_vec,}
+  \AttributeTok{col.signs =} \FunctionTok{rep}\NormalTok{(}\StringTok{"\textgreater{}="}\NormalTok{, }\DecValTok{12}\NormalTok{),}
+  \AttributeTok{col.rhs   =}\NormalTok{ demand\_vec\_bal}
+\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+Report the optimal allocation matrix and total cost.
+
+\subsection{B.4 Discussion}\label{b.4-discussion}
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\tightlist
+\item
+  Compare VAM and LP-optimal solutions. What is the gap?
+\item
+  Is the chosen warehouse configuration (Düren/Harsewinkel/Langenhagen)
+  cost-efficient? Would a different trio from Part A yield lower
+  transport costs?
+\item
+  Langenhagen has the highest fixed cost among the three. Under what
+  conditions would it be worth replacing with Hannover-Süd (slightly
+  lower fixed cost, similar location)?
+\end{enumerate}
+
+\begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
+
+\section{Part C: Uncertainty and
+Risk}\label{part-c-uncertainty-and-risk}
+
+\subsection{C.1 Demand Uncertainty
+Model}\label{c.1-demand-uncertainty-model}
+
+Battery demand from automotive plants is \textbf{uncertain}: programme
+ramp-ups, model changeovers, and supply chain disruptions all introduce
+variability. Based on historical data from comparable programmes, the
+3PL's planning team models each plant's annual demand as
+\textbf{normally distributed}:
+
+\[D_j \sim \mathcal{N}(\mu_j, \, \sigma_j^2) \quad \text{with} \quad \sigma_j = 0.15 \cdot \mu_j\]
+
+This corresponds to a \textbf{coefficient of variation of 15\%} --- a
+moderate level of forecast uncertainty typical of 12-month rolling
+forecasts.
+
+\textbf{Task:} For each of the three open warehouses, compute the
+\textbf{aggregate demand} from its assigned plants (using the LP
+allocation from B.3). What is the standard deviation of this aggregate
+demand, assuming plant demands are \textbf{independent}?
+
+\[\sigma_{\text{WH}_k} = \sqrt{\sum_{j \in \mathcal{J}_k} \sigma_j^2}\]
+
+\subsection{C.2 Safety Stock at Each
+Warehouse}\label{c.2-safety-stock-at-each-warehouse}
+
+For a \textbf{95\% type-I service level} (probability of no stockout in
+a planning period), the required safety stock at warehouse \(k\) is:
+
+\[SS_k = z_{0.95} \cdot \sigma_{\text{WH}_k} \cdot \sqrt{L}\]
+
+where \(L\) is the replenishment lead time (assume \(L = 2\) weeks =
+2/52 year) and \(z_{0.95} = 1.645\).
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\tightlist
+\item
+  Compute \(SS_k\) for each of the three warehouses
+\item
+  Convert safety stock from MWh to monetary value (assume battery cost
+  €80/kWh = €80,000/MWh)
+\item
+  Sum the total safety stock investment across all three warehouses
+\end{enumerate}
+
+\subsection{C.3 Centralised Inventory
+Alternative}\label{c.3-centralised-inventory-alternative}
+
+Consider the hypothetical alternative of supplying all 11 plants from a
+\textbf{single central warehouse} (e.g.~located at the geometric
+centroid of all plants).
+
+Under full centralisation, the aggregate standard deviation becomes:
+
+\[\sigma_{\text{central}} = \sqrt{\sum_{j=1}^{11} \sigma_j^2}\]
+
+(independent demands). Compare this to the sum
+\(\sum_k \sigma_{\text{WH}_k}\) from C.2.
+
+\textbf{Tasks:}
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\tightlist
+\item
+  Compute the safety stock under centralisation (same 95\% SL, same lead
+  time)
+\item
+  Compare total safety stock investment: decentralised network
+  vs.~centralised alternative
+\item
+  The \textbf{pooling factor} is \(\sqrt{n_{\text{locations}}}\) ---
+  verify this holds approximately here
+\end{enumerate}
+
+\textbf{Discussion questions:}
+
+\begin{itemize}
+\tightlist
+\item
+  What trade-offs does centralisation imply for transport costs, lead
+  times, and service levels?
+\item
+  In the context of battery logistics (high unit value, hazardous
+  goods), which argument weighs more heavily: pooling savings or
+  proximity to customers?
+\item
+  How would the analysis change if plant demands were
+  \textbf{correlated} (e.g.~due to a common automotive market cycle)?
+\end{itemize}
+
+\begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
+
+\section{Grading Rubric}\label{grading-rubric}
+
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\linewidth - 4\tabcolsep) * \real{0.2075}}
+  >{\centering\arraybackslash}p{(\linewidth - 4\tabcolsep) * \real{0.1509}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 4\tabcolsep) * \real{0.6415}}@{}}
+\toprule\noalign{}
+\begin{minipage}[b]{\linewidth}\raggedright
+Criterion
+\end{minipage} & \begin{minipage}[b]{\linewidth}\centering
+Weight
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Indicators of Strong Performance
+\end{minipage} \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+Problem formulation correctness & 25\% & Correct MILP formulation;
+balanced TP; proper use of Haversine; no logical errors in model
+setup \\
+Solution methodology & 25\% & VAM steps shown in full; lpSolve used
+correctly; heuristic and MILP compared; safety stock formula applied
+correctly \\
+Interpretation and management recommendations & 30\% & Logical
+conclusions drawn from results; trade-offs discussed; sensitivity to
+assumptions addressed; practical relevance of findings \\
+Presentation quality & 20\% & Clear slides, results visualised; team
+presents confidently; answers audience questions; report is
+well-structured and within page limit \\
+\end{longtable}
+
+\textbf{Pass threshold}: minimum 50\% total, with at least 40\% in each
+individual criterion.
+
+\begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
+
+\section{Appendix A: Useful R
+Packages}\label{appendix-a-useful-r-packages}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# Geographic distances}
+\CommentTok{\# (no additional package needed — implement Haversine manually)}
+
+\CommentTok{\# Transportation problem}
+\FunctionTok{install.packages}\NormalTok{(}\StringTok{"lpSolve"}\NormalTok{)}
+\FunctionTok{library}\NormalTok{(lpSolve)}
+
+\CommentTok{\# MILP / WLP}
+\FunctionTok{install.packages}\NormalTok{(}\FunctionTok{c}\NormalTok{(}\StringTok{"ompr"}\NormalTok{, }\StringTok{"ompr.roi"}\NormalTok{, }\StringTok{"ROI"}\NormalTok{, }\StringTok{"ROI.plugin.glpk"}\NormalTok{))}
+\FunctionTok{library}\NormalTok{(ompr); }\FunctionTok{library}\NormalTok{(ompr.roi); }\FunctionTok{library}\NormalTok{(ROI.plugin.glpk)}
+
+\CommentTok{\# Visualisation}
+\FunctionTok{library}\NormalTok{(ggplot2)}
+\FunctionTok{install.packages}\NormalTok{(}\StringTok{"sf"}\NormalTok{)       }\CommentTok{\# optional: for proper geographic maps}
+\FunctionTok{install.packages}\NormalTok{(}\StringTok{"ggrepel"}\NormalTok{)  }\CommentTok{\# non{-}overlapping text labels}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
+
+\section{Appendix B: Report Structure
+Guidance}\label{appendix-b-report-structure-guidance}
+
+Your written report should follow this structure (max 12 pages,
+excluding appendix):
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\tightlist
+\item
+  \textbf{Executive Summary} (max 1 page): key recommendation and
+  headline cost figures
+\item
+  \textbf{Part A: Network Design} --- formulation, cost matrix,
+  heuristic vs.~MILP, recommendation
+\item
+  \textbf{Part B: Transport Planning} --- TP setup, VAM steps (summary
+  table), LP solution, discussion
+\item
+  \textbf{Part C: Risk and Inventory} --- safety stock calculation,
+  pooling comparison, managerial insight
+\item
+  \textbf{Conclusion}: Which network do you recommend? What are the key
+  uncertainties?
+\item
+  \textbf{Appendix}: Full R code (not counted in 12 pages)
+\end{enumerate}
+
+\textbf{Note:} All figures must have a caption and be referenced in the
+text. All tables must be formatted (not R console output). Quantitative
+results must be explicitly stated in the text, not just shown in a
+table.
+
+
+
+
+\end{document}
