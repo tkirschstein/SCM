@@ -179,7 +179,6 @@ Differences between SC and Logistics: Focus on physical distribution
 
 ## The Three Flows
 
-
 ```{r}
 #| label: fig-scm-flows
 #| fig-cap: >
@@ -346,7 +345,6 @@ ggplot() +
     plot.margin     = margin(4, 4, 4, 4)
   )
 ```
-
 
 Every supply chain manages **three flows simultaneously**:
 
