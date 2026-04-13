@@ -21,7 +21,7 @@ execute:
   warning: false
 ---
 
-# Part 1: What is a Supply Chain? {background-color="#1B2A4A"}
+# Part 1: What is a Supply Chain? {background-color="#5E3EE1"}
 
 ## Learning Objectives
 
@@ -202,7 +202,7 @@ Ask students to name the decoupling point position for IKEA (mostly MTS — flat
 
 ---
 
-## Exercise 1.1 — Mapping a Supply Chain {background-color="#1e2a38"}
+## Exercise 1.1 — Mapping a Supply Chain {background-color="#361E47"}
 
 **Group exercise (3 persons, 10 minutes)**
 
@@ -246,7 +246,7 @@ Walk around during group work. Common mistakes: students focus only on the physi
 
 ---
 
-# Part 2: SC Goals and Trade-offs {background-color="#1B2A4A"}
+# Part 2: SC Goals and Trade-offs {background-color="#5E3EE1"}
 
 ## The SC Profit Equation
 
@@ -298,7 +298,7 @@ The DuPont link is crucial for building a business case for SC investments. Stud
 
 ---
 
-## Exercise 1.2 — DuPont Analysis {background-color="#1e2a38"}
+## Exercise 1.2 — DuPont Analysis {background-color="#361E47"}
 
 **FabCo GmbH — Annual Financial Data (€ thousands)**
 
@@ -405,7 +405,7 @@ The EU Corporate Sustainability Reporting Directive (CSRD) and the Supply Chain 
 
 ---
 
-# Part 3: SC Management Levels {background-color="#1B2A4A"}
+# Part 3: SC Management Levels {background-color="#5E3EE1"}
 
 ## The SC Planning Matrix
 

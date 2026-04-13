@@ -10,6 +10,7 @@ format:
     chalkboard: true
     preview-links: auto
     footer: "SCM | Module 6 | HS RheinMain"
+    logo: ../../data/logo.png
     transition: slide
     incremental: false
     toc: true

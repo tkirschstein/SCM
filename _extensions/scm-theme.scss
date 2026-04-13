@@ -1,26 +1,35 @@
 /*-- scss:defaults --*/
 
-// ─── Fonts ────────────────────────────────────────────────────────────────────
-$font-family-sans-serif: "Calibri", "Arial", "Helvetica Neue", sans-serif !default;
-$font-family-monospace:  "Consolas", "Courier New", monospace !default;
-$presentation-font-size-root: 38px !default;
+// ─── HSRM Wiesbaden Business School — Corporate Design ────────────────────────
+// Based on HSRM PowerPoint Vorlage 2025
+// Primary: deep purple #361E47, Accent red #E00514, Violet #5E3EE1
+// Secondary: Berry #A42564, Lavender #F6D0F1, Light gray #D8D1DB
+// ──────────────────────────────────────────────────────────────────────────────
 
-// ─── Brand Colors ─────────────────────────────────────────────────────────────
-$teal:       #01696F;
-$teal-dark:  #014d52;
-$navy:       #1B2A4A;
-$navy-light: #2c4070;
-$white:      #ffffff;
-$off-white:  #f5f7fa;
-$light-gray: #e8ecf0;
-$mid-gray:   #8898aa;
-$body-text:  #2d3748;
+// ─── Fonts ────────────────────────────────────────────────────────────────────
+// HSRM uses Arial throughout (system font — safe for any machine)
+$font-family-sans-serif: "Arial", "Helvetica Neue", "Helvetica", sans-serif !default;
+$font-family-monospace:  "Consolas", "Courier New", monospace !default;
+$presentation-font-size-root: 36px !default;
+
+// ─── HSRM Brand Colors ────────────────────────────────────────────────────────
+$hsrm-purple:     #361E47;   // Primary text, headings (dk1)
+$hsrm-dark:       #281537;   // Dark section backgrounds
+$hsrm-red:        #E00514;   // Accent: subtitle text, bullet markers, links
+$hsrm-violet:     #5E3EE1;   // Section divider backgrounds, strong accent
+$hsrm-berry:      #A42564;   // Secondary accent (magenta/wine)
+$hsrm-lavender:   #F6D0F1;   // Light section background variant
+$hsrm-amber:      #FBAE40;   // Decorative accent (data callouts)
+$hsrm-gray-light: #D8D1DB;   // Borders, dividers
+$hsrm-gray-mid:   #8A7D8E;   // Muted text (footer)
+$hsrm-white:      #FFFFFF;
+$hsrm-off-white:  #FAF8FB;   // Subtle table stripe
 
 // ─── Reveal Variable Overrides ────────────────────────────────────────────────
-$body-bg:       $white      !default;
-$body-color:    $body-text  !default;
-$link-color:    $teal       !default;
-$selection-bg:  rgba($teal, 0.25) !default;
+$body-bg:       $hsrm-white   !default;
+$body-color:    $hsrm-purple  !default;
+$link-color:    $hsrm-red     !default;
+$selection-bg:  rgba($hsrm-violet, 0.25) !default;
 
 /*-- scss:rules --*/
 
@@ -28,246 +37,439 @@ $selection-bg:  rgba($teal, 0.25) !default;
 .reveal {
   font-family: $font-family-sans-serif;
   font-size: $presentation-font-size-root;
-  color: $body-color;
+  color: $hsrm-purple;
 }
 
 // ─── Title Slide ──────────────────────────────────────────────────────────────
+// Light/white background with HSRM branding (matches slide 1 & 2 variants)
 .reveal .slides section.title-slide,
 .reveal .slides > section:first-child {
-  background-color: $navy;
-  color: $white;
+  background-color: $hsrm-white;
+  color: $hsrm-purple;
+  text-align: left;
 
   h1.title {
-    font-size: 1.6em;
+    font-size: 1.55em;
     font-weight: 700;
-    color: $white;
+    color: $hsrm-purple;
     line-height: 1.2;
     text-shadow: none;
-    border-bottom: 3px solid $teal;
-    padding-bottom: 0.25em;
-    margin-bottom: 0.3em;
+    margin-bottom: 0.25em;
+    padding-bottom: 0;
   }
 
   .subtitle {
-    font-size: 0.85em;
-    color: rgba($white, 0.8);
+    font-size: 0.82em;
+    color: $hsrm-red;
     font-weight: 400;
-    letter-spacing: 0.04em;
-    margin-bottom: 0.6em;
+    margin-bottom: 0.55em;
   }
 
-  .author, .date {
-    font-size: 0.65em;
-    color: rgba($white, 0.65);
+  .author {
+    font-size: 0.62em;
+    color: $hsrm-purple;
+    font-weight: 400;
+    margin-bottom: 0.1em;
+  }
+
+  .date {
+    font-size: 0.55em;
+    color: $hsrm-gray-mid;
+    margin-top: 0.1em;
   }
 }
 
-// ─── Slide Headers ────────────────────────────────────────────────────────────
+// ─── Slide Headings ───────────────────────────────────────────────────────────
 .reveal h1,
 .reveal h2 {
   font-family: $font-family-sans-serif;
   font-weight: 700;
-  color: $navy;
+  color: $hsrm-purple;
   text-shadow: none;
-  margin-bottom: 0.5em;
+  margin-bottom: 0.45em;
+  line-height: 1.2;
 }
 
-.reveal h1 { font-size: 1.4em; }
-.reveal h2 { font-size: 1.1em; border-bottom: 2px solid $teal; padding-bottom: 0.2em; }
+// h1 = main slide title (content slides)
+.reveal h1 {
+  font-size: 1.25em;
+}
 
-.reveal h3 {
-  font-size: 0.9em;
+// h2 = section-level heading inside slide
+.reveal h2 {
+  font-size: 1.0em;
   font-weight: 600;
-  color: $teal;
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
+  color: $hsrm-purple;
 }
 
-// ─── Section Title Slides ─────────────────────────────────────────────────────
-.reveal .slides section[data-background-color] h2 {
-  color: $white;
-  border-bottom-color: rgba($white, 0.4);
+// h3 = sub-section label
+.reveal h3 {
+  font-size: 0.82em;
+  font-weight: 700;
+  color: $hsrm-red;
+  text-transform: none;
+  letter-spacing: 0;
+  margin-bottom: 0.3em;
+}
+
+// ─── Section/Divider Slides ───────────────────────────────────────────────────
+// Violet background divider (matches slide 4 style)
+// Usage in Quarto: ## Section Title {background-color="#5E3EE1"}
+.reveal .slides section[data-background-color="#5E3EE1"],
+.reveal .slides section[data-background-color="#361E47"],
+.reveal .slides section[data-background-color="#281537"],
+.reveal .slides section[data-background-color="#A42564"] {
+  h1, h2 {
+    color: $hsrm-white;
+    font-weight: 700;
+  }
+
+  .subtitle, p.subtitle {
+    color: $hsrm-white;
+    opacity: 0.9;
+  }
+
+  p, li {
+    color: rgba($hsrm-white, 0.85);
+  }
+}
+
+// Lavender background divider (matches slide 3 style)
+.reveal .slides section[data-background-color="#F6D0F1"] {
+  h1, h2 {
+    color: $hsrm-purple;
+    font-weight: 700;
+  }
+
+  .subtitle, p.subtitle {
+    color: $hsrm-red;
+  }
+}
+
+// ─── Part Header Slides (class-based) ─────────────────────────────────────────
+.part-slide {
+  background-color: $hsrm-violet !important;
+  color: $hsrm-white !important;
+
+  h2 {
+    color: $hsrm-white !important;
+    font-size: 1.35em;
+  }
+
+  p {
+    color: rgba($hsrm-white, 0.85) !important;
+    font-size: 0.8em;
+  }
 }
 
 // ─── Body Text ────────────────────────────────────────────────────────────────
 .reveal p,
 .reveal li {
-  font-size: 0.78em;
-  line-height: 1.55;
-  color: $body-text;
+  font-size: 0.76em;
+  line-height: 1.5;
+  color: $hsrm-purple;
 }
 
-.reveal ul, .reveal ol { margin-left: 1.2em; }
-.reveal ul li::marker   { color: $teal; }
-.reveal strong          { color: $navy; font-weight: 700; }
+.reveal ul,
+.reveal ol {
+  margin-left: 1.1em;
+}
+
+// HSRM uses red bullet markers
+.reveal ul li::marker {
+  color: $hsrm-red;
+}
+
+.reveal ol li::marker {
+  color: $hsrm-red;
+  font-weight: 700;
+}
+
+.reveal strong {
+  color: $hsrm-purple;
+  font-weight: 700;
+}
+
+.reveal em {
+  color: $hsrm-red;
+  font-style: italic;
+}
+
+// ─── Links ────────────────────────────────────────────────────────────────────
+.reveal a {
+  color: $hsrm-red;
+  text-decoration: underline;
+
+  &:hover {
+    color: darken($hsrm-red, 12%);
+  }
+}
 
 // ─── Tables ───────────────────────────────────────────────────────────────────
 .reveal table {
-  font-size: 0.68em;
+  font-size: 0.64em;
   border-collapse: collapse;
   width: 100%;
   margin: 0.5em 0;
 }
 
 .reveal table th {
-  background-color: $navy;
-  color: $white;
-  padding: 0.45em 0.7em;
-  font-weight: 600;
+  background-color: $hsrm-purple;
+  color: $hsrm-white;
+  padding: 0.45em 0.75em;
+  font-weight: 700;
   text-align: left;
-  border: 1px solid rgba($white, 0.15);
+  border: 1px solid rgba($hsrm-white, 0.2);
+  font-size: 0.95em;
 }
 
 .reveal table td {
-  padding: 0.35em 0.7em;
-  border: 1px solid $light-gray;
-  color: $body-text;
+  padding: 0.35em 0.75em;
+  border: 1px solid $hsrm-gray-light;
+  color: $hsrm-purple;
+  vertical-align: top;
 }
 
-.reveal table tr:nth-child(even) td { background-color: $off-white; }
-.reveal table tr:hover td           { background-color: rgba($teal, 0.08); }
+.reveal table tr:nth-child(even) td {
+  background-color: $hsrm-off-white;
+}
+
+.reveal table tr:hover td {
+  background-color: rgba($hsrm-violet, 0.06);
+}
 
 // ─── Blockquotes ──────────────────────────────────────────────────────────────
+// Matches HSRM quote slide (slide 7): centered, dark purple text, red attribution
 .reveal blockquote {
-  background-color: rgba($teal, 0.08);
-  border-left: 4px solid $teal;
-  border-radius: 4px;
-  margin: 0.6em 0;
-  padding: 0.5em 0.9em;
-  font-size: 0.72em;
+  background-color: transparent;
+  border-left: none;
+  border-radius: 0;
+  margin: 0.5em auto;
+  padding: 0.4em 1em;
+  font-size: 0.75em;
   font-style: italic;
-  color: $navy;
+  color: $hsrm-purple;
   box-shadow: none;
-  width: 95%;
+  width: 90%;
+  text-align: center;
 }
 
 // ─── Callout Boxes ────────────────────────────────────────────────────────────
 .callout-tip {
-  border-left: 4px solid $teal !important;
-  background-color: rgba($teal, 0.07) !important;
+  border-left: 4px solid $hsrm-violet !important;
+  background-color: rgba($hsrm-violet, 0.06) !important;
 
   .callout-title {
-    background-color: rgba($teal, 0.15) !important;
-    color: $teal-dark !important;
+    background-color: rgba($hsrm-violet, 0.14) !important;
+    color: $hsrm-violet !important;
     font-weight: 700;
   }
 }
 
 .callout-note {
-  border-left: 4px solid $navy !important;
-  background-color: rgba($navy, 0.05) !important;
+  border-left: 4px solid $hsrm-purple !important;
+  background-color: rgba($hsrm-purple, 0.05) !important;
 
   .callout-title {
-    background-color: rgba($navy, 0.12) !important;
-    color: $navy !important;
+    background-color: rgba($hsrm-purple, 0.12) !important;
+    color: $hsrm-purple !important;
     font-weight: 700;
   }
 }
 
 .callout-warning {
-  border-left: 4px solid #d97706 !important;
-  background-color: rgba(#d97706, 0.07) !important;
+  border-left: 4px solid $hsrm-amber !important;
+  background-color: rgba($hsrm-amber, 0.08) !important;
+
+  .callout-title {
+    background-color: rgba($hsrm-amber, 0.18) !important;
+    color: darken($hsrm-amber, 25%) !important;
+    font-weight: 700;
+  }
+}
+
+.callout-important {
+  border-left: 4px solid $hsrm-red !important;
+  background-color: rgba($hsrm-red, 0.06) !important;
+
+  .callout-title {
+    background-color: rgba($hsrm-red, 0.12) !important;
+    color: $hsrm-red !important;
+    font-weight: 700;
+  }
 }
 
 // ─── Code Blocks ──────────────────────────────────────────────────────────────
 .reveal pre {
-  background-color: #1e2a38;
-  border-radius: 6px;
-  padding: 0.6em 0.9em;
-  font-size: 0.58em;
-  box-shadow: 0 3px 12px rgba(0,0,0,0.25);
+  background-color: #1E1430;   // dark purple tint matching HSRM brand
+  border-radius: 4px;
+  padding: 0.55em 0.85em;
+  font-size: 0.56em;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
   border: none;
 }
 
 .reveal code {
   font-family: $font-family-monospace;
-  color: #7dd3d8;
-  background-color: rgba($teal, 0.08);
+  color: $hsrm-violet;
+  background-color: rgba($hsrm-violet, 0.08);
   padding: 0.1em 0.3em;
   border-radius: 3px;
-  font-size: 0.85em;
+  font-size: 0.82em;
 }
 
-.reveal pre code { color: #d4e2f0; background: none; padding: 0; }
+.reveal pre code {
+  color: #E8D8FF;
+  background: none;
+  padding: 0;
+}
 
-// ─── Footer & Progress ────────────────────────────────────────────────────────
+// ─── Footer ───────────────────────────────────────────────────────────────────
+// HSRM template footer: date | presentation title | page number (right)
 .reveal .footer {
-  font-size: 0.5em;
-  color: $mid-gray;
+  font-size: 0.42em;
+  color: $hsrm-gray-mid;
   font-family: $font-family-sans-serif;
+  border-top: 1px solid $hsrm-gray-light;
+  padding-top: 0.2em;
 }
 
-.reveal .progress { color: $teal; height: 3px; }
+// ─── Progress Bar ─────────────────────────────────────────────────────────────
+.reveal .progress {
+  color: $hsrm-red;
+  height: 3px;
+}
 
 // ─── Slide Numbers ────────────────────────────────────────────────────────────
 .reveal .slide-number {
-  background-color: rgba($navy, 0.7);
-  color: $white;
-  font-size: 0.5em;
-  border-radius: 3px;
-  padding: 0.15em 0.4em;
-}
-
-// ─── Part Header Slides ───────────────────────────────────────────────────────
-.part-slide {
-  background-color: $navy !important;
-  color: $white !important;
-
-  h2 {
-    color: $white !important;
-    border-bottom-color: $teal !important;
-    font-size: 1.3em;
-  }
-
-  p { color: rgba($white, 0.75) !important; }
+  background-color: transparent;
+  color: $hsrm-gray-mid;
+  font-size: 0.42em;
+  font-family: $font-family-sans-serif;
+  right: 0.8em;
+  bottom: 0.5em;
+  padding: 0;
 }
 
 // ─── Highlight Box ────────────────────────────────────────────────────────────
+// Used for key result / insight boxes
 .highlight-box {
-  background-color: $teal;
-  color: $white;
+  background-color: $hsrm-purple;
+  color: $hsrm-white;
   padding: 0.4em 0.8em;
-  border-radius: 5px;
-  font-weight: 600;
-  font-size: 0.75em;
+  border-radius: 3px;
+  font-weight: 700;
+  font-size: 0.74em;
+}
+
+// Red variant (alert/important)
+.highlight-red {
+  background-color: $hsrm-red;
+  color: $hsrm-white;
+  padding: 0.4em 0.8em;
+  border-radius: 3px;
+  font-weight: 700;
+  font-size: 0.74em;
+}
+
+// Violet variant (section marker)
+.highlight-violet {
+  background-color: $hsrm-violet;
+  color: $hsrm-white;
+  padding: 0.4em 0.8em;
+  border-radius: 3px;
+  font-weight: 700;
+  font-size: 0.74em;
 }
 
 // ─── Two-column Layout ────────────────────────────────────────────────────────
-.columns > .column { padding: 0 0.4em; }
+.columns > .column {
+  padding: 0 0.35em;
+}
+
+// ─── KPI / Stat Callout ───────────────────────────────────────────────────────
+.kpi {
+  text-align: center;
+  padding: 0.4em;
+
+  .kpi-value {
+    font-size: 2.2em;
+    font-weight: 700;
+    color: $hsrm-purple;
+    line-height: 1;
+  }
+
+  .kpi-label {
+    font-size: 0.6em;
+    color: $hsrm-gray-mid;
+    margin-top: 0.2em;
+  }
+
+  &.kpi-red .kpi-value    { color: $hsrm-red; }
+  &.kpi-violet .kpi-value { color: $hsrm-violet; }
+}
 
 // ─── Math ─────────────────────────────────────────────────────────────────────
-.reveal .math { font-size: 0.82em; }
+.reveal .math {
+  font-size: 0.82em;
+  color: $hsrm-purple;
+}
 
 // ─── Speaker Notes ────────────────────────────────────────────────────────────
 .reveal .speaker-notes {
   font-family: $font-family-sans-serif;
-  font-size: 0.6em;
-  color: #333;
+  font-size: 0.58em;
+  color: #444;
 }
 
 // ─── Incremental Lists ────────────────────────────────────────────────────────
 .reveal ul.incremental > li,
-.reveal ol.incremental > li              { opacity: 0.25; }
+.reveal ol.incremental > li {
+  opacity: 0.25;
+}
+
 .reveal ul.incremental > li.current-fragment,
-.reveal ol.incremental > li.current-fragment { opacity: 1; }
+.reveal ol.incremental > li.current-fragment {
+  opacity: 1;
+}
 
 // ─── Exercise Boxes ───────────────────────────────────────────────────────────
 .exercise {
-  background-color: rgba(#f59e0b, 0.1);
-  border: 1.5px solid #f59e0b;
-  border-radius: 6px;
-  padding: 0.6em 0.9em;
-  margin: 0.5em 0;
-  font-size: 0.72em;
+  background-color: rgba($hsrm-amber, 0.1);
+  border: 1.5px solid $hsrm-amber;
+  border-radius: 4px;
+  padding: 0.55em 0.85em;
+  margin: 0.4em 0;
+  font-size: 0.7em;
 }
 
 .exercise::before {
   content: "Exercise";
   display: block;
   font-weight: 700;
-  color: #b45309;
-  font-size: 0.85em;
+  color: darken($hsrm-amber, 28%);
+  font-size: 0.82em;
   text-transform: uppercase;
-  letter-spacing: 0.05em;
-  margin-bottom: 0.3em;
+  letter-spacing: 0.04em;
+  margin-bottom: 0.25em;
+}
+
+// ─── SCM-specific: Formula Box ────────────────────────────────────────────────
+.formula-box {
+  background-color: rgba($hsrm-violet, 0.06);
+  border: 1.5px solid rgba($hsrm-violet, 0.3);
+  border-radius: 4px;
+  padding: 0.5em 0.85em;
+  margin: 0.4em 0;
+  font-size: 0.74em;
+  text-align: center;
+}
+
+// ─── Logo Positioning ─────────────────────────────────────────────────────────
+// Quarto RevealJS logo appears in top-right; style to match HSRM template
+.slide-logo {
+  max-height: 44px !important;
+  max-width: 160px !important;
+  object-fit: contain;
+  margin: 8px 12px 0 0;
 }

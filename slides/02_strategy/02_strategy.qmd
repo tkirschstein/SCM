@@ -10,6 +10,7 @@ format:
     chalkboard: true
     preview-links: auto
     footer: "SCM | Module 2 | HS RheinMain"
+    logo: ../../data/logo.png
     transition: slide
     incremental: false
     toc: true
@@ -19,7 +20,7 @@ execute:
   warning: false
 ---
 
-# Part 1: Strategic Fit {background-color="#1B2A4A"}
+# Part 1: Strategic Fit {background-color="#5E3EE1"}
 
 ## Learning Objectives
 
@@ -183,7 +184,7 @@ These four examples span the full spectrum. Ask students: "If Zara tried to copy
 
 ---
 
-# Part 2: Location Planning Methods {background-color="#1B2A4A"}
+# Part 2: Location Planning Methods {background-color="#5E3EE1"}
 
 ## Facility Location — The Strategic Decision
 
@@ -436,7 +437,7 @@ plot(sites$u, sites$v,
      xlim = c(0, 10), ylim = c(0, 10),
      xlab = "x-coordinate", ylab = "y-coordinate",
      main = "Customer Sites & Center of Gravity")
-text(sites$u, sites$v + 0.5, sites$label, cex = 0.7, col = "#1B2A4A")
+text(sites$u, sites$v + 0.5, sites$label, cex = 0.7, col = "#5E3EE1")
 points(cog_x, cog_y, pch = 18, cex = 2.5, col = "#e05c2a")
 text(cog_x + 0.3, cog_y + 0.5, "CoG", cex = 0.8, col = "#e05c2a")
 for(i in 1:nrow(sites)) {
@@ -453,7 +454,7 @@ The Weiszfeld algorithm is a classic example of an iterative re-weighted least s
 
 ---
 
-## Exercise 2.1 — Center of Gravity {background-color="#1e2a38"}
+## Exercise 2.1 — Center of Gravity {background-color="#361E47"}
 
 **Five customer locations with annual demands:**
 
@@ -484,7 +485,7 @@ Expected CoG: x = (500×2 + 300×7 + 800×5 + 200×1 + 400×9)/2200 = (1000+2100
 
 ---
 
-# Part 3: Network Planning Models {background-color="#1B2A4A"}
+# Part 3: Network Planning Models {background-color="#5E3EE1"}
 
 ## Distribution Network Design
 
@@ -665,7 +666,7 @@ The Add and Drop heuristics are important historically and conceptually, but in 
 
 ---
 
-## Exercise 2.2 — WLP with Add Heuristic {background-color="#1e2a38"}
+## Exercise 2.2 — WLP with Add Heuristic {background-color="#361E47"}
 
 **5 potential warehouses, 7 customers. Fixed costs (€1,000/yr):** $f = [5, 7, 5, 6, 4]$
 
