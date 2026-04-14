@@ -1029,6 +1029,85 @@ a fast-fashion retailer.
 
 ------------------------------------------------------------------------
 
+## Customer Service Dimensions {.smaller}
+
+**Three phases of the buyer–seller transaction** *(La Londe & Zinszer 1976)*
+
+:::::: columns
+::: {.column width="32%"}
+**① Pre-Transaction**
+
+*Setting the service environment*
+
+-   Written service policy (e.g. 98% OTIF target)
+-   Accessibility — single point of contact
+-   Organisational structure — CS authority
+-   System flexibility — adapting to special requirements
+:::
+
+::: {.column width="34%"}
+**② Transaction**
+
+*Order fulfilment execution*
+
+-   **Order fill rate** — % shipped complete
+-   **Order cycle time** — placement → delivery
+-   **Delivery reliability** — on-time consistency
+-   Order accuracy — right product & qty
+-   Order convenience — EDI, MOQ, consolidation
+:::
+
+::: {.column width="32%"}
+**③ Post-Transaction**
+
+*Relationship & support*
+
+-   Shipment tracking & visibility
+-   Returns management (reverse logistics)
+-   Spare parts availability
+-   Complaint & claims handling
+-   Product tracing & warranty
+:::
+::::::
+
+::: {.callout-tip title="Key Insight"}
+**Pre-transaction** elements are largely invisible to the customer — until they fail.
+**Transaction** elements are operationally intensive and directly drive cost.
+**Post-transaction** elements are disproportionately remembered and drive loyalty.
+:::
+
+::: notes
+Source: La Londe & Zinszer (1976), adopted by Christopher (2005) and Chopra & Meindl.
+The three-phase structure is useful because it shifts the conversation from pure logistics metrics to the full customer experience arc. Upstream (pre-transaction) is about designing the right service system; the transaction phase is operational execution; post-transaction is relationship management and loyalty. Ask students: which phase do most companies invest in? (Answer: transaction) — and which phase do customers remember most? (Answer: post-transaction — the "service recovery paradox" shows that a well-handled complaint can create more loyalty than no complaint at all.)
+:::
+
+------------------------------------------------------------------------
+
+## The Perfect Order
+
+**A single composite KPI integrating all transaction-phase dimensions:**
+
+$$\text{Perfect Order Rate} = \underbrace{\text{OTD\%}}_{\text{On time}} \times \underbrace{\text{Fill Rate\%}}_{\text{Complete}} \times \underbrace{\text{Accuracy\%}}_{\text{Correct docs}} \times \underbrace{\text{Damage-free\%}}_{\text{Condition}}$$
+
+| Dimension | World-class target | Typical underperformer |
+|---|---|---|
+| On-time delivery (OTD) | ≥ 97% | 80–85% |
+| Order fill rate | ≥ 98% | 90–93% |
+| Order accuracy | ≥ 99.5% | 95–97% |
+| Damage-free | ≥ 99.8% | 97–99% |
+| **Perfect Order Rate** | **≈ 95–97%** | **≈ 65–75%** |
+
+::: {.callout-warning title="The Multiplication Effect"}
+Even world-class individual KPIs compound into a lower composite score:
+$0.97 \times 0.98 \times 0.995 \times 0.998 \approx \mathbf{0.944}$ — illustrating why perfection is genuinely hard.
+:::
+
+::: notes
+The Perfect Order concept was popularised by the Supply Chain Council (now APICS/ASCM) as part of the SCOR model. It forces firms to think holistically rather than optimising individual metrics in isolation. A common failure mode: a firm achieves 98% OTIF but has 5% damage rate — the Perfect Order Rate collapses to ~93%. Ask students to compute the perfect order rate for a company with OTD=95%, fill=97%, accuracy=99%, damage-free=99%: 0.95 × 0.97 × 0.99 × 0.99 ≈ 0.904 — only 90.4% perfect orders despite individually reasonable KPIs. The managerial implication: improvement effort should focus on the weakest link, not on already-strong metrics.
+:::
+
+------------------------------------------------------------------------
+
 ## Sustainability as a Strategic Dimension
 
 **The Triple Bottom Line in SCM:**
