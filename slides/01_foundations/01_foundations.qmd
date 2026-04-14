@@ -165,6 +165,389 @@ signals upstream.
 
 ------------------------------------------------------------------------
 
+## SC Structure Types {.smaller}
+
+:::: {.columns}
+
+::: {.column width="33%"}
+**Focal**
+
+One dominant firm orchestrates all supplier and distribution relationships. High control, high dependency.
+
+*→ Apple, Toyota, Boeing*
+:::
+
+::: {.column width="33%"}
+**Linear**
+
+Strictly sequential stages — each actor processes and hands off to the next. No bypassing, no parallel flows.
+
+*→ Zara, oil refining, semiconductor fab*
+:::
+
+::: {.column width="33%"}
+**Polycentric**
+
+Multiple autonomous regional hubs, each running their own supplier networks. Coordination across hubs is lateral.
+
+*→ IKEA, Procter & Gamble, Nestlé*
+:::
+
+::::
+
+::: notes
+These three archetypes are from Harland (1996) and Choi & Rungtusanatham (1999). In practice, most supply chains are hybrids — e.g. Apple is focal at the product level but linear within the Foxconn assembly pipeline. The distinction matters for risk management: focal chains concentrate risk on one firm; polycentric chains distribute it across hubs.
+:::
+
+------------------------------------------------------------------------
+
+## Focal Structure — Apple iPhone
+
+```{r}
+#| label: fig-sc-focal
+#| fig-cap: >
+#|   Focal supply chain structure illustrated by the Apple iPhone.
+#|   Apple acts as the single orchestrating firm, coordinating hundreds of
+#|   specialised Tier-1 suppliers. All component flows converge on Apple before
+#|   reaching the consumer.
+#| fig-width: 9
+#| fig-height: 5.0
+#| fig-alt: >
+#|   Hub-and-spoke diagram. Apple (Focal Firm) is at the centre. Six supplier
+#|   boxes surround it: TSMC (Chips), Sony (Camera), Samsung (Display),
+#|   Foxconn (Assembly), Qualcomm (Modem), Murata (Capacitors). Solid arrows
+#|   flow from each supplier into Apple. A solid arrow flows from Apple to
+#|   Consumer. A dashed arrow returns from Consumer to Apple indicating demand.
+#| echo: false
+#| out-width: "100%"
+
+library(ggplot2)
+library(grid)
+
+col_purple <- "#361E47"; col_violet <- "#5E3EE1"
+col_lgray  <- "#F4F1F6"; col_gray   <- "#D8D1DB"
+
+node_box <- function(cx, cy, w, h, fill, border, label, lsize = 2.5) {
+  list(
+    annotate("rect", xmin=cx-w/2, xmax=cx+w/2, ymin=cy-h/2, ymax=cy+h/2,
+             fill=fill, color=border, linewidth=0.55),
+    annotate("text", x=cx, y=cy, label=label, size=lsize, color=border,
+             fontface="bold", hjust=0.5, vjust=0.5, lineheight=0.88)
+  )
+}
+
+arr <- function(x1,y1,x2,y2,col,ltype="solid",lw=0.9,atype="closed",aends="last",alen=0.18)
+  annotate("segment",x=x1,xend=x2,y=y1,yend=y2,color=col,linewidth=lw,linetype=ltype,
+           arrow=arrow(length=unit(alen,"cm"),type=atype,ends=aends))
+
+cx <- 0.50; cy <- 0.50; r <- 0.30; bw <- 0.13; bh <- 0.085
+
+suppliers <- data.frame(
+  label = c("TSMC\n(Chips)","Sony\n(Camera)","Samsung\n(Display)",
+            "Foxconn\n(Assembly)","Qualcomm\n(Modem)","Murata\n(Capacitors)"),
+  angle = c(150, 210, 270, 330, 30, 90))
+suppliers$sx <- cx + r * cos(suppliers$angle * pi/180)
+suppliers$sy <- cy + r * sin(suppliers$angle * pi/180)
+
+ggplot() +
+  annotate("rect", xmin=0,xmax=1,ymin=0,ymax=1, fill=col_lgray,color=NA) +
+  annotate("rect", xmin=0.33,xmax=0.67,ymin=0.33,ymax=0.67,
+           fill="white",color=col_purple,linewidth=0.3,linetype="dashed") +
+
+  # Supplier → Apple arrows
+  {lapply(seq_len(nrow(suppliers)), function(i) {
+    s <- suppliers[i,]
+    dx <- cx-s$sx; dy <- cy-s$sy; len <- sqrt(dx^2+dy^2)
+    ux <- dx/len; uy <- dy/len
+    arr(s$sx+ux*bw*1.1, s$sy+uy*bh*1.1, cx-ux*0.062, cy-uy*0.062,
+        col_purple, lw=0.75)
+  })} +
+
+  # Apple → Consumer
+  arr(cx+0.062, cy, 0.91, cy, col_purple, lw=1.1) +
+  # Consumer → Apple (demand signal)
+  arr(0.91, cy+0.018, cx+0.065, cy+0.018,
+      col_violet, ltype="dashed", lw=0.7, aends="last") +
+
+  # Supplier boxes
+  {lapply(seq_len(nrow(suppliers)), function(i) {
+    s <- suppliers[i,]
+    node_box(s$sx, s$sy, bw, bh, fill=col_lgray, border=col_purple,
+             label=s$label, lsize=2.0)
+  })} +
+
+  # Apple box
+  annotate("rect", xmin=cx-0.06,xmax=cx+0.06,ymin=cy-0.05,ymax=cy+0.05,
+           fill=col_purple,color=col_purple,linewidth=0.55) +
+  annotate("text", x=cx, y=cy, label="Apple\n(Focal Firm)",
+           size=2.4, color="white", fontface="bold", hjust=0.5, vjust=0.5, lineheight=0.88) +
+
+  # Consumer box
+  annotate("rect", xmin=0.88,xmax=0.98,ymin=cy-0.04,ymax=cy+0.04,
+           fill=col_lgray,color=col_purple,linewidth=0.55) +
+  annotate("text", x=0.93, y=cy, label="Consumer",
+           size=2.0,color=col_purple,fontface="bold") +
+
+  # Title & labels
+  annotate("text", x=0.04,y=0.96, label="Focal SC structure",
+           hjust=0,vjust=1,size=3.0,color=col_purple,fontface="bold") +
+  annotate("text", x=0.04,y=0.90, label="Example: Apple iPhone supply chain",
+           hjust=0,vjust=1,size=2.3,color=col_violet,fontface="italic") +
+
+  # Legend
+  annotate("segment",x=0.05,xend=0.12,y=0.05,yend=0.05,color=col_purple,
+           linewidth=0.85,linetype="solid",
+           arrow=arrow(length=unit(0.13,"cm"),type="closed",ends="last")) +
+  annotate("text",x=0.13,y=0.05,hjust=0,size=1.9,color=col_purple,
+           label="Material / components") +
+  annotate("segment",x=0.45,xend=0.52,y=0.05,yend=0.05,color=col_violet,
+           linewidth=0.75,linetype="dashed",
+           arrow=arrow(length=unit(0.13,"cm"),type="closed",ends="last")) +
+  annotate("text",x=0.53,y=0.05,hjust=0,size=1.9,color=col_violet,
+           label="Demand / order signal") +
+
+  scale_x_continuous(limits=c(0,1),expand=c(0,0)) +
+  scale_y_continuous(limits=c(0,1),expand=c(0,0)) +
+  theme_void() +
+  theme(plot.background=element_rect(fill="white",color=NA),
+        plot.margin=margin(4,4,4,4))
+```
+
+::: notes
+Apple exemplifies the focal model. Tim Cook transformed Apple's supply chain from a loosely managed network into a tightly controlled hub. Apple does not manufacture — it designs, orchestrates, and controls. Key levers: exclusive contracts with TSMC (A-series chips), deep integration with Foxconn (assembly), strategic pre-payments to lock preferred supply. Apple holds enormous power over Tier-1 suppliers, but this creates concentration risk — as seen in 2022 Zhengzhou factory disruptions.
+:::
+
+------------------------------------------------------------------------
+
+## Linear Structure — Fast Fashion (Zara)
+
+```{r}
+#| label: fig-sc-linear
+#| fig-cap: >
+#|   Linear supply chain structure illustrated by Zara (Inditex).
+#|   Six sequential production stages link raw material extraction to retail.
+#|   Each stage adds value and passes output to the next — no stage can be
+#|   bypassed.
+#| fig-width: 9
+#| fig-height: 5.0
+#| fig-alt: >
+#|   Six boxes arranged in a horizontal chain connected by rightward arrows:
+#|   Raw Materials → Fibre Spinning → Weaving & Dyeing → Cut & Sew →
+#|   Distribution Centre → Retail Store. Each box shows example actors below.
+#|   A characteristics panel below the chain lists sequential stages,
+#|   one-direction flow, no bypassing steps, and approx. 40-week lead time.
+#| echo: false
+#| out-width: "100%"
+
+library(ggplot2)
+library(grid)
+
+col_purple <- "#361E47"; col_violet <- "#5E3EE1"
+col_lgray  <- "#F4F1F6"; col_gray   <- "#D8D1DB"
+
+stages  <- c("Raw\nMaterials","Fibre\nSpinning","Weaving &\nDyeing",
+             "Cut &\nSew","Distribution\nCentre","Retail\nStore")
+details <- c("Cotton,\nPolyester","Yarn\nproduction","Fabric\nfinishing",
+             "Bangladesh,\nMorocco","Arteixo,\nSpain","2,100+\nstores")
+n  <- length(stages); bw <- 0.11; bh <- 0.10
+xs <- seq(0.08, 0.92, length.out=n); y0 <- 0.60; gap <- 0.008
+
+ggplot() +
+  annotate("rect",xmin=0,xmax=1,ymin=0,ymax=1,fill=col_lgray,color=NA) +
+  annotate("rect",xmin=0.02,xmax=0.98,ymin=y0-0.18,ymax=y0+0.18,
+           fill="white",color=col_gray,linewidth=0.3,linetype="dashed") +
+
+  # Arrows between boxes
+  {lapply(seq_len(n-1), function(i)
+    annotate("segment",x=xs[i]+bw/2+gap,xend=xs[i+1]-bw/2-gap,y=y0,yend=y0,
+             color=col_purple,linewidth=0.95,linetype="solid",
+             arrow=arrow(length=unit(0.18,"cm"),type="closed",ends="last"))
+  )} +
+
+  # Stage boxes (purple fill)
+  {lapply(seq_len(n), function(i)
+    annotate("rect",xmin=xs[i]-bw/2,xmax=xs[i]+bw/2,ymin=y0-bh/2,ymax=y0+bh/2,
+             fill=col_purple,color=col_purple,linewidth=0.55)
+  )} +
+
+  # Stage labels (white text)
+  {lapply(seq_len(n), function(i)
+    annotate("text",x=xs[i],y=y0,label=stages[i],
+             size=1.85,color="white",fontface="bold",hjust=0.5,vjust=0.5,lineheight=0.88)
+  )} +
+
+  # Detail labels below
+  {lapply(seq_len(n), function(i)
+    annotate("text",x=xs[i],y=y0-0.155,label=details[i],
+             size=1.7,color=col_purple,hjust=0.5,vjust=1,lineheight=0.85)
+  )} +
+
+  # Stage numbers above
+  {lapply(seq_len(n), function(i)
+    annotate("text",x=xs[i],y=y0+0.145,label=paste0("Stage ",i),
+             size=1.6,color=col_violet,hjust=0.5,fontface="italic")
+  )} +
+
+  # Title
+  annotate("text",x=0.04,y=0.97,label="Linear SC structure",
+           hjust=0,vjust=1,size=3.0,color=col_purple,fontface="bold") +
+  annotate("text",x=0.04,y=0.91,label="Example: Zara / fast fashion",
+           hjust=0,vjust=1,size=2.3,color=col_violet,fontface="italic") +
+
+  # Characteristics panel
+  annotate("rect",xmin=0.03,xmax=0.97,ymin=0.04,ymax=0.26,
+           fill="white",color=col_gray,linewidth=0.4) +
+  annotate("text",x=0.50,y=0.24,label="Characteristics",
+           size=2.2,color=col_purple,fontface="bold",hjust=0.5) +
+  annotate("text",x=0.17,y=0.16,label="Sequential stages",     size=1.9,color=col_purple,hjust=0.5) +
+  annotate("text",x=0.17,y=0.10,label="One-direction flow",    size=1.9,color=col_purple,hjust=0.5) +
+  annotate("text",x=0.50,y=0.16,label="No bypassing steps",    size=1.9,color=col_purple,hjust=0.5) +
+  annotate("text",x=0.50,y=0.10,label="Clear stage handoffs",  size=1.9,color=col_purple,hjust=0.5) +
+  annotate("text",x=0.83,y=0.16,label="Long lead times",       size=1.9,color=col_purple,hjust=0.5) +
+  annotate("text",x=0.83,y=0.10,label="~40 weeks end-to-end",  size=1.9,color=col_purple,hjust=0.5) +
+
+  scale_x_continuous(limits=c(0,1),expand=c(0,0)) +
+  scale_y_continuous(limits=c(0,1),expand=c(0,0)) +
+  theme_void() +
+  theme(plot.background=element_rect(fill="white",color=NA),
+        plot.margin=margin(4,4,4,4))
+```
+
+::: notes
+The fashion pipeline is the textbook linear chain. A t-shirt can take 40+ weeks from cotton field to store shelf. Zara disrupted this by shortening stage 3–4 (keeping design/cutting close to Spain) and air-freighting finished garments, compressing the cycle to ~2–3 weeks for replenishment. This illustrates that the linear structure is not immutable — firms can compress individual stages. The key insight: *the weakest link sets the speed of the entire chain.*
+:::
+
+------------------------------------------------------------------------
+
+## Polycentric Structure — IKEA
+
+```{r}
+#| label: fig-sc-polycentric
+#| fig-cap: >
+#|   Polycentric supply chain structure illustrated by IKEA's global network.
+#|   Three autonomous regional hubs (Europe, Asia-Pacific, Americas) each manage
+#|   their own supplier base and serve local markets. Lateral coordination links
+#|   the hubs.
+#| fig-width: 9
+#| fig-height: 5.0
+#| fig-alt: >
+#|   Three vertical sub-chains arranged side by side. Each sub-chain shows
+#|   local suppliers at the top feeding into a regional hub (Europe Hub in
+#|   Almhult, Asia-Pacific Hub in Shanghai, Americas Hub in Baltimore), which
+#|   feeds retail stores below. Dashed bidirectional arrows connect the three
+#|   hubs laterally for coordination.
+#| echo: false
+#| out-width: "100%"
+
+library(ggplot2)
+library(grid)
+
+col_purple <- "#361E47"; col_violet <- "#5E3EE1"
+col_lgray  <- "#F4F1F6"; col_gray   <- "#D8D1DB"
+
+arr <- function(x1,y1,x2,y2,col,ltype="solid",lw=0.9,atype="closed",aends="last",alen=0.16)
+  annotate("segment",x=x1,xend=x2,y=y1,yend=y2,color=col,linewidth=lw,linetype=ltype,
+           arrow=arrow(length=unit(alen,"cm"),type=atype,ends=aends))
+
+hub_x <- c(0.22, 0.50, 0.78); hub_y <- 0.55
+hub_labels <- c("Europe Hub\n(Älmhult, SE)","Asia-Pacific Hub\n(Shanghai, CN)","Americas Hub\n(Baltimore, US)")
+bw_hub <- 0.14; bh_hub <- 0.10; bw_sup <- 0.08; bh_sup <- 0.07; bw_str <- 0.11; bh_str <- 0.07
+
+sup_labels  <- list(c("Sweden","Poland","Germany"),c("China","Vietnam","India"),c("USA","Canada","Mexico"))
+store_labels <- list("450+\nEurope stores","60+\nAsia stores","55+\nAmericas stores")
+
+sup_y <- 0.84; store_y <- 0.24
+
+ggplot() +
+  annotate("rect",xmin=0,xmax=1,ymin=0,ymax=1,fill=col_lgray,color=NA) +
+
+  # Inter-hub coordination (dashed, bidirectional)
+  arr(hub_x[1]+bw_hub/2+0.01, hub_y, hub_x[2]-bw_hub/2-0.01, hub_y,
+      col_violet,ltype="dashed",lw=0.65,aends="both",atype="open") +
+  arr(hub_x[2]+bw_hub/2+0.01, hub_y, hub_x[3]-bw_hub/2-0.01, hub_y,
+      col_violet,ltype="dashed",lw=0.65,aends="both",atype="open") +
+
+  # Supplier arrows & boxes
+  {do.call(c, lapply(1:3, function(h) {
+    sups <- sup_labels[[h]]
+    ns   <- length(sups)
+    sxs  <- hub_x[h] + seq(-(ns-1),(ns-1),by=2) * 0.075
+    c(
+      lapply(sxs, function(sx)
+        arr(sx, sup_y-bh_sup/2-0.005,
+            hub_x[h]+(sx-hub_x[h])*0.3, hub_y+bh_hub/2+0.005,
+            col_purple,lw=0.6)),
+      lapply(seq_along(sxs), function(j) list(
+        annotate("rect",xmin=sxs[j]-bw_sup/2,xmax=sxs[j]+bw_sup/2,
+                 ymin=sup_y-bh_sup/2,ymax=sup_y+bh_sup/2,
+                 fill="white",color=col_purple,linewidth=0.5),
+        annotate("text",x=sxs[j],y=sup_y,label=sups[j],
+                 size=1.7,color=col_purple,fontface="bold",hjust=0.5,vjust=0.5)
+      ))
+    )
+  }))} +
+
+  # Hub → Store arrows
+  {lapply(1:3, function(h)
+    arr(hub_x[h], hub_y-bh_hub/2-0.005, hub_x[h], store_y+bh_str/2+0.005,
+        col_purple,lw=0.8)
+  )} +
+
+  # Store boxes
+  {lapply(1:3, function(h) list(
+    annotate("rect",xmin=hub_x[h]-bw_str/2,xmax=hub_x[h]+bw_str/2,
+             ymin=store_y-bh_str/2,ymax=store_y+bh_str/2,
+             fill=col_violet,color=col_violet,linewidth=0.55),
+    annotate("text",x=hub_x[h],y=store_y,label=store_labels[[h]],
+             size=1.75,color="white",fontface="bold",hjust=0.5,vjust=0.5,lineheight=0.85)
+  ))} +
+
+  # Hub boxes (on top)
+  {lapply(1:3, function(h) list(
+    annotate("rect",xmin=hub_x[h]-bw_hub/2,xmax=hub_x[h]+bw_hub/2,
+             ymin=hub_y-bh_hub/2,ymax=hub_y+bh_hub/2,
+             fill=col_purple,color=col_purple,linewidth=0.55),
+    annotate("text",x=hub_x[h],y=hub_y,label=hub_labels[h],
+             size=1.9,color="white",fontface="bold",hjust=0.5,vjust=0.5,lineheight=0.85)
+  ))} +
+
+  # Row labels
+  annotate("text",x=0.50,y=0.94,label="Tier-1 Suppliers",
+           size=1.9,color=col_purple,hjust=0.5,fontface="italic") +
+  annotate("text",x=0.50,y=0.62,label="Regional Hubs",
+           size=1.9,color=col_purple,hjust=0.5,fontface="italic") +
+  annotate("text",x=0.50,y=0.155,label="Retail Stores",
+           size=1.9,color=col_violet,hjust=0.5,fontface="italic") +
+
+  # Title
+  annotate("text",x=0.04,y=0.99,label="Polycentric SC structure",
+           hjust=0,vjust=1,size=3.0,color=col_purple,fontface="bold") +
+  annotate("text",x=0.04,y=0.92,label="Example: IKEA global network",
+           hjust=0,vjust=1,size=2.3,color=col_violet,fontface="italic") +
+
+  # Legend
+  annotate("segment",x=0.05,xend=0.11,y=0.07,yend=0.07,color=col_purple,
+           linewidth=0.85,linetype="solid",
+           arrow=arrow(length=unit(0.12,"cm"),type="closed",ends="last")) +
+  annotate("text",x=0.12,y=0.07,hjust=0,size=1.8,color=col_purple,label="Material flow") +
+  annotate("segment",x=0.36,xend=0.42,y=0.07,yend=0.07,color=col_violet,
+           linewidth=0.7,linetype="dashed",
+           arrow=arrow(length=unit(0.12,"cm"),type="open",ends="both")) +
+  annotate("text",x=0.43,y=0.07,hjust=0,size=1.8,color=col_violet,label="Inter-hub coordination") +
+
+  scale_x_continuous(limits=c(0,1),expand=c(0,0)) +
+  scale_y_continuous(limits=c(0,1),expand=c(0,0)) +
+  theme_void() +
+  theme(plot.background=element_rect(fill="white",color=NA),
+        plot.margin=margin(4,4,4,4))
+```
+
+::: notes
+IKEA has ~1,800 suppliers in 50 countries but organises them into three largely independent regional sourcing hubs. The Europe hub (anchored in Älmhult, Sweden) handles 60% of volume; Asia-Pacific (Shanghai) ~25%; Americas ~15%. Each hub has its own Trading Service Offices that negotiate independently. The hubs coordinate on assortment range and quality standards but NOT on purchasing — this deliberate autonomy reduces systemic risk. Polycentric structures sacrifice some economies of scale for resilience and speed-to-market in local regions.
+:::
+
+------------------------------------------------------------------------
+
 ## Supply Chains & Logistics
 
 ![](images/clipboard-1244104178.png)
