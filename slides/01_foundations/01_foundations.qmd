@@ -1108,6 +1108,107 @@ The Perfect Order concept was popularised by the Supply Chain Council (now APICS
 
 ------------------------------------------------------------------------
 
+## Value Capture Along the Supply Chain {.smaller}
+
+**Where does the money go?** Three real-world supply chains, by stage as % of retail price:
+
+```{r fig-sc-value-capture}
+#| label: fig-sc-value-capture
+#| fig-cap: "Value distribution across SC stages (% of final retail/sale price)"
+#| fig-width: 9
+#| fig-height: 4.8
+#| echo: false
+#| out-width: "100%"
+
+library(ggplot2)
+
+COL_PURPLE  <- "#361E47"; COL_RED     <- "#E00514"; COL_VIOLET  <- "#5E3EE1"
+COL_GOLD    <- "#D19900"; COL_TEAL    <- "#20808D"; COL_GREY    <- "#7A7974"
+COL_DARKGLD <- "#B89000"; COL_DARKTEAL<- "#1B474D"; COL_LTGREY  <- "#D4D1CA"
+COL_BG      <- "#F7F6F2"
+
+df <- data.frame(
+  product = rep(c("Coffee\n(retail per lb)","Chocolate bar\n(GBP 2 bar)","iPhone 4\n(USD 549 retail)"),
+                c(7, 6, 5)),
+  stage = c(
+    "Farmers / growers","Local intermediaries","International traders",
+    "Exporters & freight","Roasters / manufacturers","Retailers","Taxes & duties",
+    "Cocoa farmers","Cocoa local traders","Cocoa intl. traders",
+    "Cocoa processors","Chocolate manufacturers","Retailers & marketing",
+    "China assembly & small","Component suppliers",
+    "US suppliers & other","Unmeasured inputs & labour","Apple margin"
+  ),
+  pct = c(20,11,8,8,30,15,8, 6,7,12,15,35,25, 5,18,4,15,58),
+  stringsAsFactors = FALSE
+)
+
+coffee_lvls <- c("Farmers / growers","Local intermediaries","International traders",
+                 "Exporters & freight","Roasters / manufacturers","Retailers","Taxes & duties")
+cocoa_lvls  <- c("Cocoa farmers","Cocoa local traders","Cocoa intl. traders",
+                 "Cocoa processors","Chocolate manufacturers","Retailers & marketing")
+iphone_lvls <- c("China assembly & small","Component suppliers",
+                 "US suppliers & other","Unmeasured inputs & labour","Apple margin")
+df$stage <- factor(df$stage, levels = c(coffee_lvls, cocoa_lvls, iphone_lvls))
+
+tier_cols <- c(
+  "Farmers / growers"=COL_RED,"Local intermediaries"=COL_GOLD,
+  "International traders"=COL_GOLD,"Exporters & freight"=COL_DARKGLD,
+  "Roasters / manufacturers"=COL_TEAL,"Retailers"=COL_PURPLE,
+  "Taxes & duties"=COL_GREY,"Cocoa farmers"=COL_RED,
+  "Cocoa local traders"=COL_GOLD,"Cocoa intl. traders"=COL_DARKGLD,
+  "Cocoa processors"=COL_TEAL,"Chocolate manufacturers"=COL_VIOLET,
+  "Retailers & marketing"=COL_PURPLE,"China assembly & small"=COL_RED,
+  "Component suppliers"=COL_TEAL,"US suppliers & other"=COL_DARKTEAL,
+  "Unmeasured inputs & labour"=COL_GREY,"Apple margin"=COL_PURPLE
+)
+df$lbl <- ifelse(df$pct >= 6, paste0(df$pct, "%"), "")
+
+ggplot(df, aes(x = product, y = pct, fill = stage)) +
+  geom_col(width = 0.58, colour = "white", linewidth = 0.4) +
+  geom_text(aes(label = lbl), position = position_stack(vjust = 0.5),
+            size = 3.4, colour = "white", fontface = "bold", family = "sans") +
+  scale_fill_manual(values = tier_cols, guide = "none") +
+  scale_y_continuous(limits = c(0, 107), breaks = seq(0,100,25),
+                     labels = function(x) paste0(x,"%"),
+                     expand = expansion(mult = c(0,0))) +
+  annotate("rect", xmin=0.57, xmax=1.05, ymin=102, ymax=106, fill=COL_RED,    colour=NA) +
+  annotate("rect", xmin=1.07, xmax=1.55, ymin=102, ymax=106, fill=COL_GOLD,   colour=NA) +
+  annotate("rect", xmin=1.57, xmax=2.05, ymin=102, ymax=106, fill=COL_TEAL,   colour=NA) +
+  annotate("rect", xmin=2.07, xmax=2.55, ymin=102, ymax=106, fill=COL_VIOLET, colour=NA) +
+  annotate("rect", xmin=2.57, xmax=3.05, ymin=102, ymax=106, fill=COL_PURPLE, colour=NA) +
+  annotate("text", x=0.81, y=104, label="Farming",       colour="white", size=2.7, fontface="bold") +
+  annotate("text", x=1.31, y=104, label="Trade",         colour="white", size=2.7, fontface="bold") +
+  annotate("text", x=1.81, y=104, label="Processing",    colour="white", size=2.7, fontface="bold") +
+  annotate("text", x=2.31, y=104, label="Manufacturing", colour="white", size=2.7, fontface="bold") +
+  annotate("text", x=2.81, y=104, label="Brand / Retail",colour="white", size=2.7, fontface="bold") +
+  labs(title=NULL, subtitle=NULL, x=NULL, y="Share of retail price (%)") +
+  coord_cartesian(clip="off") +
+  theme_minimal(base_size=11, base_family="sans") +
+  theme(
+    plot.background=element_rect(fill=COL_BG,colour=NA),
+    panel.background=element_rect(fill=COL_BG,colour=NA),
+    panel.grid.major.x=element_blank(), panel.grid.minor=element_blank(),
+    panel.grid.major.y=element_line(colour=COL_LTGREY,linewidth=0.35),
+    axis.text.x=element_text(colour=COL_PURPLE,face="bold",size=11),
+    axis.text.y=element_text(colour=COL_GREY,size=9),
+    axis.title.y=element_text(colour=COL_GREY,size=9,margin=margin(r=6)),
+    plot.margin=margin(12,18,8,12)
+  )
+```
+
+::: notes
+Sources: Coffee — Talbot (2004) as compiled in industry value chain analysis; Chocolate/Cocoa — Cocoa Barometer 2022 and Cocoa Diaries 2025 (Ghana supply chain perspective); iPhone 4 — Dedrick, Kraemer & Linden (2011), "Who Profits from Innovation in Global Value Chains?", MIT/USITC.
+
+Key teaching points:
+- All three chains are dominated by downstream stages: the brand/retail and processing layers far outweigh farming.
+- Coffee: Roasters capture 30%, farmers only 20% — despite coffee being perceived as a "farmer product". The paradox: the value-adding transformation (roasting, packaging, branding) happens in the consuming country.
+- Chocolate: Cocoa farmers receive only 6%, down from ~50% in the 1970s. Most value is captured by chocolate manufacturers (Nestlé, Mars, Lindt) and retailers — the "commodity trap" in global value chains.
+- iPhone: Apple alone captures 58%. China's assembly labour = 1.8% of retail price — a stark illustration of why GVC participation does not automatically deliver development gains. This links to Chopra & Meindl's concept of "focal firm" value capture.
+- Discussion question: If you were a cocoa-producing country, what supply chain strategy would you pursue to move up the value chain? (Hint: Ghana's attempts at local processing, Indonesia's export taxes on raw commodities.)
+:::
+
+------------------------------------------------------------------------
+
 ## Sustainability as a Strategic Dimension
 
 **The Triple Bottom Line in SCM:**
