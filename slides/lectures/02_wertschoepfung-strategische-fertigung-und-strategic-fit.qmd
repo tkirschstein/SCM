@@ -1,0 +1,664 @@
+---
+title: "Wertschöpfung, strategische Fertigung und Strategic Fit"
+subtitle: "Supply Chain Management"
+author: "Prof. Dr. Thomas Kirschstein"
+format:
+  revealjs:
+    slide-number: true
+    footer: "Supply Chain Management"
+    chalkboard: true
+    smaller: true
+    scrollable: true
+---
+
+## Grundlagen des Supply Chain Managements {#slide-30}
+
+- Aufgaben, Begriffe und Konzepte
+- Ziele & Zielkonflikte
+- Kosten & Management
+
+Supply Chain Management
+
+
+
+## Wertschöpfung als Prozess {#slide-31}
+
+Beschaffung ist der Prozess zum Einkauf und Bereit-stellung von Rohstoffen, Komponenten und Dienst-leistungen von externen Partnern, die für die Produktion von Waren und Dienstleistungen erforderlich sind.
+
+Produktion ist ein zielgerichteter Prozess der Kombination von Gütern und Dienstleistungen in höherwertige Produkte.
+
+Distribution umfasst die physische Verteilung von Waren vom Hersteller zum Endkunden und umfasst Lagerhaltung, Transport und Logistik von Fertigprodukten.
+
+Absatz ist der Prozess des Verkaufs der Endprodukte an den Konsumenten oder Handelspartner.
+
+![](../images/image31.png)
+
+
+::: {.smartart .chevron1 data-smartart-layout="chevron1"}
+:::
+
+## Strategische Fertigung {#slide-32}
+
+Order penetration point & Fertigungsstrategien
+
+
+Versorgungszyklus
+
+Produktionszyklus
+
+Beschaffungszyklus
+
+Entwicklungszyklus
+
+Auftrags-unabhängige Prozesse
+
+make - to -stock
+
+Auftrags-unabhängige Prozesse
+
+assemble - to -order
+
+Auftrags-unabhängige Prozesse
+
+make - to -order
+
+engineer - to -order
+
+::: {.smartart .chevron1 data-smartart-layout="chevron1"}
+:::
+
+Kunden
+
+Kundenbestell-
+
+zyklus
+
+Der  order penetration point (OPP)   ist die Wertschöpfungsstufe ab der ein Produkt bzw . Zyklusobjekt einem spezifischen Kundenauftrag zugeordnet wird .
+
+## Strategische Fertigung {#slide-33}
+
+Kundenbestellzyklus : Verarbeitung von externen Kundenbedarfen
+
+Distributions-/Versorgungszyklus : Umwandlung von Kundenbedarfen in interne Bedarfe an Fertigprodukten
+
+Produktionszyklus : Umwandlung von internen Bedarfen in Produktions-bedarfe von Zwischenprodukten und Rohstoffen
+
+Beschaffungszyklus : Gestaltung von Bestell-/Versorgungsprozessen für Rohstoffe und Dienstleistungen, die extern bezogen werden müssen
+
+Denken in Zyklen
+
+Supply Chain Management
+
+33
+
+![](images/image32.png "Grafik 8")
+
+(Kummer et al., 2022, S. 45)
+
+## Strategische Fertigung {#slide-34}
+
+Entkopplung von Zyklen
+
+Supply Chain Management
+
+34
+
+![](images/image33.png "Grafik 7")
+
+![](images/image34.png "Grafik 8")
+
+Make-to-stock
+
+Make-to-order
+
+(Chopra & Meindl, 2019)
+
+Beispiele : FCMG
+
+Beispiele : buildings , airplanes , etc.
+
+## Strategische Ziele {#slide-35}
+
+Kundenzufriedenheit -- Kundenerwartungen erfüllen
+
+Supply Chain Management
+
+35
+
+Bedürfnisbe-friedigung
+
+Eigentumsnutzen
+
+Zeit-
+
+nutzen
+
+Orts-nutzen
+
+Informationsnutzen
+
+Gestalt-nutzen
+
+=
+
+\+
+
+\+
+
+\+
+
+\+
+
+Nachfrage
+
+::: {.smartart .chevron1 data-smartart-layout="chevron1"}
+:::
+
+Supply (Chain)
+
+- Was sind die Kundenerwartung hinsichtlich dieser Attribute?
+
+<!-- -->
+
+- Beer price indices for\
+- Supermarkets ( yellow ) and
+- Oktoberfest (€/L)
+
+![Infografik: Festbierpreise \| Statista](images/image35.jpeg "Picture 4")
+
+![Supermarket beer display](images/image36.jpeg "Picture 2")
+
+![](images/image37.jpeg "Picture 4")
+
+## Strategische Ziele {#slide-36}
+
+Kundenzufriedenheit & Unsicherheit
+
+Supply Chain Management
+
+36
+
+Kosten
+
+Zeit
+
+Zuverlässig- keit
+
+Zugänglich- keit
+
+Qualität
+
+Servicedimensionen
+
+Dimensionen
+
+Kunden und Supply-Chain- Unsicherheit
+
+Nachfragemenge je Kundenauftrag
+
+Lieferzeit , die von Kunden akzeptiert wird
+
+Erwartete Produktvielfalt
+
+Erwartete Lieferbereitschaft
+
+Preis/ Zahlungsbereitschaft
+
+Innovationsgrad der Produkte
+
+Nachfrageunsicherheit -- Unsicherheit der Nachfrage nach einem Produkt
+
+Implizierte Nachfrageunsicherheit -- Unsicherheit desjenigen Nachfragesegments , das durch die Supply Chain bedient werden soll basierend auf den definierten Nachfrageattributen
+
+## Umgang mit Unsicherheit {#slide-37}
+
+| Kundenbedürfnisse | Verursacht implizite Unsicherheit da ... |
+|:---|:---|
+| (max.) Nachfragemengen steigen | Erhöhte Spannweite des Bedarfs größere Varianz / Schwankung der Nachfragemengen verursacht |
+| Lieferzeit sinkt | Weniger Zeit bleibt um auf Nachfrageschwankungen zu reagieren |
+| Anzahl der angebotenen Produkte erhöht sich | Nachfrage der einzelnen Produkte schwieriger zu prognostizieren |
+| Lieferbereitschaftsgrad erhöht sich | Nachfragespitzen müssen nun abgefedert werden |
+| Innovationsgrad erhöht sich | Nachfrage neuer Produkte in der Regel unbekannt oder schwer zu prognostizieren |
+| Anzahl der Vertriebskanäle steigt | Nachfrage der einzelnen Vertriebskanäle schwieriger zu prognostizieren |
+
+Kundenbedürfnisse & implizierte Unsicherheit
+
+Supply Chain Management
+
+37
+
+## Umgang mit Unsicherheit {#slide-38}
+
+![Different roles and allocations of implied uncertainty for a given level of supply chain responsiveness.The diagram can be divided into 3 sections. The center is labeled extent of implied uncertainty for the supply chain. On either side of this are 3 different length segments. One is small, one is large, and the third is medium sized. • At the top is supply chain 1, made up of the supplier, manufacturer, and retailer. The supplier absorbs the least implied uncertainty and must be very efficient. An arrow goes from the supplier to the smallest segment above the center section. The manufacturer absorbs less implied uncertainty and must be somewhat efficient. An arrow goes from the manufacturer to the medium length segment above the center. The retailer absorbs most of the implied uncertainty and must be very responsive. The retailer's arrow points to the longest segment above the center.• At the bottom is supply chain 2. In this supply chain, the supplier absorbs less implied uncertainty and must be somewhat efficient. An arrow goes from the supplier to the medium length segment below the center. The manufacturer absorbs most of the implied uncertainty and must be very responsive. An arrow goes from the manufacturer to the longest segment below the center. The retailer absorbs the least implied uncertainty and must very efficient. An arrow goes from the retailer to the smallest segment below the center.](images/image38.emf "Picture 4")
+
+Rollen & Risikoallokation in Supply Chain
+
+Supply Chain Management \| Prof. Kirschstein
+
+38
+
+(Chopra & Meindl, 2019)
+
+## Umgang mit Unsicherheit {#slide-39}
+
+Reaktionsfähigkeit / responsiveness
+
+Supply Chain Management
+
+39
+
+Reaktionsfähigkiet kann u.a. erreicht werden durch :
+
+Hohe Lagerbestände
+
+Kurze Reaktions -/ Lieferzeiten
+
+Hohe Produktvielfalt
+
+Kurze Entwicklungszyklen neuer Produkte
+
+Hohe Bereitschaftsgrade
+
+Reduktion von Versorgungsunsicherheiten
+
+Die Reaktionsfähigkeit einer Supply Chain ist die Fähigkeit einer Supply Chain mit Nachfrageunsicherheit umzugehen
+
+## Strategische Ziele {#slide-40}
+
+Reaktionsfähigkeit vs. Effizienz
+
+Supply Chain Management
+
+40
+
+Effizienz einer Supply Chain ist das Inverse der Gesamtkosten einer Supply Chain, d.h. aller Kosten eines Produkts von
+
+![The cost responsiveness efficient frontier is a graph that plots cost from high to low versus responsiveness from low to high. The graph is shaped like the upper right quadrant of a circle. Low cost yields low responsiveness. High cost yields high responsiveness.](images/image39.emf "Picture 4")
+
+![Five key levers to deal with supply chain uncertainty. The figure, titled supply chain uncertainty, is a balanced seesaw with the following components. Capacity, inventory, time, information, price.](images/image40.emf "Picture 4")
+
+-  Reaktionsfähigkeit verursacht Kosten
+
+Die Reaktionsfähigkeit einer Supply Chain ist die Fähigkeit einer Supply Chain mit Nachfrageunsicherheit umzugehen
+
+## Strategisches Management {#slide-41}
+
+Normstrategien & SCM
+
+Supply Chain Management
+
+41
+
+| Normstrategie | Vorteil | Wettbewerbsbasis | Beitrag des SCM |
+|:---|:---|:---|:---|
+| Kostenführer | Kosteneffiziente Produktion anstoßen | Niedrigste Preise in der Produktkategorie | Effiziente kostengünstige Infrastruktur |
+| Innovationsführer | Marktstärke nutzen und singuläre Technologie einsetzen | Begehrte und innovative Produkte generieren | Kurze Time- to -Market sichern, Volumen steigern |
+| Serviceführer | Service auf Kunden konsequent zuschneiden | Erwartungen kundenspezifisch erfüllen | Kundenorientierte Entwicklung ermöglichen |
+| Qualitätsführer | Sichere und zuverlässige Produkte herstellen | Singuläre Produkteigenschaften | Verlässliche SC, Quality Assurance |
+| Nachhaltigkeitsführer | Nachhaltige Produkte und Prozesse | Nachhaltigkeitserwartungen der Kunden erfüllen | CO2-Neutralität, Energie- und Ressourcen-Schonung |
+
+| Definition Strategie (nach Gabler Wirtschaftslexikon) |
+|:---|
+| Strategie ist die grundsätzliche, langfristige Verhaltensweise (Maßnahmenkombination) der Unternehmung und relevanter Teilbereiche gegenüber ihrer Umwelt zur Verwirklichung der langfristigen Ziele. |
+
+## Strategisches Management {#slide-42}
+
+Supply Chain Treiber
+
+24.06.2026
+
+Supply Chain Management
+
+Seite 42
+
+Produktion What , how , when to produce
+
+Lager
+
+What , how much , when to stock
+
+Standorte
+
+Where to do what
+
+Transport
+
+How and when to move
+
+Information Basis for decision making
+
+Effizienz
+
+Reaktionsfähigkeit
+
+Primärziel
+
+- Productions -technologie
+- Produktportfolio
+- Entkopplungs-punkt
+
+<!-- -->
+
+- Beschaffungs-strategie
+- Lieferanten-auswahl
+- Sicherheits-bestände
+
+<!-- -->
+
+- Netzwerk- strukture
+- Standort-kapazitäten
+- Stufigkeit & Verbindungen
+
+<!-- -->
+
+- Transportmodi
+- Outsourcing
+- Transportat -planung
+
+<!-- -->
+
+- Informations-teilung
+- Systemintegration
+- Kollaborative Prognose & Planung
+
+## Strategisches Management {#slide-43}
+
+- 
+
+<!-- -->
+
+- 
+
+Supply Chain Treiber
+
+24.06.2026
+
+Supply Chain Management
+
+43
+
+Produktion What , how , when to produce
+
+Lager
+
+What , how much , when to stock
+
+Standorte
+
+Where to do what
+
+Transport
+
+How and when to move
+
+Information Basis for decision making
+
+- Excess capacity
+- Flexible manufacturing
+- Many plants
+
+<!-- -->
+
+- Higher inventry levels
+- All parts in each stock
+
+<!-- -->
+
+- Dense network
+- Small facilities , highly connected network
+
+<!-- -->
+
+- Frequent shipments
+- Fast & flexible modes of transport
+
+<!-- -->
+
+- Deep information system integration
+- Real-time monitoring
+
+<!-- -->
+
+- High utilization
+- few products
+- few plants
+
+<!-- -->
+
+- low inventry levels
+- Stock specialization
+
+<!-- -->
+
+- Hierarchical network
+- Consolidation sites
+
+<!-- -->
+
+- Full capacity transports
+- High capacity carriers
+
+<!-- -->
+
+- Information sharing on demand
+
+Responsive-
+
+ness
+
+Efficiency
+
+## Strategisches Management {#slide-44}
+
+|   | Effiziente Supply Chains | reaktive Supply Chains |
+|----|:---|:---|
+| Primärziel | Nachfragebefriedigung zu niedrigsten Kosten | Schnellstmögliche Nachfragebefriedigung |
+| Produkt -Design- Strategie | Geringe Produktvielfalt , Konzentation auf einfaches Design und hohe Durchsätze | Modulare Produktentwicklung und Postponement |
+| Preisstrategie | Niedrige Preise und Margen da Kunden preissensitiv | Höhere Preise mit höherer Marge, da Kunden wenig preissensitiv |
+| Fertigungsstrategie | Hohe Maschinenauslastung | Freie Kapazitäten um kurzfristig Produktionsmengen ausweiten zu können |
+| Lagerstrategie | Minimierung von ( Sicherheits -) Beständen | Einrichtung von Sicherheitsbeständen zur Absicherung von Nachfrageschwankungen |
+| Versorgungsstrategie | Reduziere Zykluszeiten solange Kosten nicht steigen | Reduziere Zykluszeiten auch wenn Kosten steigen |
+| Beschaffungsstrategie | Lieferantenauswahl nach Kosten und Verlässlichkeit | Lieferantenauswahl nach Reaktionsfähigkeit , Geschwindigkeit , Flexibilität und Qualität |
+
+Teilstrategien
+
+as of Oct 14, 2025
+
+Supply Chain Management \| Prof. Kirschstein
+
+44
+
+Source: Chopra 2016: Supply Chain Management , p. 42
+
+## Supply chain management ist ein strategisches Konzept {#slide-45}
+
+45
+
+Wettbewerbsfähigkeit
+
+Kundenservice
+
+Integration
+
+Auswahl der Partner
+
+Netzwerke & Zusammenarbeit zwischen den Organisationen
+
+Leadership
+
+Koordination
+
+Verwendung von Informations- und Kommunikationstechnologien
+
+Ausrichtung anhand der Prozesse
+
+Advanced Planning
+
+Fundament
+
+Logistik, Marketing, Operations Research, Organisationstheorie, Einkauf,...
+
+(Stadtler/Kilger, 2010)
+
+Supply Chain Management
+
+## Finanzielle Unternehmensziele {#slide-46}
+
+![](images/image41.png "Inhaltsplatzhalter 8")
+
+Entscheidungsfelder des SCM:
+
+Produktdesign
+
+Standortwahl
+
+Technologiewahl
+
+Beschaffungsmanagement
+
+Bestandsplanung
+
+Kapazitätsplanung
+
+Produktionsplanung
+
+Ablaufplanung
+
+Qualitätsmanagement
+
+Transportplanung
+
+Distributionsplanung
+
+Du-Pont-Schema
+
+Supply Chain Management
+
+46
+
+## Finanzielle Unternehmensziele {#slide-47}
+
+![](images/image41.png "Inhaltsplatzhalter 8")
+
+Gegebene Daten:
+
+Umsatz : 11.000 €
+
+Materialkosten: 5.500 €
+
+Personalkosten: 4.950 €
+
+Anlagevermögen : 2.000 €
+
+Zahlungsmittel: 500 €
+
+Bestände: 3.300 €
+
+Forderungen: 1.075 €
+
+Du-Pont-Schema - Beispiel
+
+Supply Chain Management
+
+47
+
+Aufgaben:
+
+Berechnen Sie den ROI/Kapitalrendite des Unternehmens
+
+Welchen Effekt hat eine Reduktion der Bestände um 5% auf den ROI?
+
+## Sustainable Supply Chain management {#slide-48}
+
+Nachhaltige Entwicklung und die Ableitung von Zielen -- Sustainable Developement Goals (SDGs)
+
+Supply Chain Management
+
+48
+
+| Zieldefinitionen |
+|:---|
+| Keine Armut Armut  in all ihren Formen und überall beenden. |
+| Kein Hunger Den  Hunger  beenden, Ernährungssicherheit und eine bessere Ernährung erreichen und eine  nachhaltige Landwirtschaft  fördern. |
+| Gesundheit und Wohlergehen Ein gesundes Leben für alle Menschen jeden Alters gewährleisten und ihr Wohlergehen fördern. \[43\] |
+| Hochwertige Bildung Bildung für alle: inklusive, gerechte und hochwertige Bildung gewährleisten und Möglichkeiten des  lebenslangen Lernens  für alle fördern. |
+| Geschlechter-Gleichheit Gleichstellung der Geschlechter  erreichen und alle Frauen und Mädchen zur  Selbstbestimmung  befähigen. |
+| Sauberes Wasser und Sanitär-Einrichtungen Verfügbarkeit und nachhaltige Bewirtschaftung von Wasser und Sanitärversorgung für alle gewährleisten. |
+| Bezahlbare und saubere Energie Zugang zu bezahlbarer, verlässlicher,  nachhaltiger und zeitgemäßer Energie  für alle sichern. |
+| Menschenwürdige Arbeit und Wirtschaftswachstum Nachhaltiges Wirtschaftswachstum  und  menschenwürdige Arbeit  für alle -- dauerhaftes, breitenwirksames und nachhaltiges Wirtschaftswachstum, produktive Vollbeschäftigung und menschenwürdige Arbeit für alle fördern. |
+| Industrie, Innovation und Infrastruktur Eine widerstandsfähige Infrastruktur aufbauen, breitenwirksame und nachhaltige Industrialisierung fördern und  Innovationen  unterstützen. |
+| Weniger Ungleichheiten Ungleichheit  in und zwischen Ländern verringern. |
+| Nachhaltige Städte und Gemeinden Städte und Siedlungen inklusiv, sicher, widerstandsfähig und nachhaltig gestalten. |
+| Nachhaltiger Konsum und Produktion Nachhaltige Konsum- und Produktionsmuster  sicherstellen. |
+| Maßnahmen zum Klimaschutz Sofortmaßnahmen ergreifen, um den  Klimawandel  und seine Auswirkungen zu bekämpfen. |
+| Leben unter Wasser Bewahrung und nachhaltige Nutzung der  Ozeane , Meere und Meeresressourcen. |
+| Leben an Land Landökosysteme schützen, wiederherstellen und ihre nachhaltige Nutzung fördern, Wälder nachhaltig bewirtschaften,  Wüstenbildung  bekämpfen,  Bodendegradation  beenden und umkehren und dem Verlust der  biologischen Vielfalt  ein Ende setzen. |
+| Frieden, Gerechtigkeit und starke Institutionen Friedliche und inklusive Gesellschaften für eine nachhaltige Entwicklung fördern, allen Menschen Zugang zum Recht ermöglichen und leistungsfähige, rechenschaftspflichtige und inklusive Institutionen auf allen Ebenen aufbauen. |
+| Partnerschaften zur Erreichung der Ziele Umsetzungsmittel stärken und die globale Partnerschaft für nachhaltige Entwicklung mit neuem Leben füllen. |
+
+![Agenda 2030 Ziele Querformat](images/image42.png "Picture 39")
+
+## Logistikkosten {#slide-49}
+
+Überblick
+
+Supply Chain Management
+
+49
+
+![](images/image43.png "Grafik 8")
+
+## Beispiele des Supply Chain FiTs {#slide-50}
+
+Beispiele
+
+- Time- to - market (Zara)
+- Adaptivität (Dell)
+- Kosteneffizienz ( discounter )
+- Angebotspalette (Amazon)
+- Lieferzeit (online retail )
+- ...
+
+24.06.2026
+
+50
+
+Skaleneffekte Transport
+
+Nachfrageunsicherheit
+
+Bücher
+
+Lebens-
+
+mittel
+
+Möbel
+
+Computer
+
+niedrig
+
+hoch
+
+niedrig
+
+hoch
+
+Supply Chain Management
+
+Chopra & Meinl (2019), Simchi -Levi (2010)
+
+## Strategic Fit und Zielerreichung {#slide-51}
+
+24.06.2026
+
+Supply Chain Management
+
+51
+
+![D:\\WORK\\PEARSON\\000 FOLIEN\\4188\\JPG\\4188-54.jpg](images/image44.jpeg "Picture 2")
+
+Kosten vs. Flexibilität
+
+Nachfrage( un ) sicherheit

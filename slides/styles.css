@@ -1,0 +1,13 @@
+/* Uniform sizing for auto-generated LaTeX formula/table graphics
+   (originally rendered as very wide, whitespace-heavy PNGs, e.g.
+   image72/74/114/115/121-124). Caps their maximum width so they stay
+   legible and consistent across slides, and keeps them from shrinking
+   to an unreadable size inside multi-column layouts. */
+.reveal .formula-img {
+  display: block;
+  width: 100%;
+  max-width: 900px;
+  min-width: 320px;
+  height: auto;
+  margin: 0.3em auto;
+}
