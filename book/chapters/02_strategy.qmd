@@ -1,361 +1,141 @@
-# SC Strategy, Location Planning & Decision Methods {#sec-strategy}
+# Strategic Supply Chain Design {#sec-strategy}
 
-## Competitive Strategy and Strategic Fit
+## Learning objectives
 
-A company's **competitive strategy** defines the set of customer needs it targets and how it intends to differentiate from competitors. Supply chain strategy must be aligned with competitive strategy — this alignment is called **strategic fit**.
+After completing this chapter, you should be able to
 
-Chopra & Meindl (2022) frame this through the concept of implied demand uncertainty: different products and customer segments imply different uncertainty levels, requiring different SC designs.
+- explain the role of the supply chain in competitive strategy,
+- discuss strategic fit and implied demand uncertainty,
+- classify the main supply chain drivers,
+- distinguish key methods of location and network planning,
+- assess major strategic trade-offs in supply chain design.
 
-| Competitive Priority | Implied SC Design | Examples |
-|---------------------|-------------------|---------|
-| Low cost / efficiency | Lean, high utilization, low inventory | IKEA, Aldi, Amazon Basics |
-| High responsiveness | Short lead times, agility, flexibility | Zara, Dell BTO, emergency medical supply |
-| Product variety | Postponement, modular production | HP printers, automobile options |
-| Innovation | Fast NPI, flexible sourcing | Apple, Tesla |
+## Strategy in supply chain management
 
-**Strategic misfit** occurs when the SC cannot deliver what the competitive strategy promises. A company competing on responsiveness but running a lean, low-inventory SC will consistently disappoint customers — at peak times, stockouts erode the service promise.
+The lecture structures this topic around strategic objectives, uncertainty, supply chain drivers, and location planning.[file:10] This makes clear that SCM strategy is not limited to isolated logistics decisions. It concerns the long-term configuration of the entire value-creation network.[file:10]
 
-## The Responsiveness-Efficiency Framework
+Strategy can be understood as the fundamental long-term pattern of behavior by which a company and its subfunctions position themselves vis-à-vis the environment in pursuit of long-term goals.[file:10] In SCM, this means designing the supply chain in a way that enables and reinforces the firm's competitive position.
 
-The **efficient frontier** of supply chain design represents the best achievable combination of responsiveness and efficiency for a given industry. Individual companies choose a position on this frontier based on their competitive strategy.
+## Strategic fit
 
-Moving toward higher responsiveness requires:
+A core idea in the SCM literature is strategic fit between competitive strategy and supply chain strategy. Chopra and Meindl argue that the supply chain must be aligned with the requirements of the market segment being served, especially with the level of implied demand uncertainty.[cite:3]
 
-- Excess capacity (low utilization)
-- Safety stock (buffer inventory)
-- Faster (more expensive) transportation modes
-- More distribution points (local warehousing)
+Misfit is strategically dangerous. A firm that promises low prices but operates a highly complex network with small batches and frequent expedited shipments will struggle to maintain cost leadership. A firm that promises speed, availability, and variety but relies on rigid processes and minimal buffers will regularly disappoint customers.[cite:3][file:10]
 
-Each of these increases cost — the fundamental trade-off between **responsiveness** and **efficiency** in SC design.
+## Customer needs and implied uncertainty
 
-## SC Drivers
+The lecture shows that customer needs determine implied uncertainty in the supply chain.[file:10] Larger demand volumes, wider demand variation, shorter acceptable lead times, higher product variety, higher service levels, and more sales channels all increase the uncertainty with which the supply chain must cope.[file:10]
 
-Chopra & Meindl identify six SC drivers, each representing a lever management can adjust:
+This insight is strategically important because uncertainty is not always imposed by the market alone. It is often amplified by the firm's own value proposition. A company that promises same-day delivery, configurability, and high availability creates a much more demanding SCM problem than a company offering standardized products with long lead times.
 
-### 1. Production (Manufacturing)
-- Trade-off: Flexibility vs. efficiency
-- Key decisions: Batch sizes, process technology, make-or-buy, capacity levels
-- High responsiveness → invest in flexible capacity and excess buffer capacity
+## Efficiency and responsiveness
 
-### 2. Inventory
-- Trade-off: Availability vs. holding cost
-- Key decisions: Safety stock levels, cycle stock, finished goods vs. WIP vs. RM inventory
-- High responsiveness → maintain more inventory at more locations
+The lecture defines responsiveness as the ability of a supply chain to cope with demand uncertainty.[file:10] Responsiveness can be increased through higher inventories, shorter lead times, greater product variety, shorter product development cycles, higher readiness levels, and reduced supply uncertainty.[file:10]
 
-### 3. Location
-- Trade-off: Proximity to customer vs. economies of scale
-- Key decisions: Number and position of facilities, geographic footprint
-- High responsiveness → decentralize, locate near customers
+Efficiency, by contrast, emphasizes low cost, high utilization, standardization, and process stability. Chopra and Meindl describe the classic trade-off between these two orientations: as uncertainty rises, the supply chain generally has to move toward responsiveness; under low uncertainty, efficient designs are superior.[cite:3]
 
-### 4. Transportation
-- Trade-off: Speed/reliability vs. cost
-- Key decisions: Mode (road, rail, air, sea), carrier selection, routing
-- High responsiveness → use faster (more expensive) modes
+A common example is the contrast between discount retailing and fast fashion. Discount formats rely on standardized processes and high operational discipline, whereas fashion retailers such as Zara depend on shorter cycles, smaller lots, and tighter coordination between stores and replenishment.[cite:3]
 
-### 5. Information
-- Trade-off: Timeliness/accuracy vs. systems investment
-- Key decisions: ERP, visibility platforms, demand sensing, data sharing
-- High responsiveness → invest in information infrastructure
+## Normative strategies and the role of SCM
 
-### 6. Sourcing
-- Trade-off: Efficiency (few, large suppliers) vs. resilience (many, diversified suppliers)
-- Key decisions: Single vs. dual sourcing, near- vs. offshore, contract structure
+The lecture distinguishes five broad normative strategies: cost leadership, innovation leadership, service leadership, quality leadership, and sustainability leadership.[file:10] Each strategy places different demands on the supply chain and shifts the relative importance of cost, speed, quality, availability, and sustainability.[file:10]
 
-## Location Planning — Introduction
+Under cost leadership, the supply chain must enable efficient infrastructure, high utilization, and low process losses. Innovation leadership requires short time-to-market, flexible sourcing, and robust ramp-up processes. Service leadership emphasizes customer-specific processes and high availability. Quality leadership depends on reliable processes and strong quality assurance. Sustainability leadership extends the target system toward CO2, energy, and resource considerations.[file:10]
 
-Location decisions are among the most capital-intensive and least reversible in supply chain management. Opening or closing a warehouse or plant locks in costs and capabilities for years or decades.
+This framework is useful because it shows that SCM is not only a support function. It can be a direct carrier of competitive advantage.
 
-**Objectives** in location planning:
+## Supply chain drivers
 
-1. Minimize total cost (transport, facility fixed costs, operating costs)
-2. Maximize service level (coverage, delivery time to customers)
-3. Minimize risk (disruption exposure, concentration)
+The lecture identifies production, inventory, location, transportation, and information as central supply chain drivers.[file:10] Chopra and Meindl use a highly similar driver logic, sometimes supplemented by sourcing and pricing.[cite:3]
 
-Location planning operates at three levels:
+### Production
 
-| Level | Decision | Typical Tools |
-|-------|----------|--------------|
-| Strategic | How many facilities? Which regions? | MILP, continuous models |
-| Tactical | Which facility serves which customer? | Transportation LP, assignment |
-| Operational | How to route between facilities? | VRP, TSP |
+Strategic production decisions concern what is produced, how it is produced, and when it is produced.[file:10] They include technology choices, make-or-buy decisions, capacity structures, lot-sizing logic, and the position of the decoupling point.
 
-## Weighted Scoring / Nutzwertanalyse
+Companies serving stable, functional demand are more likely to emphasize scale, specialization, and capacity utilization. Firms offering high customization or rapid innovation typically require more modular processes, later differentiation, and greater flexibility.
 
-**Weighted Scoring** (German: Nutzwertanalyse) is a structured multi-criteria decision method used when quantitative optimization is infeasible due to qualitative or incommensurable criteria.
+### Inventory
 
-### Procedure
+Inventory decisions concern what is stocked, where it is stocked, and in what quantity.[file:10] Inventory can improve responsiveness and service, but it also causes capital commitment, obsolescence risk, and storage cost.
 
-1. Define evaluation criteria $k_1, \ldots, k_n$
-2. Assign weights $w_i$ with $\sum_i w_i = 1$
-3. Rate each alternative $a_j$ on each criterion using a scale (e.g., 1–10)
-4. Compute weighted score: $S_j = \sum_i w_i \cdot r_{ij}$
-5. Select the alternative with the highest weighted score
+A classic textbook trade-off is centralization versus decentralization. Centralized inventory benefits from pooling effects and lower safety stocks, but may increase lead times. Decentralized inventory improves service speed, but often duplicates stock across locations.
 
-### Worked Example — DC Location Selection
+### Location
 
-Three candidate locations: **Frankfurt (FRA)**, **Leipzig (LEI)**, **Vienna (VIE)**
+Location decisions are among the most long-term and consequential SCM decisions. They determine where production, storage, consolidation, and delivery activities take place, and therefore shape distances, service times, and total cost structures.[file:10]
 
-Criteria and weights:
+Because these decisions involve high investment, limited reversibility, and strong downstream effects on transport, inventory, and service, they are central elements of strategic supply chain design.
 
-| Criterion | Weight |
-|-----------|--------|
-| Transport cost | 0.30 |
-| Labor availability | 0.20 |
-| Infrastructure quality | 0.20 |
-| Real estate cost | 0.15 |
-| Regulatory environment | 0.15 |
+### Transportation
 
-Ratings (1 = worst, 10 = best):
+Strategic transportation decisions concern modes, frequencies, network structures, and outsourcing choices.[file:10] Firms need to determine whether to rely primarily on road, rail, sea, or air transport, whether direct shipment or hub-and-spoke structures are appropriate, and to what extent transportation should be outsourced.[cite:3]
 
-| Criterion | Weight | Frankfurt | Leipzig | Vienna |
-|-----------|--------|-----------|---------|--------|
-| Transport cost | 0.30 | 8 | 7 | 6 |
-| Labor availability | 0.20 | 6 | 8 | 7 |
-| Infrastructure | 0.20 | 9 | 7 | 8 |
-| Real estate cost | 0.15 | 5 | 9 | 6 |
-| Regulatory | 0.15 | 8 | 8 | 7 |
-| **Weighted Score** | | **7.30** | **7.65** | **6.80** |
+The time-cost trade-off is particularly visible here. Air freight improves responsiveness but is significantly more expensive and often more emissions-intensive than sea freight.
 
-Calculation for Leipzig: $0.30 \times 7 + 0.20 \times 8 + 0.20 \times 7 + 0.15 \times 9 + 0.15 \times 8 = 7.65$
+### Information
 
-**Decision**: Leipzig has the highest weighted score. However, the analysis should be tested for weight sensitivity — if transport cost weight increases to 0.40, does Frankfurt take the lead?
+Information systems provide the basis for many strategic and operational decisions.[file:10] Information sharing, system integration, and collaborative planning can reduce uncertainty, improve forecasts, and lower inventories and stockouts.[file:10][file:6]
 
-## AHP — Analytic Hierarchy Process
+Vendor managed inventory is a prominent example. The supplier replenishes the customer on the basis of shared sales and stock data. Such a model depends on transparency, compatible systems, and trust.
 
-The **Analytic Hierarchy Process** (Saaty 1980) extends weighted scoring by deriving weights from pairwise comparisons rather than direct assignment. This makes the weighting process more transparent and internally consistent.
+## Strategic performance dimensions
 
-### Saaty's 9-Point Scale
+The lecture lists lead time, delivery reliability, delivery quality, flexibility or resilience, information, and cost as traditional SCM performance dimensions.[file:10] These should be interpreted as a connected system of objectives rather than isolated metrics.[file:10]
 
-| Value | Meaning |
-|-------|---------|
-| 1 | Equal importance |
-| 3 | Moderate importance of one over another |
-| 5 | Strong importance |
-| 7 | Very strong importance |
-| 9 | Extreme importance |
-| 2, 4, 6, 8 | Intermediate values |
+For instance, an additional warehouse layer may shorten lead times and improve service reliability, but it can also increase fixed cost and working capital. Conversely, aggressive centralization may lower cost while reducing resilience under disruptions or demand spikes.
 
-### Worked 3-Site AHP Example
+## Location planning as a strategic task
 
-We evaluate three potential warehouse locations — **A** (near Hamburg), **B** (Kassel), **C** (Munich) — on the criterion **Transport Cost to Customers**.
+The lecture devotes substantial attention to location planning and distinguishes multicriteria, continuous, and discrete approaches.[file:10] This classification is analytically useful because each approach matches a different decision context.
 
-**Pairwise comparison matrix** (row $i$ vs. column $j$: how much more important/better is row $i$?):
+### Multicriteria location planning
 
-$$C = \begin{pmatrix} 1 & 1/3 & 5 \\ 3 & 1 & 7 \\ 1/5 & 1/7 & 1 \end{pmatrix}$$
+Multicriteria methods are relevant when locations must be assessed not only by cost but also by qualitative criteria such as labor availability, political stability, sustainability, or infrastructure quality. The lecture discusses the weighted scoring method and the analytic hierarchy process (AHP).[file:10]
 
-Interpretation: B is 3× better than A on transport cost; A is 5× better than C; B is 7× better than C.
+#### Weighted scoring method
 
-**Step 1 — Column sums**:
+The weighted scoring method aggregates weighted partial utilities into an overall utility score.[file:10] Its main strength lies in its simplicity and in its ability to incorporate qualitative criteria. Its weaknesses include issues of interpretability, weighting, and substitutability across criteria.[file:10]
 
-$$\text{col sum} = (4.20,\ 1.476,\ 13.0)$$
+In practice, it is useful in early-stage screening of warehouse or plant alternatives when hard cost data are incomplete but strategic criteria still matter.
 
-**Step 2 — Normalize each entry** by its column sum:
+#### Analytic hierarchy process
 
-$$\hat{C} = \begin{pmatrix} 1/4.20 & (1/3)/1.476 & 5/13 \\ 3/4.20 & 1/1.476 & 7/13 \\ (1/5)/4.20 & (1/7)/1.476 & 1/13 \end{pmatrix} = \begin{pmatrix} 0.238 & 0.226 & 0.385 \\ 0.714 & 0.677 & 0.538 \\ 0.048 & 0.097 & 0.077 \end{pmatrix}$$
+AHP structures the decision through pairwise comparisons of criteria and alternatives. The lecture highlights that AHP improves transparency, reduces arbitrariness, and can reveal inconsistent judgments through a consistency index.[file:10]
 
-**Step 3 — Row averages** = priority vector $\mathbf{w}$:
+This makes AHP particularly useful in multi-stakeholder settings. A distribution center decision involving cost, service, workforce availability, and sustainability is a good example.
 
-$$w_A = \frac{0.238 + 0.226 + 0.385}{3} = 0.283, \quad w_B = \frac{0.714 + 0.677 + 0.538}{3} = 0.643, \quad w_C = \frac{0.048 + 0.097 + 0.077}{3} = 0.074$$
+### Continuous location planning
 
-**Step 4 — Consistency check**: Compute $\lambda_{\max}$, then $CI = (\lambda_{\max} - n)/(n-1)$ and $CR = CI/RI$.
+Continuous models search for optimal coordinates in space instead of selecting from a finite set of candidate sites. The lecture covers the Steiner-Weber model and, for Manhattan distances, the weighted median solution.[file:10]
 
-For $n=3$: $RI = 0.58$. A $CR < 0.10$ indicates acceptable consistency.
+Such models are especially relevant when transport cost dominates and the spatial distribution of demand or supply is known. Typical applications include the rough placement of a central warehouse or the positioning of an urban micro-hub.
 
-$$\lambda_{\max} \approx 3.065, \quad CI = \frac{3.065 - 3}{2} = 0.033, \quad CR = \frac{0.033}{0.58} = 0.057 < 0.10 \checkmark$$
+### Discrete location planning and network design
 
-**Result**: Location B (Kassel) has the highest priority weight of 0.643 — it is the preferred location on transport cost grounds.
+Discrete models select the best sites from a predefined set of alternatives. In practice, this is often the dominant planning context because firms usually choose among available buildings, service providers, or industrial sites rather than among all points in a continuous space.
 
-```{r}
-#| label: ahp-example
-#| echo: true
+Network design extends location choice by considering capacities, assignments, and flows between stages. It therefore serves as a bridge between strategic planning and quantitative optimization.
 
-ahp_priority <- function(C) {
-  # Normalize columns, then average rows
-  col_sums <- colSums(C)
-  C_norm <- sweep(C, 2, col_sums, FUN = "/")
-  w <- rowMeans(C_norm)
-  
-  # Consistency check
-  n <- nrow(C)
-  lambda_max <- mean((C %*% w) / w)
-  CI <- (lambda_max - n) / (n - 1)
-  RI <- c(0, 0, 0.58, 0.90, 1.12, 1.24, 1.32)[n]  # Random Index table
-  CR <- CI / RI
-  
-  list(weights = w, lambda_max = lambda_max, CI = CI, CR = CR,
-       consistent = CR < 0.10)
-}
+## Transport problem and allocation logic
 
-C <- matrix(c(1,   1/3, 5,
-              3,   1,   7,
-              1/5, 1/7, 1),
-            nrow = 3, byrow = TRUE)
-rownames(C) <- colnames(C) <- c("A (Hamburg)", "B (Kassel)", "C (Munich)")
+The lecture also covers the classical transportation problem and Vogel's approximation heuristic.[file:10] This fits naturally into the strategy chapter because location and network decisions almost always imply allocation and flow decisions.
 
-result <- ahp_priority(C)
-cat("Priority weights:\n")
-print(round(result$weights, 3))
-cat("\nConsistency Ratio:", round(result$CR, 3),
-    if(result$consistent) "— CONSISTENT" else "— INCONSISTENT")
-```
+The transportation problem determines how supply quantities should be assigned to demand points at minimum cost. In practice, it can represent the assignment of plants to sales regions or distribution centers to stores. Heuristic methods are valuable when a fast, good feasible solution is needed.
 
-## Continuous Location Models
+## Sustainability as a strategic dimension
 
-When candidate locations are not pre-specified, we can solve the location problem in continuous space.
+Even within the strategy chapter, the lecture already introduces sustainability as a relevant target dimension.[file:10] This is important because production, sourcing, transport, and location decisions all have environmental and social implications.[file:10]
 
-### Steiner-Weber Problem
+Werner emphasizes green supply chains, product carbon footprint, life-cycle assessment, and life-cycle costing as systematic extensions of the traditional SCM objective system.[file:6] Strategic supply chain design is therefore increasingly shaped not only by cost and service, but also by resilience and sustainability.
 
-Given $n$ demand points with coordinates $(x_i, y_i)$ and demand weights $w_i$, find the facility location $(X, Y)$ minimizing total weighted distance:
+## Contemporary examples
 
-**Euclidean (straight-line distance)**:
+Recent practice illustrates the strategic importance of network design and supply chain configuration. Amazon continues to expand and modernize its European fulfillment network, including new logistics capacity and automation investments, in order to improve responsiveness and network performance.[web:14][web:22] Reports on Germany also point to the breadth of Amazon's logistics footprint and continuing investments in local expansion.[web:18][web:19]
 
-$$\min_{X,Y} \sum_{i=1}^n w_i \sqrt{(X - x_i)^2 + (Y - y_i)^2}$$
+These developments are strategically meaningful because they show how service promises, network density, automation, and capital intensity are linked. Similar logic can be observed in same-day and quick-commerce models in urban retailing, where micro-hub location, assortment width, and delivery-time promises become core SCM strategy choices.[web:14][web:22]
 
-**Manhattan (rectilinear distance)**:
+## Chapter summary
 
-$$\min_{X,Y} \sum_{i=1}^n w_i \left(|X - x_i| + |Y - y_i|\right)$$
+Strategic SCM decisions define the long-term capability of a supply chain. They shape not only cost, but also service, flexibility, resilience, and sustainability.[file:10][file:6]
 
-The Manhattan version decomposes into two independent 1D weighted median problems — analytically solvable.
-
-### Center of Gravity Heuristic
-
-The **Center of Gravity (CoG)** places the facility at the weighted centroid of demand points:
-
-$$X^* = \frac{\sum_i w_i x_i}{\sum_i w_i}, \qquad Y^* = \frac{\sum_i w_i y_i}{\sum_i w_i}$$
-
-This minimizes squared Euclidean distance — not Euclidean distance — so it is an approximation, but it is fast and often used as a starting point for more refined methods.
-
-### Weiszfeld Algorithm
-
-The exact Euclidean Steiner-Weber solution can be found via the **Weiszfeld iteration**:
-
-$$X^{(k+1)} = \frac{\sum_i w_i x_i / d_i^{(k)}}{\sum_i w_i / d_i^{(k)}}, \qquad Y^{(k+1)} = \frac{\sum_i w_i y_i / d_i^{(k)}}{\sum_i w_i / d_i^{(k)}}$$
-
-where $d_i^{(k)} = \sqrt{(X^{(k)} - x_i)^2 + (Y^{(k)} - y_i)^2}$ is the distance to demand point $i$ at iteration $k$.
-
-This converges to the global optimum for the Euclidean case when no demand point coincides with the current estimate.
-
-```{r}
-#| label: fig-location
-#| fig-cap: "Continuous location planning: CoG and Weiszfeld solutions for 6 German demand points"
-#| echo: true
-#| message: false
-#| warning: false
-
-library(ggplot2)
-library(dplyr)
-
-# Demand points (schematic x/y in km, w = annual demand weight)
-demands <- data.frame(
-  city = c("Hamburg", "Berlin", "Dortmund", "Frankfurt", "Munich", "Stuttgart"),
-  x    = c(10, 140, 60,  90, 145, 110),
-  y    = c(170, 145, 130, 90,  45,  70),
-  w    = c(120, 200, 150, 180, 250, 130)
-)
-
-# Center of Gravity
-cog_x <- sum(demands$w * demands$x) / sum(demands$w)
-cog_y <- sum(demands$w * demands$y) / sum(demands$w)
-
-# Weiszfeld Algorithm
-X <- cog_x; Y <- cog_y
-for (k in seq_len(1000)) {
-  d <- sqrt((X - demands$x)^2 + (Y - demands$y)^2)
-  d[d < 1e-10] <- 1e-10
-  wd <- demands$w / d
-  X_new <- sum(wd * demands$x) / sum(wd)
-  Y_new <- sum(wd * demands$y) / sum(wd)
-  if (sqrt((X_new - X)^2 + (Y_new - Y)^2) < 1e-6) break
-  X <- X_new; Y <- Y_new
-}
-
-solutions <- data.frame(
-  method = c("Center of Gravity", "Weiszfeld (Euclidean)"),
-  x = c(cog_x, X), y = c(cog_y, Y)
-)
-
-p <- ggplot() +
-  geom_point(data = demands,
-             aes(x = x, y = y, size = w),
-             colour = "#20808D", alpha = 0.75) +
-  geom_text(data = demands,
-            aes(x = x, y = y, label = city),
-            vjust = -1.1, size = 3, colour = "#2D3748") +
-  geom_point(data = solutions,
-             aes(x = x, y = y, shape = method, colour = method),
-             size = 5, stroke = 1.5) +
-  geom_text(data = solutions,
-            aes(x = x, y = y,
-                label = paste0(method, "\n(", round(x,1), ", ", round(y,1), ")")),
-            vjust = 2.4, size = 2.8) +
-  scale_shape_manual(values = c("Center of Gravity" = 18,
-                                "Weiszfeld (Euclidean)" = 17)) +
-  scale_colour_manual(values = c("Center of Gravity" = "#A84B2F",
-                                 "Weiszfeld (Euclidean)" = "#1B474D")) +
-  scale_size_continuous(range = c(4, 14), name = "Annual demand") +
-  labs(title = "Continuous Location Planning — Germany (schematic)",
-       x = "East–West (km, schematic)",
-       y = "North–South (km, schematic)",
-       shape = "Solution", colour = "Solution") +
-  theme_minimal(base_size = 11)
-
-# Interactive in HTML, static in PDF
-if (knitr::is_html_output()) {
-  plotly::ggplotly(p)
-} else {
-  p
-}
-```
-
----
-
-## Exercises
-
-**Exercise 2.1 — Strategic Fit**
-
-Classify each of the following companies by their primary competitive priority (efficiency vs. responsiveness) and describe what this implies for their supply chain design. Cite one observable SC characteristic that confirms your classification.
-
-a. Lidl supermarkets
-b. W.W. Grainger (industrial MRO distributor)
-c. McLaren Automotive
-d. H&M fast fashion
-
-**Exercise 2.2 — Weighted Scoring**
-
-A logistics company is selecting a new regional distribution center. Four locations are under consideration: **Erfurt (ERF)**, **Hannover (HAN)**, **Nürnberg (NUE)**, and **Dortmund (DOR)**. The evaluation criteria and weights are:
-
-| Criterion | Weight |
-|-----------|--------|
-| Proximity to motorway junction | 0.35 |
-| Available warehouse area (m²) | 0.25 |
-| Labor market (unemployment rate proxy) | 0.20 |
-| Land acquisition cost | 0.20 |
-
-Use the following ratings (1–10 scale):
-
-| Criterion | ERF | HAN | NUE | DOR |
-|-----------|-----|-----|-----|-----|
-| Motorway access | 8 | 7 | 9 | 8 |
-| Available area | 9 | 6 | 7 | 5 |
-| Labor market | 7 | 8 | 8 | 7 |
-| Land cost | 9 | 6 | 7 | 5 |
-
-a. Calculate the weighted score for each location.
-b. Which location is preferred?
-c. At what weight for "Land cost" would Hannover become preferred over Erfurt (assume all other weights scale proportionally)?
-
-**Exercise 2.3 — Weiszfeld Iteration**
-
-Four demand points with coordinates and weights:
-
-| Point | x | y | Weight |
-|-------|---|---|--------|
-| A | 10 | 80 | 200 |
-| B | 60 | 90 | 150 |
-| C | 80 | 20 | 300 |
-| D | 30 | 40 | 100 |
-
-a. Calculate the Center of Gravity solution.
-b. Perform 3 manual iterations of the Weiszfeld algorithm starting from the CoG solution.
-c. Implement in R and run to convergence. How many iterations are needed?
-d. Compare the total weighted Euclidean distance for CoG vs. Weiszfeld solutions.
+This chapter therefore provides the conceptual bridge to the following topics in the book: network design and transport deepen the structural and spatial aspects, uncertainty management addresses volatility, and the chapters on coordination and sustainability extend the view toward interorganizational integration and broader target systems.[cite:4][file:10]

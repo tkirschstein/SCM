@@ -1,235 +1,121 @@
 # Foundations of Supply Chain Management {#sec-foundations}
 
-## What Is a Supply Chain?
+## Learning objectives
 
-A **supply chain** is the network of all organizations, people, activities, information, and resources involved in moving a product or service from raw material extraction to the final customer. It is not a chain in the linear sense — modern supply chains are complex networks with multiple tiers, many-to-many relationships, and feedback loops.
+After completing this chapter, you should be able to
 
-The Council of Supply Chain Management Professionals (CSCMP) defines SCM as:
+- distinguish supply chain management from logistics, procurement, and operations management,
+- describe material, information, and financial flows in supply chains,
+- classify basic supply chain structures,
+- explain key objectives and trade-offs in supply chain management,
+- discuss how supply chain decisions affect financial performance.
 
-> "Supply chain management encompasses the planning and management of all activities involved in sourcing and procurement, conversion, and all logistics management activities. Importantly, it also includes coordination and collaboration with channel partners, which can be suppliers, intermediaries, third-party service providers, and customers."
+## Why supply chains are not a new phenomenon
 
-A practical example: a smartphone reaching a consumer in Frankfurt involves lithium mined in the Democratic Republic of Congo, rare earth elements from China, chip fabrication in Taiwan, assembly in Vietnam, air freight to Europe, last-mile delivery by a German parcel carrier — all coordinated across dozens of companies.
+The coordination of supply, transport, storage, and information long predates the modern term supply chain management. Historical large-scale undertakings such as the construction of the Cheops pyramid, Hannibal's campaign across the Alps, and Alexander the Great's campaigns all required the coordinated provision of materials, transport capacity, food, and information across distance and time.[file:10]
 
-### Scope of SCM vs. Logistics
+These examples show that the core challenge of SCM is not new. What is new in modern supply chains is the scale of global specialization, the speed of information processing, the strategic integration of multiple firms, and the increased importance of volatility, sustainability, and interorganizational coordination.[file:10][file:6]
 
-**Logistics** is the subset of SCM concerned with the physical movement and storage of goods — transportation, warehousing, packaging. **SCM** is broader: it includes purchasing strategy, supplier relationships, demand planning, production coordination, customer service, and financial flows. All logistics is part of SCM; not all SCM is logistics.
+## What is a supply chain?
 
-## The Three Flows
+A supply chain comprises all organizations, activities, resources, and information required to move a product or service from raw material extraction to the final customer. It includes upstream and downstream relationships as well as the planning and coordination mechanisms that connect them.[file:10]
 
-Every supply chain manages three distinct types of flow simultaneously:
+The literature offers complementary definitions. Stadtler emphasizes the integration of organizational units and the coordination of material, information, and financial flows; Hugos highlights the balance between responsiveness and efficiency; Corsten and Gössinger stress the planning and management of sourcing, conversion, logistics, and collaboration with channel partners.[file:10]
 
-### 1. Material Flow
+This view is consistent with the CSCMP perspective, according to which supply chain management includes the planning and management of sourcing, procurement, conversion, logistics, and coordination with suppliers, intermediaries, service providers, and customers.[cite:3] Logistics is therefore a subset of SCM: it focuses on transportation, storage, handling, and packaging, while SCM additionally includes strategic, informational, and interorganizational decisions.[file:10][cite:3]
 
-Physical goods move **downstream** — from suppliers, through production and distribution, to the end customer. Return flows (reverse logistics) move **upstream** — defective products, recycling, remanufactured goods.
+## Value creation as transformation
 
-*Example*: Raw aluminum travels from a smelter → stamping plant → car body assembly → OEM → dealership → customer.
+Supply chains create value through several forms of transformation. The lecture distinguishes qualitative transformation (utility by design), spatial transformation (utility by location), temporal transformation (utility by time), and quantitative transformation (utility by quantity).[file:10]
 
-### 2. Information Flow
+This perspective links SCM to Porter's value chain logic. Value is created not only through manufacturing, but also by making products available in the right form, at the right place, at the right time, and in the right quantity. In online grocery retailing, for example, the physical product may be unchanged, but customer utility increases through reliable delivery windows, tracking information, and high delivery reliability.
 
-Data moves in **both directions**. Demand signals (orders, POS data, forecasts) move upstream; supply confirmations, tracking, and availability data move downstream. The quality and speed of information flow directly determines how well the material flow can be managed.
+## Core processes of a supply chain
 
-*Example*: A retailer's POS system shares real-time sales data with the manufacturer, which triggers automated replenishment orders to the supplier. The supplier confirms delivery dates, which feeds back into the retailer's available-to-promise calculations.
+From a process perspective, supply chains can be structured into procurement, production, distribution, and sales.[file:10] Procurement secures raw materials, components, and services from external partners; production transforms inputs into higher-value outputs; distribution handles storage and physical delivery; sales connects the final offering to market transactions and customer demand.[file:10]
 
-### 3. Financial Flow
+A simple automotive example illustrates this logic. A seat supplier procures metal, foam, textiles, and electronics, produces seat systems, delivers them to the OEM, and the final economic value of the entire chain is realized only when the vehicle is sold to the customer.
 
-Money moves **upstream** — customers pay retailers, retailers pay distributors, distributors pay manufacturers, manufacturers pay suppliers. Payment terms, trade credit, and supply chain financing instruments (factoring, reverse factoring) shape the cash conversion cycle of every SC participant.
+## The three flows
 
-*Example*: A supplier ships on net-60 payment terms. A reverse factoring program allows the supplier to be paid by a bank in 5 days (at a small discount), while the buyer still settles with the bank in 60 days — the bank profits from the interest spread, the supplier gets liquidity.
+The lecture models supply chains through material, information, and financial flows.[file:10] These flows do not move in the same way and therefore need to be planned and controlled separately.
 
-## The Cycle View of Supply Chains
+### Material flow
 
-Chopra & Meindl (2022) organize supply chain activities into **four cycles**, each triggered by an interface between two consecutive stages:
+Material flow describes the physical movement of goods from suppliers through production and distribution to customers, including return flows in reverse logistics. In many industrial systems, material flow is convergent in upstream stages and divergent in downstream stages.
 
-| Cycle | Interface | Activities |
-|-------|-----------|------------|
-| Customer Order Cycle | Customer ↔ Retailer | Order entry, fulfillment, delivery |
-| Replenishment Cycle | Retailer ↔ Distributor | Reorder point, batch ordering, DC pickup |
-| Manufacturing Cycle | Distributor ↔ Manufacturer | Production scheduling, MRP, batch production |
-| Procurement Cycle | Manufacturer ↔ Supplier | Purchase orders, supplier selection, inbound logistics |
+### Information flow
 
-The **cycle view** is useful because it reveals where inventory is held, what triggers each replenishment event, and which information must be shared across each interface. Long cycle times at any stage increase total SC inventory requirements.
+Information flow includes demand signals, forecasts, orders, inventory data, capacity information, confirmations, and tracking data. The quality and speed of information sharing largely determine whether material flows can be coordinated efficiently and reliably.[file:10][file:6]
 
-## Push vs. Pull and the Decoupling Point
+A central textbook theme is the bullwhip effect. If demand information is delayed, aggregated, or distorted, order variability tends to increase upstream in the chain, which creates inefficiencies and coordination problems.[file:6]
 
-Supply chain processes can be classified along a fundamental dimension:
+### Financial flow
 
-- **Pull processes** are initiated by actual customer demand. No speculation about future demand — goods are produced or shipped only when orders arrive.
-- **Push processes** are initiated based on demand *forecasts*. Goods are produced or positioned in anticipation of demand.
+Financial flow comprises payments, payment terms, credit relationships, and supply chain finance mechanisms. In practice, material and financial flows are often temporally decoupled: goods may be delivered today while payments are received much later. This makes working capital a key interface between SCM and corporate finance.
 
-The **decoupling point** (also called the customer order decoupling point, CODP) is the point in the supply chain where push transitions to pull. Everything upstream of the decoupling point is driven by forecasts; everything downstream by real orders.
+## Open systems perspective
 
-**Strategic implications**: Moving the decoupling point downstream increases responsiveness but requires carrying inventory closer to the customer. Moving it upstream reduces inventory carrying cost but lengthens response time. The optimal position depends on demand characteristics and competitive requirements.
+The lecture introduces an open enterprise model with a planning and decision layer, a financial layer, and a goods layer.[file:10] This highlights that supply chains are not just physical networks. They are also decision systems and financial systems.
 
-*Example*: A furniture manufacturer using mass customization (customer selects fabric, dimensions) may keep semi-finished frames in stock (push up to the decoupling point) and complete the upholstery only after receiving the order (pull from the decoupling point onward).
+This perspective is useful because it makes SCM visible as a cross-functional management domain. Procurement decisions, for example, affect not only availability of materials, but also capital commitment, information requirements, and supplier dependence.
 
-## DuPont Analysis — SC Impact on Financial Performance
+## Supply chain structures
 
-The **DuPont decomposition** reveals how supply chain decisions drive return on investment (ROI). The key insight: supply chains affect both the numerator (profit) and denominator (assets employed) of ROI.
+The lecture distinguishes focal and polycentric supply chains.[file:10] Focal supply chains are characterized by a dominant company that coordinates the network because of market power, interface control, or a bottleneck position.[file:10]
 
-$$\text{ROI} = \frac{\text{Net Income}}{\text{Assets}} = \underbrace{\frac{\text{Net Income}}{\text{Revenue}}}_{\text{Profit Margin}} \times \underbrace{\frac{\text{Revenue}}{\text{Assets}}}_{\text{Asset Turnover}}$$
+Typical examples include the automotive industry or platform-centered ecosystems such as Apple, where product architecture, standards, and schedules shape supplier structures.[file:10] Polycentric supply chains, by contrast, are characterized by distributed competencies, stronger specialization, and a more balanced distribution of power.[file:10]
 
-Expanding further:
+This distinction matters because governance mechanisms differ across structures. Focal systems often rely more strongly on standards, hierarchy, and performance requirements, whereas polycentric systems depend more on collaboration, negotiation, and network governance.
 
-$$\text{ROI} = \frac{\text{Revenue} - \text{Total Cost}}{\text{Revenue}} \times \frac{\text{Revenue}}{\text{Fixed Assets} + \text{Current Assets}}$$
+## Cycle view and interfaces
 
-Current assets include **inventory**, **receivables**, and **cash** — all directly managed by supply chain decisions.
+Textbooks such as Chopra and Meindl also present supply chains through a cycle view, for example customer order, replenishment, manufacturing, and procurement cycles.[cite:3] This perspective is particularly useful because it highlights where inventory is held, what triggers replenishment, and which information must be exchanged across interfaces.
 
-### Worked Example
+Many operational problems originate at these interfaces: inaccurate forecasts, delayed orders, insufficient visibility, or unnecessary safety stocks. For this reason, effective SCM depends not only on managing individual stages, but also on managing the coupling between stages.
 
-**Base case** (€ thousands):
+## Objectives of supply chain management
 
-| Item | Value |
-|------|------:|
-| Revenue | 11,000 |
-| Material cost | 5,500 |
-| Personnel cost | 4,950 |
-| Total Cost | 10,450 |
-| **Net Income** | **550** |
-| Fixed assets | 2,000 |
-| Cash | 500 |
-| Inventory | 3,300 |
-| Receivables | 1,075 |
-| **Total Assets** | **6,875** |
+The lecture identifies cost, time, reliability, accessibility, quality, and customer service as key objective dimensions.[file:10] These are often translated into metrics such as lead time, delivery reliability, delivery quality, flexibility or resilience, information quality, and total cost.[file:10][file:6]
 
-$$\text{Profit Margin} = \frac{550}{11{,}000} = 5.0\%$$
+These objectives are linked by systematic trade-offs. High product availability often requires higher safety stocks; short delivery times improve responsiveness but may increase transport and coordination cost; greater standardization reduces complexity but may weaken customer fit.[file:10]
 
-$$\text{Asset Turnover} = \frac{11{,}000}{6{,}875} = 1.60$$
+A core SCM principle follows from this: the goal is not the isolated optimization of a single function, but the design of an aligned overall system. The lecture explicitly notes that optimizing individual profits does not usually optimize total supply chain profit.[file:10]
 
-$$\text{ROI} = 5.0\% \times 1.60 = 8.0\%$$
+## Efficiency and responsiveness
 
-**After a 5% inventory reduction** (inventory falls from 3,300 to 3,135; also saves holding cost of ~€50k):
+A central SCM tension lies between efficiency and responsiveness. Hugos explicitly frames SCM as the search for the best mix of responsiveness and efficiency.[file:10]
 
-| Item | Value |
-|------|------:|
-| Net Income | 600 |
-| Total Assets | 6,635 |
-| Profit Margin | 5.45% |
-| Asset Turnover | 1.658 |
-| **ROI** | **9.04%** |
-
-A 5% inventory reduction increases ROI by 130 basis points — without any change in revenue. This motivates lean inventory strategies.
-
-```{r}
-#| label: fig-dupont
-#| fig-cap: "DuPont analysis: effect of 5% inventory reduction on key metrics"
-#| message: false
-#| warning: false
-
-library(ggplot2)
-library(tidyr)
-
-# Base case values
-base <- list(
-  revenue = 11000, material = 5500, personnel = 4950,
-  fixed_assets = 2000, cash = 500, inventory = 3300, receivables = 1075
-)
-scen <- base
-scen$inventory <- base$inventory * 0.95
-holding_saving <- 50
-
-calc_dupont <- function(p) {
-  net_income  <- p$revenue - p$material - p$personnel +
-                 holding_saving * (p$inventory < base$inventory)
-  total_assets <- p$fixed_assets + p$cash + p$inventory + p$receivables
-  list(pm = net_income / p$revenue * 100,
-       at = p$revenue / total_assets,
-       roi = net_income / total_assets * 100)
-}
-
-b <- calc_dupont(base)
-s <- calc_dupont(scen)
-
-df <- data.frame(
-  Metric   = rep(c("Profit Margin (%)", "Asset Turnover", "ROI (%)"), 2),
-  Scenario = rep(c("Base Case", "5% Inventory Reduction"), each = 3),
-  Value    = c(b$pm, b$at, b$roi, s$pm, s$at, s$roi)
-)
-df$Metric <- factor(df$Metric,
-                    levels = c("Profit Margin (%)", "Asset Turnover", "ROI (%)"))
-
-p <- ggplot(df, aes(x = Metric, y = Value, fill = Scenario)) +
-  geom_col(position = "dodge", width = 0.6) +
-  geom_text(aes(label = round(Value, 2)),
-            position = position_dodge(width = 0.6),
-            vjust = -0.4, size = 3.2) +
-  scale_fill_manual(values = c("Base Case" = "#20808D",
-                               "5% Inventory Reduction" = "#A84B2F")) +
-  labs(title = "DuPont Analysis: Effect of 5% Inventory Reduction",
-       x = NULL, y = "Value", fill = NULL) +
-  theme_minimal(base_size = 11) +
-  theme(legend.position = "bottom")
-
-# Interactive in HTML, static in PDF
-if (knitr::is_html_output()) {
-  plotly::ggplotly(p)
-} else {
-  p
-}
-```
-
-## SC Performance Metrics
-
-Supply chain performance is measured across multiple dimensions. Chopra & Meindl group these into two categories: **efficiency** and **responsiveness**.
-
-### Key Performance Indicators
-
-| KPI | Formula | What it Measures |
-|-----|---------|-----------------|
-| Inventory Turnover | Revenue / Avg. Inventory | How quickly inventory sells |
-| Days of Supply | Inventory / Daily Cost of Sales | Inventory coverage in days |
-| Fill Rate | Orders Filled Complete / Total Orders | Service reliability |
-| Order-to-Delivery Cycle Time | Ship date − Order date | Responsiveness |
-| Perfect Order Rate | % orders: on time, complete, damage-free, correct docs | End-to-end quality |
-| Cash-to-Cash Cycle Time | DIO + DSO − DPO | Working capital efficiency |
-| Total Landed Cost | Purchase + Transport + Duties + Handling | True procurement cost |
-
-Where:
-
-- DIO = Days Inventory Outstanding
-- DSO = Days Sales Outstanding
-- DPO = Days Payable Outstanding
-
-A short **cash-to-cash cycle** means the company receives payment from customers before it must pay suppliers — a favorable working capital position. Supply chain decisions directly control all three components.
-
-### SCOR Model
-
-The **Supply Chain Operations Reference (SCOR)** model provides a standardized process taxonomy and metric hierarchy across five process types: Plan, Source, Make, Deliver, Return. Level 1 metrics map to the five performance attributes: Reliability, Responsiveness, Agility, Costs, and Asset Management Efficiency.
-
-## SC Planning Hierarchy
-
-Supply chain planning operates across multiple time horizons:
-
-| Level | Horizon | Decisions |
-|-------|---------|-----------|
-| **Strategic** | 3–10 years | Network design, facility location, make-or-buy, partner selection |
-| **Tactical** | 3–18 months | Aggregate production planning, capacity allocation, contract volumes |
-| **Operational** | Days–weeks | Scheduling, routing, replenishment, order fulfillment |
-
-The **hierarchical planning principle**: Decisions at higher levels constrain the solution space at lower levels. A strategic decision to operate two distribution centers limits the tactical options for regional stock allocation. Suboptimal strategic decisions cannot be fully compensated by excellent operational execution.
-
-*Anthony's triangle* formalizes this: strategic decisions are few, high-impact, and hard to reverse; operational decisions are frequent, low-impact individually, and reversible. SCM education typically focuses on strategic and tactical models — operational execution follows from the infrastructure put in place.
-
----
-
-## Exercises
-
-**Exercise 1.1 — DuPont Analysis**
-
-A logistics company reports: Revenue €8,500k, Total Cost €7,800k, Fixed Assets €1,200k, Cash €300k, Inventory €2,100k, Receivables €950k.
-
-a. Calculate profit margin, asset turnover, and ROI.
-b. The company implements a lean initiative reducing inventory by 15% and saves €30k in holding costs. Recalculate all three metrics.
-c. Alternatively, the sales team proposes increasing revenue by 8% (same cost structure). Which initiative improves ROI more?
-
-**Exercise 1.2 — Push vs. Pull**
-
-For each of the following products, identify the likely decoupling point and justify your answer:
-
-a. A custom-configured Dell laptop
-b. A seasonal chocolate advent calendar
-c. A standard steel I-beam
-d. A Hermès Birkin bag (18-month waiting list)
-
-**Exercise 1.3 — Three Flows**
-
-Map the three flows (material, information, financial) for the following supply chain scenario: A consumer orders a kitchen appliance from an online retailer. The retailer does not hold stock — it drop-ships from the manufacturer. The manufacturer sources the motor from a supplier in Eastern Europe. The consumer pays by credit card at checkout; the credit card company settles with the retailer in 2 days; the retailer pays the manufacturer in 30 days; the manufacturer pays the supplier in 45 days. Draw the flow diagram and identify where each flow is fastest and slowest.
+Textbooks such as Chopra and Meindl show that the appropriate position on this spectrum depends on implied demand uncertainty. Functional products with stable demand typically require efficient supply chains, whereas innovative products with higher volatility and shorter life cycles require more responsive structures.[cite:3]
+
+A simple contrast is provided by basic consumer staples versus fast fashion. Standardized grocery items are usually supplied through efficiency-oriented networks with high utilization and stable replenishment, while fashion retailers such as Zara rely on shorter cycles, smaller batches, and tighter information coupling between sales and replenishment.[cite:3]
+
+## Push, pull, and the decoupling point
+
+The literature distinguishes push processes driven by forecasts from pull processes triggered by actual customer demand.[cite:3] The point where the system changes from push to pull is the customer order decoupling point.
+
+The location of this point has major strategic implications. If it is positioned closer to the customer, service speed and availability usually improve, but inventories and misallocation risks increase. If it is positioned further upstream, inventories tend to fall, but delivery times lengthen and customization potential decreases.
+
+Furniture provides a simple example. Standard shelves are often produced and stocked in anticipation of demand, whereas customized kitchens are typically configured and completed only after the customer order has been received.
+
+## Supply chain costs and trade-offs
+
+The lecture explicitly highlights conflicting cost components in logistics and SCM.[file:10] Typical trade-offs exist between inventory cost and transport cost, between capacity cost and stockout cost, and between centralization benefits and service-level disadvantages.
+
+Werner discusses these interactions in detail and shows that logistics decisions almost always create system-wide consequences. A denser warehouse network may reduce delivery time, for example, but increase fixed cost and duplicate inventories across locations.[file:6]
+
+## Financial relevance of SCM
+
+Supply chain decisions affect operational performance and financial performance at the same time. The DuPont logic makes clear that SCM influences both profitability and asset turnover, especially through inventories, receivables, service performance, and cost structures.
+
+If average inventory is reduced without harming service, capital commitment falls and asset turnover improves. At the same time, better availability and lower obsolescence can improve margins. Inventory management is therefore not merely an operational issue, but also a financial management issue.
+
+## Real-world supply chain examples
+
+The lecture encourages students to map real supply chains for products such as Coca-Cola, Patagonia T-shirts, Canyon bicycles, or Ritter Sport chocolate.[file:10] This is a valuable exercise because it connects raw materials, intermediate products, production steps, geographic allocation, and logistics processes in a single analytical frame.[file:10]
+
+A racing bicycle is a particularly good illustration of network complexity. Carbon or aluminum frames, groupsets, tires, saddles, and electronics often originate from specialized suppliers in different countries, while assembly, quality inspection, storage, and distribution may take place elsewhere. This shows why modern supply chains are networks rather than simple linear chains.
+
+## Chapter summary
+
+SCM integrates operational, strategic, and interorganizational decisions in one management framework. The concepts developed in this chapter form the basis for the following chapters on strategy, network design, transport, uncertainty, coordination, and sustainability.[file:10][cite:4]
