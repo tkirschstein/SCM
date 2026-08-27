@@ -219,7 +219,7 @@ good -> consumption
 
 ## Logistiksysteme im Unternehmen {#slide-10}
 
-![](images/clipboard-1798916514.png)
+![](../images/clipboard-1798916514.png)
 
 ## Supply Chain Strukturen {#slide-11}
 
@@ -357,12 +357,12 @@ $\rightarrow$ **Optimierung der indiv . Gewinne führt i.d.R. nicht zur Optimier
 **Value adding -- Porter's value chain**
 :::
 
-![](images/clipboard-871463286.png)
+![](../images/clipboard-871463286.png)
 ::::
 
 :::: {.column width="60%"}
 ::: {.fragment .fade-up}
-![](images/clipboard-2899353534.png)
+![](../images/clipboard-2899353534.png)
 :::
 ::::
 :::::::
@@ -397,7 +397,7 @@ Offenes Unternehmensmodell
 
 ## Flüsse in Supply Chains {#slide-15}
 
-![](images/clipboard-35016753.png)
+![](../images/clipboard-35016753.png)
 
 ## Supply Chain Strukturen {#slide-16}
 
@@ -405,7 +405,7 @@ Offenes Unternehmensmodell
 Fokale Supply Chain
 :::
 
-![](images/clipboard-1428622780.png){fig-align="center" width="2428"}
+![](../images/clipboard-1428622780.png){fig-align="center" width="2428"}
 
 ::: small-text
 **Charakteristiken**:
@@ -422,7 +422,7 @@ Fokale Supply Chain
 Polyzentrische Supply Chains
 :::
 
-![](images/clipboard-4220762876.png){fig-align="center"}
+![](../images/clipboard-4220762876.png){fig-align="center"}
 
 ::: small-text
 **Charakteristiken**:

@@ -24,6 +24,11 @@
   line-height: 1.2;
 }
 
+.large-text {
+  font-size: 1.3em;
+  line-height: 1.5;
+}
+
 .exercise-slide {
   width: 100%;
   margin-top: -0.5em;
@@ -116,4 +121,19 @@
   grid-row: 2;
   object-fit: contain;
   background: #ffffff;
+}
+
+.reveal section .tikz-slide {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+}
+
+.reveal section .tikz-slide img,
+.reveal section .tikz-slide svg {
+  width: 100% !important;
+  height: auto !important;
+  max-height: 100%;
+  object-fit: contain;
 }
