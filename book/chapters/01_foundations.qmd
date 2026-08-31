@@ -2,120 +2,142 @@
 
 ## Learning objectives
 
-After completing this chapter, you should be able to
+After completing this chapter, readers should be able to
 
-- distinguish supply chain management from logistics, procurement, and operations management,
-- describe material, information, and financial flows in supply chains,
-- classify basic supply chain structures,
-- explain key objectives and trade-offs in supply chain management,
-- discuss how supply chain decisions affect financial performance.
+- distinguish supply chain management from logistics and related functions,
+- explain the value-creating role of procurement, production, distribution, and sales,
+- analyze material, information, and financial flows across a supply chain,
+- classify focal and polycentric supply chain structures,
+- assess the implications of objectives, trade-offs, and cost structures in SCM.
 
-## Why supply chains are not a new phenomenon
+## Introduction
 
-The coordination of supply, transport, storage, and information long predates the modern term supply chain management. Historical large-scale undertakings such as the construction of the Cheops pyramid, Hannibal's campaign across the Alps, and Alexander the Great's campaigns all required the coordinated provision of materials, transport capacity, food, and information across distance and time.[file:10]
+Supply chain management is often perceived as a modern management concept. Historically, however, supply, transport, coordination, and provisioning problems have existed for millennia. The introductory lecture uses the construction of the Cheops pyramid, Hannibal’s campaign across the Alps, and Alexander the Great’s campaigns to show that large-scale supply systems long predate digital technologies and globalized sourcing. These examples are useful because they emphasize the enduring managerial problem: ensuring that the right resources are available in the right quantity, place, and time under conditions of uncertainty and interdependence [@werner2020; @kummer2022].
 
-These examples show that the core challenge of SCM is not new. What is new in modern supply chains is the scale of global specialization, the speed of information processing, the strategic integration of multiple firms, and the increased importance of volatility, sustainability, and interorganizational coordination.[file:10][file:6]
+A modern supply chain differs from these historical examples above all in complexity, speed, and organizational fragmentation. Today’s supply chains span multiple independent firms, countries, legal systems, and digital infrastructures. As a consequence, SCM is not limited to moving goods efficiently. It is concerned with the strategic and operational design of a coordinated value-creation network that aligns procurement, production, distribution, and demand fulfillment across organizational boundaries [@chopra2022; @christopher2016].
 
 ## What is a supply chain?
 
-A supply chain comprises all organizations, activities, resources, and information required to move a product or service from raw material extraction to the final customer. It includes upstream and downstream relationships as well as the planning and coordination mechanisms that connect them.[file:10]
+A supply chain comprises all organizations, resources, activities, and information involved in transforming raw materials into products or services and delivering them to the final customer. This includes upstream suppliers, focal firms, downstream channel partners, and the interfaces through which orders, forecasts, materials, services, and payments are exchanged [@chopra2022; @stadtler2015].
 
-The literature offers complementary definitions. Stadtler emphasizes the integration of organizational units and the coordination of material, information, and financial flows; Hugos highlights the balance between responsiveness and efficiency; Corsten and Gössinger stress the planning and management of sourcing, conversion, logistics, and collaboration with channel partners.[file:10]
+The lecture juxtaposes several influential definitions. Stadtler emphasizes the integration of organizational units and the coordination of material, information, and financial flows. Hugos defines SCM as the coordination of production, inventory, location, transportation, and information in order to balance responsiveness and efficiency. Corsten and Gössinger stress sourcing, procurement, conversion, logistics, and collaboration across channel partners. Taken together, these definitions show that SCM is simultaneously process-oriented, cross-functional, and interorganizational [@stadtler2015; @hugos2018; @corsten2001].
 
-This view is consistent with the CSCMP perspective, according to which supply chain management includes the planning and management of sourcing, procurement, conversion, logistics, and coordination with suppliers, intermediaries, service providers, and customers.[cite:3] Logistics is therefore a subset of SCM: it focuses on transportation, storage, handling, and packaging, while SCM additionally includes strategic, informational, and interorganizational decisions.[file:10][cite:3]
+## SCM and logistics
 
-## Value creation as transformation
+Although the terms are often used interchangeably in practice, logistics and supply chain management are not identical. Logistics focuses on the efficient planning, implementation, and control of the movement and storage of goods and related information. Supply chain management is broader because it also includes sourcing decisions, supplier relationships, network design, coordination mechanisms, and the alignment of supply with demand across firms [@christopher2016; @schulte2017].
 
-Supply chains create value through several forms of transformation. The lecture distinguishes qualitative transformation (utility by design), spatial transformation (utility by location), temporal transformation (utility by time), and quantitative transformation (utility by quantity).[file:10]
+This distinction matters analytically. A company may operate an efficient logistics system while still suffering from poor supply chain performance because forecasts are distorted, suppliers are badly integrated, or incentives across partners are misaligned. SCM therefore extends beyond physical flow management toward a systemic perspective on value creation and coordination [@chopra2022; @werner2020].
 
-This perspective links SCM to Porter's value chain logic. Value is created not only through manufacturing, but also by making products available in the right form, at the right place, at the right time, and in the right quantity. In online grocery retailing, for example, the physical product may be unchanged, but customer utility increases through reliable delivery windows, tracking information, and high delivery reliability.
+## Utility and value creation
 
-## Core processes of a supply chain
+The first lecture introduces the idea that supply exists in order to create utility for the customer. Building on logistics and value-chain thinking, products generate utility not only through their intrinsic properties but also through availability at the right time, in the right place, in the right quantity, and with the right information [@porter1985; @kummer2022].
 
-From a process perspective, supply chains can be structured into procurement, production, distribution, and sales.[file:10] Procurement secures raw materials, components, and services from external partners; production transforms inputs into higher-value outputs; distribution handles storage and physical delivery; sales connects the final offering to market transactions and customer demand.[file:10]
+This perspective is useful because it links SCM directly to customer satisfaction. A product may be technically excellent, but if it is unavailable when demanded or inaccessible through the preferred distribution channel, customer utility remains low. SCM thus contributes to property utility, time utility, place utility, information utility, and design utility by coordinating the underlying transformation and delivery processes [@christopher2016; @werner2020].
 
-A simple automotive example illustrates this logic. A seat supplier procures metal, foam, textiles, and electronics, produces seat systems, delivers them to the OEM, and the final economic value of the entire chain is realized only when the vehicle is sold to the customer.
+```{=latex}
+\begin{figure}[H]
+\centering
+\fbox{\parbox{0.88\textwidth}{\centering Placeholder for adapted lecture figure: utility dimensions of supply (property, time, place, information, design).}}
+\caption{Utility dimensions and the value-creating role of supply. Adapted from the lecture materials and discussed in the context of logistics and value-chain theory.}
+\label{fig:utility-dimensions}
+\end{figure}
+```
 
-## The three flows
+## Value creation as process
 
-The lecture models supply chains through material, information, and financial flows.[file:10] These flows do not move in the same way and therefore need to be planned and controlled separately.
+The lecture further develops this logic by modeling value creation as a sequence of transformations. Qualitative transformation changes the characteristics of an object, spatial transformation changes its location, temporal transformation ensures availability at the right time, and quantitative transformation adjusts lot size or assortment to market needs [@kummer2022; @guenther2007].
+
+In business reality, these transformations are tightly coupled. Procurement secures inputs from upstream suppliers, production transforms them into intermediate and final outputs, distribution ensures spatial and temporal availability, and sales connects the offering to market demand. This process-oriented view is particularly helpful for teaching because it avoids reducing SCM to a purely logistical support function and instead places it at the center of coordinated value creation [@porter1985; @werner2020].
+
+## Enterprise as an open system
+
+A key conceptual contribution of the introductory lecture is the open systems view of the firm. Following Kummer, Grün, and Jammernegg, companies can be analyzed on a goods level, a financial level, and a planning-and-decision level. This framework emphasizes that supply chains are not just physical systems; they are also systems of information processing, decision-making, and capital commitment [@kummer2022].
+
+This distinction is essential for SCM because many performance problems are not caused by the physical flow itself. They emerge when planning information is poor, payment structures distort incentives, or decision rights are badly assigned across organizations. The open-systems perspective therefore supports a more complete diagnosis of supply chain performance and failure [@stadtler2015; @werner2020].
+
+## Flows in supply chains
+
+A foundational SCM perspective is to analyze supply chains through three interconnected flows: material flow, information flow, and financial flow. The lecture explicitly emphasizes that these flows are initiated at different points, move in different directions, and must be coordinated rather than assumed to be naturally synchronized [@kummer2022; @chopra2022].
 
 ### Material flow
 
-Material flow describes the physical movement of goods from suppliers through production and distribution to customers, including return flows in reverse logistics. In many industrial systems, material flow is convergent in upstream stages and divergent in downstream stages.
+Material flow describes the physical movement of raw materials, components, intermediate goods, and finished products from upstream suppliers through production and distribution to the final customer. In many supply chains, reverse flows such as returns, repairs, remanufacturing, or recycling must also be considered [@christopher2016; @werner2020].
 
 ### Information flow
 
-Information flow includes demand signals, forecasts, orders, inventory data, capacity information, confirmations, and tracking data. The quality and speed of information sharing largely determine whether material flows can be coordinated efficiently and reliably.[file:10][file:6]
-
-A central textbook theme is the bullwhip effect. If demand information is delayed, aggregated, or distorted, order variability tends to increase upstream in the chain, which creates inefficiencies and coordination problems.[file:6]
+Information flow includes customer orders, forecasts, stock information, capacity data, shipment notifications, and point-of-sale signals. It plays a critical role because physical flow can only be coordinated effectively when planning and execution rely on timely and accurate information. The literature repeatedly shows that poor information sharing amplifies variability, contributes to the bullwhip effect, and increases inventories and stockouts [@lee1997; @chopra2022].
 
 ### Financial flow
 
-Financial flow comprises payments, payment terms, credit relationships, and supply chain finance mechanisms. In practice, material and financial flows are often temporally decoupled: goods may be delivered today while payments are received much later. This makes working capital a key interface between SCM and corporate finance.
+Financial flow includes invoices, payments, payment terms, trade credit, and other funding mechanisms along the supply chain. From a managerial perspective, this is highly relevant because working capital, liquidity, and cost allocation strongly influence sourcing and inventory decisions. Material can move downstream while money moves upstream, often with long delays between delivery and payment [@werner2020; @christopher2016].
 
-## Open systems perspective
-
-The lecture introduces an open enterprise model with a planning and decision layer, a financial layer, and a goods layer.[file:10] This highlights that supply chains are not just physical networks. They are also decision systems and financial systems.
-
-This perspective is useful because it makes SCM visible as a cross-functional management domain. Procurement decisions, for example, affect not only availability of materials, but also capital commitment, information requirements, and supplier dependence.
+```{=latex}
+\begin{figure}[H]
+\centering
+\fbox{\parbox{0.88\textwidth}{\centering Placeholder for adapted lecture figure: material, information, and financial flows across procurement, production, distribution, and sales.}}
+\caption{Interconnected material, information, and financial flows in supply chains. Adapted from the lecture materials.}
+\label{fig:three-flows}
+\end{figure}
+```
 
 ## Supply chain structures
 
-The lecture distinguishes focal and polycentric supply chains.[file:10] Focal supply chains are characterized by a dominant company that coordinates the network because of market power, interface control, or a bottleneck position.[file:10]
+The lecture distinguishes focal from polycentric supply chains. In focal supply chains, one dominant company controls crucial interfaces, sets standards, and often coordinates the network. Typical examples include automotive value chains or platform-centered ecosystems in consumer electronics, where a focal firm strongly influences design, scheduling, and supplier behavior [@chopra2022; @werner2020].
 
-Typical examples include the automotive industry or platform-centered ecosystems such as Apple, where product architecture, standards, and schedules shape supplier structures.[file:10] Polycentric supply chains, by contrast, are characterized by distributed competencies, stronger specialization, and a more balanced distribution of power.[file:10]
+Polycentric supply chains, by contrast, are characterized by distributed competencies, greater specialization, and a more balanced distribution of power. Coordination is less strongly centered in one actor and more dependent on negotiated interfaces, relational governance, and collaborative planning [@christopher2016; @stadtler2015].
 
-This distinction matters because governance mechanisms differ across structures. Focal systems often rely more strongly on standards, hierarchy, and performance requirements, whereas polycentric systems depend more on collaboration, negotiation, and network governance.
+This distinction matters because governance mechanisms differ significantly. Focal supply chains tend to rely more heavily on standardization, contractual discipline, and performance monitoring. Polycentric systems require stronger capabilities in collaboration, conflict resolution, and network governance.
 
-## Cycle view and interfaces
+## Examples and network thinking
 
-Textbooks such as Chopra and Meindl also present supply chains through a cycle view, for example customer order, replenishment, manufacturing, and procurement cycles.[cite:3] This perspective is particularly useful because it highlights where inventory is held, what triggers replenishment, and which information must be exchanged across interfaces.
+The lecture asks students to map supply chains for products such as Coca-Cola, Patagonia apparel, Canyon bicycles, and Ritter Sport chocolate. This exercise is didactically powerful because it forces students to identify raw materials, intermediate steps, geographic allocation, and the logistics links that connect production stages [@werner2020; @schulte2017].
 
-Many operational problems originate at these interfaces: inaccurate forecasts, delayed orders, insufficient visibility, or unnecessary safety stocks. For this reason, effective SCM depends not only on managing individual stages, but also on managing the coupling between stages.
+Such examples also demonstrate why the term supply chain can be misleading if interpreted too literally. Most real systems are not simple linear chains but networks with multiple tiers, many-to-many supplier relations, alternative transport paths, and feedback loops. The ability to think in networks rather than in sequential chains is one of the core analytical skills in SCM [@stadtler2015; @chopra2022].
 
-## Objectives of supply chain management
+## The supply chain surplus perspective
 
-The lecture identifies cost, time, reliability, accessibility, quality, and customer service as key objective dimensions.[file:10] These are often translated into metrics such as lead time, delivery reliability, delivery quality, flexibility or resilience, information quality, and total cost.[file:10][file:6]
+The lecture highlights a central insight from Chopra and Meindl: total supply chain profit equals customer revenue minus the total cost incurred across all participating processes and partners. This implies that maximizing the profit of individual actors does not automatically maximize the performance of the supply chain as a whole [@chopra2022].
 
-These objectives are linked by systematic trade-offs. High product availability often requires higher safety stocks; short delivery times improve responsiveness but may increase transport and coordination cost; greater standardization reduces complexity but may weaken customer fit.[file:10]
+This perspective is fundamental because it explains why decentralized decision-making often creates inefficiencies. Local optimization may increase one actor’s accounting result while reducing network-level performance through excess stock, poor service, or duplicated activities. The concept of supply chain surplus therefore provides a normative benchmark for system-wide optimization [@chopra2022; @cachon2005].
 
-A core SCM principle follows from this: the goal is not the isolated optimization of a single function, but the design of an aligned overall system. The lecture explicitly notes that optimizing individual profits does not usually optimize total supply chain profit.[file:10]
+## Objectives and target dimensions
 
-## Efficiency and responsiveness
+The lecture introduces a classical target system for logistics and SCM consisting of lead time, delivery reliability, delivery quality, flexibility or resilience, information quality, and cost. These dimensions remain highly relevant because they capture both efficiency and service aspects of supply chain performance [@schulte2017; @werner2020].
 
-A central SCM tension lies between efficiency and responsiveness. Hugos explicitly frames SCM as the search for the best mix of responsiveness and efficiency.[file:10]
+Importantly, these dimensions are interdependent. Reducing lead times may require higher inventory or faster transport modes. Increasing flexibility may lower capacity utilization. Improving service reliability may increase redundancy and therefore cost. SCM is therefore characterized by persistent target conflicts rather than by a single dominant objective [@christopher2016; @chopra2022].
 
-Textbooks such as Chopra and Meindl show that the appropriate position on this spectrum depends on implied demand uncertainty. Functional products with stable demand typically require efficient supply chains, whereas innovative products with higher volatility and shorter life cycles require more responsive structures.[cite:3]
+```{=latex}
+\begin{figure}[H]
+\centering
+\fbox{\parbox{0.88\textwidth}{\centering Placeholder for adapted lecture figure: classical SCM target dimensions and their conflicts.}}
+\caption{Traditional target dimensions in logistics and supply chain management. Adapted from the lecture materials and supported by logistics literature.}
+\label{fig:target-dimensions}
+\end{figure}
+```
 
-A simple contrast is provided by basic consumer staples versus fast fashion. Standardized grocery items are usually supplied through efficiency-oriented networks with high utilization and stable replenishment, while fashion retailers such as Zara rely on shorter cycles, smaller batches, and tighter information coupling between sales and replenishment.[cite:3]
+## Trade-offs and logistics cost
 
-## Push, pull, and the decoupling point
+The introductory lecture explicitly addresses conflicting cost components in logistics and SCM. This is an essential theme because logistics costs are never determined in isolation. Warehousing, transportation, lot sizing, safety stock, and service design interact in ways that make local cost minimization potentially harmful at the system level [@schulte2017; @werner2020].
 
-The literature distinguishes push processes driven by forecasts from pull processes triggered by actual customer demand.[cite:3] The point where the system changes from push to pull is the customer order decoupling point.
+The literature emphasizes that transparency of logistics cost functions is often limited by data availability, time lags, allocation problems, and stochastic influences. As a result, managerial decisions are often made under uncertainty and with incomplete cost visibility. This is one reason why SCM relies not only on accounting information but also on analytical modeling and scenario-based reasoning [@guenther2007; @werner2020].
 
-The location of this point has major strategic implications. If it is positioned closer to the customer, service speed and availability usually improve, but inventories and misallocation risks increase. If it is positioned further upstream, inventories tend to fall, but delivery times lengthen and customization potential decreases.
+## Supply chain costing
 
-Furniture provides a simple example. Standard shelves are often produced and stocked in anticipation of demand, whereas customized kitchens are typically configured and completed only after the customer order has been received.
+The Apple iPod example used in the lecture illustrates how supply chain costing can reveal the distribution of value creation across countries, stages, and actors. The example makes clear that manufacturing and assembly costs represent only part of the total value logic. Design, branding, retailing, and channel coordination can account for a substantial share of the captured margin [@dedrick2010].
 
-## Supply chain costs and trade-offs
+From a teaching perspective, such examples are important because they show students that global supply chains cannot be understood through production cost alone. Costing must account for procurement, production, distribution, retailing, and margin capture across the full chain. This broad view prepares the ground for later discussions of strategic fit, responsiveness, and network design.
 
-The lecture explicitly highlights conflicting cost components in logistics and SCM.[file:10] Typical trade-offs exist between inventory cost and transport cost, between capacity cost and stockout cost, and between centralization benefits and service-level disadvantages.
+```{=latex}
+\begin{figure}[H]
+\centering
+\fbox{\parbox{0.88\textwidth}{\centering Placeholder for adapted lecture figure: Apple iPod supply chain costing example.}}
+\caption{Illustrative supply chain costing example showing distribution of costs and value capture across stages. Adapted from lecture materials based on Dedrick et al.}
+\label{fig:ipod-costing}
+\end{figure}
+```
 
-Werner discusses these interactions in detail and shows that logistics decisions almost always create system-wide consequences. A denser warehouse network may reduce delivery time, for example, but increase fixed cost and duplicate inventories across locations.[file:6]
+## Positioning of Chapter 1
 
-## Financial relevance of SCM
+The first chapter establishes the conceptual vocabulary required for the remainder of the book. It defines the object of analysis, explains how value is created in supply chains, introduces the relevant flows and structures, and clarifies why objectives and costs must be considered at the system level rather than within isolated functions [@chopra2022; @werner2020].
 
-Supply chain decisions affect operational performance and financial performance at the same time. The DuPont logic makes clear that SCM influences both profitability and asset turnover, especially through inventories, receivables, service performance, and cost structures.
-
-If average inventory is reduced without harming service, capital commitment falls and asset turnover improves. At the same time, better availability and lower obsolescence can improve margins. Inventory management is therefore not merely an operational issue, but also a financial management issue.
-
-## Real-world supply chain examples
-
-The lecture encourages students to map real supply chains for products such as Coca-Cola, Patagonia T-shirts, Canyon bicycles, or Ritter Sport chocolate.[file:10] This is a valuable exercise because it connects raw materials, intermediate products, production steps, geographic allocation, and logistics processes in a single analytical frame.[file:10]
-
-A racing bicycle is a particularly good illustration of network complexity. Carbon or aluminum frames, groupsets, tires, saddles, and electronics often originate from specialized suppliers in different countries, while assembly, quality inspection, storage, and distribution may take place elsewhere. This shows why modern supply chains are networks rather than simple linear chains.
-
-## Chapter summary
-
-SCM integrates operational, strategic, and interorganizational decisions in one management framework. The concepts developed in this chapter form the basis for the following chapters on strategy, network design, transport, uncertainty, coordination, and sustainability.[file:10][cite:4]
+This foundation is necessary before strategic choices can be discussed. Once the supply chain is understood as a coordinated but tension-laden network, the next question is how it should be designed to match customer requirements, uncertainty, and competitive positioning.
