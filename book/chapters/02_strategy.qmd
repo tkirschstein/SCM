@@ -2,140 +2,149 @@
 
 ## Learning objectives
 
-After completing this chapter, you should be able to
+After completing this chapter, readers should be able to
 
-- explain the role of the supply chain in competitive strategy,
-- discuss strategic fit and implied demand uncertainty,
-- classify the main supply chain drivers,
-- distinguish key methods of location and network planning,
-- assess major strategic trade-offs in supply chain design.
+- explain how supply chain strategy supports competitive strategy,
+- analyze customer needs as drivers of implied demand uncertainty,
+- assess the trade-off between responsiveness and efficiency,
+- classify major supply chain drivers and their strategic roles,
+- understand how planning structure and network decisions shape supply chain performance.
 
-## Strategy in supply chain management
+## Introduction
 
-The lecture structures this topic around strategic objectives, uncertainty, supply chain drivers, and location planning.[file:10] This makes clear that SCM strategy is not limited to isolated logistics decisions. It concerns the long-term configuration of the entire value-creation network.[file:10]
+The second lecture block develops the transition from general SCM foundations to strategic design. It focuses on how supply chains should be configured in order to serve customer needs under uncertainty while maintaining economic viability. This strategic perspective is central because operational excellence alone is not sufficient if the underlying supply chain design is inconsistent with market requirements [@chopra2022; @christopher2016].
 
-Strategy can be understood as the fundamental long-term pattern of behavior by which a company and its subfunctions position themselves vis-à-vis the environment in pursuit of long-term goals.[file:10] In SCM, this means designing the supply chain in a way that enables and reinforces the firm's competitive position.
+In strategic terms, SCM concerns long-term design choices about network structure, inventories, capacities, information systems, sourcing, and service logic. These choices determine whether the supply chain supports cost leadership, innovation, service differentiation, quality, or sustainability-oriented competition [@werner2020; @hugos2018].
+
+## Strategy and customer value
+
+The lecture starts from the premise that strategic goals in SCM are ultimately derived from customer expectations. Customer needs may relate to price, lead time, availability, reliability, accessibility, quality, or product design. These dimensions jointly define the service logic that the supply chain has to support [@christopher2016; @chopra2022].
+
+This view is useful because it places strategy on the demand side rather than in internal efficiency alone. Supply chain strategy begins with understanding what kind of service attributes customers value and how these attributes translate into operational and structural requirements [@werner2020].
+
+```{=latex}
+\begin{figure}[H]
+\centering
+\fbox{\parbox{0.88\textwidth}{\centering Placeholder for adapted lecture figure: service dimensions and customer expectations.}}
+\caption{Customer service dimensions as a starting point for supply chain strategy. Adapted from the lecture materials.}
+\label{fig:service-dimensions}
+\end{figure}
+```
+
+## Customer needs and implied demand uncertainty
+
+A central concept in the lecture is implied demand uncertainty. Demand uncertainty refers to the uncertainty of demand for a product, whereas implied demand uncertainty refers to the uncertainty of the demand segment that the supply chain chooses to serve on the basis of its promised attributes. This distinction is conceptually important because it links market positioning to supply chain design [@chopra2022].
+
+The lecture identifies several customer-related drivers of implied uncertainty: order quantity, acceptable lead time, expected product variety, required service level, willingness to pay, innovation rate, and channel complexity. As these factors intensify, the supply chain typically faces greater variability, less planning time, and stronger demands for flexibility [@chopra2022; @christopher2016].
+
+For example, a narrow product line with stable demand and long customer tolerance for delivery delays creates relatively low implied uncertainty. By contrast, a market segment demanding high variety, short lead times, and frequent innovation generates much higher implied uncertainty. This is why the same physical product category can require very different supply chain designs depending on the service promise [@hugos2018; @werner2020].
+
+```{=latex}
+\begin{figure}[H]
+\centering
+\fbox{\parbox{0.88\textwidth}{\centering Placeholder for adapted lecture figure: customer needs and implied demand uncertainty.}}
+\caption{Customer attributes as drivers of implied demand uncertainty. Adapted from the lecture materials.}
+\label{fig:implied-uncertainty}
+\end{figure}
+```
+
+## Responsiveness and efficiency
+
+The lecture follows the widely used framework proposed by Chopra and Meindl, which frames supply chain design as a trade-off between responsiveness and efficiency. Responsiveness denotes the ability of a supply chain to react to changes in demand, supply, and market conditions. Efficiency refers to the ability to provide a product at low total cost [@chopra2022].
+
+A highly responsive supply chain typically features high inventory buffers, short lead times, broad product availability, flexible capacity, and strong information integration. An efficient supply chain, by contrast, emphasizes high utilization, standardization, longer planning horizons, lower safety stock, and cost-efficient transport and production structures [@hugos2018; @christopher2016].
+
+The strategic challenge lies in choosing the right position, not in maximizing one dimension unconditionally. A supply chain designed for basic, stable products should not carry the cost burden of excessive responsiveness. Conversely, a supply chain serving volatile and innovative demand cannot rely on a purely efficiency-driven design without creating severe service problems [@chopra2022; @simchi2004].
 
 ## Strategic fit
 
-A core idea in the SCM literature is strategic fit between competitive strategy and supply chain strategy. Chopra and Meindl argue that the supply chain must be aligned with the requirements of the market segment being served, especially with the level of implied demand uncertainty.[cite:3]
+The concept of strategic fit captures the alignment between competitive strategy and supply chain strategy. The lecture conveys this logic implicitly through its discussion of customer expectations, uncertainty, and supply chain design choices. In the literature, strategic fit means that the capabilities of the supply chain must match the uncertainty profile of the market segment being served [@chopra2022; @christopher2016].
 
-Misfit is strategically dangerous. A firm that promises low prices but operates a highly complex network with small batches and frequent expedited shipments will struggle to maintain cost leadership. A firm that promises speed, availability, and variety but relies on rigid processes and minimal buffers will regularly disappoint customers.[cite:3][file:10]
+A misfit occurs when the supply chain is either too rigid for the market or too expensive for the value proposition. A discounter that operates a highly redundant, ultra-flexible network sacrifices cost competitiveness unnecessarily. A fashion firm that competes through speed and novelty but relies on slow, inflexible replenishment processes fails to support its business model.
 
-## Customer needs and implied uncertainty
+## Cycles and the order penetration point
 
-The lecture shows that customer needs determine implied uncertainty in the supply chain.[file:10] Larger demand volumes, wider demand variation, shorter acceptable lead times, higher product variety, higher service levels, and more sales channels all increase the uncertainty with which the supply chain must cope.[file:10]
+The lecture gives substantial attention to strategic manufacturing and the order penetration point. This is an important extension of basic SCM concepts because it links customer demand to the configuration of production and fulfillment processes. The order penetration point marks the stage at which a product becomes tied to a specific customer order [@chopra2022; @kummer2022].
 
-This insight is strategically important because uncertainty is not always imposed by the market alone. It is often amplified by the firm's own value proposition. A company that promises same-day delivery, configurability, and high availability creates a much more demanding SCM problem than a company offering standardized products with long lead times.
+This concept helps explain the difference between make-to-stock, assemble-to-order, make-to-order, and engineer-to-order strategies. The further upstream the order penetration point is located, the more the system depends on forecasts and standardization. The further downstream it is located, the more the system can respond to specific customer requests, typically at the cost of longer lead times or higher complexity [@silver1998; @thonemann2015].
 
-## Efficiency and responsiveness
+```{=latex}
+\begin{figure}[H]
+\centering
+\fbox{\parbox{0.88\textwidth}{\centering Placeholder for adapted lecture figure: order penetration point and fulfillment strategies.}}
+\caption{Order penetration point and fulfillment strategies from make-to-stock to engineer-to-order. Adapted from the lecture materials.}
+\label{fig:opp}
+\end{figure}
+```
 
-The lecture defines responsiveness as the ability of a supply chain to cope with demand uncertainty.[file:10] Responsiveness can be increased through higher inventories, shorter lead times, greater product variety, shorter product development cycles, higher readiness levels, and reduced supply uncertainty.[file:10]
+## Thinking in cycles
 
-Efficiency, by contrast, emphasizes low cost, high utilization, standardization, and process stability. Chopra and Meindl describe the classic trade-off between these two orientations: as uncertainty rises, the supply chain generally has to move toward responsiveness; under low uncertainty, efficient designs are superior.[cite:3]
+The lecture also presents a cycle-based view of the supply chain: customer order cycle, replenishment or distribution cycle, production cycle, and procurement cycle. This structure is analytically valuable because it breaks the supply chain into interfaces where requirements are translated from one stage to the next [@kummer2022; @chopra2022].
 
-A common example is the contrast between discount retailing and fast fashion. Discount formats rely on standardized processes and high operational discipline, whereas fashion retailers such as Zara depend on shorter cycles, smaller lots, and tighter coordination between stores and replenishment.[cite:3]
+A customer order becomes a demand for finished goods, which becomes a production requirement for intermediate goods and raw materials, which in turn becomes a procurement requirement. This logic is crucial for planning because it shows how uncertainty propagates through the system and where inventories, capacity decisions, and delays are introduced.
 
-## Normative strategies and the role of SCM
+## Normative strategies and SCM
 
-The lecture distinguishes five broad normative strategies: cost leadership, innovation leadership, service leadership, quality leadership, and sustainability leadership.[file:10] Each strategy places different demands on the supply chain and shifts the relative importance of cost, speed, quality, availability, and sustainability.[file:10]
+The lecture relates SCM to five broad normative strategies: cost leadership, innovation leadership, service leadership, quality leadership, and sustainability leadership. This is a productive teaching device because it demonstrates that supply chains are not neutral infrastructures. They actively enable or constrain competitive strategy [@werner2020; @christopher2016].
 
-Under cost leadership, the supply chain must enable efficient infrastructure, high utilization, and low process losses. Innovation leadership requires short time-to-market, flexible sourcing, and robust ramp-up processes. Service leadership emphasizes customer-specific processes and high availability. Quality leadership depends on reliable processes and strong quality assurance. Sustainability leadership extends the target system toward CO2, energy, and resource considerations.[file:10]
-
-This framework is useful because it shows that SCM is not only a support function. It can be a direct carrier of competitive advantage.
+Under cost leadership, SCM must support efficient infrastructure, scale effects, low complexity, and disciplined planning. Under innovation leadership, supply chains must enable short time-to-market, rapid scaling, and flexible sourcing. Service leadership requires customer-oriented fulfillment and high reliability. Quality leadership depends on robust, traceable, and controlled processes. Sustainability leadership extends the objective system toward resource efficiency, emissions reduction, and responsible sourcing [@werner2020; @chopra2022].
 
 ## Supply chain drivers
 
-The lecture identifies production, inventory, location, transportation, and information as central supply chain drivers.[file:10] Chopra and Meindl use a highly similar driver logic, sometimes supplemented by sourcing and pricing.[cite:3]
+One of the most important conceptual models in the lecture is the driver framework. Production, inventory, location, transportation, and information are presented as the main supply chain drivers, each of which can be configured toward greater responsiveness or greater efficiency. This framework is widely used in SCM education because it translates strategic fit into concrete design levers [@chopra2022; @hugos2018].
 
 ### Production
 
-Strategic production decisions concern what is produced, how it is produced, and when it is produced.[file:10] They include technology choices, make-or-buy decisions, capacity structures, lot-sizing logic, and the position of the decoupling point.
-
-Companies serving stable, functional demand are more likely to emphasize scale, specialization, and capacity utilization. Firms offering high customization or rapid innovation typically require more modular processes, later differentiation, and greater flexibility.
+Production decisions concern what is produced, how it is produced, and when it is produced. Strategic issues include process technology, product portfolio structure, flexibility, excess capacity, and the location of the decoupling point. High responsiveness tends to require flexible manufacturing, excess capacity, and shorter planning cycles, whereas efficiency favors specialization and high utilization [@chopra2022; @thonemann2015].
 
 ### Inventory
 
-Inventory decisions concern what is stocked, where it is stocked, and in what quantity.[file:10] Inventory can improve responsiveness and service, but it also causes capital commitment, obsolescence risk, and storage cost.
-
-A classic textbook trade-off is centralization versus decentralization. Centralized inventory benefits from pooling effects and lower safety stocks, but may increase lead times. Decentralized inventory improves service speed, but often duplicates stock across locations.
+Inventory decisions concern which products are stocked, where they are stocked, and in what quantity. High service levels and short response times often require higher inventories and broader assortment availability. Efficiency-oriented systems tend to centralize or specialize inventory in order to exploit pooling effects and reduce holding cost [@silver1998; @christopher2016].
 
 ### Location
 
-Location decisions are among the most long-term and consequential SCM decisions. They determine where production, storage, consolidation, and delivery activities take place, and therefore shape distances, service times, and total cost structures.[file:10]
-
-Because these decisions involve high investment, limited reversibility, and strong downstream effects on transport, inventory, and service, they are central elements of strategic supply chain design.
+Location decisions concern where production, storage, and distribution activities are carried out. Dense networks with many facilities and short customer distances support responsiveness. Sparse or hierarchical networks with consolidation points usually support cost efficiency. Because location decisions are capital intensive and hard to reverse, they are among the most strategic supply chain choices [@chopra2022; @werner2020].
 
 ### Transportation
 
-Strategic transportation decisions concern modes, frequencies, network structures, and outsourcing choices.[file:10] Firms need to determine whether to rely primarily on road, rail, sea, or air transport, whether direct shipment or hub-and-spoke structures are appropriate, and to what extent transportation should be outsourced.[cite:3]
-
-The time-cost trade-off is particularly visible here. Air freight improves responsiveness but is significantly more expensive and often more emissions-intensive than sea freight.
+Transportation decisions concern how and when goods are moved. Frequent small shipments, fast transport modes, and flexible routing improve responsiveness but raise cost. Consolidated full-load transports and slower high-capacity modes increase efficiency but reduce flexibility and speed [@christopher2016; @schulte2017].
 
 ### Information
 
-Information systems provide the basis for many strategic and operational decisions.[file:10] Information sharing, system integration, and collaborative planning can reduce uncertainty, improve forecasts, and lower inventories and stockouts.[file:10][file:6]
+Information is the enabling driver behind all other drivers. Deep systems integration, real-time monitoring, and collaborative planning support responsiveness by reducing uncertainty and coordination delays. Limited information sharing may reduce system complexity in the short term but often undermines overall performance [@lee1997; @chopra2022].
 
-Vendor managed inventory is a prominent example. The supplier replenishes the customer on the basis of shared sales and stock data. Such a model depends on transparency, compatible systems, and trust.
+```{=latex}
+\begin{figure}[H]
+\centering
+\fbox{\parbox{0.88\textwidth}{\centering Placeholder for adapted lecture figure: the five supply chain drivers positioned between efficiency and responsiveness.}}
+\caption{Supply chain drivers as design levers between efficiency and responsiveness. Adapted from the lecture materials and the strategic-fit literature.}
+\label{fig:drivers}
+\end{figure}
+```
 
-## Strategic performance dimensions
+## Planning structure and planning matrix
 
-The lecture lists lead time, delivery reliability, delivery quality, flexibility or resilience, information, and cost as traditional SCM performance dimensions.[file:10] These should be interpreted as a connected system of objectives rather than isolated metrics.[file:10]
+The early part of the strategy block also introduces the supply chain planning matrix. This matrix links functional domains such as procurement, production, distribution, and sales to planning horizons ranging from strategic to operational. It illustrates that supply chain design is not a single decision but a layered planning architecture [@stadtler2015].
 
-For instance, an additional warehouse layer may shorten lead times and improve service reliability, but it can also increase fixed cost and working capital. Conversely, aggressive centralization may lower cost while reducing resilience under disruptions or demand spikes.
+From a pedagogical perspective, the planning matrix is highly valuable because it shows how long-term structural choices constrain medium-term and short-term decisions. Network planning influences capacity planning, which in turn affects transportation planning, scheduling, and order fulfillment. This layered view helps readers understand why strategic SCM cannot be separated cleanly from tactical and operational planning.
 
-## Location planning as a strategic task
+```{=latex}
+\begin{figure}[H]
+\centering
+\fbox{\parbox{0.88\textwidth}{\centering Placeholder for literature-based figure: Supply Chain Planning Matrix after Stadtler et al.}}
+\caption{Planning levels and functional domains in supply chain planning. Based on Stadtler et al.}
+\label{fig:planning-matrix}
+\end{figure}
+```
 
-The lecture devotes substantial attention to location planning and distinguishes multicriteria, continuous, and discrete approaches.[file:10] This classification is analytically useful because each approach matches a different decision context.
+## Transition to network planning
 
-### Multicriteria location planning
+At the end of the second lecture block, the focus shifts toward strategic network planning and location planning. This transition is logically consistent because once strategic fit, uncertainty, and driver configuration are understood, the next question is where facilities should be located and how the network should be structured. The lecture therefore prepares the ground for the more detailed treatment of multicriteria, continuous, and discrete location planning in later sections of the course [@chopra2022; @werner2020].
 
-Multicriteria methods are relevant when locations must be assessed not only by cost but also by qualitative criteria such as labor availability, political stability, sustainability, or infrastructure quality. The lecture discusses the weighted scoring method and the analytic hierarchy process (AHP).[file:10]
+For the structure of the book, this means that Chapter 2 should cover the strategic rationale and design logic, while the more formal methods of network and location planning can be deepened in the following chapter. This creates a clean separation between strategic framing and analytical methods.
 
-#### Weighted scoring method
+## Positioning of Chapter 2
 
-The weighted scoring method aggregates weighted partial utilities into an overall utility score.[file:10] Its main strength lies in its simplicity and in its ability to incorporate qualitative criteria. Its weaknesses include issues of interpretability, weighting, and substitutability across criteria.[file:10]
+Chapter 2 thus establishes the bridge from SCM fundamentals to deliberate supply chain design. It explains how customer needs translate into uncertainty, why responsiveness and efficiency must be balanced, how the order penetration point and cycle logic shape fulfillment design, and how the five supply chain drivers operationalize strategic fit [@chopra2022; @christopher2016].
 
-In practice, it is useful in early-stage screening of warehouse or plant alternatives when hard cost data are incomplete but strategic criteria still matter.
-
-#### Analytic hierarchy process
-
-AHP structures the decision through pairwise comparisons of criteria and alternatives. The lecture highlights that AHP improves transparency, reduces arbitrariness, and can reveal inconsistent judgments through a consistency index.[file:10]
-
-This makes AHP particularly useful in multi-stakeholder settings. A distribution center decision involving cost, service, workforce availability, and sustainability is a good example.
-
-### Continuous location planning
-
-Continuous models search for optimal coordinates in space instead of selecting from a finite set of candidate sites. The lecture covers the Steiner-Weber model and, for Manhattan distances, the weighted median solution.[file:10]
-
-Such models are especially relevant when transport cost dominates and the spatial distribution of demand or supply is known. Typical applications include the rough placement of a central warehouse or the positioning of an urban micro-hub.
-
-### Discrete location planning and network design
-
-Discrete models select the best sites from a predefined set of alternatives. In practice, this is often the dominant planning context because firms usually choose among available buildings, service providers, or industrial sites rather than among all points in a continuous space.
-
-Network design extends location choice by considering capacities, assignments, and flows between stages. It therefore serves as a bridge between strategic planning and quantitative optimization.
-
-## Transport problem and allocation logic
-
-The lecture also covers the classical transportation problem and Vogel's approximation heuristic.[file:10] This fits naturally into the strategy chapter because location and network decisions almost always imply allocation and flow decisions.
-
-The transportation problem determines how supply quantities should be assigned to demand points at minimum cost. In practice, it can represent the assignment of plants to sales regions or distribution centers to stores. Heuristic methods are valuable when a fast, good feasible solution is needed.
-
-## Sustainability as a strategic dimension
-
-Even within the strategy chapter, the lecture already introduces sustainability as a relevant target dimension.[file:10] This is important because production, sourcing, transport, and location decisions all have environmental and social implications.[file:10]
-
-Werner emphasizes green supply chains, product carbon footprint, life-cycle assessment, and life-cycle costing as systematic extensions of the traditional SCM objective system.[file:6] Strategic supply chain design is therefore increasingly shaped not only by cost and service, but also by resilience and sustainability.
-
-## Contemporary examples
-
-Recent practice illustrates the strategic importance of network design and supply chain configuration. Amazon continues to expand and modernize its European fulfillment network, including new logistics capacity and automation investments, in order to improve responsiveness and network performance.[web:14][web:22] Reports on Germany also point to the breadth of Amazon's logistics footprint and continuing investments in local expansion.[web:18][web:19]
-
-These developments are strategically meaningful because they show how service promises, network density, automation, and capital intensity are linked. Similar logic can be observed in same-day and quick-commerce models in urban retailing, where micro-hub location, assortment width, and delivery-time promises become core SCM strategy choices.[web:14][web:22]
-
-## Chapter summary
-
-Strategic SCM decisions define the long-term capability of a supply chain. They shape not only cost, but also service, flexibility, resilience, and sustainability.[file:10][file:6]
-
-This chapter therefore provides the conceptual bridge to the following topics in the book: network design and transport deepen the structural and spatial aspects, uncertainty management addresses volatility, and the chapters on coordination and sustainability extend the view toward interorganizational integration and broader target systems.[cite:4][file:10]
+These concepts provide the conceptual scaffolding for the subsequent chapters on network design, transportation, uncertainty management, coordination, and sustainability. Without this strategic layer, later analytical methods would remain disconnected from the market and competitive logic that gives them managerial meaning.

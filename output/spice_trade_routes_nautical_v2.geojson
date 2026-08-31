@@ -1,0 +1,344 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Vor 1498 See: Molukken-Malakka-Calicut",
+        "period": "Vor 1498",
+        "mode": "See"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [127.4, 0.79],
+          [126.2, 0.2],
+          [124.8, -0.8],
+          [123, -1.8],
+          [121, -3],
+          [118.5, -4.4],
+          [116, -5.3],
+          [113, -5.9],
+          [110, -6.3],
+          [107.2, -6],
+          [105, -5.7],
+          [104, -3.2],
+          [103, -0.5],
+          [102.25, 2.19],
+          [100.5, 5],
+          [97.5, 7.5],
+          [94, 8.7],
+          [90, 8.9],
+          [86, 8.3],
+          [82.5, 7.8],
+          [79.8, 8.2],
+          [77.5, 9.5],
+          [75.78, 11.25]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Vor 1498 See: Calicut-Aden-Suez",
+        "period": "Vor 1498",
+        "mode": "See"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [75.78, 11.25],
+          [73.5, 10.8],
+          [70, 11],
+          [66, 11.5],
+          [62, 12.1],
+          [58, 12.4],
+          [54, 12.5],
+          [50, 12.6],
+          [47, 12.7],
+          [45.03, 12.78],
+          [43.5, 12.6],
+          [42.8, 13.6],
+          [42, 15.2],
+          [41.3, 17],
+          [40.4, 19.2],
+          [39.17, 21.54],
+          [37.3, 24],
+          [35.4, 26.2],
+          [33.7, 28.2],
+          [32.55, 29.97]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Vor 1498 Karawane: Suez-Kairo",
+        "period": "Vor 1498",
+        "mode": "Karawane"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [32.55, 29.97],
+          [32.3, 29.98],
+          [32.05, 29.99],
+          [31.8, 30],
+          [31.5, 30.02],
+          [31.24, 30.04]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Vor 1498 Karawane: Kairo-Alexandria",
+        "period": "Vor 1498",
+        "mode": "Karawane"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [31.24, 30.04],
+          [30.95, 30.25],
+          [30.6, 30.45],
+          [30.25, 30.7],
+          [29.92, 31.2]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Vor 1498 See: Alexandria-Venedig-Antwerpen",
+        "period": "Vor 1498",
+        "mode": "See"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [29.92, 31.2],
+          [27, 32.3],
+          [24.5, 33.6],
+          [22, 35],
+          [19.5, 36.5],
+          [17.5, 38.5],
+          [15.5, 40.8],
+          [13.5, 43],
+          [12.33, 45.44],
+          [11.8, 44.8],
+          [10.8, 44.1],
+          [9.5, 43.8],
+          [8, 43.8],
+          [6.5, 44.2],
+          [5, 45.2],
+          [3.5, 46.7],
+          [2, 48.6],
+          [2.6, 50.3],
+          [4.4, 51.22]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Nach 1498 See: Lissabon-Südatlantik-Mozambique",
+        "period": "Nach 1498",
+        "mode": "See"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [-9.14, 38.72],
+          [-11, 35.5],
+          [-14, 31],
+          [-17.5, 25],
+          [-19, 18.5],
+          [-18, 12],
+          [-15, 5],
+          [-11, -2],
+          [-5, -10],
+          [1, -18],
+          [7, -24],
+          [12, -29],
+          [16, -33],
+          [18, -34.8],
+          [21.5, -33],
+          [25, -30],
+          [29, -26],
+          [33, -22],
+          [36.5, -18.5],
+          [39, -16],
+          [40.73, -15.03]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Nach 1498 See: Mozambique-Mombasa-Malindi",
+        "period": "Nach 1498",
+        "mode": "See"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [40.73, -15.03],
+          [40.6, -13],
+          [40.5, -11],
+          [40.3, -9],
+          [40.1, -7],
+          [39.85, -5.2],
+          [39.67, -4.04],
+          [39.8, -3.7],
+          [39.95, -3.4],
+          [40.12, -3.22]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Nach 1498 See: Malindi-Calicut (Monsunquerung)",
+        "period": "Nach 1498",
+        "mode": "See"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [40.12, -3.22],
+          [43, -0.5],
+          [46.5, 2],
+          [50, 4.5],
+          [54, 7],
+          [58, 9],
+          [62, 10.2],
+          [66, 10.8],
+          [70, 11],
+          [73, 11.1],
+          [75.78, 11.25]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Nach 1498 See: Calicut-Goa",
+        "period": "Nach 1498",
+        "mode": "See"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [75.78, 11.25],
+          [75, 12.3],
+          [74.5, 13.3],
+          [74.1, 14.3],
+          [73.83, 15.5]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Nach 1498 See: Malakka-Ternate",
+        "period": "Nach 1498",
+        "mode": "See"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [102.25, 2.19],
+          [103, 0],
+          [104, -2.5],
+          [105, -5.5],
+          [107.5, -6.2],
+          [110.5, -6.5],
+          [113.5, -6],
+          [116.5, -5.2],
+          [119.5, -4],
+          [122, -2.5],
+          [124, -1.2],
+          [126, -0.2],
+          [127.4, 0.79]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Nach 1498 See: Mozambique-Kap der Guten Hoffnung",
+        "period": "Nach 1498",
+        "mode": "See"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [40.73, -15.03],
+          [40.55, -16.2],
+          [40.35, -17.6],
+          [39.95, -19.3],
+          [39.5, -21],
+          [39.1, -22.8],
+          [38.8, -24.5],
+          [38.1, -26.5],
+          [37.2, -28.4],
+          [36, -30.3],
+          [34.7, -31.8],
+          [33.2, -33.1],
+          [31, -33.8],
+          [28.5, -34.3],
+          [26, -34.5],
+          [23.5, -34.6],
+          [21, -34.65],
+          [19.5, -34.72],
+          [18.47, -34.36]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Nach 1498 See: Kap-Lissabon",
+        "period": "Nach 1498",
+        "mode": "See"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [18.47, -34.36],
+          [15.5, -32.5],
+          [12, -29],
+          [8, -23],
+          [4, -16],
+          [0, -8],
+          [-4.5, 1],
+          [-9, 10],
+          [-14, 18],
+          [-13, 28],
+          [-9.14, 38.72]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Nach 1498 See: Lissabon-Antwerpen",
+        "period": "Nach 1498",
+        "mode": "See"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [-9.14, 38.72],
+          [-9.5, 41.5],
+          [-8, 44],
+          [-5, 46.5],
+          [-2, 49],
+          [1.5, 50.4],
+          [4.4, 51.22]
+        ]
+      }
+    }
+  ]
+}
