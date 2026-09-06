@@ -24,6 +24,11 @@
   line-height: 1.0;
 }
 
+.smaller-text {
+  font-size: 0.725em;
+  line-height: 1.0;
+}
+
 .small-text {
   font-size: 0.85em;
   line-height: 1.2;
