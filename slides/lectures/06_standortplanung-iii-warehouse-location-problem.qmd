@@ -87,7 +87,7 @@ V
 
 VI
 
--  Wähle konkrete Standorte im Netzwerk aus   in der Regel begrenzte Betrachtung der SC
+-  Wähle konkrete Standorte im Netzwerk aus   in der Regel begrenzte Betrachtung der SC
 
 ## Fallstudie -- Batterielogistik {#slide-111}
 
@@ -171,11 +171,9 @@ Aufgaben
 - Ermitteln Sie dazu einen geeigneten Transportkostensatz für Batterien. 
 - Finden Sie eine Zuordnung der Werke zu den Lagerstandorten ermitteln Sie die Gesamtkosten  Ihrer Lösung.
 
-## Warehouse  location   problem {#slide-114}
+## Warehouse location problem {#slide-114}
 
 Problembeschreibung
-
-24.06.2026
 
 114
 
@@ -203,11 +201,9 @@ D
 
 Supply Chain Management
 
-## Warehouse  location   problem {#slide-115}
+## Warehouse location problem {#slide-115}
 
-Mathematisches Modell 
-
-24.06.2026
+Mathematisches Modell
 
 115
 
@@ -232,163 +228,415 @@ D
 
 Supply Chain Management
 
-## Warehouse  location   problem {#slide-116}
+## Warehouse location problem -- Fallbeispiel {#slide-116}
 
-Beispiel
-
-24.06.2026
+Probleminstanz (5 Lager, 6 Kunden)
 
 116
 
-  Daten
-  ------------------------------------------------------
-  5  Lagerhausstandorte 7  Kunden Kosten   wie   folgt
+```{r}
+#| echo: false
+#| warning: false
+#| message: false
 
-A
+# Problemdaten
+f <- c(110, 95, 140, 80, 125)   # Fixkosten Lagerhäuser W1..W5
+a <- c(40, 25, 60, 30, 50, 35)  # Nachfragen Kunden C1..C6
 
-B
+# Transportkosten c_ij (Kosten je Einheit von Lager i zu Kunde j)
+c_mat <- matrix(c(
+  3, 5, 8, 4, 6, 7,   # W1
+  7, 4, 3, 5, 8, 2,   # W2
+  5, 3, 6, 2, 4, 9,   # W3
+  6, 8, 2, 7, 3, 5,   # W4
+  4, 6, 7, 3, 5, 6    # W5
+), nrow = 5, byrow = TRUE)
 
-C
+# Gesamte Transportkosten t_ij = c_ij * a_j
+t_mat <- sweep(c_mat, 2, a, `*`)
+```
 
-D
+::: {layout-ncol="2"}
 
-1
+**Fixkosten** $f_i$ (T€) und **Nachfragen** $a_j$ (Einh.)
 
-2
+| Lager | $f_i$ |   | Kunde | $a_j$ |
+|-------|------:|---|-------|------:|
+| W1    | 110   |   | C1    | 40    |
+| W2    |  95   |   | C2    | 25    |
+| W3    | 140   |   | C3    | 60    |
+| W4    |  80   |   | C4    | 30    |
+| W5    | 125   |   | C5    | 50    |
+|       |       |   | C6    | 35    |
 
-3
+**Transportkosten** $c_{ij}$ (€/Einheit)
 
-...
+|    | C1 | C2 | C3 | C4 | C5 | C6 |
+|----|---:|---:|---:|---:|---:|---:|
+| W1 |  3 |  5 |  8 |  4 |  6 |  7 |
+| W2 |  7 |  4 |  3 |  5 |  8 |  2 |
+| W3 |  5 |  3 |  6 |  2 |  4 |  9 |
+| W4 |  6 |  8 |  2 |  7 |  3 |  5 |
+| W5 |  4 |  6 |  7 |  3 |  5 |  6 |
 
-4
-
-5
+:::
 
 Supply Chain Management
 
-E
+## Warehouse location problem -- Fallbeispiel {#slide-116b}
 
-F
+Transportkostenmatrix $t_{ij} = c_{ij} \cdot a_j$ (T€)
 
-G
+116b
 
-...
+```{r}
+#| echo: false
+#| warning: false
+#| message: false
 
-## Warehouse  location   problem {#slide-117}
+knitr::kable(
+  data.frame(
+    Lager = paste0("W", 1:5),
+    C1 = t_mat[,1], C2 = t_mat[,2], C3 = t_mat[,3],
+    C4 = t_mat[,4], C5 = t_mat[,5], C6 = t_mat[,6],
+    Summe = rowSums(t_mat)
+  ),
+  col.names = c("", "C1", "C2", "C3", "C4", "C5", "C6", "$\\sum_j t_{ij}$"),
+  align = "lrrrrrrr"
+)
+```
+
+- $t_{ij} = c_{ij} \cdot a_j$: gesamte Transportkosten, wenn Kunde $j$ von Lager $i$ beliefert wird
+- Optimale Einzelzuordnung (günstigstes Lager je Kunde): C1→W1, C2→W3, C3→W4, C4→W3, C5→W4, C6→W2
+
+Supply Chain Management
+
+## Warehouse location problem -- ILP am Fallbeispiel {#slide-117}
 
 Mathematisches Modell extensiv am Beispiel
 
-Supply Chain Management
-
 117
 
-## Warehouse  location   problem {#slide-118}
+```{r}
+#| echo: false
+#| warning: false
+#| message: false
+#| out-width: "95%"
+#| fig-height: 5.5
 
-Lösung des WLP mit der Add Heuristik
+library(ompr)
+library(ompr.roi)
+library(ROI.plugin.glpk)
+library(dplyr)
 
-24.06.2026
+m <- 5; n <- 6
+sol <- MIPModel() |>
+  add_variable(y[i], i = 1:m, type = "binary") |>
+  add_variable(x[i,j], i = 1:m, j = 1:n, type = "binary") |>
+  set_objective(
+    sum_expr(f[i] * y[i], i = 1:m) +
+    sum_expr(t_mat[i,j] * x[i,j], i = 1:m, j = 1:n),
+    sense = "min"
+  ) |>
+  add_constraint(sum_expr(x[i,j], i = 1:m) == 1, j = 1:n) |>
+  add_constraint(x[i,j] <= y[i], i = 1:m, j = 1:n) |>
+  solve_model(with_ROI("glpk", verbose = FALSE))
+
+y_sol <- get_solution(sol, y[i])
+x_sol <- get_solution(sol, x[i,j])
+cat("Optimale Lager:", paste0("W", y_sol$i[y_sol$value > 0.5], collapse = ", "), "\n")
+cat("Gesamtkosten:", objective_value(sol), "T€\n")
+```
+
+Supply Chain Management
+
+## Add-Heuristik -- Grundidee {#slide-118}
+
+Lösungsverfahren für das WLP
 
 118
 
-  Allgemeine Idee
-  --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-  " Gierige "  Konstruktionsheuristik     generiert   eine   zulässige   Lösung Veröffentlicht  von Kühn and Hamburger (1963) Eröffne   Lagerstandorte , Solange die  Gesamtkosten   sinken
+::: {.callout-note}
+## Allgemeine Idee (Kühn & Hamburger, 1963)
+
+**„Gierige" Konstruktionsheuristik** -- generiert iterativ eine zulässige Lösung
+
+1. Starte mit **keinem** geöffneten Lagerhaus
+2. Berechne für jedes noch geschlossene Lager $i$ den **Netto-Saving** $S_i$:
+$$S_i = \underbrace{\sum_{j=1}^{n} \max\!\bigl(0,\; \hat{t}_j - t_{ij}\bigr)}_{\text{Transportkosteneinsparung}} - f_i$$
+   wobei $\hat{t}_j$ die aktuellen Transportkosten für Kunde $j$ sind
+3. Öffne das Lager mit dem **größten positiven** $S_i$
+4. Aktualisiere $\hat{t}_j$ für alle Kunden
+5. **Wiederhole** bis kein positives $S_i$ mehr existiert
+:::
+
+**Interpretation von $S_i$:** Eröffne Lager $i$ genau dann, wenn die erzielbare Transportkosteneinsparung die Fixkosten $f_i$ übersteigt.
 
 Supply Chain Management
 
-## Warehouse  location   problem {#slide-119}
+## Add-Heuristik -- Iteration 1 {#slide-119}
 
-Beispiel -- Lösung Add-Heuristik 1/2
-
-24.06.2026
+Fallbeispiel: Startschritt
 
 119
 
-  w ij     1    2    3    4    5    6   7          f   S
-  -------- ---- ---- ---- ---- ---- --- ---- ----- --- ----
-  1        -5   -2   0    0    -1   0   -3   -11   5   -6
-  2        -4   0    -6   0    -4   0   0    -14   7   -7
-  3        0    0    -5   0    -4   0   -1   -10   5   -5
-  4        0    0    0    -1   -1   0   0    -2    6   4
-                                                       
+**Ausgangssituation:** Kein Lager geöffnet → Bewerte alle Lagerhäuser als Einzeloption
 
-- Iteration 1: Matrix der  Savings  (im Vergleich zu Standort 5)
+| Lager | $f_i$ | Transport (allein) | Gesamtkosten |
+|-------|------:|-------------------:|-------------:|
+| W1    | 110   | 1 390              | **1 500**    |
+| W2    |  95   | 1 180              | **1 275**    |
+| W3    | 140   | 1 210              | **1 350**    |
+| **W4**|  **80**| **1 095**         | **1 175** ✓  |
+| W5    | 125   | 1 280              | **1 405**    |
+
+→ **Öffne W4** (günstigste Gesamtkosten = 1 175 T€)
+
+**Zuordnung nach Iteration 1:**
+C1→W4, C2→W4, C3→W4, C4→W4, C5→W4, C6→W4
+
+| Transport | Fixkosten | **Gesamt** |
+|----------:|----------:|-----------:|
+| 1 095     |  80       | **1 175**  |
 
 Supply Chain Management
 
-## Warehouse  location   problem {#slide-120}
+## Add-Heuristik -- Iteration 2 {#slide-120}
 
-Beispiel -- Lösung Add-Heuristik 2/2
-
-24.06.2026
+Fallbeispiel: Savings-Matrix
 
 120
 
-- Iteration 2: update  Savings  Matrix 
+**Aktuelle Kosten** (nur W4 offen): $\hat{t}_j$ = (240, 200, 120, 210, 150, 175)
 
-  w ij     1    2    3   4   5   6   7         f   S
-  -------- ---- ---- --- --- --- --- ---- ---- --- ----
-  1        -1   -2   0   0   0   0   -3   -6   5   -1
-                                                   
-  3        0    0    0   0   0   0   -1   -1   5   4
-                                                   
-                                                   
+**Savings-Matrix** $w_{ij} = \max(0,\; \hat{t}_j - t_{ij})$:
+
+| Lager | C1  | C2  | C3 | C4  | C5 | C6 | $\sum w_{ij}$ | $f_i$ | $S_i$    |
+|-------|----:|----:|---:|----:|---:|---:|--------------:|------:|---------:|
+| **W1**| 120 |  75 |  0 |  90 |  0 |  0 |           285 |   110 | **175** ✓|
+| W2    |   0 | 100 |  0 |  60 |  0 | 105|           265 |    95 |   170    |
+| W3    |  40 | 125 |  0 | 150 |  0 |   0|           315 |   140 |   175    |
+| W5    |  80 |  50 |  0 | 120 |  0 |   0|           250 |   125 |   125    |
+
+→ **Öffne W1** ($S_i = 175$, Tie-Breaking: niedrigerer Index)
+
+**Zuordnung nach Iteration 2:**
+C1→W1, C2→W1, C3→W4, C4→W1, C5→W4, C6→W4
+
+| Transport | Fixkosten (W1+W4) | **Gesamt** |
+|----------:|------------------:|-----------:|
+| 810       | 190               | **1 000**  |
 
 Supply Chain Management
 
-## Warehouse  location   problem {#slide-121}
+## Add-Heuristik -- Iteration 3 {#slide-120b}
 
-Lösung des WLP mit der Drop Heuristik
+Fallbeispiel: Letzte Verbesserung
 
-24.06.2026
+120b
+
+**Aktuelle Kosten** (W1, W4 offen): $\hat{t}_j$ = (120, 125, 120, 120, 150, 175)
+
+**Savings-Matrix** $w_{ij} = \max(0,\; \hat{t}_j - t_{ij})$:
+
+| Lager | C1 | C2 | C3 | C4 | C5 | C6  | $\sum w_{ij}$ | $f_i$ | $S_i$   |
+|-------|---:|---:|---:|---:|---:|----:|--------------:|------:|--------:|
+| **W2**|  0 | 25 |  0 |  0 |  0 | 105 |           130 |    95 | **35** ✓|
+| W3    |  0 | 50 |  0 | 60 |  0 |   0 |           110 |   140 |  −30    |
+| W5    |  0 |  0 |  0 | 30 |  0 |   0 |            30 |   125 |  −95    |
+
+→ **Öffne W2** ($S_i = 35 > 0$)
+
+**Zuordnung nach Iteration 3:**
+C1→W1, C2→W2, C3→W4, C4→W1, C5→W4, C6→W2
+
+| Transport | Fixkosten (W1+W2+W4) | **Gesamt** |
+|----------:|---------------------:|-----------:|
+| 680       | 285                  | **965**    |
+
+**Iteration 4:** Alle verbleibenden $S_i \leq 0$ → **Abbruch**
+
+Supply Chain Management
+
+## Drop-Heuristik -- Grundidee {#slide-121}
+
+Lösungsverfahren für das WLP
 
 121
 
-  Allgemeine Idee
-  ---------------------------------------------------------------------------------------------------------------------------------------------------
-  " Gierige "  Konstruktionsheuristik Veröffentlicht  in Feldmann et al. (1966) Schließe   schrittweise  Lager  solange  die  Gesamtkosten   sinken
+::: {.callout-note}
+## Allgemeine Idee (Feldman et al., 1966)
+
+**„Gierige" Verbesserungsheuristik** -- startet mit allen Lagern offen
+
+1. Starte mit **allen** $m$ Lagerhäusern geöffnet
+2. Berechne für jedes offene Lager $i$ den **Netto-Saving** des Schließens:
+$$S_i = \underbrace{\Delta T_i}_{\text{Transportkostenanstieg}} - \underbrace{f_i}_{\text{Fixkostenersparnis}}$$
+   wobei $\Delta T_i \geq 0$ der Anstieg der Transportkosten bei Schließung von $i$ ist
+3. Schließe das Lager mit dem **größten negativen** $S_i$ (= größte Nettoeinsparung)
+4. Weise alle Kunden dem jeweils günstigsten verbleibenden Lager zu
+5. **Wiederhole** bis kein weiteres Schließen Kosten spart
+:::
+
+**Unterschied zur Add-Heuristik:** Startpunkt und Suchrichtung sind entgegengesetzt -- häufig gleiche oder ähnliche Endlösung, aber unterschiedlicher Rechenweg.
 
 Supply Chain Management
 
-## Warehouse  location   problem {#slide-122}
+## Drop-Heuristik -- Startlösung {#slide-122}
 
-Beispiel -- Lösung Drop-Heuristik 1/3
-
-24.06.2026
+Fallbeispiel: Alle Lager geöffnet
 
 122
 
-- Iteration 1:  Savings -Matrix
+**Ausgangssituation:** Alle 5 Lagerhäuser geöffnet
+
+Optimale Einzelzuordnung: C1→W1, C2→W3, C3→W4, C4→W3, C5→W4, C6→W2
+
+| Transport | Fixkosten (W1+…+W5) | **Gesamt** |
+|----------:|--------------------:|-----------:|
+| 595       | 550                 | **1 145**  |
+
+**Savings-Matrix Iteration 1** -- Einsparung durch Schließen von Lager $i$:
+
+| Schließe | $\Delta T_i$ | $-f_i$ | $S_i = -f_i - \Delta T_i$ | Neue Gesamtkosten |
+|----------|-------------:|-------:|--------------------------:|------------------:|
+| W1       |  +40         | −110   | **+70**                   | 1 075             |
+| W2       | +105         |  −95   | **−10**                   | 1 155             |
+| W3       |  +55         | −140   | **+85**                   | 1 060             |
+| **W5**   |   **0**      | **−125**| **+125** ✓               | **1 020**         |
+| W4       | +110         |  −80   | **−30**                   | 1 175             |
+
+→ **Schließe W5** (Einsparung = 125 T€)
 
 Supply Chain Management
 
-## Warehouse  location   problem {#slide-123}
+## Drop-Heuristik -- Iteration 2 {#slide-123}
 
-Beispiel -- Lösung Drop-Heuristik 2/3
-
-24.06.2026
+Fallbeispiel: Zweiter Schließungsschritt
 
 123
 
-- Iteration 2: neue Lieferzuordnung
+**Aktuelle Situation** (W1, W2, W3, W4 offen):
 
-<!-- -->
+Zuordnung unverändert: C1→W1, C2→W3, C3→W4, C4→W3, C5→W4, C6→W2
 
-- Iterations  2:  Savingsmatrix
+| Transport | Fixkosten (W1+W2+W3+W4) | **Gesamt** |
+|----------:|------------------------:|-----------:|
+| 595       | 425                     | **1 020**  |
+
+**Savings-Matrix Iteration 2:**
+
+| Schließe | $\Delta T_i$ | $-f_i$ | Netto-Saving | Neue Gesamtkosten |
+|----------|-------------:|-------:|-------------:|------------------:|
+| W1       |  +80         | −110   |  +30         |   990             |
+| W2       | +105         |  −95   |  −10         | 1 030             |
+| **W3**   |  **+85**     | **−140**| **+55** ✓   | **965**           |
+| W4       | +110         |  −80   |  −30         | 1 050             |
+
+→ **Schließe W3** (Einsparung = 55 T€)
+
+**Neue Zuordnung:** C1→W1, C2→W2, C3→W4, C4→W1, C5→W4, C6→W2
 
 Supply Chain Management
 
-## Warehouse  location   problem {#slide-124}
+## Drop-Heuristik -- Iteration 3 (Abbruch) {#slide-124}
 
-Beispiel -- Lösung Drop-Heuristik 3/3
-
-24.06.2026
+Fallbeispiel: Kein weiteres Schließen lohnt sich
 
 124
 
-- Iterations  3:  Keine Verbesserung
+**Aktuelle Situation** (W1, W2, W4 offen):
+
+Zuordnung: C1→W1, C2→W2, C3→W4, C4→W1, C5→W4, C6→W2
+
+| Transport | Fixkosten (W1+W2+W4) | **Gesamt** |
+|----------:|---------------------:|-----------:|
+| 680       | 285                  | **965**    |
+
+**Savings-Matrix Iteration 3:**
+
+| Schließe | $\Delta T_i$ | $-f_i$ | Netto-Saving | Neue Gesamtkosten |
+|----------|-------------:|-------:|-------------:|------------------:|
+| W1       | +150         | −110   | **−40**      | 1 005             |
+| W2       | +130         |  −95   | **−35**      | 1 000             |
+| W4       | +210         |  −80   | **−130**     | 1 095             |
+
+→ Alle Netto-Savings negativ → **Abbruch**
+
+**Ergebnis Drop-Heuristik:** Öffne W1, W2, W4 -- Gesamtkosten = **965 T€**
 
 Supply Chain Management
 
-- Iteration 3: neue Lieferzuordnung
+## Vergleich: Optimal vs. Heuristiken {#slide-125}
 
+Fallbeispiel (5 Lager, 6 Kunden)
+
+125
+
+```{r}
+#| echo: false
+#| warning: false
+#| message: false
+#| out-width: "95%"
+#| fig-height: 5
+
+library(ggplot2)
+library(dplyr)
+
+results <- data.frame(
+  Methode  = c("Optimallösung\n(ILP)", "Add-Heuristik\n(Kühn & Hamburger)", "Drop-Heuristik\n(Feldman et al.)"),
+  Transport = c(680, 680, 680),
+  Fixkosten = c(285, 285, 285),
+  Gesamt   = c(965, 965, 965),
+  Lager    = c("W1, W2, W4", "W1, W2, W4", "W1, W2, W4"),
+  Iterationen = c(NA, 3L, 2L)
+)
+
+results_long <- tidyr::pivot_longer(results, cols = c(Transport, Fixkosten),
+                                    names_to = "Kostenart", values_to = "Kosten")
+
+ggplot(results_long, aes(x = Methode, y = Kosten, fill = Kostenart)) +
+  geom_col(width = 0.55, colour = "white", linewidth = 0.4) +
+  geom_text(data = results, aes(x = Methode, y = Gesamt + 25, label = paste0(Gesamt, " T€"),
+            fill = NULL), size = 4, fontface = "bold", inherit.aes = FALSE) +
+  scale_fill_manual(values = c("Transport" = "#5B8DB8", "Fixkosten" = "#B8855B"),
+                    name = "Kostenart") +
+  scale_y_continuous(limits = c(0, 1100), expand = c(0, 0),
+                     labels = scales::label_comma(suffix = " T€")) +
+  labs(title = "Gesamtkosten im Vergleich",
+       subtitle = "Optimale Lager in allen drei Methoden: W1, W2, W4",
+       x = NULL, y = "Kosten (T€)") +
+  theme_minimal(base_size = 13) +
+  theme(legend.position = "bottom",
+        panel.grid.major.x = element_blank(),
+        plot.subtitle = element_text(colour = "grey40"))
+```
+
+Supply Chain Management
+
+## Vergleich: Optimal vs. Heuristiken {#slide-126}
+
+Zusammenfassung der Ergebnisse
+
+126
+
+| Kriterium             | Optimallösung (ILP) | Add-Heuristik | Drop-Heuristik |
+|-----------------------|--------------------:|--------------:|---------------:|
+| Geöffnete Lager       | W1, W2, W4          | W1, W2, W4    | W1, W2, W4     |
+| Transportkosten (T€)  | 680                 | 680           | 680            |
+| Fixkosten (T€)        | 285                 | 285           | 285            |
+| **Gesamtkosten (T€)** | **965**             | **965**       | **965**        |
+| Lösungsgüte           | optimal             | optimal       | optimal        |
+| Iterationen           | —                   | 3             | 2 (+Start)     |
+| Startpunkt            | —                   | kein Lager    | alle Lager     |
+
+::: {.callout-important}
+## Fazit
+
+- Beide Heuristiken finden in diesem Beispiel die **Optimallösung** -- das ist nicht immer garantiert
+- **Add-Heuristik** eignet sich besonders, wenn wenige Lager geöffnet werden sollen (sparse solutions)
+- **Drop-Heuristik** eignet sich besonders, wenn viele Lager geschlossen werden sollen
+- Bei großen Instanzen sind Heuristiken oft die einzig praktikable Methode (exakte Lösung NP-schwer)
+:::
+
+Supply Chain Management
