@@ -410,3 +410,128 @@ Zur Versorgung der Automobilwerke in Norddeut-schland und den Benelux-Ländern m
 
 :::
 :::
+
+---
+
+## Fallstudie – Batterielogistik {#slide-cs2}
+::: slide-subtitle
+Entscheidungssituation
+:::
+
+::: {style="background:#F0F0F0; padding:10px 16px; font-size:0.82em; line-height:1.5; border:1px solid #ccc; margin-bottom:8px;"}
+Der 3PL muss [entscheiden]{.underline}, [welche]{.underline} seiner [Lagerstandorte]{.underline} er [umrüstet]{.underline} und [welche]{.underline} Werke von [welchem Lager versorgt werden soll]{.underline}. Das [Unternehmen]{.underline} möchte die [Entscheidung]{.underline} so [treffen, dass die jährlichen Gesamtkosten für Lagerbetrieb]{.underline} und Transport [minimiert werden]{.underline}. [Folgende Informationen sind bekannt:]{.underline}
+:::
+
+::: columns
+::: {.column width="48%"}
+
+::: small-text
+**Lagerstandorte und jährliche Rüstkosten des Lagerbetriebs**
+
+```{r lager-tabelle}
+#| echo: false
+#| warning: false
+#| message: false
+
+library(knitr)
+library(kableExtra)
+
+lager <- data.frame(
+  ID       = c("L1","L2","L3","L4","L5","L6"),
+  Standort = c("Gütersloh","Düren","Dorsten/Marl",
+               "Harsewinkel","Langenhagen","Hannover"),
+  Lon      = c(8.4143, 6.4925, 6.9635, 8.2306, 9.6983, 9.8053),
+  Lat      = c(51.8950,50.8078,51.6643,51.9621,52.4504,52.3199),
+  Kosten   = c(450, 480, 520, 470, 510, 460)
+)
+
+kbl(lager,
+    col.names = c("ID","Standort","Längengrad","Breitengrad",
+                  "Rüstkosten/Jahr (1000 €)"),
+    align = c("c","l","r","r","r")) |>
+  kable_styling(bootstrap_options = c("condensed","striped"),
+                full_width = TRUE, font_size = 11) |>
+  column_spec(1, bold = TRUE, background = "#2F3E46", color = "white") |>
+  row_spec(0, background = "#2F3E46", color = "white", bold = TRUE)
+```
+
+**Transportdistanzen in km**
+
+```{r dist-tabelle}
+#| echo: false
+#| warning: false
+#| message: false
+
+dist_mat <- matrix(
+  c(211,121,281, 70,201,171,312,382,383,362,252,
+    415,325,367,239,353, 44,221,226,227,168, 72,
+    341,251,234,117,231, 98,264,273,274,254,144,
+    231,140,255, 45,175,178,332,389,390,369,259,
+     92,  6,244,136,121,289,383,499,501,480,370,
+     91, 18,263,160,140,313,360,524,525,504,394),
+  nrow = 6, byrow = TRUE,
+  dimnames = list(paste0("L",1:6), paste0("C",1:11))
+)
+
+df_dist <- cbind(`$d_{ij}$` = rownames(dist_mat),
+                 as.data.frame(dist_mat))
+
+kbl(df_dist,
+    col.names = c("$d_{ij}$", paste0("C",1:11)),
+    align = c("c", rep("r",11)),
+    escape = FALSE) |>
+  kable_styling(bootstrap_options = c("condensed","striped"),
+                full_width = TRUE, font_size = 10) |>
+  column_spec(1, bold = TRUE, background = "#2F3E46", color = "white") |>
+  row_spec(0, background = "#2F3E46", color = "white", bold = TRUE)
+```
+:::
+
+:::
+::: {.column width="50%"}
+
+::: small-text
+**Werkstandorte und jährliche Batteriebedarfe**
+
+```{r werke-tabelle}
+#| echo: false
+#| warning: false
+#| message: false
+
+werke <- data.frame(
+  ID     = paste0("C",1:11),
+  Werk   = c("Volkswagen Wolfsburg","Volkswagen Hannover",
+             "Volkswagen Emden","Volkswagen Osnabrück",
+             "Mercedes-Benz Bremen","Ford Köln",
+             "Opel Rüsselsheim","Volvo Cars Gent",
+             "Volvo Trucks Gent","Toyota Motor Europe",
+             "VDL Nedcar"),
+  Ort    = c("Wolfsburg, Niedersachsen","Hannover, Niedersachsen",
+             "Emden, Niedersachsen","Osnabrück, Niedersachsen",
+             "Bremen","Köln","Rüsselsheim",
+             "Gent, Belgien","Gent, Belgien",
+             "Zaventem, Belgien","Born, Niederlande"),
+  Lon    = c(10.7796,9.6846,7.207,8.0472,8.8072,6.8996,
+              8.4196,3.7499,3.733,4.46,5.8106),
+  Lat    = c(52.4338,52.4236,53.3687,52.2736,53.0793,50.957,
+             49.9896,51.0645,51.0615,50.887,51.0315),
+  Bedarf = c(45000,15000,18000,12000,35000,30000,
+             25000,19000,17000,40000,15000)
+)
+
+kbl(werke,
+    col.names = c("ID","Werksname","Ort",
+                  "Längen-<br>grad","Breiten-<br>grad",
+                  "Batteriebedarf<br>(MWh/Jahr)"),
+    align = c("c","l","l","r","r","r"),
+    escape = FALSE,
+    format.args = list(big.mark = "\u202f")) |>
+  kable_styling(bootstrap_options = c("condensed","striped"),
+                full_width = TRUE, font_size = 11) |>
+  column_spec(1, bold = TRUE, background = "#2F3E46", color = "white") |>
+  row_spec(0, background = "#2F3E46", color = "white", bold = TRUE)
+```
+:::
+
+:::
+:::
