@@ -15,7 +15,11 @@ library(leaflet)
 library(readxl)
 library(dplyr)
 library(plotly)
-
+library(sf)
+library(osrm)
+library(leaflet)
+library(dplyr)
+library(units)
 ```
 
 ## Strategische Gestaltung von Supply Chains {#slide-66}
@@ -820,11 +824,6 @@ $$
 #| warning: false
 #| message: false
 
-library(sf)
-library(osrm)
-library(leaflet)
-library(dplyr)
-library(units)
 
 start <- data.frame(
   id = "Standort",

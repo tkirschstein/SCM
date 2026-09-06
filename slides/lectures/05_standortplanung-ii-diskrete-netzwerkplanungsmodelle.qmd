@@ -15,6 +15,9 @@ library(leaflet)
 library(readxl)
 library(dplyr)
 library(plotly)
+library(knitr)
+library(kableExtra)
+library(DiagrammeR)
 
 ```
 
@@ -40,8 +43,6 @@ Einordnung
 #| message: false
 #| out-width: "100%"
 #| fig-height: 1.1
-
-library(plotly)
 
 top_boxes <- data.frame(
   label = c("Beschaffung", "Produktion", "Distribution", "Absatz"),
@@ -94,7 +95,6 @@ fig
 #| out-width: "90%"
 #| fig-height: 5.5
 
-library(DiagrammeR)
 
 grViz("
 digraph network {
@@ -344,23 +344,22 @@ Zur Versorgung der Automobilwerke in Norddeutschland und den Benelux-Ländern mi
 Entscheidungssituation
 :::
 
-::: {style="background:#F0F0F0; padding:10px 16px; font-size:0.82em; line-height:1.5; border:1px solid #ccc; margin-bottom:8px;"}
-Der 3PL muss [entscheiden]{.underline}, [welche]{.underline} seiner [Lagerstandorte]{.underline} er [umrüstet]{.underline} und [welche]{.underline} Werke von [welchem Lager versorgt werden soll]{.underline}. Das [Unternehmen]{.underline} möchte die [Entscheidung]{.underline} so [treffen, dass die jährlichen Gesamtkosten für Lagerbetrieb]{.underline} und Transport [minimiert werden]{.underline}. [Folgende Informationen sind bekannt:]{.underline}
+::: {.callout-note appearance="simple"}
+## Entscheidungssituation
+
+Der 3PL muss entscheiden, welche seiner Lagerstandorte er umrüstet und welche Werke von welchem Lager versorgt werden soll. Das Unternehmen möchte die Entscheidung so treffen, dass die jährlichen Gesamtkosten für Lagerbetrieb und Transport minimiert werden. Folgende Informationen sind bekannt:
 :::
 
 ::: columns
 ::: {.column width="48%"}
 
 ::: small-text
-**Lagerstandorte und jährliche Rüstkosten des Lagerbetriebs**
+**Lagerstandorte und jährliche Rüstkosten**
 
 ```{r lager-tabelle}
 #| echo: false
 #| warning: false
 #| message: false
-
-library(knitr)
-library(kableExtra)
 
 lager <- data.frame(
   ID       = c("L1","L2","L3","L4","L5","L6"),
@@ -376,7 +375,7 @@ kbl(lager,
                   "Rüstkosten/Jahr (1000 €)"),
     align = c("c","l","r","r","r")) |>
   kable_styling(bootstrap_options = c("condensed","striped"),
-                full_width = TRUE, font_size = 11) |>
+                full_width = TRUE, font_size = 16) |>
   column_spec(1, bold = TRUE, background = "#2F3E46", color = "white") |>
   row_spec(0, background = "#2F3E46", color = "white", bold = TRUE)
 ```
@@ -399,15 +398,14 @@ dist_mat <- matrix(
   dimnames = list(paste0("L",1:6), paste0("C",1:11))
 )
 
-df_dist <- cbind(`$d_{ij}$` = rownames(dist_mat),
-                 as.data.frame(dist_mat))
+df_dist <- as.data.frame(dist_mat)
 
 kbl(df_dist,
-    col.names = c("$d_{ij}$", paste0("C",1:11)),
-    align = c("c", rep("r",11)),
+    col.names = c(paste0("C",1:11)),
+    align = c( rep("r",11)),
     escape = FALSE) |>
   kable_styling(bootstrap_options = c("condensed","striped"),
-                full_width = TRUE, font_size = 10) |>
+                full_width = TRUE, font_size = 16) |>
   column_spec(1, bold = TRUE, background = "#2F3E46", color = "white") |>
   row_spec(0, background = "#2F3E46", color = "white", bold = TRUE)
 ```
@@ -426,12 +424,12 @@ kbl(df_dist,
 
 werke <- data.frame(
   ID     = paste0("C",1:11),
-  Werk   = c("Volkswagen Wolfsburg","Volkswagen Hannover",
-             "Volkswagen Emden","Volkswagen Osnabrück",
-             "Mercedes-Benz Bremen","Ford Köln",
-             "Opel Rüsselsheim","Volvo Cars Gent",
-             "Volvo Trucks Gent","Toyota Motor Europe",
-             "VDL Nedcar"),
+  # Werk   = c("Volkswagen Wolfsburg","Volkswagen Hannover",
+  #            "Volkswagen Emden","Volkswagen Osnabrück",
+  #            "Mercedes-Benz Bremen","Ford Köln",
+  #            "Opel Rüsselsheim","Volvo Cars Gent",
+  #            "Volvo Trucks Gent","Toyota Motor Europe",
+  #            "VDL Nedcar"),
   Ort    = c("Wolfsburg, Niedersachsen","Hannover, Niedersachsen",
              "Emden, Niedersachsen","Osnabrück, Niedersachsen",
              "Bremen","Köln","Rüsselsheim",
@@ -446,18 +444,41 @@ werke <- data.frame(
 )
 
 kbl(werke,
-    col.names = c("ID","Werksname","Ort",
-                  "Längen-<br>grad","Breiten-<br>grad",
-                  "Batteriebedarf<br>(MWh/Jahr)"),
+    col.names = c("ID","Ort",
+                  "Längengrad","Breitengrad",
+                  "Batteriebedarf (MWh/Jahr)"),
     align = c("c","l","l","r","r","r"),
     escape = FALSE,
     format.args = list(big.mark = "\u202f")) |>
   kable_styling(bootstrap_options = c("condensed","striped"),
-                full_width = TRUE, font_size = 11) |>
-  column_spec(1, bold = TRUE, background = "#2F3E46", color = "white") |>
+                full_width = TRUE, font_size = 15) |>
+  column_spec(1, bold = TRUE, background = "#2F3E46", color = "white", width = "1em") |>
   row_spec(0, background = "#2F3E46", color = "white", bold = TRUE)
 ```
 :::
 
 :::
 :::
+
+---
+
+## Fallstudie - Batterielogistik
+::: slide-subtitle
+Aufgabe
+:::
+
+::: {.callout-note appearance="simple"}
+## Zielformulierung
+
+Sie wurden von ihrem Vorgesetzten aufgefordert eine Entscheidungsvorlage für erarbeiten, wie die Batteriedistribution organisiert werden könnte. Die Vorlage soll eine Zuordnung der Werke zu Versorgungslagern enthalten. Auf Basis dieser Zuordnung erwartet das Management eine Abschätzung der jährlichen Gesamtkosten, die aus Ihrem Vorschlag resultieren würden. Dies soll als Grundlage für ein Angebot und die Verhandlungen mit dem Automobilkonsortium dienen.
+:::
+
+::: {.fragment .fade-up}
+### Aufgaben
+
+1. Formulieren Sie einen Ansatz zur Berechnung der jährlichen Gesamtkosten. 
+2. Formulieren Sie einen Ansatz zur Berechnung der Transportkosten für die Batteriedistribution per LKW.
+3. Ermitteln Sie dazu einen geeigneten Transportkostensatz für Batterien. 
+4. Finden Sie eine Zuordnung der Werke zu den Lagerstandorten ermitteln Sie die Gesamtkosten Ihrer Lösung.
+:::
+
