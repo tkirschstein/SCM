@@ -482,3 +482,152 @@ Sie wurden von ihrem Vorgesetzten aufgefordert eine Entscheidungsvorlage für er
 4. Finden Sie eine Zuordnung der Werke zu den Lagerstandorten ermitteln Sie die Gesamtkosten Ihrer Lösung.
 :::
 
+---
+
+## Warehouse Location Problem {#slide-wlp-1}
+::: slide-subtitle
+Problembeschreibung
+:::
+
+::: {.callout-note appearance="minimal" icon=false}
+**Problemstellung**
+
+Gegeben sei eine Menge an **Kundenstandorten** und eine Menge (potentieller) **Lagerhausstandorte**. Jeder Kundenstandort hat eine **Warennachfrage** (z.B. in Stück pro Monat/Jahr), die von den Lagerhäusern beliefert warden muss. Der Transport der Waren verursacht entfernungsabhängige **Transportkosten**. Die Eröffnung eines Lagerhauses verursacht **Einrichtungskosten**.
+
+Es ist zu entscheiden, an welchen Standorten Lagerhäuser eingerichtet werden sollen und welche Kunden diese versorgen sollen.
+:::
+
+::: columns
+::: {.column width="46%"}
+
+**Notation**
+
+- Menge der Lagerhäuser $i \in I$
+- Menge der Kundenstandorte $j \in J$
+- Transportverbindungen $E \subseteq I \times J$
+- Eröffnungskosten an Lagerstandort $i$: $f_i$
+- Transportkosten (z.B. in €/Monat) Standort $i$ zu Kunde $j$: $c_{ij}$
+- Nachfrage von Kunde $j$: $d_j$
+
+:::
+::: {.column width="52%"}
+
+```{r wlp-graph}
+#| echo: false
+#| warning: false
+#| message: false
+#| out-width: "100%"
+#| fig-height: 5
+
+grViz("
+digraph wlp {
+
+  graph [
+    rankdir = LR,
+    bgcolor = 'transparent',
+    nodesep = 0.6,
+    ranksep = 2.2,
+    splines = line,
+    fontname = Arial
+  ]
+
+  /* ---- Lagerhäuser (Set I) ---- */
+  node [
+    shape = hexagon,
+    style = filled,
+    fillcolor = '#BFDBF7',
+    color = '#4B5563',
+    fontname = Arial,
+    fontsize = 20,
+    width = 0.65,
+    height = 0.55,
+    fixedsize = true
+  ]
+  W1 [label = '1']
+  W2 [label = '2']
+  W3 [label = '3']
+
+  /* ---- Kunden (Set J) ---- */
+  node [
+    shape = circle,
+    style = filled,
+    fillcolor = '#2D9E8E',
+    color = '#2F3E46',
+    fontcolor = 'white',
+    fontname = Arial,
+    fontsize = 20,
+    width = 0.65,
+    height = 0.55,
+    fixedsize = true
+  ]
+  CA [label = 'A']
+  CB [label = 'B']
+  CC [label = 'C']
+  CD [label = 'D']
+
+  /* ---- Rang ---- */
+  { rank = same; W1; W2; W3 }
+  { rank = same; CA; CB; CC; CD }
+
+  /* ---- Kanten mit Beschriftungen ---- */
+  edge [
+    color = '#4B4B4B',
+    penwidth = 1.4,
+    arrowsize = 0.9,
+    fontname = Arial,
+    fontsize = 16,
+    fontcolor = '#1F2933'
+  ]
+
+  W1 -> CA [label = 'c@_{1A}']
+  W1 -> CB
+  W2 -> CB
+  W2 -> CC
+  W2 -> CD
+  W3 -> CD [label = 'c@_{3D}']
+
+  /* ---- externe Labels für f_i und d_j ---- */
+  /* Einrichtungskosten links von den Lagern */
+  node [
+    shape = none,
+    style = none,
+    fillcolor = 'transparent',
+    color = 'transparent',
+    fontcolor = '#1F2933',
+    fontsize = 20,
+    width = 0.4,
+    height = 0.3,
+    fixedsize = false
+  ]
+  LF1 [label = 'f@_1']
+  LF2 [label = '...']
+  LF3 [label = 'f@_3']
+  LSetI [label = 'Set I']
+
+  LD_A  [label = 'd@_A']
+  LD_D  [label = 'd@_D']
+  LD_mid [label = '...']
+  LSetJ [label = 'Set J']
+
+  /* unsichtbare Kanten für Positionierung */
+  edge [style = invis, arrowhead = none]
+  LF1  -> W1
+  LF2  -> W2
+  LF3  -> W3
+  CA   -> LD_A
+  CD   -> LD_D
+  CB   -> LD_mid
+
+  LSetI -> W1
+  CA    -> LSetJ
+
+  { rank = same; LF1; LF2; LF3; W1; W2; W3 }
+  { rank = same; CA; CB; CC; CD; LD_A; LD_D; LD_mid }
+  { rank = min;  LSetI }
+  { rank = max;  LSetJ }
+}
+")
+```
+
+:::
+:::
