@@ -1,348 +1,260 @@
 ---
-title: "Standortplanung II: Diskrete Netzwerkplanungsmodelle"
+title: "Standortplanung II: Diskrete Standortplanung"
 ---
+
+```{r}
+#| echo: false
+#| warning: false
+#| message: false
+
+library(plotly)
+
+cols <- list(
+  top    = "#0B6E4F",
+  strat  = "#2D6A4F",
+  mid    = "#52B788",
+  low    = "#FFFFFF",
+  atp    = "#D97B29",
+  border = "#2F3E46",
+  text   = "#1F2933",
+  muted  = "#6B7280",
+  dash   = "#7C8792",
+  bg     = "#FFFFFF"
+)
+
+mid <- function(a, b) (a + b) / 2
+
+chevron_path <- function(x0, x1, y0, y1, head = 0.28, notch = 0.24) {
+  xm <- x1 - head
+  paste0(
+    "M ", x0, ",", y0, " ",
+    "L ", xm, ",", y0, " ",
+    "L ", x1, ",", mid(y0, y1), " ",
+    "L ", xm, ",", y1, " ",
+    "L ", x0, ",", y1, " ",
+    "L ", x0 + notch, ",", mid(y0, y1), " Z"
+  )
+}
+
+shape_rect <- function(x0, x1, y0, y1, fill, line = cols$border, width = 1.2) {
+  list(
+    type = "rect", x0 = x0, x1 = x1, y0 = y0, y1 = y1,
+    xref = "x", yref = "y",
+    line = list(color = line, width = width),
+    fillcolor = fill,
+    layer = "below"
+  )
+}
+
+shape_path <- function(path, fill, line = cols$border, width = 1.2) {
+  list(
+    type = "path", path = path, xref = "x", yref = "y",
+    line = list(color = line, width = width),
+    fillcolor = fill,
+    layer = "below"
+  )
+}
+
+shape_line <- function(x0, x1, y0, y1, color, width = 2) {
+  list(
+    type = "line", x0 = x0, x1 = x1, y0 = y0, y1 = y1,
+    xref = "x", yref = "y",
+    line = list(color = color, width = width)
+  )
+}
+
+text_trace <- function(data, x, y, text, color, size = 16) {
+  add_text(
+    fig, data = data,
+    x = x, y = y, text = text,
+    textfont = list(size = size, color = color, family = "Arial"),
+    hoverinfo = "skip", showlegend = FALSE
+  )
+}
+
+arrow_ann <- function(x, y, ax, ay, dash = FALSE,
+                      color = cols$border, width = 1.5) {
+  list(
+    x = x, y = y, ax = ax, ay = ay,
+    xref = "x", yref = "y", axref = "x", ayref = "y",
+    text = "", showarrow = TRUE,
+    arrowhead = 2, arrowsize = 1,
+    arrowwidth = width, arrowcolor = color,
+    arrowdash = if (dash) "dash" else "solid"
+  )
+}
+
+```
 
 ## Strategische Gestaltung von Supply Chains {#slide-92}
 
 - Multikriterielle  Standortplanung
 - Kontinuierliche Standortplanung
-- Netzwerkplanung
-- Diskrete Standortplanung
-
-92
-
-Supply Chain Management
+- **Diskrete Standortplanung**
 
 ## Planung von Distributionsnetzen {#slide-93}
 
-Einordnung
+::: r-stretch
+```{r}
+#| echo: false
+#| warning: false
+#| message: false
+#| out-width: "100%"
+#| fig-height: 1.1
 
-Supply Chain Management
+library(plotly)
 
-93
+top_boxes <- data.frame(
+  label = c("Beschaffung", "Produktion", "Distribution", "Absatz"),
+  x0 = c(0.00, 2.00, 4.00, 6.00),
+  x1 = c(2.00, 4.00, 6.00, 8.00),
+  y0 = 9.25,
+  y1 = 9.75
+)
 
-1A
 
-::: {.smartart .chevron1 data-smartart-layout="chevron1"}
+shapes <- c(
+  lapply(seq_len(nrow(top_boxes)), function(i) {
+    shape_path(
+      chevron_path(top_boxes$x0[i], top_boxes$x1[i], top_boxes$y0[i], top_boxes$y1[i]),
+      fill = cols$top
+    )
+  })
+)
+
+
+fig <- plot_ly()
+
+fig <- fig %>%
+  add_text(
+    x = mid(top_boxes$x0, top_boxes$x1),
+    y = mid(top_boxes$y0, top_boxes$y1),
+    text = top_boxes$label,
+    textfont = list(size = 18, color = "white", family = "Arial"),
+    hoverinfo = "skip", showlegend = FALSE
+  )  %>%
+  layout(
+    xaxis = list(visible = FALSE, range = c(0, 8), fixedrange = T),
+    yaxis = list(visible = FALSE, range = c(9.1, 9.8), fixedrange = T),
+    plot_bgcolor = cols$bg,
+    paper_bgcolor = cols$bg,
+    margin = list(l = 10, r = 10, t = 10, b = 10),
+    shapes = shapes,
+    width = 1500,
+    height = 100
+  )
+
+fig
+
+```
+
+```{r}
+#| echo: false
+#| warning: false
+#| message: false
+#| out-width: "90%"
+#| fig-height: 5.5
+
+library(DiagrammeR)
+
+grViz("
+digraph network {
+
+  graph [
+    rankdir = LR,
+    bgcolor = 'transparent',
+    nodesep = 0.35,
+    ranksep = 0.75,
+    splines = line
+  ]
+
+  node [
+    shape = box,
+    style = filled,
+    fillcolor = '#DCEAF0',
+    color = '#4B5563',
+    fontname = Arial,
+    fontsize = 16,
+    width = 0.55,
+    height = 0.38,
+    fixedsize = true
+  ]
+
+  edge [
+    color = '#4B4B4B',
+    penwidth = 1.3,
+    arrowsize = 0.8
+  ]
+
+  subgraph cluster_beschaffung {
+    label = ''
+    style = filled
+    fillcolor = '#F3E7AE'
+    color = '#183A43'
+    penwidth = 2
+
+    { rank = same; '7A'; '7B'; '7C'; '7D'; '7E' }
+    { rank = same; '6A'; '6B'; '6C'; '6D' }
+  }
+
+  { rank = same; '5A'; '5B'; '5C' }
+  { rank = same; '4A'; '4B'; '4C' }
+  { rank = same; '3A'; '3B'; '3C' }
+  { rank = same; '2A'; '2B'; '2C'; '2D' }
+  { rank = same; '1A'; '1B'; '1C'; '1D'; '1E' }
+
+  '7A' -> '6A'
+  '7B' -> '6A'
+  '7B' -> '6B'
+  '7C' -> '6B'
+  '7C' -> '6C'
+  '7D' -> '6C'
+  '7D' -> '6D'
+  '7E' -> '6D'
+
+  '6A' -> '5A'
+  '6B' -> '5A'
+  '6B' -> '5B'
+  '6C' -> '5B'
+  '6C' -> '5C'
+  '6D' -> '5C'
+
+  '5A' -> '4A'
+  '5B' -> '4A'
+  '5B' -> '4B'
+  '5C' -> '4B'
+  '5C' -> '4C'
+
+  '4A' -> '4B'
+  '4B' -> '4C'
+
+  '4A' -> '3A'
+  '4A' -> '3B'
+  '4A' -> '3C'
+  '4B' -> '3B'
+  '4B' -> '3C'
+  '4C' -> '3C'
+
+  '3A' -> '2A'
+  '3A' -> '2B'
+  '3B' -> '2B'
+  '3B' -> '2C'
+  '3C' -> '2C'
+  '3C' -> '2D'
+
+  '2B' -> '2A'
+
+  '2A' -> '1A'
+  '2A' -> '1B'
+  '2B' -> '1C'
+  '2C' -> '1C'
+  '2D' -> '1D'
+  '2D' -> '1E'
+}
+")
+```
 :::
 
-I
+$\rightarrow$ Wähle konkrete Standorte im Netzwerk aus $\rightarrow$ in der Regel begrenzte Betrachtung der SC
 
-1B
-
-II
-
-1C
-
-III
-
-1D
-
-IV
-
-1E
-
-V
-
-2A
-
-2B
-
-2C
-
-2D
-
-3A
-
-3B
-
-3C
-
-4A
-
-4B
-
-5A
-
-5B
-
-5C
-
-7A
-
-7B
-
-7C
-
-7D
-
-7E
-
-6A
-
-6B
-
-6C
-
-6D
-
-VI
-
-- in der Regel Abwägung von Servicezielen (Reaktionsschnelligkeit in Distribution) und Kosten (Netzdichte)
-
-## Strategische Netzwerkplanung {#slide-94}
-
-\[Graphic: other: http://schemas.openxmlformats.org/presentationml/2006/ole\]
-
-Horizontale Standortplanung -- Distribution & Zentralität
-
-Distribution
-
-94
-
-::: {layout-ncol="2"}
-![Wenige Standorte / hohe Zentralität](../images/image76.png "Picture 4")
-
-![Viele Standorte / geringe Zentralität](../images/image77.png "Picture 5")
-:::
-
-## Strategische Netzwerkplanung {#slide-95}
-
-\[Graphic: other: http://schemas.openxmlformats.org/presentationml/2006/ole\]
-
-Horizontale Standortplanung -- Distribution
-
-Distribution
-
-95
-
-                                        Trend zur Zentralisierung                             Trend zu dezentralem Lager
-  ------------------------------------- ------------------------------------------------- --- ----------------------------------------------------
-  Sortiment                             Breites Sortiment                                 ↔   Schmales Sortiment
-  Lieferzeit                            Ausreichende Lieferzeit                           ↔   Schnellste Belieferung  Stundengenaue Anlieferung
-  Wert der Produkte                     Teure Produkte                                    ↔   Billige Produkte
-  Konzentration der Produktionsstätte   Eine „Quelle"                                     ↔   Viele „Quellen"
-  Kundenstruktur                        Wenige Großkunden bzw.  homogene Kundenstruktur   ↔   Viele kleine Kunden bzw. Inhomogene Kundenstruktur
-  Spezifische Lageranforderungen        Ja                                                ↔   Nein
-  Nationale Eigenheiten                 Wenig nationale Eigenheiten                       ↔   Viele nationale Eigenheiten
-
-Quelle: Schulte (2017), S. 703
-
-## Netzwerkplanungsmodelle {#slide-96}
-
-24.06.2026
-
-96
-
-  Charakteristiken
-  ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-  Kunden- und  potentielle   Versorgungsstandorte   sind   identisch Nachfragemengen  der  Kundenstandorte  &  Distanzen   zwischen  den  Standorten   gegeben Abwägung   zwischen   unterschiedlichen  Zielen   Kosten-  bzw .  Servicerestriktionen Auswahlentscheidung   zwischen   verschiedenen   Standortalternativen  
-
-Supply Chain Management
-
-Planung von Distributionsnetzen
-
-                              Entscheid-ungsraum   \# Stand- orte      Daten- typ        \#  Ziele
-  --------------------------- -------------------- ------------------- ----------------- -------------------
-  Netzwerk-planungs-modelle   diskret              multiple facility   deterministisch   ein-kriteriell
-  Steiner-Weber-Modell        kontinuier -lich     single facility     deterministisch   ein-kriteriell
-  AHP,  Nutzwert-analyse      diskret              multiple facility   deterministisch   multi- kriteriell
-
-Klassifikation der Modelle
-
-Modelle
-
-## Median  problems {#slide-97}
-
-24.06.2026
-
-97
-
-![](../images/image78.png "Grafik 7")
-
-Supply Chain Management
-
-## Center-probleme {#slide-98}
-
-24.06.2026
-
-98
-
-![](../images/image79.png "Grafik 9")
-
-Supply Chain Management
-
-## Covering   probleme {#slide-99}
-
-24.06.2026
-
-99
-
-![](../images/image80.png "Grafik 8")
-
-Supply Chain Management
-
-## Covering   location   problem {#slide-100}
-
-Beispiel ( Vahrenkamp  2003 , S.  128)
-
-24.06.2026
-
-100
-
-Supply Chain Management
-
-  Problemstellung
-  --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-  Ein Einzelhandelsunternehmen plant sein Filialnetz im Ruhrgebiet auszubauen. In folgendem Netzwerk sind die Städte und die Fahrzeiten zwischen den Städten (in Minuten) dargestellt.
-
-1
-
-2
-
-3
-
-6
-
-5
-
-4
-
-7
-
-8
-
-12
-
-9
-
-5
-
-7
-
-8
-
-4
-
-3
-
-5
-
-8
-
-15
-
-5
-
-4
-
-12
-
-5
-
-10
-
-## Covering   location   problem {#slide-101}
-
-Beispiel ( Vahrenkamp  2003, p. 128)
-
-24.06.2026
-
-Seite   101
-
-Supply Chain Management
-
-## Covering   location   problem {#slide-102}
-
-Beispiel ( Vahrenkamp  2003, p. 128)
-
-24.06.2026
-
-102
-
-Supply Chain Management
-
-## Covering   location   problem {#slide-103}
-
-Dominierte Spalten und Zeilen löschen
-
-24.06.2026
-
-103
-
-Supply Chain Management
-
-1. Dominierende Spalten löschen
-
-2. Reduzierte Matrix
-
-3.  Domierte  Zeilen löschen
-
-4. Reduzierte Matrix
-
--  Eröffne Standorte in Knoten 7 sowie 8 (oder 3/4/5)
-
-## Planung von Vertriebsnetzwerken {#slide-104}
-
-Covering   location   problem
-
-24.06.2026
-
-104
-
-Supply Chain Management
-
-## Maximum  covering   location   problem  (MCLP) {#slide-105}
-
-Überblick
-
-24.06.2026
-
-105
-
-Supply Chain Management
-
-## Maximum  covering   location   problem  (MCLP) {#slide-106}
-
-Heuristik
-
-24.06.2026
-
-106
-
-  Idee
-  ----------------------------------------------------------------------------------------------
-  Greedy -Heuristik   eröffne iterativ diejenigen Standorte, die den höchsten Bedarf abdecken
-
-Supply Chain Management
-
-## Maximum  covering   location   problem  (MCLP) {#slide-107}
-
-Beispiel
-
-24.06.2026
-
-107
-
-![](../images/image83.png "Grafik 6")
-
-![](../images/image84.png "Grafik 8")
-
-Nachfrage:
-
-Sevice   level :  180
-
-Supply Chain Management
-
-## Maximum  covering   location   problem  (MCLP) {#slide-108}
-
-Beispiel - Lösung
-
-24.06.2026
-
-108
-
-![](../images/image85.png "Grafik 9")
-
-Supply Chain Management
 
