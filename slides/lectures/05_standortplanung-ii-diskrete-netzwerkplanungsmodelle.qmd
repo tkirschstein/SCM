@@ -7,6 +7,12 @@ title: "Standortplanung II: Diskrete Standortplanung"
 #| warning: false
 #| message: false
 
+# Funktionen aus scm_functions.R einbinden
+source("../../R/scm_functions.R")
+
+library(leaflet)
+library(readxl)
+library(dplyr)
 library(plotly)
 
 cols <- list(
@@ -86,13 +92,20 @@ arrow_ann <- function(x, y, ax, ay, dash = FALSE,
 
 ```
 
+---
+
 ## Strategische Gestaltung von Supply Chains {#slide-92}
 
 - Multikriterielle  Standortplanung
 - Kontinuierliche Standortplanung
 - **Diskrete Standortplanung**
 
+---
+
 ## Planung von Distributionsnetzen {#slide-93}
+::: slide-subtitle
+Einordnung
+:::
 
 ::: r-stretch
 ```{r}
@@ -258,3 +271,142 @@ digraph network {
 $\rightarrow$ Wähle konkrete Standorte im Netzwerk aus $\rightarrow$ in der Regel begrenzte Betrachtung der SC
 
 
+
+
+---
+
+## Fallstudie – Batterielogistik {#slide-cs1}
+::: slide-subtitle
+Ausgangslage
+:::
+
+::: columns
+::: {.column width="48%"}
+
+```{r karte}
+#| echo: false
+#| warning: false
+#| message: false
+#| out-width: "100%"
+#| fig-height: 6.5
+
+# Daten laden
+standorte <- readxl::read_excel("../../R/Arvato_Distributionsstandorte_Deutschland.xlsx")
+
+# Automobilwerke in Norddeutschland und Benelux (Kunden / Bedarfsorte)
+# Bekannte Werke in der Region: VW Wolfsburg, BMW Hannover,
+# Mercedes Bremen, Daimler Düsseldorf, Volvo Gent, Audi Brüssel,
+# VW Emden, Ford Köln, Opel Rüsselsheim
+kunden <- data.frame(
+  name = c(
+    "VW Wolfsburg", "VW Emden", "BMW Hannover",
+    "Mercedes Bremen", "Daimler Düsseldorf", "Ford Köln",
+    "Opel Rüsselsheim", "Volvo Gent", "Audi Brüssel",
+    "Stellantis Antwerpen", "DAF Eindhoven", "VW Hannover"
+  ),
+  lat = c(52.432, 53.367, 52.372, 53.075, 51.220, 50.930,
+          49.992, 51.036, 50.852, 51.261, 51.462, 52.377),
+  lon = c(10.796, 7.206, 9.738,  8.814,  6.788,  6.960,
+          8.389,  3.722,  4.352,  4.403,  5.479,  9.726),
+  typ = "Automobilwerk"
+)
+
+# Mögliche Lagerstandorte aus Arvato-Daten
+# (Repräsentative Standorte aus Norddeutschland + Benelux)
+if (exists("standorte") && "lat" %in% names(standorte) && "lon" %in% names(standorte)) {
+  lager_data <- standorte %>%
+    filter(!is.na(lat), !is.na(lon)) %>%
+    head(8)
+} else {
+  # Fallback: manuelle repräsentative Arvato/Logistik-Standorte
+  lager_data <- data.frame(
+    name = c(
+      "Hannover-Lagerhaus", "Bremen Logistikpark", "Dortmund DC",
+      "Köln Depot", "Hamburg Hub", "Düsseldorf Lager",
+      "Frankfurt DC", "Antwerpen Hub"
+    ),
+    lat = c(52.370, 53.080, 51.514, 50.938, 53.551, 51.227, 50.110, 51.222),
+    lon = c( 9.732,  8.800,  7.465,  6.960,  9.993,  6.773,  8.682,  4.415)
+  )
+}
+
+# Haversine-Distanzen (aus scm_functions.R) exemplarisch für ersten Kunden
+if (nrow(lager_data) > 0 && "lat" %in% names(lager_data)) {
+  lager_data$dist_wolfsburg <- mapply(
+    haversine,
+    lager_data$lat, lager_data$lon,
+    MoreArgs = list(lat2 = 52.432, lon2 = 10.796)
+  )
+}
+
+# Leaflet-Karte
+map <- leaflet(options = leafletOptions(zoomControl = TRUE)) %>%
+  addProviderTiles(providers$OpenStreetMap.Mapnik) %>%
+  setView(lng = 7.5, lat = 52.0, zoom = 6) %>%
+
+  # Automobilwerke (blau)
+  addAwesomeMarkers(
+    data        = kunden,
+    lng         = ~lon,
+    lat         = ~lat,
+    label       = ~name,
+    icon        = awesomeIcons(
+      icon        = "industry",
+      library     = "fa",
+      markerColor = "blue",
+      iconColor   = "white"
+    ),
+    group = "Automobilwerke"
+  ) %>%
+
+  # Potenzielle Lagerstandorte (grün)
+  addAwesomeMarkers(
+    data        = lager_data,
+    lng         = ~lon,
+    lat         = ~lat,
+    label       = ~name,
+    icon        = awesomeIcons(
+      icon        = "home",
+      library     = "fa",
+      markerColor = "green",
+      iconColor   = "white"
+    ),
+    group = "Lagerstandorte"
+  ) %>%
+
+  addLayersControl(
+    overlayGroups = c("Automobilwerke", "Lagerstandorte"),
+    options       = layersControlOptions(collapsed = FALSE)
+  ) %>%
+  addLegend(
+    position = "bottomleft",
+    colors   = c("#2A7ACA", "#3DB843"),
+    labels   = c("Automobilwerk (Kunde)", "Potenzieller Lagerstandort"),
+    title    = "Legende"
+  )
+
+map
+```
+
+:::
+::: {.column width="48%"}
+
+::: {.small-text}
+
+::: {.callout-note appearance="simple"}
+## Problemstellung
+Zur Versorgung der Automobilwerke in Norddeut-schland und den Benelux-Ländern mit Antriebs-Batterien soll eine Versor-gungskette aufgebaut werden. Ein bereits in der Automobil-branche tätiger Logistikdienstleister bietet an, die Versorgung der Werke mit Antriebs-Batterien zu übernehmen. Dazu müssen Investitionen in die Lagerstandorte getätigt werden, um die Regularien für Gefahrgutlagerung einzuhalten. 
+:::
+:::
+
+::: columns
+::: {.column width="49%"}
+![](../images/image87.png){width="99%"}
+:::
+::: {.column width="49%"}
+![](../images/image88.jpeg)
+:::
+:::
+
+:::
+:::
