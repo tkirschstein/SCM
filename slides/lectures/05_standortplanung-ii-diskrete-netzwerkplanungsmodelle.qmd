@@ -652,3 +652,173 @@ fig
 :::
 :::
 :::
+
+
+---
+
+## Warehouse Location Problem {#slide-wlp-model}
+::: slide-subtitle
+Mathematisches Modell
+:::
+
+::: columns
+::: {.column width="55%"}
+
+::: {.callout-tip appearance="simple" icon=false}
+#### Gemischt-ganzzahliges lineares Optimierungsmodell
+Minimiere die Gesamtkosten aus Transport und Standorteröffnung
+
+$$\min \rightarrow \sum_{i \in I} y_i \cdot f_i + \sum_{(i,j) \in E} x_{ij} \cdot c_{ij}$$
+:::
+
+::: {.smaller-text}
+
+**Nebenbedingungen**
+$$
+\begin{align}
+  \sum_{(i,j) \in E} x_{ij} &= d_j          & \forall j \in J      &\quad\rightarrow \text{Nachfrage befriedigen} \\
+  x_{ij}                    &\leq y_i \cdot d_j & \forall (i,j) \in E &\quad\rightarrow \text{nur Transporte von eröffneten Standorten} \\
+  x_{ij}                    &\geq 0          & \forall (i,j) \in E &\quad\rightarrow \text{Transportmengen nicht negativ} \\
+  y_i                       &\in \{0,1\}     & \forall i \in I     &\quad\rightarrow \text{Standort wird eröffnet oder nicht}
+\end{align}
+$$
+:::
+
+:::
+::: {.column width="43%"}
+
+```{r wlp-graph2}
+#| echo: false
+#| warning: false
+#| message: false
+#| out-width: "99%"
+#| fig-height: 5
+
+# --- Koordinaten (normiert 0..1) ---
+lager <- data.frame(
+  id  = c("W1","W2","W3"),
+  lbl = c("1","2","3"),
+  fi  = c("f<sub>1</sub>", "...", "f<sub>3</sub>"),
+  x   = 0.20,
+  y   = c(0.15, 0.50, 0.85)
+)
+
+kunden <- data.frame(
+  id  = c("A","B","C","D"),
+  lbl = c("A","B","C","D"),
+  dj  = c("d<sub>A</sub>", "", "...", "d<sub>D</sub>"),
+  x   = 0.75,
+  y   = c(0.85, 0.60, 0.35, 0.10)
+)
+
+lxy <- setNames(lager[, c("x","y")],   c("x","y")); rownames(lxy) <- lager$id
+kxy <- setNames(kunden[, c("x","y")],  c("x","y")); rownames(kxy) <- kunden$id
+
+# Knotenradius in Plot-Koordinaten (angepasst an fig-Größe)
+r <- 0.058   # <-- ggf. leicht anpassen wenn Größe ändert
+
+edges <- data.frame(
+  from = c("W3","W3","W2","W2","W2","W1"),
+  to   = c("A", "B", "B", "C", "D", "D"),
+  lbl  = c("c<sub>1A</sub>","","","","","c<sub>3D</sub>"),
+  stringsAsFactors = FALSE
+)
+
+fig <- plot_ly(type = "scatter", mode = "markers")
+
+# Kanten: Endpunkte auf Rand der Knoten verschieben
+for (i in seq_len(nrow(edges))) {
+  x0 <- lxy[edges$from[i], "x"];  y0 <- lxy[edges$from[i], "y"]
+  x1 <- kxy[edges$to[i],   "x"];  y1 <- kxy[edges$to[i],   "y"]
+
+  dx <- x1 - x0;  dy <- y1 - y0
+  d  <- sqrt(dx^2 + dy^2)
+
+  # Startpunkt: r vom Lager-Mittelpunkt entfernt Richtung Kunde
+  ax <- x0 + r * dx / d
+  ay <- y0 + r * dy / d
+  # Endpunkt:   r vom Kunden-Mittelpunkt entfernt Richtung Lager
+  ex <- x1 - r * dx / d
+  ey <- y1 - r * dy / d
+
+  fig <- fig %>% add_annotations(
+    x = ex, y = ey, ax = ax, ay = ay,
+    xref = "x", yref = "y", axref = "x", ayref = "y",
+    showarrow = TRUE, arrowhead = 2, arrowsize = 1,
+    arrowwidth = 1.5, arrowcolor = "#4B4B4B", text = ""
+  )
+
+  # Kanten-Label mittig
+  if (nchar(edges$lbl[i]) > 0) {
+    fig <- fig %>% add_annotations(
+      x = (ax + ex) / 2 + 0.02, y = (ay + ey) / 2 + 0.025,
+      xref = "x", yref = "y",
+      text = edges$lbl[i], showarrow = FALSE,
+      font = list(size = 13, color = "#1F2933", family = "Arial")
+    )
+  }
+}
+
+# Lager-Knoten (Hexagon)
+fig <- fig %>% add_trace(
+  x = lager$x, y = lager$y, text = lager$lbl,
+  mode = "markers+text",
+  marker = list(symbol = "hexagon", size = 40,
+                color = "#BFDBF7", line = list(color = "#4B5563", width = 1.5)),
+  textfont = list(size = 16, color = "#1F2933", family = "Arial"),
+  textposition = "middle center",
+  hoverinfo = "skip", showlegend = FALSE
+)
+
+# f_i links
+fig <- fig %>% add_annotations(
+  x = lager$x - 0.10, y = lager$y,
+  xref = "x", yref = "y",
+  text = lager$fi, showarrow = FALSE,
+  font = list(size = 14, color = "#1F2933", family = "Arial"),
+  xanchor = "right"
+)
+
+# Kunden-Knoten (Circle)
+fig <- fig %>% add_trace(
+  x = kunden$x, y = kunden$y, text = kunden$lbl,
+  mode = "markers+text",
+  marker = list(symbol = "circle", size = 40,
+                color = "#2D9E8E", line = list(color = "#2F3E46", width = 1.5)),
+  textfont = list(size = 16, color = "white", family = "Arial"),
+  textposition = "middle center",
+  hoverinfo = "skip", showlegend = FALSE
+)
+
+# d_j rechts
+fig <- fig %>% add_annotations(
+  x = kunden$x + 0.08, y = kunden$y,
+  xref = "x", yref = "y",
+  text = kunden$dj, showarrow = FALSE,
+  font = list(size = 14, color = "#1F2933", family = "Arial"),
+  xanchor = "left"
+)
+
+# Set-Labels
+fig <- fig %>% add_annotations(
+  x = c(0.20, 0.75), y = c(1.00, 1.00),
+  xref = "x", yref = "y",
+  text = c("<b>Set <i>I</i></b>", "<b>Set <i>J</i></b>"),
+  showarrow = FALSE,
+  font = list(size = 14, color = "#1F2933", family = "Arial")
+)
+
+fig <- fig %>% layout(
+  xaxis = list(visible = FALSE, range = c(0, 1), fixedrange = TRUE),
+  yaxis = list(visible = FALSE, range = c(-0.05, 1.08), fixedrange = TRUE),
+  plot_bgcolor  = "transparent",
+  paper_bgcolor = "transparent",
+  margin = list(l = 40, r = 40, t = 10, b = 10),
+  height = 380
+)
+
+fig
+```
+
+:::
+:::
