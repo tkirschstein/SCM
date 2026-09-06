@@ -11,6 +11,24 @@ format:
     scrollable: true
 ---
 
+
+```{r}
+#| echo: false
+#| warning: false
+#| message: false
+
+# Funktionen aus scm_functions.R einbinden
+source("../../R/scm_functions.R")
+
+library(tidyverse)
+library(leaflet)
+library(readxl)
+library(dplyr)
+library(plotly)
+
+```
+
+
 ## Grundlagen des Supply Chain Managements {#slide-30}
 
 - Aufgaben, Begriffe und Konzepte

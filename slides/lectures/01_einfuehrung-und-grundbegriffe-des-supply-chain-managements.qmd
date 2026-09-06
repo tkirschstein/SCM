@@ -2,6 +2,25 @@
 title: "Einführung und Grundbegriffe des Supply Chain Managements"
 ---
 
+
+```{r}
+#| echo: false
+#| warning: false
+#| message: false
+
+# Funktionen aus scm_functions.R einbinden
+source("../../R/scm_functions.R")
+
+library(tidyverse)
+library(leaflet)
+library(readxl)
+library(dplyr)
+library(plotly)
+
+```
+
+
+
 ## Organisatorisches {#slide-2}
 
 Dozent: Prof. Dr. Thomas Kirschstein (HS RheinMain + Fraunhofer)

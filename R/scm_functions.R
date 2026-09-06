@@ -10,6 +10,84 @@
 #   4. Warehouse Location Problem (Add / Drop Heuristics)
 # =============================================================================
 
+# Farbdefinitionen
+
+cols <- list(
+  top    = "#0B6E4F",
+  strat  = "#2D6A4F",
+  mid    = "#52B788",
+  low    = "#FFFFFF",
+  atp    = "#D97B29",
+  border = "#2F3E46",
+  text   = "#1F2933",
+  muted  = "#6B7280",
+  dash   = "#7C8792",
+  bg     = "#FFFFFF"
+)
+
+# Zeichenfunktionen Blockdiagramme
+
+mid <- function(a, b) (a + b) / 2
+
+chevron_path <- function(x0, x1, y0, y1, head = 0.28, notch = 0.24) {
+  xm <- x1 - head
+  paste0(
+    "M ", x0, ",", y0, " ",
+    "L ", xm, ",", y0, " ",
+    "L ", x1, ",", mid(y0, y1), " ",
+    "L ", xm, ",", y1, " ",
+    "L ", x0, ",", y1, " ",
+    "L ", x0 + notch, ",", mid(y0, y1), " Z"
+  )
+}
+
+shape_rect <- function(x0, x1, y0, y1, fill, line = cols$border, width = 1.2) {
+  list(
+    type = "rect", x0 = x0, x1 = x1, y0 = y0, y1 = y1,
+    xref = "x", yref = "y",
+    line = list(color = line, width = width),
+    fillcolor = fill,
+    layer = "below"
+  )
+}
+
+shape_path <- function(path, fill, line = cols$border, width = 1.2) {
+  list(
+    type = "path", path = path, xref = "x", yref = "y",
+    line = list(color = line, width = width),
+    fillcolor = fill,
+    layer = "below"
+  )
+}
+
+shape_line <- function(x0, x1, y0, y1, color, width = 2) {
+  list(
+    type = "line", x0 = x0, x1 = x1, y0 = y0, y1 = y1,
+    xref = "x", yref = "y",
+    line = list(color = color, width = width)
+  )
+}
+
+text_trace <- function(data, x, y, text, color, size = 16) {
+  add_text(
+    fig, data = data,
+    x = x, y = y, text = text,
+    textfont = list(size = size, color = color, family = "Arial"),
+    hoverinfo = "skip", showlegend = FALSE
+  )
+}
+
+arrow_ann <- function(x, y, ax, ay, dash = FALSE,
+                      color = cols$border, width = 1.5) {
+  list(
+    x = x, y = y, ax = ax, ay = ay,
+    xref = "x", yref = "y", axref = "x", ayref = "y",
+    text = "", showarrow = TRUE,
+    arrowhead = 2, arrowsize = 1,
+    arrowwidth = width, arrowcolor = color,
+    arrowdash = if (dash) "dash" else "solid"
+  )
+}
 
 # ─── 1. LOCATION PLANNING ─────────────────────────────────────────────────────
 
