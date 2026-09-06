@@ -1210,3 +1210,814 @@ fig2
 
 :::
 :::
+
+---
+
+## Heuristische Lösungsverfahren {#slide-heuristics-intro}
+::: slide-subtitle
+Motivation und Überblick
+:::
+
+::: columns
+::: {.column width="55%"}
+
+::: {.callout-warning appearance="simple"}
+## Warum Heuristiken?
+
+Das WLP ist **NP-schwer**: exakte Solver (MILP) finden zwar optimale Lösungen, aber die Rechenzeit wächst exponentiell mit $|I|$ und $|J|$. Für große Praxisinstanzen sind **konstruktive Heuristiken** oft der einzig praktikable Ansatz.
+:::
+
+::: {.fragment .fade-up}
+### Zwei klassische Ansätze
+
+| Methode | Ausgangspunkt | Richtung |
+|---|---|---|
+| **Add-Heuristik** | Keine Lager offen | Schrittweise hinzufügen |
+| **Drop-Heuristik** | Alle Lager offen | Schrittweise schließen |
+
+- Jeder Schritt: **greedy** – wähle die Änderung mit der größten Kostenreduktion
+- Abbruch, wenn keine weitere Verbesserung möglich
+- Kunden werden stets dem **billigsten offenen Lager** zugeordnet
+:::
+
+:::
+::: {.column width="42%"}
+
+::: {.fragment .fade-up}
+```{r heuristic-overview-plot}
+#| echo: false
+#| warning: false
+#| message: false
+#| out-width: "99%"
+#| fig-height: 5
+
+# Schematische Kostenkurve: Add- vs. Drop-Verlauf
+n_steps <- 5
+steps   <- 0:n_steps
+
+# Grobe Illustration (nicht exakte Werte)
+cost_add  <- c(NA, 724.5, 639.5, rep(NA, 3))
+cost_drop <- c(854.5, 759.0, 681.5, 641.5, rep(NA, 2))
+cost_opt  <- rep(639.5, n_steps + 1)
+
+df_plot <- data.frame(
+  lager_offen = c(1, 2, 1, 2, 3, 5, 4, 3, 2),
+  kosten      = c(724.5, 639.5, 854.5, 759.0, 681.5, NA, NA, NA, 641.5),
+  methode     = c("Add","Add","Drop","Drop","Drop",NA,NA,NA,"Drop")
+)
+
+fig_h <- plot_ly()
+
+# Add-Kurve
+fig_h <- fig_h %>% add_trace(
+  x = c(1, 2), y = c(724.5, 639.5),
+  type = "scatter", mode = "lines+markers",
+  name = "Add-Heuristik",
+  line   = list(color = "#01696f", width = 2.5),
+  marker = list(color = "#01696f", size = 10)
+)
+
+# Drop-Kurve
+fig_h <- fig_h %>% add_trace(
+  x = c(5, 4, 3, 2), y = c(854.5, 759.0, 681.5, 641.5),
+  type = "scatter", mode = "lines+markers",
+  name = "Drop-Heuristik",
+  line   = list(color = "#da7101", width = 2.5, dash = "dash"),
+  marker = list(color = "#da7101", size = 10)
+)
+
+# Optimum
+fig_h <- fig_h %>% add_trace(
+  x = c(1, 2, 3, 4, 5), y = rep(639.5, 5),
+  type = "scatter", mode = "lines",
+  name = "Optimum (Z* = 639,5)",
+  line = list(color = "#a12c7b", width = 1.5, dash = "dot")
+)
+
+fig_h <- fig_h %>% layout(
+  xaxis = list(title = "Anzahl offener Lager", dtick = 1,
+               range = c(0.5, 5.5)),
+  yaxis = list(title = "Gesamtkosten (T€/Jahr)",
+               range = c(600, 900)),
+  legend = list(orientation = "h", y = -0.2),
+  plot_bgcolor  = "transparent",
+  paper_bgcolor = "transparent",
+  margin = list(l = 50, r = 20, t = 10, b = 60),
+  height = 340
+)
+
+fig_h
+```
+:::
+
+:::
+:::
+
+---
+
+## Add-Heuristik {#slide-add-heuristic}
+::: slide-subtitle
+Algorithmus
+:::
+
+::: columns
+::: {.column width="52%"}
+
+::: {.callout-note appearance="minimal" icon=false}
+**Idee:** Starte ohne geöffnetes Lager. Füge in jedem Schritt dasjenige Lager $i^*$ hinzu, das die Gesamtkosten am stärksten **reduziert**.
+:::
+
+::: {.fragment .fade-up}
+### Algorithmus
+
+**Initialisierung:** $S \leftarrow \emptyset$
+
+**Wiederhole:**
+
+1. Berechne für jedes noch nicht geöffnete Lager $i \notin S$ den Kostenbeitrag:
+$$\Delta_i = Z(S) - Z(S \cup \{i\})$$
+
+2. Wähle $i^* = \arg\max_{i \notin S} \Delta_i$
+
+3. **Falls** $\Delta_{i^*} > 0$: öffne $i^*$, setze $S \leftarrow S \cup \{i^*\}$
+
+4. **Sonst:** Abbruch
+
+**Zuordnungsregel:** Jeder Kunde $j$ wird dem günstigsten offenen Lager zugeordnet:
+$$\sigma(j) = \arg\min_{i \in S} c_{ij}$$
+:::
+
+:::
+::: {.column width="46%"}
+
+::: {.fragment .fade-up}
+::: {.callout-tip appearance="simple"}
+## Kostenberechnung
+
+$$Z(S) = \underbrace{\sum_{i \in S} f_i}_{\text{Eröffnung}} + \underbrace{\sum_{j \in J} \min_{i \in S} c_{ij} \cdot a_j}_{\text{Transport}}$$
+
+- **Laufzeit:** $\mathcal{O}(|I|^2 \cdot |J|)$  
+- **Eigenschaft:** Greedy, nicht garantiert optimal
+- **Stärke:** Berücksichtigt Synergien – ein neues Lager kann mehrere Kunden gleichzeitig günstiger versorgen
+:::
+:::
+
+::: {.fragment .fade-up}
+::: {.callout-warning appearance="simple"}
+## Abbruchbedingung
+
+Die Heuristik stoppt, sobald **kein** weiteres Lager die Gesamtkosten senkt – d.h. die Einsparung bei den Transportkosten die Eröffnungskosten des nächsten Lagers nicht mehr übersteigt.
+:::
+:::
+
+:::
+:::
+
+---
+
+## Drop-Heuristik {#slide-drop-heuristic}
+::: slide-subtitle
+Algorithmus
+:::
+
+::: columns
+::: {.column width="52%"}
+
+::: {.callout-note appearance="minimal" icon=false}
+**Idee:** Starte mit **allen** Lagern geöffnet. Schließe in jedem Schritt dasjenige Lager $i^*$, dessen Schließung die Gesamtkosten am stärksten **reduziert**.
+:::
+
+::: {.fragment .fade-up}
+### Algorithmus
+
+**Initialisierung:** $S \leftarrow I$
+
+**Wiederhole:**
+
+1. Berechne für jedes noch geöffnete Lager $i \in S$ den Kostenbeitrag:
+$$\Delta_i = Z(S) - Z(S \setminus \{i\})$$
+
+2. Wähle $i^* = \arg\max_{i \in S} \Delta_i$
+
+3. **Falls** $\Delta_{i^*} > 0$: schließe $i^*$, setze $S \leftarrow S \setminus \{i^*\}$
+
+4. **Sonst:** Abbruch
+
+**Zuordnungsregel:** identisch zur Add-Heuristik:
+$$\sigma(j) = \arg\min_{i \in S} c_{ij}$$
+:::
+
+:::
+::: {.column width="46%"}
+
+::: {.fragment .fade-up}
+::: {.callout-tip appearance="simple"}
+## Vergleich mit Add-Heuristik
+
+| Merkmal | Add | Drop |
+|---|---|---|
+| **Start** | $S = \emptyset$ | $S = I$ |
+| **Richtung** | aufbauend | abbauend |
+| **Startkosten** | $\infty$ (kein Lager) | $\sum_i f_i + \ldots$ |
+| **Laufzeit** | $\mathcal{O}(|I|^2 \cdot |J|)$ | $\mathcal{O}(|I|^2 \cdot |J|)$ |
+| **Tendenz** | wenige Lager | evtl. mehr Lager |
+
+:::
+:::
+
+::: {.fragment .fade-up}
+::: {.callout-warning appearance="simple"}
+## Wichtig
+
+Beide Heuristiken sind **nicht garantiert optimal**. Sie liefern zulässige Lösungen, die je nach Instanz nahe am Optimum oder deutlich davon entfernt sein können. Die Lösungsqualität hängt stark von der Kostenstruktur der Instanz ab.
+:::
+:::
+
+:::
+:::
+
+---
+
+## Add-Heuristik – Fallbeispiel {#slide-add-example}
+::: slide-subtitle
+Schrittweise Lösung der Probleminstanz
+:::
+
+```{r add-heuristic-compute}
+#| echo: false
+#| warning: false
+#| message: false
+
+# Problemdaten (identisch zu slide-wlp-example)
+n_I  <- 5; n_J <- 6
+f_h  <- c(110, 95, 140, 80, 125)
+a_h  <- c(40, 25, 60, 30, 50, 35)
+c_h  <- matrix(
+  c(1.8, 3.2, 2.5, 4.1, 1.2, 3.7,
+    3.4, 1.1, 3.8, 1.6, 2.9, 2.2,
+    2.6, 4.0, 1.3, 3.5, 3.1, 1.9,
+    4.2, 1.8, 2.9, 1.0, 3.6, 2.7,
+    1.5, 3.6, 3.3, 4.4, 2.0, 1.4),
+  nrow = n_I, byrow = TRUE,
+  dimnames = list(paste0("W", 1:n_I), paste0("C", 1:n_J))
+)
+
+total_cost_h <- function(S) {
+  if (length(S) == 0) return(Inf)
+  sum(f_h[S]) + sum(sapply(1:n_J, function(j) min(c_h[S, j]) * a_h[j]))
+}
+
+best_assign <- function(S) {
+  sapply(1:n_J, function(j) S[which.min(c_h[S, j])])
+}
+
+# Add-Heuristik durchführen
+S_add_h  <- integer(0)
+rem_h    <- 1:n_I
+add_log  <- list()
+
+repeat {
+  cur_cost <- total_cost_h(S_add_h)
+  gains <- sapply(rem_h, function(i) cur_cost - total_cost_h(c(S_add_h, i)))
+  best_idx  <- which.max(gains)
+  best_gain <- gains[best_idx]
+  best_i    <- rem_h[best_idx]
+  if (best_gain <= 0) break
+  S_add_h  <- c(S_add_h, best_i)
+  rem_h    <- setdiff(rem_h, best_i)
+  asgn     <- best_assign(S_add_h)
+  fix_cost <- sum(f_h[S_add_h])
+  tr_cost  <- total_cost_h(S_add_h) - fix_cost
+  add_log[[length(add_log)+1]] <- list(
+    step      = length(add_log)+1,
+    added     = best_i,
+    open      = S_add_h,
+    gain      = best_gain,
+    fix       = fix_cost,
+    transp    = tr_cost,
+    total     = total_cost_h(S_add_h),
+    assign    = asgn
+  )
+}
+```
+
+::: columns
+::: {.column width="52%"}
+
+::: small-text
+
+```{r add-steps-table}
+#| echo: false
+#| warning: false
+#| message: false
+
+add_df <- do.call(rbind, lapply(add_log, function(s) {
+  data.frame(
+    Schritt    = s$step,
+    Aktion     = paste0("+W", s$added),
+    Offen      = paste0("{", paste0("W", sort(s$open), collapse=", "), "}"),
+    Fix        = s$fix,
+    Transport  = round(s$transp, 1),
+    Gesamt     = round(s$total, 1),
+    Zuordnung  = paste0(paste0("C", 1:n_J, "→W", s$assign), collapse=", ")
+  )
+}))
+
+kbl(add_df[, c("Schritt","Aktion","Offen","Fix","Transport","Gesamt")],
+    col.names = c("Schritt","Aktion","Offene Lager",
+                  "Eröffn. (T€)","Transport (T€)","Gesamt (T€)"),
+    align = c("c","c","l","r","r","r")) |>
+  kable_styling(bootstrap_options = c("condensed","striped"),
+                full_width = TRUE, font_size = 16) |>
+  column_spec(1, bold = TRUE, background = "#2F3E46", color = "white") |>
+  column_spec(2, bold = TRUE, color = "#01696f") |>
+  column_spec(6, bold = TRUE) |>
+  row_spec(0, background = "#2F3E46", color = "white", bold = TRUE)
+```
+
+**Kundenzuordnung je Schritt:**
+
+```{r add-assign-table}
+#| echo: false
+#| warning: false
+#| message: false
+
+assign_df <- do.call(rbind, lapply(add_log, function(s) {
+  row <- c(Schritt = s$step,
+           setNames(paste0("W", s$assign), paste0("C", 1:n_J)))
+  as.data.frame(t(row), stringsAsFactors = FALSE)
+}))
+
+kbl(assign_df,
+    col.names = c("Schritt", paste0("C", 1:n_J)),
+    align = c("c", rep("c", n_J))) |>
+  kable_styling(bootstrap_options = c("condensed","striped"),
+                full_width = TRUE, font_size = 16) |>
+  column_spec(1, bold = TRUE, background = "#2F3E46", color = "white") |>
+  row_spec(0, background = "#2F3E46", color = "white", bold = TRUE)
+```
+
+::: {.callout-tip appearance="simple"}
+**Ergebnis Add-Heuristik:** Lager $\{W1, W2\}$ geöffnet, $Z_\text{Add} = `r round(total_cost_h(S_add_h), 1)`$ T€/Jahr
+:::
+:::
+
+:::
+::: {.column width="46%"}
+
+```{r add-solution-plot}
+#| echo: false
+#| warning: false
+#| message: false
+#| out-width: "99%"
+#| fig-height: 5.5
+
+final_open_add <- S_add_h
+final_asgn_add <- best_assign(final_open_add)
+
+lp_add <- data.frame(
+  id   = paste0("W", 1:n_I),
+  x    = 0.18,
+  y    = c(0.08, 0.30, 0.52, 0.74, 0.92),
+  open = seq_len(n_I) %in% final_open_add
+)
+kp_add <- data.frame(
+  id = paste0("C", 1:n_J),
+  x  = 0.80,
+  y  = c(0.92, 0.74, 0.56, 0.38, 0.20, 0.04)
+)
+lxy_a <- setNames(lp_add[, c("x","y")], c("x","y")); rownames(lxy_a) <- lp_add$id
+kxy_a <- setNames(kp_add[, c("x","y")], c("x","y")); rownames(kxy_a) <- kp_add$id
+r_a <- 0.048
+
+fig_a <- plot_ly(type = "scatter", mode = "markers")
+
+for (ii in 1:n_I) for (jj in 1:n_J) {
+  wi <- paste0("W", ii); cj <- paste0("C", jj)
+  x0 <- lxy_a[wi,"x"]; y0 <- lxy_a[wi,"y"]
+  x1 <- kxy_a[cj,"x"]; y1 <- kxy_a[cj,"y"]
+  dx <- x1-x0; dy <- y1-y0; dd <- sqrt(dx^2+dy^2)
+  ax <- x0+r_a*dx/dd; ay <- y0+r_a*dy/dd
+  ex <- x1-r_a*dx/dd; ey <- y1-r_a*dy/dd
+  fig_a <- fig_a %>% add_annotations(
+    x=ex,y=ey,ax=ax,ay=ay,xref="x",yref="y",axref="x",ayref="y",
+    showarrow=TRUE,arrowhead=0,arrowsize=0.8,arrowwidth=0.8,
+    arrowcolor="#D0D5DD",text="")
+}
+
+for (jj in 1:n_J) {
+  wi <- paste0("W", final_asgn_add[jj]); cj <- paste0("C", jj)
+  x0 <- lxy_a[wi,"x"]; y0 <- lxy_a[wi,"y"]
+  x1 <- kxy_a[cj,"x"]; y1 <- kxy_a[cj,"y"]
+  dx <- x1-x0; dy <- y1-y0; dd <- sqrt(dx^2+dy^2)
+  ax <- x0+r_a*dx/dd; ay <- y0+r_a*dy/dd
+  ex <- x1-r_a*dx/dd; ey <- y1-r_a*dy/dd
+  fig_a <- fig_a %>% add_annotations(
+    x=ex,y=ey,ax=ax,ay=ay,xref="x",yref="y",axref="x",ayref="y",
+    showarrow=TRUE,arrowhead=2,arrowsize=1,arrowwidth=2.2,
+    arrowcolor="#01696f",text="")
+}
+
+lc <- ifelse(lp_add$open, "#BFDBF7", "#E8E8E8")
+lb <- ifelse(lp_add$open, "#4B5563", "#B0B0B0")
+fig_a <- fig_a %>% add_trace(
+  x=lp_add$x, y=lp_add$y, text=lp_add$id,
+  mode="markers+text",
+  marker=list(symbol="hexagon",size=38,color=lc,line=list(color=lb,width=2)),
+  textfont=list(size=14,color="#1F2933",family="Arial"),
+  textposition="middle center",hoverinfo="skip",showlegend=FALSE)
+fig_a <- fig_a %>% add_annotations(
+  x=lp_add$x-0.09, y=lp_add$y, xref="x",yref="y",
+  text=ifelse(lp_add$open, paste0("f=",f_h,"✓"), paste0("f=",f_h)),
+  showarrow=FALSE,
+  font=list(size=11,color=ifelse(lp_add$open,"#01696f","#9CA3AF"),family="Arial"),
+  xanchor="right")
+fig_a <- fig_a %>% add_trace(
+  x=kp_add$x, y=kp_add$y, text=kp_add$id,
+  mode="markers+text",
+  marker=list(symbol="circle",size=38,color="#2D9E8E",
+              line=list(color="#2F3E46",width=1.5)),
+  textfont=list(size=14,color="white",family="Arial"),
+  textposition="middle center",hoverinfo="skip",showlegend=FALSE)
+fig_a <- fig_a %>% add_annotations(
+  x=kp_add$x+0.07, y=kp_add$y, xref="x",yref="y",
+  text=paste0("a=",a_h),
+  showarrow=FALSE,font=list(size=11,color="#1F2933",family="Arial"),
+  xanchor="left")
+fig_a <- fig_a %>% layout(
+  xaxis=list(visible=FALSE,range=c(0,1),fixedrange=TRUE),
+  yaxis=list(visible=FALSE,range=c(-0.05,1.05),fixedrange=TRUE),
+  plot_bgcolor="transparent",paper_bgcolor="transparent",
+  margin=list(l=40,r=20,t=10,b=10),height=420)
+fig_a
+```
+
+:::
+:::
+
+---
+
+## Drop-Heuristik – Fallbeispiel {#slide-drop-example}
+::: slide-subtitle
+Schrittweise Lösung der Probleminstanz
+:::
+
+```{r drop-heuristic-compute}
+#| echo: false
+#| warning: false
+#| message: false
+
+S_drop_h  <- 1:n_I
+drop_log  <- list()
+
+# Startzeile
+fix0   <- sum(f_h[S_drop_h])
+tr0    <- total_cost_h(S_drop_h) - fix0
+drop_log[[1]] <- list(
+  step    = 0,
+  removed = NA,
+  open    = S_drop_h,
+  gain    = NA,
+  fix     = fix0,
+  transp  = tr0,
+  total   = total_cost_h(S_drop_h),
+  assign  = best_assign(S_drop_h)
+)
+
+repeat {
+  if (length(S_drop_h) <= 1) break
+  cur_cost <- total_cost_h(S_drop_h)
+  gains <- sapply(S_drop_h, function(i)
+    cur_cost - total_cost_h(setdiff(S_drop_h, i)))
+  best_idx  <- which.max(gains)
+  best_gain <- gains[best_idx]
+  best_i    <- S_drop_h[best_idx]
+  if (best_gain <= 0) break
+  S_drop_h <- setdiff(S_drop_h, best_i)
+  fix_cost <- sum(f_h[S_drop_h])
+  tr_cost  <- total_cost_h(S_drop_h) - fix_cost
+  asgn     <- best_assign(S_drop_h)
+  drop_log[[length(drop_log)+1]] <- list(
+    step    = length(drop_log),
+    removed = best_i,
+    open    = S_drop_h,
+    gain    = best_gain,
+    fix     = fix_cost,
+    transp  = tr_cost,
+    total   = total_cost_h(S_drop_h),
+    assign  = asgn
+  )
+}
+```
+
+::: columns
+::: {.column width="52%"}
+
+::: small-text
+
+```{r drop-steps-table}
+#| echo: false
+#| warning: false
+#| message: false
+
+drop_df <- do.call(rbind, lapply(drop_log, function(s) {
+  data.frame(
+    Schritt   = s$step,
+    Aktion    = ifelse(is.na(s$removed), "Start",
+                       paste0("-W", s$removed)),
+    Offen     = paste0("{", paste0("W", sort(s$open), collapse=", "), "}"),
+    Fix       = s$fix,
+    Transport = round(s$transp, 1),
+    Gesamt    = round(s$total, 1)
+  )
+}))
+
+kbl(drop_df,
+    col.names = c("Schritt","Aktion","Offene Lager",
+                  "Eröffn. (T€)","Transport (T€)","Gesamt (T€)"),
+    align = c("c","c","l","r","r","r")) |>
+  kable_styling(bootstrap_options = c("condensed","striped"),
+                full_width = TRUE, font_size = 16) |>
+  column_spec(1, bold = TRUE, background = "#2F3E46", color = "white") |>
+  column_spec(2, bold = TRUE, color = "#da7101") |>
+  column_spec(6, bold = TRUE) |>
+  row_spec(0, background = "#2F3E46", color = "white", bold = TRUE) |>
+  row_spec(1, italic = TRUE, color = "#6B7280")
+```
+
+**Kundenzuordnung je Schritt:**
+
+```{r drop-assign-table}
+#| echo: false
+#| warning: false
+#| message: false
+
+assign_drop_df <- do.call(rbind, lapply(drop_log, function(s) {
+  row <- c(Schritt = s$step,
+           setNames(paste0("W", s$assign), paste0("C", 1:n_J)))
+  as.data.frame(t(row), stringsAsFactors = FALSE)
+}))
+
+kbl(assign_drop_df,
+    col.names = c("Schritt", paste0("C", 1:n_J)),
+    align = c("c", rep("c", n_J))) |>
+  kable_styling(bootstrap_options = c("condensed","striped"),
+                full_width = TRUE, font_size = 16) |>
+  column_spec(1, bold = TRUE, background = "#2F3E46", color = "white") |>
+  row_spec(0, background = "#2F3E46", color = "white", bold = TRUE) |>
+  row_spec(1, italic = TRUE, color = "#6B7280")
+```
+
+::: {.callout-tip appearance="simple"}
+**Ergebnis Drop-Heuristik:** Lager $\{W1, W4\}$ geöffnet, $Z_\text{Drop} = `r round(total_cost_h(S_drop_h), 1)`$ T€/Jahr
+:::
+:::
+
+:::
+::: {.column width="46%"}
+
+```{r drop-solution-plot}
+#| echo: false
+#| warning: false
+#| message: false
+#| out-width: "99%"
+#| fig-height: 5.5
+
+final_open_drop <- S_drop_h
+final_asgn_drop <- best_assign(final_open_drop)
+
+lp_drop <- data.frame(
+  id   = paste0("W", 1:n_I),
+  x    = 0.18,
+  y    = c(0.08, 0.30, 0.52, 0.74, 0.92),
+  open = seq_len(n_I) %in% final_open_drop
+)
+kp_drop <- data.frame(
+  id = paste0("C", 1:n_J),
+  x  = 0.80,
+  y  = c(0.92, 0.74, 0.56, 0.38, 0.20, 0.04)
+)
+lxy_d <- setNames(lp_drop[, c("x","y")], c("x","y")); rownames(lxy_d) <- lp_drop$id
+kxy_d <- setNames(kp_drop[, c("x","y")], c("x","y")); rownames(kxy_d) <- kp_drop$id
+r_d <- 0.048
+
+fig_d <- plot_ly(type = "scatter", mode = "markers")
+
+for (ii in 1:n_I) for (jj in 1:n_J) {
+  wi <- paste0("W", ii); cj <- paste0("C", jj)
+  x0 <- lxy_d[wi,"x"]; y0 <- lxy_d[wi,"y"]
+  x1 <- kxy_d[cj,"x"]; y1 <- kxy_d[cj,"y"]
+  dx <- x1-x0; dy <- y1-y0; dd <- sqrt(dx^2+dy^2)
+  ax <- x0+r_d*dx/dd; ay <- y0+r_d*dy/dd
+  ex <- x1-r_d*dx/dd; ey <- y1-r_d*dy/dd
+  fig_d <- fig_d %>% add_annotations(
+    x=ex,y=ey,ax=ax,ay=ay,xref="x",yref="y",axref="x",ayref="y",
+    showarrow=TRUE,arrowhead=0,arrowsize=0.8,arrowwidth=0.8,
+    arrowcolor="#D0D5DD",text="")
+}
+
+for (jj in 1:n_J) {
+  wi <- paste0("W", final_asgn_drop[jj]); cj <- paste0("C", jj)
+  x0 <- lxy_d[wi,"x"]; y0 <- lxy_d[wi,"y"]
+  x1 <- kxy_d[cj,"x"]; y1 <- kxy_d[cj,"y"]
+  dx <- x1-x0; dy <- y1-y0; dd <- sqrt(dx^2+dy^2)
+  ax <- x0+r_d*dx/dd; ay <- y0+r_d*dy/dd
+  ex <- x1-r_d*dx/dd; ey <- y1-r_d*dy/dd
+  fig_d <- fig_d %>% add_annotations(
+    x=ex,y=ey,ax=ax,ay=ay,xref="x",yref="y",axref="x",ayref="y",
+    showarrow=TRUE,arrowhead=2,arrowsize=1,arrowwidth=2.2,
+    arrowcolor="#da7101",text="")
+}
+
+lc_d <- ifelse(lp_drop$open, "#BFDBF7", "#E8E8E8")
+lb_d <- ifelse(lp_drop$open, "#4B5563", "#B0B0B0")
+fig_d <- fig_d %>% add_trace(
+  x=lp_drop$x, y=lp_drop$y, text=lp_drop$id,
+  mode="markers+text",
+  marker=list(symbol="hexagon",size=38,color=lc_d,line=list(color=lb_d,width=2)),
+  textfont=list(size=14,color="#1F2933",family="Arial"),
+  textposition="middle center",hoverinfo="skip",showlegend=FALSE)
+fig_d <- fig_d %>% add_annotations(
+  x=lp_drop$x-0.09, y=lp_drop$y, xref="x",yref="y",
+  text=ifelse(lp_drop$open, paste0("f=",f_h,"✓"), paste0("f=",f_h)),
+  showarrow=FALSE,
+  font=list(size=11,color=ifelse(lp_drop$open,"#da7101","#9CA3AF"),family="Arial"),
+  xanchor="right")
+fig_d <- fig_d %>% add_trace(
+  x=kp_drop$x, y=kp_drop$y, text=kp_drop$id,
+  mode="markers+text",
+  marker=list(symbol="circle",size=38,color="#2D9E8E",
+              line=list(color="#2F3E46",width=1.5)),
+  textfont=list(size=14,color="white",family="Arial"),
+  textposition="middle center",hoverinfo="skip",showlegend=FALSE)
+fig_d <- fig_d %>% add_annotations(
+  x=kp_drop$x+0.07, y=kp_drop$y, xref="x",yref="y",
+  text=paste0("a=",a_h),
+  showarrow=FALSE,font=list(size=11,color="#1F2933",family="Arial"),
+  xanchor="left")
+fig_d <- fig_d %>% layout(
+  xaxis=list(visible=FALSE,range=c(0,1),fixedrange=TRUE),
+  yaxis=list(visible=FALSE,range=c(-0.05,1.05),fixedrange=TRUE),
+  plot_bgcolor="transparent",paper_bgcolor="transparent",
+  margin=list(l=40,r=20,t=10,b=10),height=420)
+fig_d
+```
+
+:::
+:::
+
+---
+
+## Lösungsvergleich {#slide-heuristic-comparison}
+::: slide-subtitle
+Optimum vs. Add-Heuristik vs. Drop-Heuristik
+:::
+
+```{r comparison-compute}
+#| echo: false
+#| warning: false
+#| message: false
+
+# Alle Lösungsdaten zusammenführen
+cost_opt_val  <- total_cost_h(c(1, 2))     # W1, W2 – optimale Lösung (MILP)
+cost_add_val  <- total_cost_h(S_add_h)
+cost_drop_val <- total_cost_h(S_drop_h)
+
+fix_opt  <- sum(f_h[c(1, 2)])
+tr_opt   <- cost_opt_val  - fix_opt
+fix_add  <- sum(f_h[S_add_h])
+tr_add   <- cost_add_val  - fix_add
+fix_drop <- sum(f_h[S_drop_h])
+tr_drop  <- cost_drop_val - fix_drop
+
+asgn_opt  <- best_assign(c(1, 2))
+asgn_add  <- best_assign(S_add_h)
+asgn_drop <- best_assign(S_drop_h)
+
+gap_add  <- round((cost_add_val  / cost_opt_val - 1) * 100, 2)
+gap_drop <- round((cost_drop_val / cost_opt_val - 1) * 100, 2)
+```
+
+::: columns
+::: {.column width="50%"}
+
+```{r comparison-table}
+#| echo: false
+#| warning: false
+#| message: false
+
+comp_df <- data.frame(
+  Kennzahl = c(
+    "Geöffnete Lager",
+    "Anzahl Lager",
+    "Eröffnungskosten (T€)",
+    "Transportkosten (T€)",
+    "**Gesamtkosten Z (T€)**",
+    "Gap zum Optimum (%)"
+  ),
+  Optimum = c(
+    paste0("W", sort(c(1,2)), collapse=", "),
+    length(c(1, 2)),
+    fix_opt,
+    round(tr_opt, 1),
+    paste0("**", round(cost_opt_val, 1), "**"),
+    "–"
+  ),
+  Add = c(
+    paste0("W", sort(S_add_h), collapse=", "),
+    length(S_add_h),
+    fix_add,
+    round(tr_add, 1),
+    paste0("**", round(cost_add_val, 1), "**"),
+    paste0(gap_add, " %")
+  ),
+  Drop = c(
+    paste0("W", sort(S_drop_h), collapse=", "),
+    length(S_drop_h),
+    fix_drop,
+    round(tr_drop, 1),
+    paste0("**", round(cost_drop_val, 1), "**"),
+    paste0(gap_drop, " %")
+  )
+)
+
+kbl(comp_df,
+    col.names = c("Kennzahl", "Optimum (MILP)", "Add-Heuristik", "Drop-Heuristik"),
+    align = c("l","c","c","c"), escape = FALSE) |>
+  kable_styling(bootstrap_options = c("condensed","striped"),
+                full_width = TRUE, font_size = 17) |>
+  column_spec(1, bold = FALSE) |>
+  column_spec(2, bold = TRUE, background = "#a12c7b", color = "white") |>
+  column_spec(3, background = "#E8F4F1") |>
+  column_spec(4, background = "#FEF3E2") |>
+  row_spec(0, background = "#2F3E46", color = "white", bold = TRUE) |>
+  row_spec(5, bold = TRUE)
+```
+
+::: {.callout-note appearance="simple"}
+In diesem Fallbeispiel findet die **Add-Heuristik** zufällig die **optimale Lösung** ($Z = `r round(cost_add_val,1)`$ T€). Die **Drop-Heuristik** liefert mit $Z = `r round(cost_drop_val,1)`$ T€ eine um `r gap_drop` % schlechtere Lösung.
+:::
+
+:::
+::: {.column width="48%"}
+
+```{r comparison-bar}
+#| echo: false
+#| warning: false
+#| message: false
+#| out-width: "99%"
+#| fig-height: 5
+
+methoden  <- c("Optimum (MILP)", "Add-Heuristik", "Drop-Heuristik")
+fix_vals  <- c(fix_opt,  fix_add,  fix_drop)
+tr_vals   <- c(round(tr_opt,1), round(tr_add,1), round(tr_drop,1))
+farben_fix <- c("#a12c7b", "#01696f", "#da7101")
+farben_tr  <- c("#d163a7", "#4f98a3", "#fdab43")
+
+fig_bar <- plot_ly()
+
+fig_bar <- fig_bar %>% add_trace(
+  x = methoden, y = fix_vals, type = "bar", name = "Eröffnungskosten",
+  marker = list(color = farben_fix),
+  text = paste0(fix_vals, " T€"), textposition = "inside",
+  insidetextanchor = "middle",
+  textfont = list(color = "white", size = 13, family = "Arial")
+)
+
+fig_bar <- fig_bar %>% add_trace(
+  x = methoden, y = tr_vals, type = "bar", name = "Transportkosten",
+  marker = list(color = farben_tr),
+  text = paste0(tr_vals, " T€"), textposition = "inside",
+  insidetextanchor = "middle",
+  textfont = list(color = "white", size = 13, family = "Arial")
+)
+
+# Gesamtkosten-Label oben
+total_vals <- fix_vals + tr_vals
+fig_bar <- fig_bar %>% add_annotations(
+  x = methoden, y = total_vals + 12,
+  text = paste0("<b>", total_vals, " T€</b>"),
+  showarrow = FALSE,
+  font = list(size = 14, color = "#1F2933", family = "Arial")
+)
+
+fig_bar <- fig_bar %>% layout(
+  barmode = "stack",
+  xaxis   = list(title = ""),
+  yaxis   = list(title = "Kosten (T€/Jahr)", range = c(0, max(total_vals) * 1.15)),
+  legend  = list(orientation = "h", y = -0.18),
+  plot_bgcolor  = "transparent",
+  paper_bgcolor = "transparent",
+  margin = list(l = 50, r = 20, t = 30, b = 60),
+  height = 380
+)
+
+fig_bar
+```
+
+::: {.callout-warning appearance="simple"}
+**Allgemein gilt:** Heuristiken sind **nicht garantiert optimal**. Die Güte hängt von der Kostenstruktur ab. Für Praxisinstanzen mit $|I|, |J| \gg 100$ sind sie dennoch oft die einzig praktikable Alternative zu exakten Solvern.
+:::
+
+:::
+:::
