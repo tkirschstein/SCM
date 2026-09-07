@@ -157,7 +157,7 @@ Kapazitäten (Maschinen, Personal, Lagerraum) werden **ex ante** bestimmt. Die N
 **Konsequenzen des Mismatches**
 
 | Szenario | Phänomen | Folge |
-|---|---------|---------|
+|---|---------|---------| 
 | $d > C$ | Überlastung | Lost Sales, Umsatzverlust |
 | $d < C$ | Unterauslastung | Leerkosten |
 | $d \approx C$ | Gleichgewicht |  bei perfekter Prognose |
@@ -469,13 +469,7 @@ kbl(cp_data,
                 full_width = TRUE, font_size = 20) |>
   column_spec(1, bold = TRUE, background = "#2F3E46", color = "white") |>
   row_spec(0, background = "#2F3E46", color = "white", bold = TRUE) |>
-  row_spec(12, bold = TRUE) #|>
-  # add_footnote(c(
-  #   paste0("Ø  d^A = ", round(mean(cp_data$dA),2),
-  #          ";  d^B = ", round(mean(cp_data$dB),2)),
-  #   paste0("Ø  x^A = ", round(mean(cp_data$xA),2),
-  #          ";  x^B = ", round(mean(cp_data$xB),2))
-  # ), notation = "none")
+  row_spec(12, bold = TRUE)
 ```
 
 :::
@@ -544,12 +538,7 @@ kbl(cp_pool[, c("Monat","dA","dB","x1A","x1B","x2B")],
                 full_width = TRUE, font_size = 20) |>
   column_spec(1, bold = TRUE, background = "#2F3E46", color = "white") |>
   column_spec(4:5, background = "#E8F4F1") |>
-  row_spec(0, background = "#2F3E46", color = "white", bold = TRUE) #|>
-  # add_footnote(c(
-  #   paste0("Ø  x^1 = ", round(mean(cp_pool$x1),1),
-  #          " (>86,3);  E(x^{1B}+x^{2B}) = ",
-  #          round(mean(cp_pool$x1B + cp_pool$x2B),1), " (>87,3)")
-  # ), notation = "none")
+  row_spec(0, background = "#2F3E46", color = "white", bold = TRUE)
 ```
 
 :::
@@ -1068,6 +1057,553 @@ fig_rho <- fig_rho %>% layout(
 )
 
 fig_rho
+```
+
+:::
+
+:::
+:::
+
+---
+
+## Lagerbestandspooling – Grundidee {#slide-inv-pooling-intro}
+::: slide-subtitle
+Sicherheitsbestand und Zentralisierung (Cachon & Terwiesch, Kap. 13)
+:::
+
+::: {.callout-note appearance="minimal" icon=false}
+**Lagerbestandspooling** (*inventory pooling*) bezeichnet die Bündelung von Sicherheitsbeständen mehrerer dezentraler Lager in einem **zentralen Lager**. Durch den **Risikoausgleichseffekt** sinkt der benötigte Gesamtsicherheitsbestand bei gleichem Servicegrad.
+:::
+
+::: columns
+::: {.column width="52%"}
+
+::: {.fragment .fade-up}
+::: smaller-text
+
+**Dezentral vs. Zentral**
+
+```{r inv-pooling-diagram}
+#| echo: false
+#| warning: false
+#| message: false
+#| out-width: "99%"
+#| fig-height: 3.6
+
+# Schematische Darstellung: n dezentrale Lager vs. 1 zentrales Lager
+n_demo <- 4
+
+# Dezentrale Lager
+x_dez <- seq(0.15, 0.85, length.out = n_demo)
+y_lager <- 0.65
+y_kunde <- 0.15
+y_zentrallager <- 0.65
+y_verteiler <- 0.15
+
+fig_dia <- plot_ly()
+
+# ─── DEZENTRAL (links) ───
+for (i in seq_along(x_dez)) {
+  xi <- x_dez[i] * 0.48
+  # Lager-Symbol (Rechteck)
+  fig_dia <- fig_dia %>% add_annotations(
+    x = xi, y = y_lager, xref = "paper", yref = "paper",
+    text = paste0("🏭<br><b>L", i, "</b>"),
+    showarrow = FALSE,
+    font = list(size = 11, color = "#0B6E4F", family = "Arial"),
+    align = "center"
+  )
+  # Kunde
+  fig_dia <- fig_dia %>% add_annotations(
+    x = xi, y = y_kunde, xref = "paper", yref = "paper",
+    text = paste0("👤<br>K", i),
+    showarrow = FALSE,
+    font = list(size = 11, color = "#1D4ED8", family = "Arial"),
+    align = "center"
+  )
+}
+
+fig_dia <- fig_dia %>% add_annotations(
+  x = 0.12, y = 0.95, xref = "paper", yref = "paper",
+  text = "<b>Dezentral: n = 4 Lager</b>",
+  showarrow = FALSE,
+  font = list(size = 13, color = "#1F2933", family = "Arial"),
+  align = "left"
+)
+
+# ─── ZENTRAL (rechts) ───
+x_zentral <- 0.74
+x_kunden_z <- seq(0.56, 0.92, length.out = n_demo)
+
+fig_dia <- fig_dia %>% add_annotations(
+  x = x_zentral, y = y_zentrallager, xref = "paper", yref = "paper",
+  text = "🏢<br><b>Zentral-<br>lager</b>",
+  showarrow = FALSE,
+  font = list(size = 12, color = "#0B6E4F", family = "Arial"),
+  align = "center"
+)
+
+for (i in seq_along(x_kunden_z)) {
+  fig_dia <- fig_dia %>% add_annotations(
+    x = x_kunden_z[i], y = y_verteiler, xref = "paper", yref = "paper",
+    text = paste0("👤<br>K", i),
+    showarrow = FALSE,
+    font = list(size = 11, color = "#1D4ED8", family = "Arial"),
+    align = "center"
+  )
+}
+
+fig_dia <- fig_dia %>% add_annotations(
+  x = 0.60, y = 0.95, xref = "paper", yref = "paper",
+  text = "<b>Zentral: 1 Lager</b>",
+  showarrow = FALSE,
+  font = list(size = 13, color = "#1F2933", family = "Arial"),
+  align = "left"
+)
+
+# Trennlinie
+fig_dia <- fig_dia %>% add_annotations(
+  x = 0.51, y = 0.5, xref = "paper", yref = "paper",
+  text = "vs.",
+  showarrow = FALSE,
+  font = list(size = 18, color = "#6B7280", family = "Arial"),
+  align = "center"
+)
+
+fig_dia <- fig_dia %>% layout(
+  xaxis = list(visible = FALSE, fixedrange = TRUE),
+  yaxis = list(visible = FALSE, fixedrange = TRUE),
+  plot_bgcolor  = "transparent",
+  paper_bgcolor = "transparent",
+  margin = list(l = 10, r = 10, t = 10, b = 10),
+  height = 270
+)
+
+fig_dia
+```
+
+:::
+:::
+
+:::
+::: {.column width="46%"}
+
+::: {.fragment .fade-up}
+::: {.callout-tip appearance="simple"}
+## Risikoausgleich
+
+- Schwankungen einzelner Standorte **kompensieren sich** gegenseitig
+- Die **Standardabweichung der Gesamtnachfrage** wächst langsamer als die Anzahl der Standorte:
+
+$$\sigma_\text{pool} = \sqrt{n} \cdot \sigma \quad (\text{bei Unabhängigkeit})$$
+
+- Sicherheitsbestand dezentral: $n \cdot z \cdot \sigma$
+- Sicherheitsbestand zentral: $z \cdot \sqrt{n} \cdot \sigma$
+- **Einsparung:** $z \cdot \sigma \cdot (n - \sqrt{n})$
+:::
+:::
+
+:::
+:::
+
+---
+
+## Lagerbestandspooling – Formales Modell {#slide-inv-pooling-model}
+::: slide-subtitle
+Sicherheitsbestand: Dezentral vs. zentral (Cachon & Terwiesch, Kap. 13)
+:::
+
+::: columns
+::: {.column width="50%"}
+
+::: {.callout-note appearance="minimal" icon=false}
+**Notation**
+
+- $n$: Anzahl dezentraler Standorte
+- $\sigma$: Standardabweichung der Nachfrage je Standort (pro Wiederbeschaffungsperiode)
+- $z$: Servicefaktor ($z = \Phi^{-1}(\beta)$ für Servicegrad $\beta$)
+:::
+
+::: {.fragment .fade-up}
+::: smaller-text
+
+**Sicherheitsbestände im Vergleich**
+
+| Konfiguration | Formel | Beispiel ($n=4$, $\sigma=50$, $z=1{,}65$) |
+|---|---|---|
+| **Dezentral** (je Lager) | $SS_i = z \cdot \sigma$ | $= 82{,}5$ |
+| **Dezentral** (gesamt) | $SS_\text{dez} = n \cdot z \cdot \sigma$ | $= 330$ |
+| **Zentral** | $SS_\text{pool} = z \cdot \sqrt{n} \cdot \sigma$ | $= 165$ |
+| **Einsparung** | $\Delta SS = z \cdot \sigma \cdot (n - \sqrt{n})$ | $= 165$ (50%) |
+
+:::
+:::
+
+:::
+::: {.column width="48%"}
+
+::: {.fragment .fade-up}
+
+```{r inv-pooling-model-plot}
+#| echo: false
+#| warning: false
+#| message: false
+#| out-width: "99%"
+#| fig-height: 4.8
+
+sigma_ex <- 50
+z_ex     <- qnorm(0.95)
+n_seq    <- 1:20
+
+ss_dez   <- n_seq * z_ex * sigma_ex
+ss_pool  <- z_ex * sqrt(n_seq) * sigma_ex
+savings  <- ss_dez - ss_pool
+
+df_model <- data.frame(n = n_seq, ss_dez, ss_pool, savings)
+
+fig_model <- plot_ly(df_model, x = ~n)
+
+fig_model <- fig_model %>% add_trace(
+  y = ~ss_dez, type = "scatter", mode = "lines+markers",
+  name = "SS dezentral (gesamt)",
+  line   = list(color = "#E76F51", width = 2),
+  marker = list(color = "#E76F51", size = 5)
+)
+fig_model <- fig_model %>% add_trace(
+  y = ~ss_pool, type = "scatter", mode = "lines+markers",
+  name = "SS zentral (Pool)",
+  line   = list(color = cols$top, width = 2.5),
+  marker = list(color = cols$top, size = 5)
+)
+fig_model <- fig_model %>% add_trace(
+  y = ~savings, type = "scatter", mode = "lines",
+  name = "Einsparung ΔSS",
+  line = list(color = "#a12c7b", width = 2, dash = "dot"),
+  yaxis = "y2"
+)
+
+fig_model <- fig_model %>% layout(
+  xaxis  = list(title = "Anzahl Standorte n", dtick = 2, fixedrange = TRUE),
+  yaxis  = list(title = "Sicherheitsbestand (Einh.)", fixedrange = TRUE),
+  yaxis2 = list(title = "Einsparung ΔSS (Einh.)",
+                overlaying = "y", side = "right",
+                fixedrange = TRUE, showgrid = FALSE),
+  legend = list(orientation = "h", y = -0.22, font = list(size = 11)),
+  plot_bgcolor  = "transparent",
+  paper_bgcolor = "transparent",
+  margin = list(l = 55, r = 55, t = 15, b = 70),
+  height = 380
+)
+
+fig_model
+```
+
+:::
+
+:::
+:::
+
+---
+
+## Lagerbestandspooling – Berechnung {#slide-inv-pooling-calc}
+::: slide-subtitle
+Anwendung von `pooling_safety_stock()` aus `scm_functions.R`
+:::
+
+::: columns
+::: {.column width="52%"}
+
+```{r inv-pooling-calc}
+#| echo: true
+#| warning: false
+#| message: false
+
+# Servicegrad 95 % (z = 1,645)
+res <- pooling_safety_stock(
+  n     = 8,
+  sigma = 40,
+  z     = qnorm(0.95)
+)
+```
+
+::: small-text
+
+```{r inv-pooling-result-table}
+#| echo: false
+#| warning: false
+#| message: false
+
+result_df <- data.frame(
+  Kennzahl = c(
+    "Servicegrad-Faktor z",
+    "SS je dezentralem Lager",
+    "SS dezentral (gesamt, n = 8)",
+    "σ zentrales Lager (√n · σ)",
+    "SS zentrales Lager",
+    "Absolute Einsparung ΔSS",
+    "Relative Einsparung (%)"
+  ),
+  Formel = c(
+    "$z = \\Phi^{-1}(0{,}95)$",
+    "$z \\cdot \\sigma$",
+    "$n \\cdot z \\cdot \\sigma$",
+    "$\\sqrt{n} \\cdot \\sigma$",
+    "$z \\cdot \\sqrt{n} \\cdot \\sigma$",
+    "$n \\cdot z \\cdot \\sigma - z \\cdot \\sqrt{n} \\cdot \\sigma$",
+    "$1 - 1/\\sqrt{n}$"
+  ),
+  Wert = c(
+    round(res$z, 3),
+    round(res$ss_individual, 1),
+    round(res$ss_total_individual, 1),
+    round(res$sigma_central, 1),
+    round(res$ss_central, 1),
+    round(res$savings, 1),
+    paste0(round(res$savings_pct, 1), " %")
+  )
+)
+
+kbl(result_df,
+    col.names = c("Kennzahl", "Formel", "Wert"),
+    align = c("l", "l", "r"),
+    escape = FALSE) |>
+  kable_styling(bootstrap_options = c("condensed", "striped"),
+                full_width = TRUE, font_size = 17) |>
+  column_spec(1, bold = TRUE) |>
+  column_spec(3, bold = TRUE, background = "#E8F4F1") |>
+  row_spec(0, background = "#2F3E46", color = "white", bold = TRUE) |>
+  row_spec(c(5, 6, 7), background = "#F0FDF4")
+```
+
+:::
+
+:::
+::: {.column width="46%"}
+
+::: {.fragment .fade-up}
+::: {.callout-tip appearance="simple"}
+## Ergebnis ($n = 8$, $\sigma = 40$, $\beta = 95\%$)
+
+Durch Zentralisierung sinkt der Gesamtsicherheitsbestand von
+**`r round(res$ss_total_individual, 0)` auf `r round(res$ss_central, 0)` Einheiten** —
+eine Einsparung von **`r round(res$savings_pct, 1)` %**.
+
+Der **Pooling-Faktor** beträgt $\sqrt{`r res$n`} = `r round(res$pooling_factor, 3)`$.
+:::
+:::
+
+::: {.fragment .fade-up}
+::: {.callout-warning appearance="simple"}
+## Annahmen
+- Nachfragen der $n$ Standorte sind **unabhängig** und **identisch verteilt**
+- Gemeinsamer Servicegrad $\beta$ für das Zentrallager
+- **Keine Transportzeitunterschiede** zwischen zentralem und dezentralem System
+:::
+:::
+
+:::
+:::
+
+---
+
+## Lagerbestandspooling – Sensitivität {#slide-inv-pooling-sensitivity}
+::: slide-subtitle
+Einsparung in Abhängigkeit von $n$ und $\sigma$
+:::
+
+::: columns
+::: {.column width="52%"}
+
+```{r inv-pooling-sensitivity}
+#| echo: false
+#| warning: false
+#| message: false
+#| out-width: "99%"
+#| fig-height: 5.0
+
+z_sens <- qnorm(0.95)
+n_grid <- c(2, 4, 6, 8, 10, 12, 16, 20)
+sigma_grid <- c(20, 40, 60, 80)
+
+# Relative Einsparung (hängt nur von n ab!)
+rel_savings <- sapply(n_grid, function(n) (1 - 1/sqrt(n)) * 100)
+
+df_rel <- data.frame(n = n_grid, rel = rel_savings)
+
+fig_sens <- plot_ly(df_rel, x = ~n, y = ~rel,
+  type = "scatter", mode = "lines+markers",
+  name = "Relative Einsparung (%)",
+  line   = list(color = cols$top, width = 2.5),
+  marker = list(color = cols$top, size = 8),
+  text   = paste0(round(rel_savings, 1), " %"),
+  textposition = "top center",
+  textfont = list(size = 11, family = "Arial", color = "#1F2933")
+)
+
+fig_sens <- fig_sens %>% layout(
+  xaxis = list(title = "Anzahl Standorte n", dtick = 2,
+               tickvals = n_grid, fixedrange = TRUE),
+  yaxis = list(title = "Relative SS-Einsparung (%)",
+               range = c(0, 80), fixedrange = TRUE),
+  annotations = list(list(
+    x = 18, y = 73,
+    text = "<b>Unabhängig von σ!</b>",
+    showarrow = FALSE,
+    font = list(size = 11, color = "#a12c7b", family = "Arial")
+  )),
+  plot_bgcolor  = "transparent",
+  paper_bgcolor = "transparent",
+  margin = list(l = 55, r = 20, t = 20, b = 60),
+  height = 370
+)
+
+fig_sens
+```
+
+:::
+::: {.column width="46%"}
+
+::: {.fragment .fade-up}
+
+```{r inv-pooling-abs-savings}
+#| echo: false
+#| warning: false
+#| message: false
+#| out-width: "99%"
+#| fig-height: 4.6
+
+# Absolute Einsparung je σ-Wert
+fig_abs <- plot_ly()
+
+farben_abs <- c("#52B788", "#0B6E4F", "#E9C46A", "#E76F51")
+
+for (s_idx in seq_along(sigma_grid)) {
+  s <- sigma_grid[s_idx]
+  abs_sav <- sapply(n_grid, function(n) {
+    r <- pooling_safety_stock(n = n, sigma = s, z = z_sens)
+    r$savings
+  })
+  fig_abs <- fig_abs %>% add_trace(
+    x = n_grid, y = abs_sav,
+    type = "scatter", mode = "lines+markers",
+    name = paste0("σ = ", s),
+    line   = list(color = farben_abs[s_idx], width = 2),
+    marker = list(color = farben_abs[s_idx], size = 6)
+  )
+}
+
+fig_abs <- fig_abs %>% layout(
+  xaxis = list(title = "Anzahl Standorte n", dtick = 2,
+               tickvals = n_grid, fixedrange = TRUE),
+  yaxis = list(title = "Absolute SS-Einsparung (Einh.)",
+               fixedrange = TRUE),
+  legend = list(orientation = "h", y = -0.20, font = list(size = 11)),
+  plot_bgcolor  = "transparent",
+  paper_bgcolor = "transparent",
+  margin = list(l = 55, r = 20, t = 15, b = 70),
+  height = 340
+)
+
+fig_abs
+```
+
+:::
+
+::: {.fragment .fade-up}
+::: {.callout-note appearance="minimal" icon=false}
+**Kernerkenntnis:** Die **relative** Einsparung $(1 - 1/\sqrt{n})$ hängt ausschließlich von $n$ ab — nicht von $\sigma$. Die **absolute** Einsparung hingegen steigt proportional mit $\sigma$.
+:::
+:::
+
+:::
+:::
+
+---
+
+## Lagerbestandspooling – Grenzen {#slide-inv-pooling-limits}
+::: slide-subtitle
+Wann lohnt sich Zentralisierung nicht?
+:::
+
+::: columns
+::: {.column width="50%"}
+
+::: {.callout-warning appearance="simple"}
+## Grenzen des Inventory Poolings
+
+1. **Positive Korrelation** ($\rho > 0$): Nachfragen schwanken gleichgerichtet – der Risikoausgleich nimmt ab. Allgemein gilt:
+$$SS_\text{pool} = z \cdot \sigma \cdot \sqrt{n + n(n-1)\rho}$$
+
+2. **Längere Lieferzeiten:** Ein zentrales Lager kann weiter von Kunden entfernt sein $\rightarrow$ höhere Wiederbeschaffungszeit erhöht $\sigma$
+
+3. **Höhere Transportkosten:** Direktlieferung vom Zentrallager zu Kunden kann teurer sein als lokale Lager
+
+4. **Servicelevel-Anforderungen:** Sehr kurze Lieferzeitfenster erfordern physische Nähe
+:::
+
+:::
+::: {.column width="48%"}
+
+::: {.fragment .fade-up}
+
+```{r inv-pooling-rho-effect}
+#| echo: false
+#| warning: false
+#| message: false
+#| out-width: "99%"
+#| fig-height: 5.2
+
+z_lim  <- qnorm(0.95)
+n_lim  <- 8
+sig_lim <- 40
+rho_lim <- seq(0, 1, by = 0.05)
+
+# SS Pool mit Korrelation: z * sigma * sqrt(n + n*(n-1)*rho)
+ss_pool_rho <- z_lim * sig_lim * sqrt(n_lim + n_lim * (n_lim - 1) * rho_lim)
+ss_dez_lim  <- n_lim * z_lim * sig_lim   # konstant
+
+df_lim <- data.frame(rho = rho_lim, ss_pool = ss_pool_rho, ss_dez = ss_dez_lim)
+
+fig_lim <- plot_ly(df_lim, x = ~rho)
+
+fig_lim <- fig_lim %>% add_trace(
+  y = ~ss_dez,
+  type = "scatter", mode = "lines",
+  name = "SS dezentral (gesamt)",
+  line = list(color = "#6B7280", width = 1.8, dash = "dash"),
+  hoverinfo = "skip"
+)
+fig_lim <- fig_lim %>% add_trace(
+  y = ~ss_pool,
+  type = "scatter", mode = "lines",
+  name = "SS Pool (mit Korrelation ρ)",
+  line = list(color = cols$top, width = 2.5),
+  fill = "tonexty",
+  fillcolor = "rgba(11,110,79,0.12)"
+)
+
+fig_lim <- fig_lim %>% layout(
+  xaxis = list(title = "Korrelation ρ zwischen Standorten",
+               fixedrange = TRUE, dtick = 0.2),
+  yaxis = list(title = "Sicherheitsbestand (Einh.)", fixedrange = TRUE),
+  annotations = list(
+    list(x = 0.05, y = ss_pool_rho[2] * 0.85,
+         text = "<b>Pool-Vorteil</b>",
+         showarrow = FALSE,
+         font = list(size = 12, color = cols$top, family = "Arial")),
+    list(x = 0.90, y = ss_dez_lim * 1.02,
+         text = "<b>kein Vorteil</b>\nbei ρ → 1",
+         showarrow = FALSE,
+         font = list(size = 12, color = "#6B7280", family = "Arial"))
+  ),
+  legend = list(orientation = "h", y = -0.20, font = list(size = 11)),
+  plot_bgcolor  = "transparent",
+  paper_bgcolor = "transparent",
+  margin = list(l = 55, r = 20, t = 15, b = 70),
+  height = 400
+)
+
+fig_lim
 ```
 
 :::
