@@ -317,7 +317,7 @@ cp_data_bg <- data.frame(
 C_bg <- 90
 
 make_mismatch_fig <- function(d_vals, C, werk_label, farbe_linie,
-                               height = 290) {
+                               height = 290, width = 600) {
   t_vals    <- seq_along(d_vals)
   prod_vals <- pmin(d_vals, C)
   lost_vals <- pmax(0, d_vals - C)
@@ -407,7 +407,8 @@ make_mismatch_fig(
   C           = C_bg,
   werk_label  = "Werk 1 – Chevy Malibu",
   farbe_linie = cols$top,
-  height      = 270
+  height      = 270,
+  width       = 600
 )
 ```
 
@@ -423,7 +424,8 @@ make_mismatch_fig(
   C           = C_bg,
   werk_label  = "Werk 2 – GMC Yukon XL",
   farbe_linie = cols$mid,
-  height      = 270
+  height      = 270,
+  width       = 600
 )
 ```
 
@@ -467,13 +469,13 @@ kbl(cp_data,
                 full_width = TRUE, font_size = 20) |>
   column_spec(1, bold = TRUE, background = "#2F3E46", color = "white") |>
   row_spec(0, background = "#2F3E46", color = "white", bold = TRUE) |>
-  row_spec(12, bold = TRUE) |>
-  add_footnote(c(
-    paste0("Ø  d^A = ", round(mean(cp_data$dA),2),
-           ";  d^B = ", round(mean(cp_data$dB),2)),
-    paste0("Ø  x^A = ", round(mean(cp_data$xA),2),
-           ";  x^B = ", round(mean(cp_data$xB),2))
-  ), notation = "none")
+  row_spec(12, bold = TRUE) #|>
+  # add_footnote(c(
+  #   paste0("Ø  d^A = ", round(mean(cp_data$dA),2),
+  #          ";  d^B = ", round(mean(cp_data$dB),2)),
+  #   paste0("Ø  x^A = ", round(mean(cp_data$xA),2),
+  #          ";  x^B = ", round(mean(cp_data$xB),2))
+  # ), notation = "none")
 ```
 
 :::
@@ -492,16 +494,17 @@ kbl(cp_data,
 :::
 :::
 
-::: {.fragment .fade-up}
-::: {.callout-warning appearance="simple"}
-## Problem
-Obwohl die Auslastung hoch ist, gehen **Lost Sales** verloren. Kann ein flexibleres System besser abschneiden?
-$$\rightarrow \text{Capacity Pooling!}$$
-:::
-:::
 
 :::
 :::
+
+::: {.fragment .fade-up}
+::: {.callout-warning appearance="simple"}
+## Problem
+Auslastung und Lieferservicegrad sind hoch, dennoch gibt es **lost sales** und **Unterauslastung** $\rightarrow$ Kann gegenseitiges Aushelfen (**Kapazitätspooling**) die Kennzahlen verbessern?
+:::
+:::
+
 
 ---
 
@@ -541,12 +544,12 @@ kbl(cp_pool[, c("Monat","dA","dB","x1A","x1B","x2B")],
                 full_width = TRUE, font_size = 20) |>
   column_spec(1, bold = TRUE, background = "#2F3E46", color = "white") |>
   column_spec(4:5, background = "#E8F4F1") |>
-  row_spec(0, background = "#2F3E46", color = "white", bold = TRUE) |>
-  add_footnote(c(
-    paste0("Ø  x^1 = ", round(mean(cp_pool$x1),1),
-           " (>86,3);  E(x^{1B}+x^{2B}) = ",
-           round(mean(cp_pool$x1B + cp_pool$x2B),1), " (>87,3)")
-  ), notation = "none")
+  row_spec(0, background = "#2F3E46", color = "white", bold = TRUE) #|>
+  # add_footnote(c(
+  #   paste0("Ø  x^1 = ", round(mean(cp_pool$x1),1),
+  #          " (>86,3);  E(x^{1B}+x^{2B}) = ",
+  #          round(mean(cp_pool$x1B + cp_pool$x2B),1), " (>87,3)")
+  # ), notation = "none")
 ```
 
 :::
