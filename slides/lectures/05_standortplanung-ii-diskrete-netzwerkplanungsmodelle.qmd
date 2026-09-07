@@ -644,7 +644,8 @@ fig <- fig %>% layout(
   plot_bgcolor  = "transparent",
   paper_bgcolor = "transparent",
   margin = list(l = 40, r = 40, t = 10, b = 10),
-  height = 380
+  height = 380,
+  width = 650
 )
 
 fig
@@ -814,7 +815,8 @@ fig <- fig %>% layout(
   plot_bgcolor  = "transparent",
   paper_bgcolor = "transparent",
   margin = list(l = 40, r = 40, t = 10, b = 10),
-  height = 380
+  height = 380,
+  width = 650
 )
 
 fig
@@ -825,9 +827,9 @@ fig
 
 ---
 
-## WLP – Kleines Fallbeispiel {#slide-wlp-example}
+## Warehouse Location Problem {#slide-wlp-example}
 ::: slide-subtitle
-Probleminstanz (5 Lager, 6 Kunden)
+Fallbeispiel
 :::
 
 ```{r wlp-example-data}
@@ -907,11 +909,6 @@ kbl(as.data.frame(wlp_cij),
   row_spec(0, background = "#2F3E46", color = "white", bold = TRUE)
 ```
 
-::: {.callout-tip appearance="simple"}
-**Gesamtkosten** = Eröffnungskosten der gewählten Lager  
-$\quad\quad\quad\quad\quad\quad$ + Transportkosten × Nachfrage je Zuordnung  
-$$Z = \sum_{i} y_i f_i + \sum_{i,j} x_{ij} \cdot c_{ij}$$
-:::
 :::
 
 :::
@@ -919,9 +916,9 @@ $$Z = \sum_{i} y_i f_i + \sum_{i,j} x_{ij} \cdot c_{ij}$$
 
 ---
 
-## WLP – Lösung mit R/OMPR {#slide-wlp-ompr}
+## Warehouse Location Problem {#slide-wlp-ompr}
 ::: slide-subtitle
-Implementierung als MILP
+Implementierung mit R/OMPR
 :::
 
 ::: columns
@@ -1006,23 +1003,15 @@ offene_lager <- y_sol$i[y_sol$value > 0.5]
 obj_val <- objective_value(result)
 ```
 
-::: {.callout-tip appearance="simple"}
-**Optimaler Zielfunktionswert:**  
-```{r}
-#| echo: false
-cat(paste0("Z* = ", round(obj_val, 1), " T€/Jahr"))
-```
-**Geöffnete Lager:** W`r paste(offene_lager, collapse = ", W")`
-:::
 
 :::
 :::
 
 ---
 
-## WLP – Optimale Lösung {#slide-wlp-solution}
+## Warehouse Location Problem  {#slide-wlp-solution}
 ::: slide-subtitle
-Ergebnis und Zuordnung
+Fallbeispiel – Optimale Lösung
 :::
 
 ::: columns
@@ -1203,7 +1192,8 @@ fig2 <- fig2 %>% layout(
   plot_bgcolor="transparent",
   paper_bgcolor="transparent",
   margin=list(l=40,r=20,t=10,b=10),
-  height=420)
+  height=420,
+  width = 700)
 
 fig2
 ```
@@ -1213,9 +1203,9 @@ fig2
 
 ---
 
-## Heuristische Lösungsverfahren {#slide-heuristics-intro}
+## Warehouse Location Problem {#slide-heuristics-intro}
 ::: slide-subtitle
-Motivation und Überblick
+Heuristische Lösungsverfahren - Grundideen
 :::
 
 ::: columns
@@ -1227,23 +1217,35 @@ Motivation und Überblick
 Das WLP ist **NP-schwer**: exakte Solver (MILP) finden zwar optimale Lösungen, aber die Rechenzeit wächst exponentiell mit $|I|$ und $|J|$. Für große Praxisinstanzen sind **konstruktive Heuristiken** oft der einzig praktikable Ansatz.
 :::
 
-::: {.fragment .fade-up}
-### Zwei klassische Ansätze
+:::: {.fragment .fade-up}
+::: {.small-text}
+**Grundidee**
 
-| Methode | Ausgangspunkt | Richtung |
-|---|---|---|
-| **Add-Heuristik** | Keine Lager offen | Schrittweise hinzufügen |
-| **Drop-Heuristik** | Alle Lager offen | Schrittweise schließen |
-
+- start mit einer zulässigen Lösung und versuche diese schrittweise zu verbessern
 - Jeder Schritt: **greedy** – wähle die Änderung mit der größten Kostenreduktion
 - Abbruch, wenn keine weitere Verbesserung möglich
-- Kunden werden stets dem **billigsten offenen Lager** zugeordnet
+- Kunden werden stets dem **günstigsten offenen Lager** zugeordnet
 :::
+::::
 
 :::
 ::: {.column width="42%"}
 
 ::: {.fragment .fade-up}
+::: {.smaller-text}
+**Zwei klassische Ansätze**
+
+| Methode | Ausgangspunkt | Richtung |
+|---|---|---|
+| **Add-Heuristik** | Keine Lager offen | Schrittweise hinzufügen |
+| **Drop-Heuristik** | Alle Lager offen | Schrittweise schließen |
+:::
+:::
+
+::: {.fragment .fade-up}
+::: {.smaller-text}
+**Grundideen Add/Drop - graphisch**
+:::
 ```{r heuristic-overview-plot}
 #| echo: false
 #| warning: false
@@ -1315,9 +1317,9 @@ fig_h
 
 ---
 
-## Add-Heuristik {#slide-add-heuristic}
+## Warehouse Location Problem {#slide-add-heuristic}
 ::: slide-subtitle
-Algorithmus
+Add-Heuristik
 :::
 
 ::: columns
@@ -1328,7 +1330,10 @@ Algorithmus
 :::
 
 ::: {.fragment .fade-up}
-### Algorithmus
+
+**Algorithmus**
+
+::: {.smaller-text}
 
 **Initialisierung:** $S \leftarrow \emptyset$
 
@@ -1346,6 +1351,7 @@ $$\Delta_i = Z(S) - Z(S \cup \{i\})$$
 **Zuordnungsregel:** Jeder Kunde $j$ wird dem günstigsten offenen Lager zugeordnet:
 $$\sigma(j) = \arg\min_{i \in S} c_{ij}$$
 :::
+:::
 
 :::
 ::: {.column width="46%"}
@@ -1356,9 +1362,10 @@ $$\sigma(j) = \arg\min_{i \in S} c_{ij}$$
 
 $$Z(S) = \underbrace{\sum_{i \in S} f_i}_{\text{Eröffnung}} + \underbrace{\sum_{j \in J} \min_{i \in S} c_{ij} \cdot a_j}_{\text{Transport}}$$
 
-- **Laufzeit:** $\mathcal{O}(|I|^2 \cdot |J|)$  
-- **Eigenschaft:** Greedy, nicht garantiert optimal
-- **Stärke:** Berücksichtigt Synergien – ein neues Lager kann mehrere Kunden gleichzeitig günstiger versorgen
+- **Eigenschaft:** 
+  - Greedy, nicht garantiert optimal
+  - Transportkosten sinken von Schritt zu Schritt
+  - neues Lager wird eröffnet, wenn Eröffnungskosten < Transportkosteneinsparungen
 :::
 :::
 
@@ -1366,7 +1373,7 @@ $$Z(S) = \underbrace{\sum_{i \in S} f_i}_{\text{Eröffnung}} + \underbrace{\sum_
 ::: {.callout-warning appearance="simple"}
 ## Abbruchbedingung
 
-Die Heuristik stoppt, sobald **kein** weiteres Lager die Gesamtkosten senkt – d.h. die Einsparung bei den Transportkosten die Eröffnungskosten des nächsten Lagers nicht mehr übersteigt.
+Die Heuristik stoppt, sobald **kein** weiteres Lager die Gesamtkosten senkt.
 :::
 :::
 
@@ -1375,9 +1382,9 @@ Die Heuristik stoppt, sobald **kein** weiteres Lager die Gesamtkosten senkt – 
 
 ---
 
-## Drop-Heuristik {#slide-drop-heuristic}
+## Warehouse Location Problem {#slide-drop-heuristic}
 ::: slide-subtitle
-Algorithmus
+Drop-Heuristik
 :::
 
 ::: columns
@@ -1388,8 +1395,9 @@ Algorithmus
 :::
 
 ::: {.fragment .fade-up}
-### Algorithmus
+**Algorithmus**
 
+::: {.smaller-text}
 **Initialisierung:** $S \leftarrow I$
 
 **Wiederhole:**
@@ -1403,10 +1411,9 @@ $$\Delta_i = Z(S) - Z(S \setminus \{i\})$$
 
 4. **Sonst:** Abbruch
 
-**Zuordnungsregel:** identisch zur Add-Heuristik:
-$$\sigma(j) = \arg\min_{i \in S} c_{ij}$$
+**Zuordnungsregel:** $\sigma(j) = \arg\min_{i \in S} c_{ij}$
 :::
-
+:::
 :::
 ::: {.column width="46%"}
 
@@ -1420,7 +1427,7 @@ $$\sigma(j) = \arg\min_{i \in S} c_{ij}$$
 | **Richtung** | aufbauend | abbauend |
 | **Startkosten** | $\infty$ (kein Lager) | $\sum_i f_i + \ldots$ |
 | **Laufzeit** | $\mathcal{O}(|I|^2 \cdot |J|)$ | $\mathcal{O}(|I|^2 \cdot |J|)$ |
-| **Tendenz** | wenige Lager | evtl. mehr Lager |
+| **Tendenz** | wenige Lager | mehr Lager |
 
 :::
 :::
@@ -1429,7 +1436,7 @@ $$\sigma(j) = \arg\min_{i \in S} c_{ij}$$
 ::: {.callout-warning appearance="simple"}
 ## Wichtig
 
-Beide Heuristiken sind **nicht garantiert optimal**. Sie liefern zulässige Lösungen, die je nach Instanz nahe am Optimum oder deutlich davon entfernt sein können. Die Lösungsqualität hängt stark von der Kostenstruktur der Instanz ab.
+Beide Heuristiken sind **nicht garantiert optimal**. Sie liefern zulässige Lösungen, die Lösungsqualität hängt stark von der Kostenstruktur der Instanz ab.
 :::
 :::
 
@@ -1438,9 +1445,9 @@ Beide Heuristiken sind **nicht garantiert optimal**. Sie liefern zulässige Lös
 
 ---
 
-## Add-Heuristik – Fallbeispiel {#slide-add-example}
+## Warehouse Location Problem {#slide-add-example}
 ::: slide-subtitle
-Schrittweise Lösung der Probleminstanz
+Add-Heuristik – Fallbeispiel
 :::
 
 ```{r add-heuristic-compute}
@@ -1528,7 +1535,7 @@ kbl(add_df[, c("Schritt","Aktion","Offen","Fix","Transport","Gesamt")],
                   "Eröffn. (T€)","Transport (T€)","Gesamt (T€)"),
     align = c("c","c","l","r","r","r")) |>
   kable_styling(bootstrap_options = c("condensed","striped"),
-                full_width = TRUE, font_size = 16) |>
+                full_width = TRUE, font_size = 24) |>
   column_spec(1, bold = TRUE, background = "#2F3E46", color = "white") |>
   column_spec(2, bold = TRUE, color = "#01696f") |>
   column_spec(6, bold = TRUE) |>
@@ -1552,7 +1559,7 @@ kbl(assign_df,
     col.names = c("Schritt", paste0("C", 1:n_J)),
     align = c("c", rep("c", n_J))) |>
   kable_styling(bootstrap_options = c("condensed","striped"),
-                full_width = TRUE, font_size = 16) |>
+                full_width = TRUE, font_size = 24) |>
   column_spec(1, bold = TRUE, background = "#2F3E46", color = "white") |>
   row_spec(0, background = "#2F3E46", color = "white", bold = TRUE)
 ```
@@ -1648,7 +1655,7 @@ fig_a <- fig_a %>% layout(
   xaxis=list(visible=FALSE,range=c(0,1),fixedrange=TRUE),
   yaxis=list(visible=FALSE,range=c(-0.05,1.05),fixedrange=TRUE),
   plot_bgcolor="transparent",paper_bgcolor="transparent",
-  margin=list(l=40,r=20,t=10,b=10),height=420)
+  margin=list(l=40,r=20,t=10,b=10),height=420, width = 650)
 fig_a
 ```
 
@@ -1657,9 +1664,9 @@ fig_a
 
 ---
 
-## Drop-Heuristik – Fallbeispiel {#slide-drop-example}
+## Warehouse Location Problem {#slide-drop-example}
 ::: slide-subtitle
-Schrittweise Lösung der Probleminstanz
+Drop-Heuristik – Fallbeispiel
 :::
 
 ```{r drop-heuristic-compute}
@@ -1737,7 +1744,7 @@ kbl(drop_df,
                   "Eröffn. (T€)","Transport (T€)","Gesamt (T€)"),
     align = c("c","c","l","r","r","r")) |>
   kable_styling(bootstrap_options = c("condensed","striped"),
-                full_width = TRUE, font_size = 16) |>
+                full_width = TRUE, font_size = 24) |>
   column_spec(1, bold = TRUE, background = "#2F3E46", color = "white") |>
   column_spec(2, bold = TRUE, color = "#da7101") |>
   column_spec(6, bold = TRUE) |>
@@ -1762,7 +1769,7 @@ kbl(assign_drop_df,
     col.names = c("Schritt", paste0("C", 1:n_J)),
     align = c("c", rep("c", n_J))) |>
   kable_styling(bootstrap_options = c("condensed","striped"),
-                full_width = TRUE, font_size = 16) |>
+                full_width = TRUE, font_size = 24) |>
   column_spec(1, bold = TRUE, background = "#2F3E46", color = "white") |>
   row_spec(0, background = "#2F3E46", color = "white", bold = TRUE) |>
   row_spec(1, italic = TRUE, color = "#6B7280")
@@ -1859,7 +1866,7 @@ fig_d <- fig_d %>% layout(
   xaxis=list(visible=FALSE,range=c(0,1),fixedrange=TRUE),
   yaxis=list(visible=FALSE,range=c(-0.05,1.05),fixedrange=TRUE),
   plot_bgcolor="transparent",paper_bgcolor="transparent",
-  margin=list(l=40,r=20,t=10,b=10),height=420)
+  margin=list(l=40,r=20,t=10,b=10),height=420, width = 650)
 fig_d
 ```
 
@@ -1868,9 +1875,9 @@ fig_d
 
 ---
 
-## Lösungsvergleich {#slide-heuristic-comparison}
+## Warehouse Location Problem {#slide-heuristic-comparison}
 ::: slide-subtitle
-Optimum vs. Add-Heuristik vs. Drop-Heuristik
+Lösungsvergleich 
 :::
 
 ```{r comparison-compute}
@@ -1945,7 +1952,7 @@ kbl(comp_df,
     col.names = c("Kennzahl", "Optimum (MILP)", "Add-Heuristik", "Drop-Heuristik"),
     align = c("l","c","c","c"), escape = FALSE) |>
   kable_styling(bootstrap_options = c("condensed","striped"),
-                full_width = TRUE, font_size = 17) |>
+                full_width = TRUE, font_size = 24) |>
   column_spec(1, bold = FALSE) |>
   column_spec(2, bold = TRUE, background = "#a12c7b", color = "white") |>
   column_spec(3, background = "#E8F4F1") |>
@@ -2009,7 +2016,7 @@ fig_bar <- fig_bar %>% layout(
   plot_bgcolor  = "transparent",
   paper_bgcolor = "transparent",
   margin = list(l = 50, r = 20, t = 30, b = 60),
-  height = 380
+  height = 380, width = 650
 )
 
 fig_bar
