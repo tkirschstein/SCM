@@ -157,7 +157,7 @@ Kapazitäten (Maschinen, Personal, Lagerraum) werden **ex ante** bestimmt. Die N
 **Konsequenzen des Mismatches**
 
 | Szenario | Phänomen | Folge |
-|---|---------|---------| 
+|---|---------|---------|
 | $d > C$ | Überlastung | Lost Sales, Umsatzverlust |
 | $d < C$ | Unterauslastung | Leerkosten |
 | $d \approx C$ | Gleichgewicht |  bei perfekter Prognose |
@@ -573,7 +573,7 @@ $$x_t^{2B} = C^2$$
 - **Produktion Werk 1:** $E(x^1) = \mathbf{87{,}4}$ (> 86,3)
 - **Markt B gesamt:** $E(x^{1B}+x^{2B}) = \mathbf{88{,}4}$ (> 87,3)
 - **Auslastung:** $\frac{E(x^1)}{C^1} = \mathbf{97{,}1\%}$ (> 95,8 %)
-- **Verkaufsquote B:** $\frac{E(x^2)}{E(d^B)} = \mathbf{98{,}7\%}$ (> 97,5 %)
+- **Verkaufsquote B:** $\frac{E(x^{1B}+x^{2B})}{E(d^B)} = \mathbf{98{,}8\%}$ (> 97,5 %)
 :::
 :::
 
@@ -582,750 +582,494 @@ $$x_t^{2B} = C^2$$
 
 ---
 
-## Warum funktioniert Pooling? {#slide-cp-theory}
+## Kapazitätspooling – Grundidee {#slide-cp-intuition}
 ::: slide-subtitle
-Das Gesetz der großen Zahlen & Risikoausgleich
+Warum hilft Pooling? (Cachon & Terwiesch, Kap. 17)
 :::
-
-::: columns
-::: {.column width="55%"}
 
 ::: {.callout-note appearance="minimal" icon=false}
-**Kernidee:** Pooling nutzt die **negative Korrelation** oder **Unabhängigkeit** der Nachfragen aus. Wenn Markt A schwächelt, kann freie Kapazität für Markt B genutzt werden – und umgekehrt.
+**Kernidee:** Zwei Märkte mit unkorrelierter Nachfrage – wenn Markt A boomt, läuft Markt B schleppend, und umgekehrt. Ein **flexibles Werk** kann in solchen Situationen die Überlast des einen Markts mit Leerkapazität des anderen abfedern.
 :::
-
-::: {.fragment .fade-up}
-
-::: {.smaller-text}
-
-**Formale Bedingung für Pooling-Vorteil**
-
-Sei $\sigma_A^2$, $\sigma_B^2$ die Nachfragevarianz und $\rho$ die Korrelation:
-
-$$\text{Var}(d^A + d^B) = \sigma_A^2 + \sigma_B^2 + 2\rho\,\sigma_A\,\sigma_B$$
-
-- **Pooling lohnt sich** besonders bei $\rho < 1$ (unkorreliert oder negativ korreliert)
-- Je **geringer** $\rho$, desto größer der Ausgleichseffekt
-- Bei $\rho = 1$: kein Pooling-Vorteil
-:::
-:::
-
-:::
-::: {.column width="43%"}
-
-::: {.fragment .fade-up}
-
-```{r cp-theory-plot}
-#| echo: false
-#| warning: false
-#| message: false
-#| out-width: "99%"
-#| fig-height: 5
-
-set.seed(42)
-rho_vals <- seq(-1, 1, by = 0.1)
-sigma <- 10; mu <- 89; C <- 90
-
-ls_single <- pmax(0, mu + sigma * qnorm(0.9) - C) * 2
-
-pooling_gain <- sapply(rho_vals, function(rho) {
-  sigma_pool <- sqrt(2 * sigma^2 * (1 + rho))
-  max(0, ls_single - pmax(0, 2*mu + sigma_pool * qnorm(0.9) - 2*C))
-})
-
-df_theory <- data.frame(rho = rho_vals, gain = pooling_gain * 3)
-
-fig_th <- plot_ly(df_theory, x = ~rho, y = ~gain,
-  type = "scatter", mode = "lines",
-  line = list(color = "#01696f", width = 3),
-  fill = "tozeroy",
-  fillcolor = "rgba(1,105,111,0.15)"
-) %>% layout(
-  xaxis = list(title = "Korrelation ρ(d^A, d^B)",
-               tickvals = seq(-1, 1, 0.5)),
-  yaxis = list(title = "Relativer Pooling-Vorteil"),
-  shapes = list(list(
-    type = "line", x0 = 0, x1 = 0,
-    y0 = 0, y1 = max(df_theory$gain) * 1.1,
-    line = list(color = "#c0392b", dash = "dot", width = 1.5)
-  )),
-  annotations = list(list(
-    x = -0.5, y = max(df_theory$gain) * 0.8,
-    text = "<b>Größter Vorteil<br>bei ρ < 0</b>",
-    showarrow = FALSE,
-    font = list(size = 12, color = "#01696f", family = "Arial")
-  )),
-  plot_bgcolor  = "transparent",
-  paper_bgcolor = "transparent",
-  margin = list(l = 50, r = 20, t = 20, b = 60),
-  height = 340
-)
-fig_th
-```
-
-:::
-:::
-:::
-
----
-
-## Konfigurationsvergleich {#slide-cp-comparison}
-::: slide-subtitle
-Original vs. Pooling – Systemkennzahlen im Überblick
-:::
-
-```{r cp-comparison-data}
-#| echo: false
-#| warning: false
-#| message: false
-
-orig_xA  <- mean(cp_data$xA)
-orig_xB  <- mean(cp_data$xB)
-orig_dA  <- mean(cp_data$dA)
-orig_dB  <- mean(cp_data$dB)
-C_cap    <- 90
-
-pool_x1  <- mean(cp_pool$x1)
-pool_xB_total <- mean(cp_pool$x1B + cp_pool$x2B)
-```
 
 ::: columns
 ::: {.column width="52%"}
-
-::: small-text
-
-```{r cp-comparison-table}
-#| echo: false
-
-comp <- data.frame(
-  Kennzahl = c(
-    "E(Produktion Markt A)",
-    "E(Produktion Markt B)",
-    "Werksauslastung Werk 1",
-    "Werksauslastung Werk 2",
-    "Verkaufsquote A",
-    "Verkaufsquote B"
-  ),
-  Original = c(
-    round(orig_xA, 2),
-    round(orig_xB, 2),
-    paste0(round(orig_xA / C_cap * 100, 1), " %"),
-    paste0(round(orig_xB / C_cap * 100, 1), " %"),
-    paste0(round(orig_xA / orig_dA * 100, 1), " %"),
-    paste0(round(orig_xB / orig_dB * 100, 1), " %")
-  ),
-  Pooling = c(
-    round(pool_x1, 1),
-    round(pool_xB_total, 1),
-    paste0(round(pool_x1 / C_cap * 100, 1), " %"),
-    paste0("96,9 %"),
-    paste0(round(pool_x1 / orig_dA * 100, 1), " %"),
-    paste0(round(pool_xB_total / orig_dB * 100, 1), " %")
-  ),
-  Veraenderung = c("↑", "↑", "↑", "=", "↑", "↑")
-)
-
-kbl(comp,
-    col.names = c("Kennzahl", "Original", "Pooling", "Δ"),
-    align = c("l","c","c","c"),
-    escape = FALSE) |>
-  kable_styling(bootstrap_options = c("condensed","striped"),
-                full_width = TRUE, font_size = 20) |>
-  column_spec(1, bold = FALSE) |>
-  column_spec(2, background = "#E8E8E8") |>
-  column_spec(3, bold = TRUE, background = "#E8F4F1") |>
-  column_spec(4, bold = TRUE, color = "#01696f") |>
-  row_spec(0, background = "#2F3E46", color = "white", bold = TRUE)
-```
-:::
-
-::: {.callout-tip appearance="simple"}
-**Fazit:** Capacity Pooling verbessert alle relevanten Kennzahlen – ohne zusätzliche Kapazität!
-:::
-
-:::
-::: {.column width="46%"}
-
-```{r cp-comparison-bar}
-#| echo: false
-#| warning: false
-#| message: false
-#| out-width: "99%"
-#| fig-height: 5
-
-kennzahlen <- c("Prod. Markt A", "Prod. Markt B",
-                "Auslastung W1 (%)", "Verkaufsquote B (%)")
-
-orig_vals   <- c(orig_xA, orig_xB,
-                 round(orig_xA / C_cap * 100, 1),
-                 round(orig_xB / orig_dB * 100, 1))
-pooling_vals <- c(pool_x1, pool_xB_total,
-                  round(pool_x1 / C_cap * 100, 1),
-                  round(pool_xB_total / orig_dB * 100, 1))
-
-fig_comp <- plot_ly() %>%
-  add_trace(
-    x = kennzahlen, y = orig_vals, type = "bar",
-    name = "Original",
-    marker = list(color = "#8B9EB7"),
-    text = round(orig_vals, 1), textposition = "outside",
-    textfont = list(size = 13, color = "#1F2933", family = "Arial")
-  ) %>%
-  add_trace(
-    x = kennzahlen, y = pooling_vals, type = "bar",
-    name = "Pooling",
-    marker = list(color = "#01696f"),
-    text = round(pooling_vals, 1), textposition = "outside",
-    textfont = list(size = 13, color = "#1F2933", family = "Arial")
-  ) %>%
-  layout(
-    barmode = "group",
-    xaxis = list(title = ""),
-    yaxis = list(title = "Wert", range = c(0, max(pooling_vals) * 1.2)),
-    legend = list(orientation = "h", y = -0.18),
-    plot_bgcolor  = "transparent",
-    paper_bgcolor = "transparent",
-    margin = list(l = 50, r = 20, t = 20, b = 80),
-    height = 380
-  )
-
-fig_comp
-```
-
-:::
-:::
-
----
-
-## Skalierung: 10 Werke & 10 Modelle {#slide-cp-scale}
-::: slide-subtitle
-Vollständiges Netzwerk – Chained Flexibility Strategy
-:::
-
-::: columns
-::: {.column width="50%"}
-
-::: {.callout-note appearance="minimal" icon=false}
-**Reale Situation bei GM:** 10 Werke, 10 Modelle. Vollständige Flexibilität (jedes Werk kann jedes Modell produzieren) ist teuer. Die Frage: **Wie viel Flexibilität ist nötig?**
-:::
-
-::: {.fragment .fade-up}
-::: {.smaller-text}
-
-**Drei Strategien im Vergleich**
-
-| Strategie | Flexibilitätsgrad | Leistung |
-|---|---|---|
-| **No Pooling** | 0 Zusatzverbindungen | Baseline |
-| **Chained (2 Links/Werk)** | 10 Zusatzverbindungen | ~80–90 % des vollen Vorteils |
-| **Full Flexibility** | n·(n-1) Verbindungen | 100 % (Benchmark) |
-
-$\rightarrow$ Chained Flexibility erzielt **fast den gesamten Vorteil** bei **geringen Investitionskosten** (Cachon & Terwiesch, Kap. 17)
-:::
-:::
-
-:::
-::: {.column width="48%"}
-
-::: {.fragment .fade-up}
-
-```{r cp-chain-plot}
-#| echo: false
-#| warning: false
-#| message: false
-#| out-width: "99%"
-#| fig-height: 5.5
-
-n <- 5
-set.seed(7)
-
-werke <- data.frame(
-  id = paste0("W", 1:n),
-  x  = 0.20,
-  y  = seq(0.1, 0.9, length.out = n)
-)
-
-maerkte <- data.frame(
-  id = paste0("M", 1:n),
-  x  = 0.80,
-  y  = seq(0.1, 0.9, length.out = n)
-)
-
-fig_ch <- plot_ly(type = "scatter", mode = "markers")
-
-# No-pooling edges (solid dark)
-for (i in 1:n) {
-  fig_ch <- fig_ch %>% add_annotations(
-    x = maerkte$x[i], y = maerkte$y[i],
-    ax = werke$x[i],  ay = werke$y[i],
-    xref = "x", yref = "y", axref = "x", ayref = "y",
-    showarrow = TRUE, arrowhead = 2, arrowsize = 0.8,
-    arrowwidth = 2.0, arrowcolor = "#2F3E46", text = ""
-  )
-}
-
-# Chain edges (green dashed)
-for (i in 1:n) {
-  next_i <- i %% n + 1
-  fig_ch <- fig_ch %>% add_annotations(
-    x = maerkte$x[next_i], y = maerkte$y[next_i],
-    ax = werke$x[i],        ay = werke$y[i],
-    xref = "x", yref = "y", axref = "x", ayref = "y",
-    showarrow = TRUE, arrowhead = 2, arrowsize = 0.8,
-    arrowwidth = 1.5, arrowcolor = "#01696f", text = ""
-  )
-}
-
-# Werke nodes (hexagon)
-fig_ch <- fig_ch %>% add_trace(
-  x = werke$x, y = werke$y, text = werke$id,
-  mode = "markers+text",
-  marker = list(symbol = "hexagon", size = 36,
-                color = "#BFDBF7", line = list(color = "#4B5563", width = 1.5)),
-  textfont = list(size = 14, color = "#1F2933", family = "Arial"),
-  textposition = "middle center",
-  hoverinfo = "skip", showlegend = FALSE
-)
-
-# Markt nodes (circle)
-fig_ch <- fig_ch %>% add_trace(
-  x = maerkte$x, y = maerkte$y, text = maerkte$id,
-  mode = "markers+text",
-  marker = list(symbol = "circle", size = 36,
-                color = "#2D9E8E", line = list(color = "#2F3E46", width = 1.5)),
-  textfont = list(size = 14, color = "white", family = "Arial"),
-  textposition = "middle center",
-  hoverinfo = "skip", showlegend = FALSE
-)
-
-fig_ch <- fig_ch %>% add_annotations(
-  x = c(0.20, 0.80), y = c(1.02, 1.02),
-  text = c("<b>Werke</b>", "<b>Märkte</b>"),
-  showarrow = FALSE,
-  font = list(size = 14, color = "#1F2933", family = "Arial")
-)
-
-fig_ch <- fig_ch %>% add_annotations(
-  x = 0.50, y = -0.04,
-  text = "<span style='color:#2F3E46'>── Basisverbindung</span>  |  <span style='color:#01696f'>── Chain-Link (Pooling)</span>",
-  showarrow = FALSE,
-  font = list(size = 11, family = "Arial")
-)
-
-fig_ch <- fig_ch %>% layout(
-  xaxis = list(visible = FALSE, range = c(0, 1), fixedrange = TRUE),
-  yaxis = list(visible = FALSE, range = c(-0.08, 1.08), fixedrange = TRUE),
-  plot_bgcolor  = "transparent",
-  paper_bgcolor = "transparent",
-  margin = list(l = 20, r = 20, t = 10, b = 40),
-  height = 380
-)
-
-fig_ch
-```
-
-:::
-:::
-:::
-
-
-
----
-
-## Bestandspooling {#slide-pooling-model}
-::: slide-subtitle
-Formales Modell – Sicherheitsbestand
-:::
-
-::: columns
-::: {.column width="55%"}
-
-::: {.callout-tip appearance="simple" icon=false}
-#### Sicherheitsbestand bei normalverteilter Nachfrage
-
-Sei $D_i \sim \mathcal{N}(\mu_i,\, \sigma_i^2)$ die Nachfrage an Standort $i$, $z_\alpha$ das Servicegrad-Quantil.
-
-**Dezentral** (n unabhängige Lager):
-$$SS_\text{dez} = n \cdot z_\alpha \cdot \sigma$$
-
-**Zentral** (ein Pool-Lager):
-$$SS_\text{pool} = z_\alpha \cdot \sqrt{n} \cdot \sigma$$
-
-**Einsparung:**
-$$\Delta SS = SS_\text{dez} - SS_\text{pool} = z_\alpha \cdot \sigma \cdot \left(n - \sqrt{n}\right)$$
-:::
 
 ::: {.fragment .fade-up}
 ::: smaller-text
-$\Rightarrow$ Der **Pooling-Faktor** $\sqrt{n}$ beschreibt, um wie viel der zentrale Sicherheitsbestand kleiner ist als der dezentrale Gesamtbestand.
-:::
-:::
 
-:::
-::: {.column width="43%"}
+**Intuition: Kompensationseffekt**
 
-::: {.fragment .fade-up}
-
-```{r pooling-formula-plot}
+```{r cp-intuition-plot}
 #| echo: false
 #| warning: false
 #| message: false
 #| out-width: "99%"
-#| fig-height: 5
+#| fig-height: 4.2
 
-n_vals  <- 1:20
-sigma   <- 40
-z       <- qnorm(0.95)
+set.seed(42)
+n <- 24
+mu <- 89
+sig <- 12
+dA_sim <- pmax(55, round(rnorm(n, mu, sig)))
+# negativ korreliert für maximale Illustration
+dB_sim <- pmax(55, round(mu * 2 - dA_sim + rnorm(n, 0, 4)))
+pool_sim <- (dA_sim + dB_sim) / 2
+C_sim <- 90
 
-ss_dez  <- n_vals * z * sigma
-ss_pool <- z * sqrt(n_vals) * sigma
-savings <- ss_dez - ss_pool
+df_int <- data.frame(t = 1:n, dA = dA_sim, dB = dB_sim, pool = pool_sim)
 
-df_form <- data.frame(n = n_vals, ss_dez, ss_pool, savings)
+fig_int <- plot_ly(df_int, x = ~t)
 
-fig_form <- plot_ly(df_form, x = ~n)
-
-fig_form <- fig_form %>%
-  add_trace(y = ~ss_dez, type = "scatter", mode = "lines+markers",
-            name = "SS dezentral",
-            line   = list(color = "#da7101", width = 2),
-            marker = list(color = "#da7101", size = 7)) %>%
-  add_trace(y = ~ss_pool, type = "scatter", mode = "lines+markers",
-            name = "SS zentral (Pool)",
-            line   = list(color = cols$top, width = 2),
-            marker = list(color = cols$top, size = 7)) %>%
-  add_trace(y = ~savings, type = "scatter", mode = "lines",
-            name = "Einsparung",
-            line = list(color = "#a12c7b", width = 1.5, dash = "dot")) %>%
-  layout(
-    xaxis = list(title = "Anzahl Standorte n", dtick = 2, fixedrange = TRUE),
-    yaxis = list(title = "Sicherheitsbestand (Stück)", fixedrange = TRUE),
-    legend = list(orientation = "h", y = -0.2),
-    plot_bgcolor  = "transparent",
-    paper_bgcolor = "transparent",
-    margin = list(l = 50, r = 20, t = 10, b = 60),
-    height = 340
-  )
-
-fig_form
-```
-
-:::
-
-:::
-:::
-
----
-
-## Bestandspooling {#slide-pooling-function}
-::: slide-subtitle
-Implementierung mit `pooling_safety_stock()`
-:::
-
-::: columns
-::: {.column width="52%"}
-
-::: {.callout-note appearance="simple"}
-## Funktion `pooling_safety_stock()` aus `scm_functions.R`
-
-Vergleicht den Sicherheitsbestand unter dezentraler und zentraler Lagerhaltung für $n$ unabhängige, identisch verteilte Standorte.
-:::
-
-```{r pooling-code}
-#| echo: true
-#| eval: true
-
-# Beispiel: 8 Standorte, σ = 40 Stück, 95 % Servicegrad
-res <- pooling_safety_stock(
-  n     = 8,
-  sigma = 40,
-  z     = qnorm(0.95)
+fig_int <- fig_int %>% add_trace(
+  y = ~dA, type = "scatter", mode = "lines",
+  name = "Nachfrage Markt A",
+  line = list(color = cols$top, width = 1.8, dash = "dot")
+)
+fig_int <- fig_int %>% add_trace(
+  y = ~dB, type = "scatter", mode = "lines",
+  name = "Nachfrage Markt B",
+  line = list(color = cols$mid, width = 1.8, dash = "dot")
+)
+fig_int <- fig_int %>% add_trace(
+  y = ~pool, type = "scatter", mode = "lines",
+  name = "Ø Pool-Nachfrage",
+  line = list(color = "#a12c7b", width = 2.5)
+)
+fig_int <- fig_int %>% add_trace(
+  x = c(1, n), y = c(C_sim, C_sim),
+  type = "scatter", mode = "lines",
+  name = "Kapazität C = 90",
+  line = list(color = "#6B7280", width = 1.5, dash = "dash"),
+  hoverinfo = "skip"
 )
 
-res$ss_total_individual   # Summe dezentraler SS
-res$ss_central            # Zentraler SS
-res$savings               # Absolute Einsparung
-res$savings_pct           # Relative Einsparung (%)
-res$pooling_factor        # sqrt(n)
+fig_int <- fig_int %>% layout(
+  xaxis = list(title = "Periode", dtick = 3, fixedrange = TRUE),
+  yaxis = list(title = "Einheiten", fixedrange = TRUE,
+               range = c(50, 130)),
+  legend = list(orientation = "h", y = -0.22, font = list(size = 11)),
+  plot_bgcolor  = "transparent",
+  paper_bgcolor = "transparent",
+  margin = list(l = 50, r = 20, t = 10, b = 70),
+  height = 340
+)
+
+fig_int
 ```
+
+:::
+:::
 
 :::
 ::: {.column width="46%"}
 
 ::: {.fragment .fade-up}
-
-```{r pooling-result-table}
-#| echo: false
-#| warning: false
-#| message: false
-
-res8 <- pooling_safety_stock(n = 8, sigma = 40, z = qnorm(0.95))
-
-kenn <- data.frame(
-  Kennzahl = c(
-    "Anzahl Standorte $n$",
-    "Std.-Abw. $\\sigma$",
-    "Servicegrad-Quantil $z_{\\alpha}$",
-    "SS je Standort (dezentral)",
-    "Gesamt-SS dezentral",
-    "Pooling-Faktor $\\sqrt{n}$",
-    "SS Zentrallager (Pool)",
-    "Einsparung (absolut)",
-    "Einsparung (%)"
-  ),
-  Wert = c(
-    res8$n,
-    res8$sigma,
-    round(res8$z, 3),
-    round(res8$ss_individual, 1),
-    round(res8$ss_total_individual, 1),
-    round(res8$pooling_factor, 3),
-    round(res8$ss_central, 1),
-    round(res8$savings, 1),
-    paste0(round(res8$savings_pct, 1), " %")
-  )
-)
-
-kbl(kenn,
-    col.names = c("Kennzahl", "Wert"),
-    align = c("l", "r"), escape = FALSE) |>
-  kable_styling(bootstrap_options = c("condensed", "striped"),
-                full_width = TRUE, font_size = 20) |>
-  row_spec(0, background = "#2F3E46", color = "white", bold = TRUE) |>
-  row_spec(8:9, bold = TRUE, background = "#E8F4F1") |>
-  row_spec(6, italic = TRUE, color = cols$top)
-```
-
-:::
-
-::: {.fragment .fade-up}
 ::: {.callout-tip appearance="simple"}
-**Ergebnis:** Bei $n = 8$ Standorten reduziert Pooling den Sicherheitsbestand um **`r round(res8$savings_pct, 1)` %** — von `r round(res8$ss_total_individual,1)` auf `r round(res8$ss_central,1)` Einheiten.
+## Drei Voraussetzungen für effektives Pooling
+
+1. **Negative/geringe Korrelation** der Nachfragen — kompensieren sich
+2. **Flexible Kapazität** — mindestens ein Werk kann beide Produkte fertigen
+3. **Ausreichende Gesamtkapazität** — $C^1 + C^2 \geq E(d^A) + E(d^B)$
 :::
 :::
-
-:::
-:::
-
----
-
-## Bestandspooling {#slide-pooling-sensitivity}
-::: slide-subtitle
-Sensitivitätsanalyse – Einsparungspotenzial
-:::
-
-```{r pooling-sens-data}
-#| echo: false
-#| warning: false
-#| message: false
-
-n_grid     <- c(2, 4, 6, 8, 10, 15, 20)
-sigma_grid <- c(20, 40, 60)
-z_95       <- qnorm(0.95)
-
-sens_df <- expand.grid(n = n_grid, sigma = sigma_grid) |>
-  rowwise() |>
-  mutate(
-    res        = list(pooling_safety_stock(n, sigma, z_95)),
-    ss_dez     = res$ss_total_individual,
-    ss_pool    = res$ss_central,
-    savings    = res$savings,
-    savings_pct = res$savings_pct,
-    factor     = res$pooling_factor
-  ) |>
-  select(-res)
-```
-
-::: columns
-::: {.column width="50%"}
-
-::: small-text
-**Einsparung (%) nach Anzahl Standorte und Standardabweichung**
-
-```{r pooling-heatmap}
-#| echo: false
-#| warning: false
-#| message: false
-#| out-width: "99%"
-#| fig-height: 4.5
-
-hm_df <- sens_df |>
-  mutate(
-    n_label     = paste0("n = ", n),
-    sigma_label = paste0("σ = ", sigma)
-  )
-
-fig_hm <- plot_ly(
-  data = hm_df,
-  x    = ~factor(n),
-  y    = ~factor(sigma_label),
-  z    = ~round(savings_pct, 1),
-  type = "heatmap",
-  colorscale = list(
-    c(0,   "#FFFFFF"),
-    c(0.5, "#52B788"),
-    c(1,   "#0B6E4F")
-  ),
-  text = ~paste0(round(savings_pct, 1), " %"),
-  texttemplate = "%{text}",
-  showscale = TRUE,
-  colorbar  = list(title = "Einsparung (%)")
-)
-
-fig_hm <- fig_hm %>% layout(
-  xaxis = list(title = "Anzahl Standorte n", fixedrange = TRUE),
-  yaxis = list(title = "Std.-Abweichung σ", fixedrange = TRUE),
-  plot_bgcolor  = "transparent",
-  paper_bgcolor = "transparent",
-  margin = list(l = 80, r = 60, t = 20, b = 50),
-  height = 300
-)
-
-fig_hm
-```
-
-:::
-
-::: {.fragment .fade-up}
-::: {.callout-note appearance="simple"}
-Die **relative** Einsparung hängt **nur von $n$** ab, nicht von $\sigma$ — da $\sigma$ sich in Zähler und Nenner kürzt. Die **absolute** Einsparung steigt proportional zu $\sigma$.
-:::
-:::
-
-:::
-::: {.column width="48%"}
-
-::: small-text
-**Einsparung (absolut) nach Standortanzahl, σ = 40**
-
-```{r pooling-bar-abs}
-#| echo: false
-#| warning: false
-#| message: false
-#| out-width: "99%"
-#| fig-height: 4.5
-
-df_abs <- sens_df |> filter(sigma == 40)
-
-fig_abs <- plot_ly(df_abs, x = ~n)
-
-fig_abs <- fig_abs %>%
-  add_trace(y = ~ss_dez, type = "bar", name = "SS dezentral",
-            marker = list(color = "#da7101"),
-            text = ~round(ss_dez, 0), textposition = "outside",
-            textfont = list(size = 12, color = "#da7101")) %>%
-  add_trace(y = ~ss_pool, type = "bar", name = "SS Pool",
-            marker = list(color = cols$top),
-            text = ~round(ss_pool, 0), textposition = "outside",
-            textfont = list(size = 12, color = cols$top)) %>%
-  layout(
-    barmode = "group",
-    xaxis   = list(title = "Anzahl Standorte n", dtick = 1,
-                   fixedrange = TRUE),
-    yaxis   = list(title = "Sicherheitsbestand (Stück)",
-                   fixedrange = TRUE),
-    legend  = list(orientation = "h", y = -0.2),
-    plot_bgcolor  = "transparent",
-    paper_bgcolor = "transparent",
-    margin = list(l = 50, r = 20, t = 20, b = 60),
-    height = 300
-  )
-
-fig_abs
-```
-
-:::
-
-:::
-:::
-
----
-
-## Bestandspooling {#slide-pooling-limits}
-::: slide-subtitle
-Grenzen und praktische Überlegungen
-:::
-
-::: columns
-::: {.column width="55%"}
 
 ::: {.fragment .fade-up}
 ::: {.callout-warning appearance="simple"}
-## Wann wirkt Pooling weniger stark?
-
-- **Positive Korrelation** der Nachfragen: Alle Standorte haben gleichzeitig hohe/niedrige Nachfrage → kein Ausgleichseffekt
-- **Hohe Transportkosten** zum zentralen Lager können Bestandseinsparungen überkompensieren
-- **Lange Lieferzeiten** aus dem Zentrallager reduzieren den Servicegrad
-- **Produktvielfalt** und unterschiedliche Nachfrageprofile erschweren zentrale Disposition
+## Kosten der Flexibilität
+- Flexible Werke erfordern **Mehrinvestitionen** (Umrüstanlagen, Qualifikation)
+- Lohnt sich nur bei **ausreichender Nachfragevariabilität**
+- $\rightarrow$ Trade-off: Flexibilitätskosten vs. Mismatch-Kosten
 :::
+:::
+
+:::
+:::
+
+---
+
+## Kapazitätspooling – Formales Modell {#slide-cp-model}
+::: slide-subtitle
+Zwei Werke, zwei Märkte (Cachon & Terwiesch, Kap. 17)
+:::
+
+::: columns
+::: {.column width="50%"}
+
+::: {.callout-note appearance="minimal" icon=false}
+**Modellrahmen**
+
+- Zwei Märkte $A$, $B$ mit stochastischer Nachfrage $d^A$, $d^B$
+- Zwei Werke mit Kapazitäten $C^1$, $C^2$
+- **Dezentral:** Werk $k$ bedient nur Markt $k$
+- **Pooling:** Werk 1 kann ggf. auch Markt B bedienen
 :::
 
 ::: {.fragment .fade-up}
 ::: smaller-text
 
-**Korrelationseffekt – Zentraler Sicherheitsbestand bei Korrelation $\rho$:**
+**Erwartete Verkäufe – Dezentral**
 
-$$SS_\text{pool}(\rho) = z_\alpha \cdot \sigma \cdot \sqrt{n + n(n-1)\rho}$$
+$$E(x^k_\text{dez}) = E[\min(d^k, C^k)]$$
 
-Für $\rho = 0$: $SS_\text{pool} = z_\alpha \sigma \sqrt{n}$ ← vollständige Diversifikation
+**Erwartete Verkäufe Markt B – Pooling**
 
-Für $\rho = 1$: $SS_\text{pool} = z_\alpha \sigma \cdot n$ ← keine Diversifikation
+$$E(x^B_\text{pool}) = E[\min(d^B,\; C^2 + \max(0, C^1 - d^A))]$$
+
+**Gewinn durch Pooling**
+
+$$\Delta = E(x^A_\text{pool}) + E(x^B_\text{pool}) - E(x^A_\text{dez}) - E(x^B_\text{dez})$$
+
 :::
 :::
 
 :::
-::: {.column width="43%"}
+::: {.column width="48%"}
 
 ::: {.fragment .fade-up}
 
-```{r pooling-corr-plot}
+```{r cp-model-plot}
 #| echo: false
 #| warning: false
 #| message: false
 #| out-width: "99%"
 #| fig-height: 5
 
-rho_vals <- seq(0, 1, by = 0.05)
-n_c      <- 8
-sigma_c  <- 40
-z_c      <- qnorm(0.95)
+# Simulation: Dezentral vs. Pooling über Korrelationsbereich
+set.seed(7)
+N_sim <- 10000
+mu_AB <- 89; sig_AB <- 12; C_k <- 90
 
-ss_corr <- z_c * sigma_c * sqrt(n_c + n_c * (n_c - 1) * rho_vals)
-ss_dez_c <- n_c * z_c * sigma_c
+rho_vals <- seq(-1, 1, by = 0.05)
 
-df_corr <- data.frame(rho = rho_vals, ss = ss_corr)
+sim_results <- sapply(rho_vals, function(rho) {
+  # Korrelierte Normalverteilung
+  Sigma <- matrix(c(sig_AB^2, rho * sig_AB^2,
+                    rho * sig_AB^2, sig_AB^2), 2, 2)
+  L <- chol(Sigma)
+  Z <- matrix(rnorm(N_sim * 2), N_sim, 2) %*% L
+  dA_s <- pmax(0, Z[,1] + mu_AB)
+  dB_s <- pmax(0, Z[,2] + mu_AB)
 
-fig_corr <- plot_ly(df_corr, x = ~rho)
+  # Dezentral
+  xA_dez <- pmin(dA_s, C_k)
+  xB_dez <- pmin(dB_s, C_k)
 
-fig_corr <- fig_corr %>%
-  add_trace(y = ~ss, type = "scatter", mode = "lines",
-            name = "SS Pool (mit Korrelation ρ)",
-            line = list(color = cols$top, width = 2.5)) %>%
-  add_trace(x = c(0, 1), y = c(ss_dez_c, ss_dez_c),
-            type = "scatter", mode = "lines",
-            name = "SS dezentral (Benchmark)",
-            line = list(color = "#da7101", width = 1.5, dash = "dot")) %>%
-  layout(
-    xaxis  = list(title = "Korrelation ρ zwischen Standorten",
-                  range = c(0, 1), dtick = 0.2, fixedrange = TRUE),
-    yaxis  = list(title = "Sicherheitsbestand (Stück)",
-                  fixedrange = TRUE),
-    legend = list(orientation = "h", y = -0.2),
-    plot_bgcolor  = "transparent",
-    paper_bgcolor = "transparent",
-    margin = list(l = 50, r = 20, t = 10, b = 60),
-    height = 340
+  # Pooling: Werk 1 flex (bedient A first, then spare cap to B)
+  xA_pool <- pmin(dA_s, C_k)
+  spare1   <- pmax(0, C_k - dA_s)
+  short_B  <- pmax(0, dB_s - C_k)
+  xB_pool  <- pmin(dB_s, C_k + pmin(spare1, short_B))
+
+  c(
+    dez   = mean(xA_dez + xB_dez),
+    pool  = mean(xA_pool + xB_pool),
+    delta = mean(xA_pool + xB_pool) - mean(xA_dez + xB_dez)
   )
+})
 
-fig_corr
+df_sim <- data.frame(
+  rho   = rho_vals,
+  dez   = sim_results["dez", ],
+  pool  = sim_results["pool", ],
+  delta = sim_results["delta", ]
+)
+
+fig_mod <- plot_ly(df_sim, x = ~rho)
+
+fig_mod <- fig_mod %>% add_trace(
+  y = ~dez, type = "scatter", mode = "lines",
+  name = "Dezentral",
+  line = list(color = "#6B7280", width = 2, dash = "dash")
+)
+fig_mod <- fig_mod %>% add_trace(
+  y = ~pool, type = "scatter", mode = "lines",
+  name = "Pooling",
+  line = list(color = cols$top, width = 2.5)
+)
+fig_mod <- fig_mod %>% add_trace(
+  y = ~delta, type = "scatter", mode = "lines",
+  name = "Δ Pooling-Gewinn",
+  line = list(color = "#a12c7b", width = 2),
+  yaxis = "y2"
+)
+
+fig_mod <- fig_mod %>% layout(
+  xaxis = list(title = "Korrelation ρ(d^A, d^B)", fixedrange = TRUE,
+               range = c(-1, 1)),
+  yaxis  = list(title = "Erwartete Gesamtverkäufe", fixedrange = TRUE),
+  yaxis2 = list(title = "Δ Pooling-Gewinn (Einheiten)",
+                overlaying = "y", side = "right",
+                fixedrange = TRUE, showgrid = FALSE),
+  legend = list(orientation = "h", y = -0.22, font = list(size = 11)),
+  plot_bgcolor  = "transparent",
+  paper_bgcolor = "transparent",
+  margin = list(l = 55, r = 55, t = 15, b = 70),
+  height = 390
+)
+
+fig_mod
 ```
 
 :::
 
+:::
+:::
+
+---
+
+## Kapazitätspooling – Kennzahlenvergleich {#slide-cp-kpis}
+::: slide-subtitle
+Dezentral vs. Pooling: Auswertung des empirischen Beispiels
+:::
+
+```{r cp-kpi-compute}
+#| echo: false
+#| warning: false
+#| message: false
+
+# cp_data und cp_pool wurden auf slide-cp-original / slide-cp-pooling definiert
+# Sicherheitshalber neu berechnen
+cp_data2 <- data.frame(
+  Monat = 1:12,
+  dA    = c(78, 79, 92, 76, 95,104, 87, 92, 91, 85, 96, 93),
+  dB    = c(102, 92, 93, 87, 80, 97, 90, 76, 89, 86, 89, 93)
+)
+C1b <- 90; C2b <- 90
+
+cp_data2 <- cp_data2 %>%
+  mutate(
+    xA_dez = pmin(dA, C1b),
+    xB_dez = pmin(dB, C2b),
+    x1A    = pmin(dA, C1b),
+    x1B    = ifelse(dB > C2b & dA < C1b, pmin(C1b - dA, dB - C2b), 0),
+    x2B    = C2b,
+    xB_pool = x1B + x2B,
+    # Lost Sales
+    ls_A_dez  = pmax(0, dA - C1b),
+    ls_B_dez  = pmax(0, dB - C2b),
+    ls_B_pool = pmax(0, dB - xB_pool),
+    # Idle
+    idle_1_dez  = pmax(0, C1b - dA),
+    idle_2_dez  = pmax(0, C2b - dB),
+    idle_1_pool = pmax(0, C1b - (x1A + x1B))
+  )
+
+kpi_df <- data.frame(
+  Kennzahl = c(
+    "Ø Produktion Werk 1 (Einh.)",
+    "Ø Verkäufe Markt B (Einh.)",
+    "Auslastung Werk 1 (%)",
+    "Verkaufsquote Markt A (%)",
+    "Verkaufsquote Markt B (%)",
+    "Ø Lost Sales Markt A (Einh.)",
+    "Ø Lost Sales Markt B (Einh.)",
+    "Ø Idle Capacity Werk 1 (Einh.)"
+  ),
+  Dezentral = c(
+    round(mean(cp_data2$xA_dez), 1),
+    round(mean(cp_data2$xB_dez), 1),
+    round(mean(cp_data2$xA_dez) / C1b * 100, 1),
+    round(mean(cp_data2$xA_dez) / mean(cp_data2$dA) * 100, 1),
+    round(mean(cp_data2$xB_dez) / mean(cp_data2$dB) * 100, 1),
+    round(mean(cp_data2$ls_A_dez), 2),
+    round(mean(cp_data2$ls_B_dez), 2),
+    round(mean(cp_data2$idle_1_dez), 1)
+  ),
+  Pooling = c(
+    round(mean(cp_data2$x1A + cp_data2$x1B), 1),
+    round(mean(cp_data2$xB_pool), 1),
+    round(mean(cp_data2$x1A + cp_data2$x1B) / C1b * 100, 1),
+    round(mean(cp_data2$x1A) / mean(cp_data2$dA) * 100, 1),
+    round(mean(cp_data2$xB_pool) / mean(cp_data2$dB) * 100, 1),
+    round(mean(cp_data2$ls_A_dez), 2),   # A unverändert
+    round(mean(cp_data2$ls_B_pool), 2),
+    round(mean(cp_data2$idle_1_pool), 1)
+  )
+)
+```
+
+::: columns
+::: {.column width="50%"}
+
+```{r cp-kpi-table}
+#| echo: false
+#| warning: false
+#| message: false
+
+kbl(kpi_df,
+    col.names = c("Kennzahl", "Dezentral", "Pooling"),
+    align = c("l", "r", "r")) |>
+  kable_styling(bootstrap_options = c("condensed", "striped"),
+                full_width = TRUE, font_size = 20) |>
+  column_spec(1) |>
+  column_spec(2, background = "#F3E7AE") |>
+  column_spec(3, bold = TRUE, background = "#E8F4F1") |>
+  row_spec(0, background = "#2F3E46", color = "white", bold = TRUE)
+```
+
 ::: {.fragment .fade-up}
 ::: {.callout-tip appearance="simple"}
-Ab $\rho \approx 1$ bringt Zentralisierung **keinen Vorteil** mehr gegenüber dezentraler Lagerhaltung.
+## Fazit
+Pooling verbessert **alle** Servicekennzahlen gleichzeitig: mehr Verkäufe, höhere Auslastung, weniger Leerkapazität – ohne zusätzliche Gesamtkapazität.
 :::
+:::
+
+:::
+::: {.column width="48%"}
+
+::: {.fragment .fade-up}
+
+```{r cp-kpi-bar}
+#| echo: false
+#| warning: false
+#| message: false
+#| out-width: "99%"
+#| fig-height: 4.8
+
+metriken <- c("Auslastung\nWerk 1 (%)", "Verkaufsquote\nMarkt A (%)", "Verkaufsquote\nMarkt B (%)")
+dez_vals  <- kpi_df$Dezentral[c(3, 4, 5)]
+pool_vals <- kpi_df$Pooling[c(3, 4, 5)]
+
+fig_kpi <- plot_ly()
+
+fig_kpi <- fig_kpi %>% add_trace(
+  x = metriken, y = dez_vals,
+  type = "bar", name = "Dezentral",
+  marker = list(color = "#E9C46A",
+                line = list(color = "#B8951A", width = 1)),
+  text = paste0(dez_vals, " %"),
+  textposition = "outside",
+  textfont = list(size = 13, family = "Arial", color = "#1F2933")
+)
+
+fig_kpi <- fig_kpi %>% add_trace(
+  x = metriken, y = pool_vals,
+  type = "bar", name = "Pooling",
+  marker = list(color = cols$top,
+                line = list(color = "#01696f", width = 1)),
+  text = paste0(pool_vals, " %"),
+  textposition = "outside",
+  textfont = list(size = 13, family = "Arial", color = "#1F2933")
+)
+
+fig_kpi <- fig_kpi %>% layout(
+  barmode = "group",
+  xaxis = list(title = "", fixedrange = TRUE),
+  yaxis = list(title = "Wert (%)", fixedrange = TRUE,
+               range = c(90, 102)),
+  legend = list(orientation = "h", y = -0.18),
+  plot_bgcolor  = "transparent",
+  paper_bgcolor = "transparent",
+  margin = list(l = 50, r = 20, t = 30, b = 60),
+  height = 370
+)
+
+fig_kpi
+```
+
+:::
+
+:::
+:::
+
+---
+
+## Kapazitätspooling – Grenzen {#slide-cp-limits}
+::: slide-subtitle
+Wann wirkt Pooling nicht? Und wie stark?
+:::
+
+::: columns
+::: {.column width="50%"}
+
+::: {.callout-warning appearance="simple"}
+## Grenzen des Kapazitätspoolings
+
+1. **Hohe Korrelation** ($\rho \to 1$): Beide Märkte boomen oder schwächeln gleichzeitig – kein Ausgleichseffekt
+2. **Hohe Auslastung:** Bei nahezu vollständig ausgelasteten Werken gibt es keine Reservekapazität zum Umverteilen
+3. **Hohe Flexibilitätskosten:** Investitionen in flexible Werke können den Nutzen übersteigen
+4. **Logistische Restriktionen:** Transport, Rüstzeiten und regulatorische Anforderungen limitieren Flexibilität in der Praxis
+:::
+
+:::
+::: {.column width="48%"}
+
+::: {.fragment .fade-up}
+
+```{r cp-rho-sensitivity}
+#| echo: false
+#| warning: false
+#| message: false
+#| out-width: "99%"
+#| fig-height: 5.2
+
+set.seed(99)
+N_s <- 8000
+mu_s <- 89; sig_s <- 12; C_s <- 90
+
+rho_s <- seq(-1, 1, by = 0.04)
+
+gains <- sapply(rho_s, function(rho) {
+  Sigma <- matrix(c(sig_s^2, rho * sig_s^2,
+                    rho * sig_s^2, sig_s^2), 2, 2)
+  eig_vals <- eigen(Sigma, only.values = TRUE)$values
+  if (any(eig_vals < -1e-8)) return(NA_real_)
+  L <- chol(Sigma + diag(1e-8, 2))
+  Z <- matrix(rnorm(N_s * 2), N_s, 2) %*% L
+  dA_s <- pmax(0, Z[,1] + mu_s)
+  dB_s <- pmax(0, Z[,2] + mu_s)
+
+  xA_dez <- pmin(dA_s, C_s)
+  xB_dez <- pmin(dB_s, C_s)
+
+  xA_p  <- pmin(dA_s, C_s)
+  spare <- pmax(0, C_s - dA_s)
+  short <- pmax(0, dB_s - C_s)
+  xB_p  <- pmin(dB_s, C_s + pmin(spare, short))
+
+  mean(xA_p + xB_p) - mean(xA_dez + xB_dez)
+})
+
+df_rho <- data.frame(rho = rho_s, gain = gains) %>% filter(!is.na(gain))
+
+fig_rho <- plot_ly(df_rho, x = ~rho, y = ~gain,
+                   type = "scatter", mode = "lines",
+                   line = list(color = cols$top, width = 2.5),
+                   fill = "tozeroy",
+                   fillcolor = "rgba(44,158,142,0.15)",
+                   name = "Δ Pooling-Gewinn")
+
+fig_rho <- fig_rho %>% add_trace(
+  x = c(-1, 1), y = c(0, 0),
+  type = "scatter", mode = "lines",
+  line = list(color = "#6B7280", width = 1, dash = "dot"),
+  showlegend = FALSE, hoverinfo = "skip"
+)
+
+fig_rho <- fig_rho %>% layout(
+  xaxis = list(title = "Korrelation ρ(d^A, d^B)", fixedrange = TRUE,
+               range = c(-1, 1), dtick = 0.25),
+  yaxis = list(title = "Δ Erwartete Mehrverkäufe (Einh.)",
+               fixedrange = TRUE),
+  annotations = list(
+    list(x = -0.85, y = max(df_rho$gain, na.rm = TRUE) * 0.9,
+         text = "<b>Pooling am\nwirksamsten</b>",
+         showarrow = FALSE,
+         font = list(size = 12, color = cols$top, family = "Arial")),
+    list(x = 0.85, y = max(df_rho$gain, na.rm = TRUE) * 0.08,
+         text = "<b>Pooling\nwirkungslos</b>",
+         showarrow = FALSE,
+         font = list(size = 12, color = "#6B7280", family = "Arial"))
+  ),
+  plot_bgcolor  = "transparent",
+  paper_bgcolor = "transparent",
+  margin = list(l = 55, r = 20, t = 15, b = 60),
+  height = 400
+)
+
+fig_rho
+```
+
 :::
 
 :::
