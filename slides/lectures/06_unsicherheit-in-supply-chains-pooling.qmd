@@ -460,16 +460,25 @@ cp_data <- data.frame(
   xB    = c(90, 90, 90, 87, 80, 90, 90, 76, 89, 86, 89, 90)
 )
 
+cp.means <- colMeans(cp_data)
+cp.means[1] <- NA
+
+cp_data <- rbind(cp_data,cp.means)
+
+cp_data$Monat <- as.character(cp_data$Monat)
+
+cp_data$Monat[13] <- "&#8960;"
+
 kbl(cp_data,
-    col.names = c("Monat", "$d_t^A$", "$d_t^B$",
-                  "$x_t^A$", "$x_t^B$"),
+    col.names = c("Monat", "d<sub>t</sub><sup>A</sup>", "d<sub>t</sub><sup>B</sup>",
+                  "x<sub>t</sub><sup>A</sup>", "x<sub>t</sub><sup>B</sup>"),
     align = c("c","r","r","r","r"),
     escape = FALSE) |>
   kable_styling(bootstrap_options = c("condensed","striped"),
                 full_width = TRUE, font_size = 20) |>
   column_spec(1, bold = TRUE, background = "#2F3E46", color = "white") |>
   row_spec(0, background = "#2F3E46", color = "white", bold = TRUE) |>
-  row_spec(12, bold = TRUE)
+  row_spec(13, bold = TRUE, background = "#2F3E4640")
 ```
 
 :::
@@ -484,7 +493,7 @@ kbl(cp_data,
 - **Erwartete Nachfrage:** $E(d^A) = 89{,}0$; $E(d^B) = 89{,}5$
 - **Erwartete Produktion/Verkauf:** $E(x^A) = 86{,}25$; $E(x^B) = 87{,}25$
 - **Werksauslastung:** $\frac{E(x^A)}{C^1} = 95{,}8\%$; $\frac{E(x^B)}{C^2} = 96{,}9\%$
-- **Erwartete Verkaufsquote:** $\frac{E(x^A)}{E(d^A)} = 96{,}9\%$; $\frac{E(x^B)}{E(d^B)} = 97{,}5\%$
+- **Erwarteter Lieferservicegrad:** $\frac{E(x^A)}{E(d^A)} = 96{,}9\%$; $\frac{E(x^B)}{E(d^B)} = 97{,}5\%$
 :::
 :::
 
@@ -520,22 +529,22 @@ Empirisches Beispiel – Werk 1 kann beide Modelle produzieren
 
 C1 <- 90; C2 <- 90
 
-cp_pool <- cp_data %>%
+cp_pool <- cp_data[-13,] %>%
   mutate(
     x1A = pmin(dA, C1),
     x1B = ifelse(dB > C2 & dA < C1,
                  pmin(C1 - dA, dB - C2), 0),
     x1  = x1A + x1B,
-    x2B = C2
+    x2B = pmin(C2, dB)
   )
 
 kbl(cp_pool[, c("Monat","dA","dB","x1A","x1B","x2B")],
-    col.names = c("Monat", "$d_t^A$", "$d_t^B$",
-                  "$x_t^{1A}$", "$x_t^{1B}$", "$x_t^{2B}$"),
+    col.names = c("Monat", "d<sub>t</sub><sup>A</sup>", "d<sub>t</sub><sup>B</sup>",
+                  "x<sub>t</sub><sup>1A</sup>", "x<sub>t</sub><sup>1B</sup>", "x<sub>t</sub><sup>2B</sup>"),
     align = c("c","r","r","r","r","r"),
     escape = FALSE) |>
   kable_styling(bootstrap_options = c("condensed","striped"),
-                full_width = TRUE, font_size = 20) |>
+                full_width = TRUE, font_size = 22) |>
   column_spec(1, bold = TRUE, background = "#2F3E46", color = "white") |>
   column_spec(4:5, background = "#E8F4F1") |>
   row_spec(0, background = "#2F3E46", color = "white", bold = TRUE)
@@ -560,14 +569,172 @@ $$x_t^{2B} = C^2$$
 ## System Evaluation (Pooling)
 
 - **Produktion Werk 1:** $E(x^1) = \mathbf{87{,}4}$ (> 86,3)
-- **Markt B gesamt:** $E(x^{1B}+x^{2B}) = \mathbf{88{,}4}$ (> 87,3)
-- **Auslastung:** $\frac{E(x^1)}{C^1} = \mathbf{97{,}1\%}$ (> 95,8 %)
-- **Verkaufsquote B:** $\frac{E(x^{1B}+x^{2B})}{E(d^B)} = \mathbf{98{,}8\%}$ (> 97,5 %)
+- **Versorgung Markt B gesamt:** $E(x^{1B}+x^{2B}) = \mathbf{88{,}4}$ (> 87,3)
+- **Auslastung Werk 1:** $\frac{E(x^1)}{C^1} = \mathbf{97{,}1\%}$ (> 95,8 %)
+- **Lieferservicegrad Markt B:** $\frac{E(x^{1B}+x^{2B})}{E(d^B)} = \mathbf{98{,}8\%}$ (> 97,5 %)
 :::
 :::
 
 :::
 :::
+
+---
+
+## Kapazitätspooling – Kennzahlenvergleich {#slide-cp-kpis}
+::: slide-subtitle
+Dezentral vs. Pooling: Auswertung des empirischen Beispiels
+:::
+
+```{r cp-kpi-compute}
+#| echo: false
+#| warning: false
+#| message: false
+
+# cp_data und cp_pool wurden auf slide-cp-original / slide-cp-pooling definiert
+# Sicherheitshalber neu berechnen
+cp_data2 <- data.frame(
+  Monat = 1:12,
+  dA    = c(78, 79, 92, 76, 95,104, 87, 92, 91, 85, 96, 93),
+  dB    = c(102, 92, 93, 87, 80, 97, 90, 76, 89, 86, 89, 93)
+)
+C1b <- 90; C2b <- 90
+
+cp_data2 <- cp_data2 %>%
+  mutate(
+    xA_dez = pmin(dA, C1b),
+    xB_dez = pmin(dB, C2b),
+    x1A    = pmin(dA, C1b),
+    x1B    = ifelse(dB > C2b & dA < C1b, pmin(C1b - dA, dB - C2b), 0),
+    x2B    = C2b,
+    xB_pool = x1B + x2B,
+    # Lost Sales
+    ls_A_dez  = pmax(0, dA - C1b),
+    ls_B_dez  = pmax(0, dB - C2b),
+    ls_B_pool = pmax(0, dB - xB_pool),
+    # Idle
+    idle_1_dez  = pmax(0, C1b - dA),
+    idle_2_dez  = pmax(0, C2b - dB),
+    idle_1_pool = pmax(0, C1b - (x1A + x1B))
+  )
+
+kpi_df <- data.frame(
+  Kennzahl = c(
+    "Ø Produktion Werk 1 (Einh.)",
+    "Ø Verkäufe Markt B (Einh.)",
+    "Auslastung Werk 1 (%)",
+    "Verkaufsquote Markt A (%)",
+    "Verkaufsquote Markt B (%)",
+    "Ø Lost Sales Markt A (Einh.)",
+    "Ø Lost Sales Markt B (Einh.)",
+    "Ø Idle Capacity Werk 1 (Einh.)"
+  ),
+  Dezentral = c(
+    round(mean(cp_data2$xA_dez), 1),
+    round(mean(cp_data2$xB_dez), 1),
+    round(mean(cp_data2$xA_dez) / C1b * 100, 1),
+    round(mean(cp_data2$xA_dez) / mean(cp_data2$dA) * 100, 1),
+    round(mean(cp_data2$xB_dez) / mean(cp_data2$dB) * 100, 1),
+    round(mean(cp_data2$ls_A_dez), 2),
+    round(mean(cp_data2$ls_B_dez), 2),
+    round(mean(cp_data2$idle_1_dez), 1)
+  ),
+  Pooling = c(
+    round(mean(cp_data2$x1A + cp_data2$x1B), 1),
+    round(mean(cp_data2$xB_pool), 1),
+    round(mean(cp_data2$x1A + cp_data2$x1B) / C1b * 100, 1),
+    round(mean(cp_data2$x1A) / mean(cp_data2$dA) * 100, 1),
+    round(mean(cp_data2$xB_pool) / mean(cp_data2$dB) * 100, 1),
+    round(mean(cp_data2$ls_A_dez), 2),   # A unverändert
+    round(mean(cp_data2$ls_B_pool), 2),
+    round(mean(cp_data2$idle_1_pool), 1)
+  )
+)
+```
+
+::: columns
+::: {.column width="50%"}
+
+```{r cp-kpi-table}
+#| echo: false
+#| warning: false
+#| message: false
+
+kbl(kpi_df,
+    col.names = c("Kennzahl", "Dezentral", "Pooling"),
+    align = c("l", "r", "r")) |>
+  kable_styling(bootstrap_options = c("condensed", "striped"),
+                full_width = TRUE, font_size = 20) |>
+  column_spec(1) |>
+  column_spec(2, background = "#F3E7AE") |>
+  column_spec(3, bold = TRUE, background = "#E8F4F1") |>
+  row_spec(0, background = "#2F3E46", color = "white", bold = TRUE)
+```
+
+::: {.fragment .fade-up}
+::: {.callout-tip appearance="simple"}
+## Fazit
+Pooling verbessert **alle** Servicekennzahlen gleichzeitig: mehr Verkäufe, höhere Auslastung, weniger Leerkapazität – ohne zusätzliche Gesamtkapazität.
+:::
+:::
+
+:::
+::: {.column width="48%"}
+
+::: {.fragment .fade-up}
+
+```{r cp-kpi-bar}
+#| echo: false
+#| warning: false
+#| message: false
+#| out-width: "99%"
+#| fig-height: 4.8
+
+metriken <- c("Auslastung\nWerk 1 (%)", "Verkaufsquote\nMarkt A (%)", "Verkaufsquote\nMarkt B (%)")
+dez_vals  <- kpi_df$Dezentral[c(3, 4, 5)]
+pool_vals <- kpi_df$Pooling[c(3, 4, 5)]
+
+fig_kpi <- plot_ly()
+
+fig_kpi <- fig_kpi %>% add_trace(
+  x = metriken, y = dez_vals,
+  type = "bar", name = "Dezentral",
+  marker = list(color = "#E9C46A",
+                line = list(color = "#B8951A", width = 1)),
+  text = paste0(dez_vals, " %"),
+  textposition = "outside",
+  textfont = list(size = 13, family = "Arial", color = "#1F2933")
+)
+
+fig_kpi <- fig_kpi %>% add_trace(
+  x = metriken, y = pool_vals,
+  type = "bar", name = "Pooling",
+  marker = list(color = cols$top,
+                line = list(color = "#01696f", width = 1)),
+  text = paste0(pool_vals, " %"),
+  textposition = "outside",
+  textfont = list(size = 13, family = "Arial", color = "#1F2933")
+)
+
+fig_kpi <- fig_kpi %>% layout(
+  barmode = "group",
+  xaxis = list(title = "", fixedrange = TRUE),
+  yaxis = list(title = "Wert (%)", fixedrange = TRUE,
+               range = c(90, 102)),
+  legend = list(orientation = "h", y = -0.18),
+  plot_bgcolor  = "transparent",
+  paper_bgcolor = "transparent",
+  margin = list(l = 50, r = 20, t = 30, b = 60),
+  height = 370
+)
+
+fig_kpi
+```
+
+:::
+
+:::
+:::
+
 
 ---
 
@@ -734,7 +901,7 @@ sim_results <- sapply(rho_vals, function(rho) {
   # Korrelierte Normalverteilung
   Sigma <- matrix(c(sig_AB^2, rho * sig_AB^2,
                     rho * sig_AB^2, sig_AB^2), 2, 2)
-  L <- chol(Sigma)
+  L <- chol(Sigma + diag(1e-10, 2))
   Z <- matrix(rnorm(N_sim * 2), N_sim, 2) %*% L
   dA_s <- pmax(0, Z[,1] + mu_AB)
   dB_s <- pmax(0, Z[,2] + mu_AB)
@@ -804,162 +971,6 @@ fig_mod
 :::
 :::
 
----
-
-## Kapazitätspooling – Kennzahlenvergleich {#slide-cp-kpis}
-::: slide-subtitle
-Dezentral vs. Pooling: Auswertung des empirischen Beispiels
-:::
-
-```{r cp-kpi-compute}
-#| echo: false
-#| warning: false
-#| message: false
-
-# cp_data und cp_pool wurden auf slide-cp-original / slide-cp-pooling definiert
-# Sicherheitshalber neu berechnen
-cp_data2 <- data.frame(
-  Monat = 1:12,
-  dA    = c(78, 79, 92, 76, 95,104, 87, 92, 91, 85, 96, 93),
-  dB    = c(102, 92, 93, 87, 80, 97, 90, 76, 89, 86, 89, 93)
-)
-C1b <- 90; C2b <- 90
-
-cp_data2 <- cp_data2 %>%
-  mutate(
-    xA_dez = pmin(dA, C1b),
-    xB_dez = pmin(dB, C2b),
-    x1A    = pmin(dA, C1b),
-    x1B    = ifelse(dB > C2b & dA < C1b, pmin(C1b - dA, dB - C2b), 0),
-    x2B    = C2b,
-    xB_pool = x1B + x2B,
-    # Lost Sales
-    ls_A_dez  = pmax(0, dA - C1b),
-    ls_B_dez  = pmax(0, dB - C2b),
-    ls_B_pool = pmax(0, dB - xB_pool),
-    # Idle
-    idle_1_dez  = pmax(0, C1b - dA),
-    idle_2_dez  = pmax(0, C2b - dB),
-    idle_1_pool = pmax(0, C1b - (x1A + x1B))
-  )
-
-kpi_df <- data.frame(
-  Kennzahl = c(
-    "Ø Produktion Werk 1 (Einh.)",
-    "Ø Verkäufe Markt B (Einh.)",
-    "Auslastung Werk 1 (%)",
-    "Verkaufsquote Markt A (%)",
-    "Verkaufsquote Markt B (%)",
-    "Ø Lost Sales Markt A (Einh.)",
-    "Ø Lost Sales Markt B (Einh.)",
-    "Ø Idle Capacity Werk 1 (Einh.)"
-  ),
-  Dezentral = c(
-    round(mean(cp_data2$xA_dez), 1),
-    round(mean(cp_data2$xB_dez), 1),
-    round(mean(cp_data2$xA_dez) / C1b * 100, 1),
-    round(mean(cp_data2$xA_dez) / mean(cp_data2$dA) * 100, 1),
-    round(mean(cp_data2$xB_dez) / mean(cp_data2$dB) * 100, 1),
-    round(mean(cp_data2$ls_A_dez), 2),
-    round(mean(cp_data2$ls_B_dez), 2),
-    round(mean(cp_data2$idle_1_dez), 1)
-  ),
-  Pooling = c(
-    round(mean(cp_data2$x1A + cp_data2$x1B), 1),
-    round(mean(cp_data2$xB_pool), 1),
-    round(mean(cp_data2$x1A + cp_data2$x1B) / C1b * 100, 1),
-    round(mean(cp_data2$x1A) / mean(cp_data2$dA) * 100, 1),
-    round(mean(cp_data2$xB_pool) / mean(cp_data2$dB) * 100, 1),
-    round(mean(cp_data2$ls_A_dez), 2),   # A unverändert
-    round(mean(cp_data2$ls_B_pool), 2),
-    round(mean(cp_data2$idle_1_pool), 1)
-  )
-)
-```
-
-::: columns
-::: {.column width="50%"}
-
-```{r cp-kpi-table}
-#| echo: false
-#| warning: false
-#| message: false
-
-kbl(kpi_df,
-    col.names = c("Kennzahl", "Dezentral", "Pooling"),
-    align = c("l", "r", "r")) |>
-  kable_styling(bootstrap_options = c("condensed", "striped"),
-                full_width = TRUE, font_size = 20) |>
-  column_spec(1) |>
-  column_spec(2, background = "#F3E7AE") |>
-  column_spec(3, bold = TRUE, background = "#E8F4F1") |>
-  row_spec(0, background = "#2F3E46", color = "white", bold = TRUE)
-```
-
-::: {.fragment .fade-up}
-::: {.callout-tip appearance="simple"}
-## Fazit
-Pooling verbessert **alle** Servicekennzahlen gleichzeitig: mehr Verkäufe, höhere Auslastung, weniger Leerkapazität – ohne zusätzliche Gesamtkapazität.
-:::
-:::
-
-:::
-::: {.column width="48%"}
-
-::: {.fragment .fade-up}
-
-```{r cp-kpi-bar}
-#| echo: false
-#| warning: false
-#| message: false
-#| out-width: "99%"
-#| fig-height: 4.8
-
-metriken <- c("Auslastung\nWerk 1 (%)", "Verkaufsquote\nMarkt A (%)", "Verkaufsquote\nMarkt B (%)")
-dez_vals  <- kpi_df$Dezentral[c(3, 4, 5)]
-pool_vals <- kpi_df$Pooling[c(3, 4, 5)]
-
-fig_kpi <- plot_ly()
-
-fig_kpi <- fig_kpi %>% add_trace(
-  x = metriken, y = dez_vals,
-  type = "bar", name = "Dezentral",
-  marker = list(color = "#E9C46A",
-                line = list(color = "#B8951A", width = 1)),
-  text = paste0(dez_vals, " %"),
-  textposition = "outside",
-  textfont = list(size = 13, family = "Arial", color = "#1F2933")
-)
-
-fig_kpi <- fig_kpi %>% add_trace(
-  x = metriken, y = pool_vals,
-  type = "bar", name = "Pooling",
-  marker = list(color = cols$top,
-                line = list(color = "#01696f", width = 1)),
-  text = paste0(pool_vals, " %"),
-  textposition = "outside",
-  textfont = list(size = 13, family = "Arial", color = "#1F2933")
-)
-
-fig_kpi <- fig_kpi %>% layout(
-  barmode = "group",
-  xaxis = list(title = "", fixedrange = TRUE),
-  yaxis = list(title = "Wert (%)", fixedrange = TRUE,
-               range = c(90, 102)),
-  legend = list(orientation = "h", y = -0.18),
-  plot_bgcolor  = "transparent",
-  paper_bgcolor = "transparent",
-  margin = list(l = 50, r = 20, t = 30, b = 60),
-  height = 370
-)
-
-fig_kpi
-```
-
-:::
-
-:::
-:::
 
 ---
 
