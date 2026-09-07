@@ -487,6 +487,63 @@ kbl(cp_data,
 ::: {.column width="46%"}
 
 ::: {.fragment .fade-up}
+
+<!-- Netzwerk-Diagramm: Dezentrale Konfiguration -->
+<div style="display:flex; justify-content:center; align-items:center; padding: 0.5rem 0 0.8rem 0;">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 380 160" width="100%" style="max-width:380px; font-family: Arial, sans-serif;">
+
+  <!-- Labels oben -->
+  <text x="70"  y="18" text-anchor="middle" font-size="12" font-weight="bold" fill="#374151">Plant / vehicle type</text>
+  <text x="290" y="18" text-anchor="middle" font-size="12" font-weight="bold" fill="#374151">vehicle market</text>
+
+  <!-- Werk C1 (Hexagon, oben links) -->
+  <polygon points="50,35 70,24 90,35 90,57 70,68 50,57"
+           fill="#CBD5E1" stroke="#475569" stroke-width="1.5"/>
+  <text x="70" y="49" text-anchor="middle" font-size="11" font-weight="bold" fill="#1e293b">C¹</text>
+  <text x="103" y="49" text-anchor="middle" font-size="10" fill="#374151">1</text>
+  <circle cx="103" cy="46" r="10" fill="#e2e8f0" stroke="#475569" stroke-width="1.2"/>
+  <text x="103" y="50" text-anchor="middle" font-size="10" fill="#374151">1</text>
+
+  <!-- Werk C2 (Hexagon, unten links) -->
+  <polygon points="50,105 70,94 90,105 90,127 70,138 50,127"
+           fill="#CBD5E1" stroke="#475569" stroke-width="1.5"/>
+  <text x="70" y="119" text-anchor="middle" font-size="11" font-weight="bold" fill="#1e293b">C²</text>
+  <circle cx="103" cy="116" r="10" fill="#e2e8f0" stroke="#475569" stroke-width="1.2"/>
+  <text x="103" y="120" text-anchor="middle" font-size="10" fill="#374151">2</text>
+
+  <!-- Pfeil Werk1 → Markt A (durchgezogen) -->
+  <line x1="113" y1="46" x2="255" y2="46"
+        stroke="#374151" stroke-width="1.8" marker-end="url(#arrowBlack)"/>
+  <text x="184" y="40" text-anchor="middle" font-size="11" fill="#374151">x¹ᴬ</text>
+
+  <!-- Pfeil Werk2 → Markt B (durchgezogen) -->
+  <line x1="113" y1="116" x2="255" y2="116"
+        stroke="#374151" stroke-width="1.8" marker-end="url(#arrowBlack)"/>
+  <text x="184" y="110" text-anchor="middle" font-size="11" fill="#374151">x²ᴮ</text>
+
+  <!-- Markt A (Kreis, oben rechts) -->
+  <circle cx="275" cy="46" r="18" fill="#6EE7B7" stroke="#059669" stroke-width="1.8"/>
+  <text x="275" y="51" text-anchor="middle" font-size="13" font-weight="bold" fill="#065f46">A</text>
+  <text x="303" y="51" text-anchor="start" font-size="12" fill="#374151">d^A</text>
+
+  <!-- Markt B (Kreis, unten rechts) -->
+  <circle cx="275" cy="116" r="18" fill="#6EE7B7" stroke="#059669" stroke-width="1.8"/>
+  <text x="275" y="121" text-anchor="middle" font-size="13" font-weight="bold" fill="#065f46">B</text>
+  <text x="303" y="121" text-anchor="start" font-size="12" fill="#374151">d^B</text>
+
+  <!-- Pfeilspitzen-Definition -->
+  <defs>
+    <marker id="arrowBlack" markerWidth="8" markerHeight="8"
+            refX="6" refY="3" orient="auto">
+      <path d="M0,0 L0,6 L8,3 z" fill="#374151"/>
+    </marker>
+  </defs>
+</svg>
+</div>
+
+:::
+
+::: {.fragment .fade-up}
 ::: {.callout-tip appearance="simple"}
 ## System Evaluation
 
@@ -554,6 +611,72 @@ kbl(cp_pool[, c("Monat","dA","dB","x1A","x1B","x2B")],
 
 :::
 ::: {.column width="46%"}
+
+::: {.fragment .fade-up}
+
+<!-- Netzwerk-Diagramm: Pooling-Konfiguration -->
+<div style="display:flex; justify-content:center; align-items:center; padding: 0.5rem 0 0.8rem 0;">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 380 160" width="100%" style="max-width:380px; font-family: Arial, sans-serif;">
+
+  <!-- Labels oben -->
+  <text x="70"  y="18" text-anchor="middle" font-size="12" font-weight="bold" fill="#374151">Plant / vehicle type</text>
+  <text x="290" y="18" text-anchor="middle" font-size="12" font-weight="bold" fill="#374151">vehicle market</text>
+
+  <!-- Werk C1 (Hexagon, oben links) – flexibles Werk -->
+  <polygon points="50,35 70,24 90,35 90,57 70,68 50,57"
+           fill="#A7F3D0" stroke="#059669" stroke-width="2"/>
+  <text x="70" y="49" text-anchor="middle" font-size="11" font-weight="bold" fill="#065f46">C¹</text>
+  <circle cx="103" cy="46" r="10" fill="#e2e8f0" stroke="#475569" stroke-width="1.2"/>
+  <text x="103" y="50" text-anchor="middle" font-size="10" fill="#374151">1</text>
+
+  <!-- Werk C2 (Hexagon, unten links) -->
+  <polygon points="50,105 70,94 90,105 90,127 70,138 50,127"
+           fill="#CBD5E1" stroke="#475569" stroke-width="1.5"/>
+  <text x="70" y="119" text-anchor="middle" font-size="11" font-weight="bold" fill="#1e293b">C²</text>
+  <circle cx="103" cy="116" r="10" fill="#e2e8f0" stroke="#475569" stroke-width="1.2"/>
+  <text x="103" y="120" text-anchor="middle" font-size="10" fill="#374151">2</text>
+
+  <!-- Pfeil Werk1 → Markt A (durchgezogen, x^1A) -->
+  <line x1="113" y1="43" x2="255" y2="43"
+        stroke="#374151" stroke-width="1.8" marker-end="url(#arrowBlack2)"/>
+  <text x="184" y="37" text-anchor="middle" font-size="11" fill="#374151">x¹ᴬ</text>
+
+  <!-- Pfeil Werk1 → Markt B (gestrichelt, x^1B – Pooling-Fluss) -->
+  <line x1="113" y1="56" x2="255" y2="109"
+        stroke="#059669" stroke-width="1.8" stroke-dasharray="5,3"
+        marker-end="url(#arrowGreen2)"/>
+  <text x="184" y="92" text-anchor="middle" font-size="11" fill="#059669">x¹ᴮ</text>
+
+  <!-- Pfeil Werk2 → Markt B (durchgezogen, x^2B) -->
+  <line x1="113" y1="116" x2="255" y2="116"
+        stroke="#374151" stroke-width="1.8" marker-end="url(#arrowBlack2)"/>
+  <text x="184" y="110" text-anchor="middle" font-size="11" fill="#374151">x²ᴮ</text>
+
+  <!-- Markt A (Kreis, oben rechts) -->
+  <circle cx="275" cy="46" r="18" fill="#6EE7B7" stroke="#059669" stroke-width="1.8"/>
+  <text x="275" y="51" text-anchor="middle" font-size="13" font-weight="bold" fill="#065f46">A</text>
+  <text x="303" y="51" text-anchor="start" font-size="12" fill="#374151">d^A</text>
+
+  <!-- Markt B (Kreis, unten rechts) -->
+  <circle cx="275" cy="116" r="18" fill="#6EE7B7" stroke="#059669" stroke-width="1.8"/>
+  <text x="275" y="121" text-anchor="middle" font-size="13" font-weight="bold" fill="#065f46">B</text>
+  <text x="303" y="121" text-anchor="start" font-size="12" fill="#374151">d^B</text>
+
+  <!-- Pfeilspitzen-Definitionen -->
+  <defs>
+    <marker id="arrowBlack2" markerWidth="8" markerHeight="8"
+            refX="6" refY="3" orient="auto">
+      <path d="M0,0 L0,6 L8,3 z" fill="#374151"/>
+    </marker>
+    <marker id="arrowGreen2" markerWidth="8" markerHeight="8"
+            refX="6" refY="3" orient="auto">
+      <path d="M0,0 L0,6 L8,3 z" fill="#059669"/>
+    </marker>
+  </defs>
+</svg>
+</div>
+
+:::
 
 ::: {.fragment .fade-up}
 ::: {.callout-note appearance="minimal" icon=false}
