@@ -1,3 +1,507 @@
 ---
 title: "Unsicherheit in Supply Chains: Pooling"
 ---
+
+```{r}
+#| echo: false
+#| warning: false
+#| message: false
+
+source("../../R/scm_functions.R")
+
+library(tidyverse)
+library(plotly)
+library(knitr)
+library(kableExtra)
+```
+
+---
+
+## Kapazitätspooling {#slide-pooling-1}
+::: slide-subtitle
+Grundidee und Motivation
+:::
+
+::: {.callout-note appearance="minimal" icon=false}
+**Kapazitätspooling** bezeichnet die Strategie, Lagerbestände oder Kapazitäten mehrerer dezentraler Standorte in einem gemeinsamen Pool zusammenzufassen, um die gesamte Sicherheitsbestandsmenge bei gleichem Servicegrad zu **reduzieren**.
+:::
+
+::: columns
+::: {.column width="52%"}
+
+::: {.fragment .fade-up}
+::: smaller-text
+**Intuition: Zufällige Nachfragen kompensieren sich**
+
+- Standort A hat unerwartet hohe Nachfrage → zieht aus Pool
+- Standort B hat unerwartet niedrige Nachfrage → speist Pool
+- Gesamtvariabilität **geringer** als Summe der Einzelvariabilitäten
+
+:::
+:::
+
+::: {.fragment .fade-up}
+::: {.callout-warning appearance="simple"}
+## Voraussetzung
+Pooling wirkt umso stärker, je **geringer die Korrelation** der Nachfragen zwischen den Standorten ist.
+:::
+:::
+
+:::
+::: {.column width="46%"}
+
+::: {.fragment .fade-up}
+
+```{r pooling-motivation-plot}
+#| echo: false
+#| warning: false
+#| message: false
+#| out-width: "99%"
+#| fig-height: 5
+
+set.seed(42)
+n <- 60
+mu <- 100
+sigma <- 30
+
+d_A <- rnorm(n, mu, sigma)
+d_B <- rnorm(n, mu, sigma)
+d_pool <- d_A + d_B
+
+df <- data.frame(
+  t      = 1:n,
+  d_A    = d_A,
+  d_B    = d_B,
+  d_pool = d_pool
+)
+
+fig_mot <- plot_ly(df, x = ~t)
+
+fig_mot <- fig_mot %>%
+  add_trace(y = ~d_A, type = "scatter", mode = "lines",
+            name = "Standort A",
+            line = list(color = cols$mid, width = 1.5)) %>%
+  add_trace(y = ~d_B, type = "scatter", mode = "lines",
+            name = "Standort B",
+            line = list(color = cols$atp, width = 1.5, dash = "dash")) %>%
+  add_trace(y = ~d_pool / 2, type = "scatter", mode = "lines",
+            name = "Pool-Ø (÷2)",
+            line = list(color = cols$top, width = 2.5)) %>%
+  layout(
+    xaxis = list(title = "Periode", fixedrange = TRUE),
+    yaxis = list(title = "Nachfrage (Stück)", fixedrange = TRUE),
+    legend = list(orientation = "h", y = -0.2),
+    plot_bgcolor  = "transparent",
+    paper_bgcolor = "transparent",
+    margin = list(l = 50, r = 20, t = 10, b = 60),
+    height = 340
+  )
+
+fig_mot
+```
+
+:::
+
+:::
+:::
+
+---
+
+## Kapazitätspooling {#slide-pooling-model}
+::: slide-subtitle
+Formales Modell – Sicherheitsbestand
+:::
+
+::: columns
+::: {.column width="55%"}
+
+::: {.callout-tip appearance="simple" icon=false}
+#### Sicherheitsbestand bei normalverteilter Nachfrage
+
+Sei $D_i \sim \mathcal{N}(\mu_i,\, \sigma_i^2)$ die Nachfrage an Standort $i$, $z_\alpha$ das Servicegrad-Quantil.
+
+**Dezentral** (n unabhängige Lager):
+$$SS_\text{dez} = n \cdot z_\alpha \cdot \sigma$$
+
+**Zentral** (ein Pool-Lager):
+$$SS_\text{pool} = z_\alpha \cdot \sqrt{n} \cdot \sigma$$
+
+**Einsparung:**
+$$\Delta SS = SS_\text{dez} - SS_\text{pool} = z_\alpha \cdot \sigma \cdot \left(n - \sqrt{n}\right)$$
+:::
+
+::: {.fragment .fade-up}
+::: smaller-text
+$\Rightarrow$ Der **Pooling-Faktor** $\sqrt{n}$ beschreibt, um wie viel der zentrale Sicherheitsbestand kleiner ist als der dezentrale Gesamtbestand.
+:::
+:::
+
+:::
+::: {.column width="43%"}
+
+::: {.fragment .fade-up}
+
+```{r pooling-formula-plot}
+#| echo: false
+#| warning: false
+#| message: false
+#| out-width: "99%"
+#| fig-height: 5
+
+n_vals  <- 1:20
+sigma   <- 40
+z       <- qnorm(0.95)
+
+ss_dez  <- n_vals * z * sigma
+ss_pool <- z * sqrt(n_vals) * sigma
+savings <- ss_dez - ss_pool
+
+df_form <- data.frame(n = n_vals, ss_dez, ss_pool, savings)
+
+fig_form <- plot_ly(df_form, x = ~n)
+
+fig_form <- fig_form %>%
+  add_trace(y = ~ss_dez, type = "scatter", mode = "lines+markers",
+            name = "SS dezentral",
+            line   = list(color = "#da7101", width = 2),
+            marker = list(color = "#da7101", size = 7)) %>%
+  add_trace(y = ~ss_pool, type = "scatter", mode = "lines+markers",
+            name = "SS zentral (Pool)",
+            line   = list(color = cols$top, width = 2),
+            marker = list(color = cols$top, size = 7)) %>%
+  add_trace(y = ~savings, type = "scatter", mode = "lines",
+            name = "Einsparung",
+            line = list(color = "#a12c7b", width = 1.5, dash = "dot")) %>%
+  layout(
+    xaxis = list(title = "Anzahl Standorte n", dtick = 2, fixedrange = TRUE),
+    yaxis = list(title = "Sicherheitsbestand (Stück)", fixedrange = TRUE),
+    legend = list(orientation = "h", y = -0.2),
+    plot_bgcolor  = "transparent",
+    paper_bgcolor = "transparent",
+    margin = list(l = 50, r = 20, t = 10, b = 60),
+    height = 340
+  )
+
+fig_form
+```
+
+:::
+
+:::
+:::
+
+---
+
+## Kapazitätspooling {#slide-pooling-function}
+::: slide-subtitle
+Implementierung mit `pooling_safety_stock()`
+:::
+
+::: columns
+::: {.column width="52%"}
+
+::: {.callout-note appearance="simple"}
+## Funktion `pooling_safety_stock()` aus `scm_functions.R`
+
+Vergleicht den Sicherheitsbestand unter dezentraler und zentraler Lagerhaltung für $n$ unabhängige, identisch verteilte Standorte.
+:::
+
+```{r pooling-code}
+#| echo: true
+#| eval: true
+
+# Beispiel: 8 Standorte, σ = 40 Stück, 95 % Servicegrad
+res <- pooling_safety_stock(
+  n     = 8,
+  sigma = 40,
+  z     = qnorm(0.95)
+)
+
+res$ss_total_individual   # Summe dezentraler SS
+res$ss_central            # Zentraler SS
+res$savings               # Absolute Einsparung
+res$savings_pct           # Relative Einsparung (%)
+res$pooling_factor        # sqrt(n)
+```
+
+:::
+::: {.column width="46%"}
+
+::: {.fragment .fade-up}
+
+```{r pooling-result-table}
+#| echo: false
+#| warning: false
+#| message: false
+
+res8 <- pooling_safety_stock(n = 8, sigma = 40, z = qnorm(0.95))
+
+kenn <- data.frame(
+  Kennzahl = c(
+    "Anzahl Standorte $n$",
+    "Std.-Abw. $\\sigma$",
+    "Servicegrad-Quantil $z_{\\alpha}$",
+    "SS je Standort (dezentral)",
+    "Gesamt-SS dezentral",
+    "Pooling-Faktor $\\sqrt{n}$",
+    "SS Zentrallager (Pool)",
+    "Einsparung (absolut)",
+    "Einsparung (%)"
+  ),
+  Wert = c(
+    res8$n,
+    res8$sigma,
+    round(res8$z, 3),
+    round(res8$ss_individual, 1),
+    round(res8$ss_total_individual, 1),
+    round(res8$pooling_factor, 3),
+    round(res8$ss_central, 1),
+    round(res8$savings, 1),
+    paste0(round(res8$savings_pct, 1), " %")
+  )
+)
+
+kbl(kenn,
+    col.names = c("Kennzahl", "Wert"),
+    align = c("l", "r"), escape = FALSE) |>
+  kable_styling(bootstrap_options = c("condensed", "striped"),
+                full_width = TRUE, font_size = 20) |>
+  row_spec(0, background = "#2F3E46", color = "white", bold = TRUE) |>
+  row_spec(8:9, bold = TRUE, background = "#E8F4F1") |>
+  row_spec(6, italic = TRUE, color = cols$top)
+```
+
+:::
+
+::: {.fragment .fade-up}
+::: {.callout-tip appearance="simple"}
+**Ergebnis:** Bei $n = 8$ Standorten reduziert Pooling den Sicherheitsbestand um **`r round(res8$savings_pct, 1)` %** — von `r round(res8$ss_total_individual,1)` auf `r round(res8$ss_central,1)` Einheiten.
+:::
+:::
+
+:::
+:::
+
+---
+
+## Kapazitätspooling {#slide-pooling-sensitivity}
+::: slide-subtitle
+Sensitivitätsanalyse – Einsparungspotenzial
+:::
+
+```{r pooling-sens-data}
+#| echo: false
+#| warning: false
+#| message: false
+
+n_grid     <- c(2, 4, 6, 8, 10, 15, 20)
+sigma_grid <- c(20, 40, 60)
+z_95       <- qnorm(0.95)
+
+sens_df <- expand.grid(n = n_grid, sigma = sigma_grid) |>
+  rowwise() |>
+  mutate(
+    res        = list(pooling_safety_stock(n, sigma, z_95)),
+    ss_dez     = res$ss_total_individual,
+    ss_pool    = res$ss_central,
+    savings    = res$savings,
+    savings_pct = res$savings_pct,
+    factor     = res$pooling_factor
+  ) |>
+  select(-res)
+```
+
+::: columns
+::: {.column width="50%"}
+
+::: small-text
+**Einsparung (%) nach Anzahl Standorte und Standardabweichung**
+
+```{r pooling-heatmap}
+#| echo: false
+#| warning: false
+#| message: false
+#| out-width: "99%"
+#| fig-height: 4.5
+
+hm_df <- sens_df |>
+  mutate(
+    n_label     = paste0("n = ", n),
+    sigma_label = paste0("σ = ", sigma)
+  )
+
+fig_hm <- plot_ly(
+  data = hm_df,
+  x    = ~factor(n),
+  y    = ~factor(sigma_label),
+  z    = ~round(savings_pct, 1),
+  type = "heatmap",
+  colorscale = list(
+    c(0,   "#FFFFFF"),
+    c(0.5, "#52B788"),
+    c(1,   "#0B6E4F")
+  ),
+  text = ~paste0(round(savings_pct, 1), " %"),
+  texttemplate = "%{text}",
+  showscale = TRUE,
+  colorbar  = list(title = "Einsparung (%)")
+)
+
+fig_hm <- fig_hm %>% layout(
+  xaxis = list(title = "Anzahl Standorte n", fixedrange = TRUE),
+  yaxis = list(title = "Std.-Abweichung σ", fixedrange = TRUE),
+  plot_bgcolor  = "transparent",
+  paper_bgcolor = "transparent",
+  margin = list(l = 80, r = 60, t = 20, b = 50),
+  height = 300
+)
+
+fig_hm
+```
+
+:::
+
+::: {.fragment .fade-up}
+::: {.callout-note appearance="simple"}
+Die **relative** Einsparung hängt **nur von $n$** ab, nicht von $\sigma$ — da $\sigma$ sich in Zähler und Nenner kürzt. Die **absolute** Einsparung steigt proportional zu $\sigma$.
+:::
+:::
+
+:::
+::: {.column width="48%"}
+
+::: small-text
+**Einsparung (absolut) nach Standortanzahl, σ = 40**
+
+```{r pooling-bar-abs}
+#| echo: false
+#| warning: false
+#| message: false
+#| out-width: "99%"
+#| fig-height: 4.5
+
+df_abs <- sens_df |> filter(sigma == 40)
+
+fig_abs <- plot_ly(df_abs, x = ~n)
+
+fig_abs <- fig_abs %>%
+  add_trace(y = ~ss_dez, type = "bar", name = "SS dezentral",
+            marker = list(color = "#da7101"),
+            text = ~round(ss_dez, 0), textposition = "outside",
+            textfont = list(size = 12, color = "#da7101")) %>%
+  add_trace(y = ~ss_pool, type = "bar", name = "SS Pool",
+            marker = list(color = cols$top),
+            text = ~round(ss_pool, 0), textposition = "outside",
+            textfont = list(size = 12, color = cols$top)) %>%
+  layout(
+    barmode = "group",
+    xaxis   = list(title = "Anzahl Standorte n", dtick = 1,
+                   fixedrange = TRUE),
+    yaxis   = list(title = "Sicherheitsbestand (Stück)",
+                   fixedrange = TRUE),
+    legend  = list(orientation = "h", y = -0.2),
+    plot_bgcolor  = "transparent",
+    paper_bgcolor = "transparent",
+    margin = list(l = 50, r = 20, t = 20, b = 60),
+    height = 300
+  )
+
+fig_abs
+```
+
+:::
+
+:::
+:::
+
+---
+
+## Kapazitätspooling {#slide-pooling-limits}
+::: slide-subtitle
+Grenzen und praktische Überlegungen
+:::
+
+::: columns
+::: {.column width="55%"}
+
+::: {.fragment .fade-up}
+::: {.callout-warning appearance="simple"}
+## Wann wirkt Pooling weniger stark?
+
+- **Positive Korrelation** der Nachfragen: Alle Standorte haben gleichzeitig hohe/niedrige Nachfrage → kein Ausgleichseffekt
+- **Hohe Transportkosten** zum zentralen Lager können Bestandseinsparungen überkompensieren
+- **Lange Lieferzeiten** aus dem Zentrallager reduzieren den Servicegrad
+- **Produktvielfalt** und unterschiedliche Nachfrageprofile erschweren zentrale Disposition
+:::
+:::
+
+::: {.fragment .fade-up}
+::: smaller-text
+
+**Korrelationseffekt – Zentraler Sicherheitsbestand bei Korrelation $\rho$:**
+
+$$SS_\text{pool}(\rho) = z_\alpha \cdot \sigma \cdot \sqrt{n + n(n-1)\rho}$$
+
+Für $\rho = 0$: $SS_\text{pool} = z_\alpha \sigma \sqrt{n}$ ← vollständige Diversifikation
+
+Für $\rho = 1$: $SS_\text{pool} = z_\alpha \sigma \cdot n$ ← keine Diversifikation
+:::
+:::
+
+:::
+::: {.column width="43%"}
+
+::: {.fragment .fade-up}
+
+```{r pooling-corr-plot}
+#| echo: false
+#| warning: false
+#| message: false
+#| out-width: "99%"
+#| fig-height: 5
+
+rho_vals <- seq(0, 1, by = 0.05)
+n_c      <- 8
+sigma_c  <- 40
+z_c      <- qnorm(0.95)
+
+ss_corr <- z_c * sigma_c * sqrt(n_c + n_c * (n_c - 1) * rho_vals)
+ss_dez_c <- n_c * z_c * sigma_c
+
+df_corr <- data.frame(rho = rho_vals, ss = ss_corr)
+
+fig_corr <- plot_ly(df_corr, x = ~rho)
+
+fig_corr <- fig_corr %>%
+  add_trace(y = ~ss, type = "scatter", mode = "lines",
+            name = "SS Pool (mit Korrelation ρ)",
+            line = list(color = cols$top, width = 2.5)) %>%
+  add_trace(x = c(0, 1), y = c(ss_dez_c, ss_dez_c),
+            type = "scatter", mode = "lines",
+            name = "SS dezentral (Benchmark)",
+            line = list(color = "#da7101", width = 1.5, dash = "dot")) %>%
+  layout(
+    xaxis  = list(title = "Korrelation ρ zwischen Standorten",
+                  range = c(0, 1), dtick = 0.2, fixedrange = TRUE),
+    yaxis  = list(title = "Sicherheitsbestand (Stück)",
+                  fixedrange = TRUE),
+    legend = list(orientation = "h", y = -0.2),
+    plot_bgcolor  = "transparent",
+    paper_bgcolor = "transparent",
+    margin = list(l = 50, r = 20, t = 10, b = 60),
+    height = 340
+  )
+
+fig_corr
+```
+
+:::
+
+::: {.fragment .fade-up}
+::: {.callout-tip appearance="simple"}
+Ab $\rho \approx 1$ bringt Zentralisierung **keinen Vorteil** mehr gegenüber dezentraler Lagerhaltung.
+:::
+:::
+
+:::
+:::
