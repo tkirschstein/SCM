@@ -1038,7 +1038,7 @@ kbl(zuordnung,
                   "Menge $x_{ij}$","Transportkosten (T€)"),
     align = c("c","c","r","r"), escape = FALSE) |>
   kable_styling(bootstrap_options = c("condensed","striped"),
-                full_width = TRUE, font_size = 17) |>
+                full_width = TRUE, font_size = 24) |>
   column_spec(1, bold = TRUE, background = "#2F3E46", color = "white") |>
   column_spec(2, bold = TRUE, background = "#2D9E8E", color = "white") |>
   row_spec(0, background = "#2F3E46", color = "white", bold = TRUE)
@@ -1061,7 +1061,7 @@ kbl(kosten_df,
     col.names = c("Kostenart", "T€/Jahr"),
     align = c("l","r")) |>
   kable_styling(bootstrap_options = c("condensed"),
-                full_width = TRUE, font_size = 17) |>
+                full_width = TRUE, font_size = 24) |>
   row_spec(3, bold = TRUE, background = "#2F3E46", color = "white") |>
   row_spec(0, background = "#2F3E46", color = "white", bold = TRUE)
 ```
@@ -1919,7 +1919,7 @@ comp_df <- data.frame(
     "Anzahl Lager",
     "Eröffnungskosten (T€)",
     "Transportkosten (T€)",
-    "**Gesamtkosten Z (T€)**",
+    "Gesamtkosten Z (T€)",
     "Gap zum Optimum (%)"
   ),
   Optimum = c(
@@ -1927,7 +1927,8 @@ comp_df <- data.frame(
     length(c(1, 2)),
     fix_opt,
     round(tr_opt, 1),
-    paste0("**", round(cost_opt_val, 1), "**"),
+    #paste0("**", round(cost_opt_val, 1), "**"),
+    round(cost_opt_val, 1),
     "–"
   ),
   Add = c(
@@ -1935,7 +1936,8 @@ comp_df <- data.frame(
     length(S_add_h),
     fix_add,
     round(tr_add, 1),
-    paste0("**", round(cost_add_val, 1), "**"),
+    #paste0("**", round(cost_add_val, 1), "**"),
+    round(cost_add_val, 1),
     paste0(gap_add, " %")
   ),
   Drop = c(
@@ -1943,7 +1945,8 @@ comp_df <- data.frame(
     length(S_drop_h),
     fix_drop,
     round(tr_drop, 1),
-    paste0("**", round(cost_drop_val, 1), "**"),
+    #paste0("**", round(cost_drop_val, 1), "**"),
+    round(cost_drop_val, 1),
     paste0(gap_drop, " %")
   )
 )
@@ -1968,12 +1971,14 @@ In diesem Fallbeispiel findet die **Add-Heuristik** zufällig die **optimale Lö
 :::
 ::: {.column width="48%"}
 
+**Kostenvergleich**
+
 ```{r comparison-bar}
 #| echo: false
 #| warning: false
 #| message: false
 #| out-width: "99%"
-#| fig-height: 5
+#| fig-height: 4.5
 
 methoden  <- c("Optimum (MILP)", "Add-Heuristik", "Drop-Heuristik")
 fix_vals  <- c(fix_opt,  fix_add,  fix_drop)
@@ -2021,10 +2026,6 @@ fig_bar <- fig_bar %>% layout(
 
 fig_bar
 ```
-
-::: {.callout-warning appearance="simple"}
-**Allgemein gilt:** Heuristiken sind **nicht garantiert optimal**. Die Güte hängt von der Kostenstruktur ab. Für Praxisinstanzen mit $|I|, |J| \gg 100$ sind sie dennoch oft die einzig praktikable Alternative zu exakten Solvern.
-:::
 
 :::
 :::
