@@ -283,7 +283,7 @@ Kapazitätspooling
 
 ::: {.callout-note appearance="simple"}
 ## Ausgangssituation (Cachon & Terwiesch, Kap. 17)
-Ein Automobilhersteller (z.B. GM) betreibt **10 Produktionswerke** für **10 Fahrzeugmodelle** (z.B. Chevy Malibu, GMC Yukon XL). Jedes Werk ist genau einem Modell zugeordnet – **keine Flexibilität**. Die Kapazität je Werk beträgt **90 Einheiten**. Die Nachfrage ist **unsicher** und wird beobachtet, nachdem die Kapazitäten festgelegt wurden.
+Ein Automobilhersteller (z.B. GM) betreibt **2 Produktionswerke** für **2 Fahrzeugmodelle** (z.B. Chevy Malibu, GMC Yukon XL). Jedes Werk ist genau einem Modell zugeordnet – **keine Flexibilität**. Die Kapazität je Werk beträgt **90 Einheiten**. Die Nachfrage ist **unsicher** und wird beobachtet, nachdem die Kapazitäten festgelegt wurden.
 :::
 
 ::: columns
