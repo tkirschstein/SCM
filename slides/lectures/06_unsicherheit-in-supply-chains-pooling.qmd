@@ -19,11 +19,257 @@ library(kableExtra)
 
 ## Die Natur der Unsicherheit {#slide-pooling-1}
 ::: slide-subtitle
-Beobachtungen
+Implizierte Unsicherheit in Supply Chains (Chopra & Meindl)
 :::
 
+::: {.callout-note appearance="minimal" icon=false}
+**Implizierte Unsicherheit** (*implied uncertainty*) bezeichnet die Unsicherheit, mit der eine Supply Chain umgehen **muss** — bestimmt durch die Kombination aus **Nachfrageunsicherheit** und den **Serviceanforderungen** des Marktes (Chopra & Meindl, Kap. 2).
+:::
 
+::: columns
+::: {.column width="52%"}
 
+::: {.fragment .fade-up}
+::: smaller-text
+**Zwei Quellen implizierter Unsicherheit**
+
+| Dimension | Niedrig | Hoch |
+|---|---|---|
+| **Nachfrageunsicherheit** | Salz, Strom | Fashion, Elektronik |
+| **Liefervariabilität** | Beton, Kohle | Halbleiter, Fischfang |
+
+$\rightarrow$ Hohe implizierte Unsicherheit erfordert **reaktionsfähige** (*responsive*) Supply Chains mit Pufferkapazität.
+:::
+:::
+
+::: {.fragment .fade-up}
+::: {.callout-warning appearance="simple"}
+## Das Grunddilemma
+- **Nachfrage** ist variabel und schwer vorhersagbar
+- **Kapazitäten** (Werke, Lager, Personal) werden im Voraus festgelegt
+- $\rightarrow$ Mismatch zwischen Angebot und Nachfrage ist **strukturell unvermeidlich**
+:::
+:::
+
+:::
+::: {.column width="46%"}
+
+::: {.fragment .fade-up}
+
+```{r implied-uncertainty-plot}
+#| echo: false
+#| warning: false
+#| message: false
+#| out-width: "99%"
+#| fig-height: 5
+
+# Implied Uncertainty Spectrum nach Chopra & Meindl
+produkte <- data.frame(
+  label     = c("Salz", "Suppe", "Bier", "Kleidung",
+                "PC", "Fashion", "Telefonchips"),
+  iu_score  = c(0.05, 0.18, 0.30, 0.52, 0.65, 0.82, 0.94),
+  kategorie = c("Functional", "Functional", "Functional",
+                "Hybrid", "Hybrid", "Innovative", "Innovative")
+)
+
+farben <- c("Functional" = "#52B788",
+            "Hybrid"     = "#E9C46A",
+            "Innovative" = "#E76F51")
+
+fig_iu <- plot_ly(produkte,
+  x    = ~iu_score,
+  y    = rep(1, nrow(produkte)),
+  type = "scatter", mode = "markers+text",
+  color = ~kategorie, colors = farben,
+  marker = list(size = 22, opacity = 0.9,
+                line = list(color = "white", width = 1.5)),
+  text        = ~label,
+  textposition = "top center",
+  textfont    = list(size = 12, family = "Arial", color = "#1F2933")
+) %>%
+  layout(
+    xaxis = list(
+      title    = "Implizierte Unsicherheit →",
+      range    = c(-0.05, 1.05),
+      tickvals = c(0, 0.5, 1),
+      ticktext = c("Niedrig", "Mittel", "Hoch"),
+      fixedrange = TRUE
+    ),
+    yaxis = list(
+      visible    = FALSE,
+      range      = c(0.8, 1.5),
+      fixedrange = TRUE
+    ),
+    legend = list(orientation = "h", y = -0.15, title = list(text = "Produkttyp")),
+    annotations = list(
+      list(
+        x = 0.12, y = 0.82, xref = "x", yref = "paper",
+        text = "<b>Efficient SC</b><br>wenig Puffer nötig",
+        showarrow = FALSE,
+        font = list(size = 11, color = "#52B788", family = "Arial"),
+        align = "center"
+      ),
+      list(
+        x = 0.88, y = 0.82, xref = "x", yref = "paper",
+        text = "<b>Responsive SC</b><br>Puffer & Flexibilität",
+        showarrow = FALSE,
+        font = list(size = 11, color = "#E76F51", family = "Arial"),
+        align = "center"
+      )
+    ),
+    shapes = list(list(
+      type = "line",
+      x0 = 0.5, x1 = 0.5, y0 = 0, y1 = 1,
+      xref = "x", yref = "paper",
+      line = list(color = "#9CA3AF", dash = "dot", width = 1.2)
+    )),
+    plot_bgcolor  = "transparent",
+    paper_bgcolor = "transparent",
+    margin = list(l = 30, r = 20, t = 20, b = 60),
+    height = 330
+  )
+
+fig_iu
+```
+
+:::
+
+:::
+:::
+
+---
+
+## Die Natur der Unsicherheit {#slide-pooling-mismatch}
+::: slide-subtitle
+Mismatch: Schwankende Nachfrage vs. fixe Kapazität
+:::
+
+::: columns
+::: {.column width="52%"}
+
+::: {.callout-note appearance="minimal" icon=false}
+Kapazitäten (Maschinen, Personal, Lagerraum) werden **ex ante** bestimmt. Die Nachfrage realisiert sich **ex post**. Das Ergebnis: **systematischer Mismatch** in beide Richtungen.
+:::
+
+::: {.fragment .fade-up}
+::: smaller-text
+
+**Konsequenzen des Mismatches**
+
+| Szenario | Ursache | Folge |
+|---|---|---|
+| $d > C$ | Nachfrage übersteigt Kapazität | Lost Sales, Umsatzverlust |
+| $d < C$ | Kapazität nicht ausgelastet | Leerkosten, Ineffizienz |
+| $d \approx C$ | Zufälliges Gleichgewicht | Nur bei perfekter Prognose |
+
+:::
+:::
+
+::: {.fragment .fade-up}
+::: {.callout-tip appearance="simple"}
+## Praxisbeispiele
+- **Automobilindustrie:** GM-Werke produzieren nur ein Modell — Yukon-Werk steht still, während Malibu-Werk überlastet ist (Cachon & Terwiesch, Kap. 17)
+- **Einzelhandel:** Saisonware (Weihnachtsartikel) wird zu früh bestellt, Reste werden verramscht
+- **Krankenhaus:** OP-Kapazitäten sind täglich fix, Notfallaufkommen ist hochvariabel
+:::
+:::
+
+:::
+::: {.column width="46%"}
+
+::: {.fragment .fade-up}
+
+```{r mismatch-plot}
+#| echo: false
+#| warning: false
+#| message: false
+#| out-width: "99%"
+#| fig-height: 5.5
+
+set.seed(12)
+n_periods <- 24
+mu_d <- 88
+sigma_d <- 14
+C <- 90
+
+t_vals <- 1:n_periods
+d_vals <- pmax(40, round(rnorm(n_periods, mu_d, sigma_d)))
+prod_vals <- pmin(d_vals, C)
+lost_vals <- pmax(0, d_vals - C)
+idle_vals <- pmax(0, C - d_vals)
+
+df_mm <- data.frame(
+  t = t_vals, d = d_vals, prod = prod_vals,
+  lost = lost_vals, idle = idle_vals
+)
+
+fig_mm <- plot_ly(df_mm, x = ~t)
+
+# Kapazitätsgrenze
+fig_mm <- fig_mm %>% add_trace(
+  x = c(1, n_periods), y = c(C, C),
+  type = "scatter", mode = "lines",
+  name = paste0("Kapazität C = ", C),
+  line = list(color = "#6B7280", width = 1.8, dash = "dash"),
+  hoverinfo = "skip"
+)
+
+# Leerkapazität (shaded)
+fig_mm <- fig_mm %>% add_trace(
+  x = ~t, y = ~idle,
+  type = "bar", name = "Idle Capacity (C − d)",
+  marker = list(color = "rgba(234,179,8,0.45)",
+                line = list(color = "rgba(234,179,8,0.0)", width = 0)),
+  base = ~prod
+)
+
+# Lost Sales (shaded above C)
+fig_mm <- fig_mm %>% add_trace(
+  x = ~t, y = ~lost,
+  type = "bar", name = "Lost Sales (d − C)",
+  marker = list(color = "rgba(220,38,38,0.55)",
+                line = list(color = "rgba(220,38,38,0.0)", width = 0)),
+  base = C
+)
+
+# Produktion
+fig_mm <- fig_mm %>% add_trace(
+  x = ~t, y = ~prod,
+  type = "scatter", mode = "lines",
+  name = "Produktion / Verkauf",
+  line = list(color = cols$top, width = 2)
+)
+
+# Nachfrage
+fig_mm <- fig_mm %>% add_trace(
+  x = ~t, y = ~d,
+  type = "scatter", mode = "lines+markers",
+  name = "Nachfrage d",
+  line   = list(color = "#1D4ED8", width = 1.5),
+  marker = list(color = "#1D4ED8", size = 5)
+)
+
+fig_mm <- fig_mm %>% layout(
+  barmode = "overlay",
+  xaxis = list(title = "Periode", dtick = 3, fixedrange = TRUE),
+  yaxis = list(title = "Einheiten",
+               range = c(40, max(d_vals) * 1.12),
+               fixedrange = TRUE),
+  legend = list(orientation = "h", y = -0.22,
+                font = list(size = 11)),
+  plot_bgcolor  = "transparent",
+  paper_bgcolor = "transparent",
+  margin = list(l = 50, r = 20, t = 10, b = 70),
+  height = 370
+)
+
+fig_mm
+```
+
+:::
+
+:::
+:::
 
 ---
 
