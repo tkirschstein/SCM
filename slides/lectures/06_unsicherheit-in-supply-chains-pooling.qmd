@@ -42,15 +42,6 @@ $\rightarrow$ Hohe implizierte Unsicherheit erfordert **reaktionsfähige** (*res
 :::
 :::
 
-::: {.fragment .fade-up}
-::: {.callout-warning appearance="simple"}
-## Das Grunddilemma
-- **Nachfrage** ist variabel und schwer vorhersagbar
-- **Kapazitäten** (Werke, Lager, Personal) werden im Voraus festgelegt
-- $\rightarrow$ Mismatch zwischen Angebot und Nachfrage ist **strukturell unvermeidlich**
-:::
-:::
-
 :::
 ::: {.column width="46%"}
 
@@ -61,7 +52,7 @@ $\rightarrow$ Hohe implizierte Unsicherheit erfordert **reaktionsfähige** (*res
 #| warning: false
 #| message: false
 #| out-width: "99%"
-#| fig-height: 5
+#| fig-height: 3.5
 
 # Implied Uncertainty Spectrum nach Chopra & Meindl
 produkte <- data.frame(
@@ -137,6 +128,15 @@ fig_iu
 :::
 :::
 
+::: {.fragment .fade-up}
+::: {.callout-warning appearance="simple"}
+## Das Grunddilemma
+- **Nachfrage** ist variabel und schwer vorhersagbar
+- **Kapazitäten** (Werke, Lager, Personal) werden im Voraus festgelegt
+- $\rightarrow$ Mismatch zwischen Angebot und Nachfrage ist **strukturell unvermeidlich**
+:::
+:::
+
 ---
 
 ## Die Natur der Unsicherheit {#slide-pooling-mismatch}
@@ -156,21 +156,12 @@ Kapazitäten (Maschinen, Personal, Lagerraum) werden **ex ante** bestimmt. Die N
 
 **Konsequenzen des Mismatches**
 
-| Szenario | Ursache | Folge |
-|---|---|---|
-| $d > C$ | Nachfrage übersteigt Kapazität | Lost Sales, Umsatzverlust |
-| $d < C$ | Kapazität nicht ausgelastet | Leerkosten, Ineffizienz |
-| $d \approx C$ | Zufälliges Gleichgewicht | Nur bei perfekter Prognose |
+| Szenario | Phänomen | Folge |
+|---|---------|---------|
+| $d > C$ | Überlastung | Lost Sales, Umsatzverlust |
+| $d < C$ | Unterauslastung | Leerkosten |
+| $d \approx C$ | Gleichgewicht |  bei perfekter Prognose |
 
-:::
-:::
-
-::: {.fragment .fade-up}
-::: {.callout-tip appearance="simple"}
-## Praxisbeispiele
-- **Automobilindustrie:** GM-Werke produzieren nur ein Modell — Yukon-Werk steht still, während Malibu-Werk überlastet ist (Cachon & Terwiesch, Kap. 17)
-- **Einzelhandel:** Saisonware (Weihnachtsartikel) wird zu früh bestellt, Reste werden verramscht
-- **Krankenhaus:** OP-Kapazitäten sind täglich fix, Notfallaufkommen ist hochvariabel
 :::
 :::
 
@@ -184,7 +175,7 @@ Kapazitäten (Maschinen, Personal, Lagerraum) werden **ex ante** bestimmt. Die N
 #| warning: false
 #| message: false
 #| out-width: "99%"
-#| fig-height: 5.5
+#| fig-height: 3.5
 
 set.seed(12)
 n_periods <- 24
@@ -260,7 +251,8 @@ fig_mm <- fig_mm %>% layout(
   plot_bgcolor  = "transparent",
   paper_bgcolor = "transparent",
   margin = list(l = 50, r = 20, t = 10, b = 70),
-  height = 370
+  height = 370,
+  width = 650
 )
 
 fig_mm
@@ -271,11 +263,22 @@ fig_mm
 :::
 :::
 
+::: {.fragment .fade-up}
+::: {.callout-tip appearance="simple"}
+## Praxisbeispiele
+- **Automobilindustrie:** Werke produzieren nur bestimmte Modelle für mehrere Jahre $\rightarrow$ Auslastung hängt von Nachfrage ab
+- **Einzelhandel:** Saisonware (Weihnachtsartikel) wird zu früh bestellt, Reste werden verramscht
+- **Krankenhaus:** OP-Kapazitäten sind täglich fix, Notfallaufkommen ist hochvariabel
+:::
+:::
+
+
+
 ---
 
-## Die Natur der Unsicherheit {#slide-cp-background}
+## Umgang mit Unsicherheit {#slide-cp-background}
 ::: slide-subtitle
-Auswirkungen
+Kapazitätspooling
 :::
 
 ::: {.callout-note appearance="simple"}
