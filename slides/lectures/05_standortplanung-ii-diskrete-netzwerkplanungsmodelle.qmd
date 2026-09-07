@@ -874,7 +874,7 @@ kbl(wlp_lager,
     col.names = c("Lager $i$", "$f_i$ (T€)"),
     align = c("c","r"), escape = FALSE) |>
   kable_styling(bootstrap_options = c("condensed","striped"),
-                full_width = TRUE, font_size = 18) |>
+                full_width = TRUE, font_size = 24) |>
   column_spec(1, bold = TRUE, background = "#2F3E46", color = "white") |>
   row_spec(0, background = "#2F3E46", color = "white", bold = TRUE)
 ```
@@ -887,7 +887,7 @@ kbl(wlp_kunden,
     col.names = c("Kunde $j$", "$a_j$"),
     align = c("c","r"), escape = FALSE) |>
   kable_styling(bootstrap_options = c("condensed","striped"),
-                full_width = TRUE, font_size = 18) |>
+                full_width = TRUE, font_size = 24) |>
   column_spec(1, bold = TRUE, background = "#2D9E8E", color = "white") |>
   row_spec(0, background = "#2D9E8E", color = "white", bold = TRUE)
 ```
@@ -904,7 +904,7 @@ kbl(wlp_kunden,
 kbl(as.data.frame(wlp_cij),
     align = rep("r", 6), escape = FALSE) |>
   kable_styling(bootstrap_options = c("condensed","striped"),
-                full_width = TRUE, font_size = 18) |>
+                full_width = TRUE, font_size = 24) |>
   column_spec(1, bold = TRUE, background = "#2F3E46", color = "white") |>
   row_spec(0, background = "#2F3E46", color = "white", bold = TRUE)
 ```
@@ -1036,7 +1036,7 @@ zuordnung <- x_sol |>
 kbl(zuordnung,
     col.names = c("Lager $i$","Kunde $j$",
                   "Menge $x_{ij}$","Transportkosten (T€)"),
-    align = c("c","c","r","r"), escape = FALSE) |>
+    align = c("c","c","r","r"), escape = F) |>
   kable_styling(bootstrap_options = c("condensed","striped"),
                 full_width = TRUE, font_size = 24) |>
   column_spec(1, bold = TRUE, background = "#2F3E46", color = "white") |>
@@ -1349,7 +1349,7 @@ $$\Delta_i = Z(S) - Z(S \cup \{i\})$$
 4. **Sonst:** Abbruch
 
 **Zuordnungsregel:** Jeder Kunde $j$ wird dem günstigsten offenen Lager zugeordnet:
-$$\sigma(j) = \arg\min_{i \in S} c_{ij}$$
+$\sigma(j) = \arg\min_{i \in S} c_{ij}$
 :::
 :::
 
