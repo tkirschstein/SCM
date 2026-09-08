@@ -1471,8 +1471,21 @@ Sicherheitsbestände dienen dem Ausgleich von Nachfrageschwankungen über die Ze
 $$ sb = S - \mu$$ 
 :::
 
+:::: columns
+::: {.column width="33%"}
 
+::: {.fragment .fade-up}
+::: {.callout-note appearance="minimal" icon=false}
+## Festlegung von Sicherheitsbeständen
 
+- *nach Kosten*: Sicherheitsbestände verursachen Lagerhaltungskosten und vermeiden Fehlmengenkosten $\rightarrow$ Kostenabwägung 
+- *Lieferbereitschaft*: Absicherung des Risikos, im Risikozeitraum nicht lieferfähig zu sein ($\alpha$-Servicegrad)
+- *Versorgungsgrad*: Anteil der Nachfrage, die langfristig innerhalb des Risikozeitraums erfüllt werden soll ($\beta$-Servicegrad)
+:::
+:::
+:::
+
+::::
 
 ---
 
