@@ -89,6 +89,46 @@ arrow_ann <- function(x, y, ax, ay, dash = FALSE,
   )
 }
 
+
+# 0. Inventor management ─────────────────────────────────────────────────────
+#' (t,S) Inventory control function
+#'
+#' calculates inventory stocks for a (t,S)-controlled storage
+#'
+#' @param d  numeric vector with period demands
+#' @param t  numeric scalar with order interval
+#' @param S  numeric scalar with order-up-to-level
+#' @param l.ini  numeric initial inventory level
+#' @param wbz  integer number of  order lead time
+#' @return        Named matrix with demand, stock levels, orders and deliveries
+#' @examples
+#' demand <- rpois(25, lambda = 25)
+#' tS.lager(d = demand, t =3, S = 65, l.ini = 50, wbz = 2)
+
+tS.lager <- function(d, t, S, l.ini,  wbz){
+  n <- length(d)
+  tmp.mat <- matrix(0, nrow= n+1+wbz, ncol= 5 )
+  colnames(tmp.mat) <- c("Bedarf","Lagerbestand", "Bestellung", "Lieferung", "dis.LB")
+  
+  tmp.mat[,"Bedarf"] <- c(0,d, rep(0,wbz))
+  tmp.mat[1,"Lagerbestand"] <- l.ini
+  tmp.mat[1,"dis.LB"] <- l.ini
+  
+  for(i in 2:(n+1)){
+    if((i-1) %% t == 0){
+      tmp.mat[i, "Bestellung"] <- S - tmp.mat[i-1, "dis.LB"]
+      tmp.mat[i+wbz, "Lieferung"] <- tmp.mat[i, "Bestellung"]
+    }
+    
+    tmp.mat[i, "dis.LB"] <- tmp.mat[i-1, "dis.LB"] - tmp.mat[i, "Bedarf"] + tmp.mat[i, "Bestellung"]
+    tmp.mat[i, "Lagerbestand"] <- tmp.mat[i-1, "Lagerbestand"] - tmp.mat[i, "Bedarf"] + tmp.mat[i, "Lieferung"]
+    
+  }
+  return(tmp.mat[2:(n+1),]) 
+}
+
+
+
 # ─── 1. LOCATION PLANNING ─────────────────────────────────────────────────────
 
 #' Center of Gravity (CoG) Heuristic

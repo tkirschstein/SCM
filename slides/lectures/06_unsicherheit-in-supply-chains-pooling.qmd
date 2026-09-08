@@ -1467,8 +1467,7 @@ Pooling über die Zeit - Sicherheitsbestände
 ::: {.callout-note appearance="minimal" icon=false}
 ## Definition Sicherheitsbestand (Wiederholung)
 
-Sicherheitsbestände dienen dem Ausgleich von Nachfrageschwankungen über die Zeit. Der Sicherheitsbestand ist der erwarte Lagerbestand am Ende einer Risikoperiode. Sei $S$ der Anfangslagerbestand zu Begin der Risikoperiode und $\mu$ der erwartete Bedarf in der Risikoperiode, dann gilt für den Sicherheitsbestand $sb$
-$$ sb = S - \mu$$ 
+Sicherheitsbestände gleichen Nachfrageschwankungen über die Zeit aus. Sei $S$ der Anfangslagerbestand zu Begin der Risikoperiode und $\mu$ der erwartete Bedarf in der Risikoperiode, dann gilt für den Sicherheitsbestand $sb$: $sb = S - \mu$
 :::
 
 :::: columns
@@ -1484,6 +1483,210 @@ $$ sb = S - \mu$$
 :::
 :::
 :::
+
+
+::: {.column width="65%"}
+
+::: {.fragment .fade-up}
+```{r lagerbestand-graph}
+#| echo: false
+#| warning: false
+#| message: false
+#| out-width: "90%"
+#| fig-height: 4.5
+
+library(plotly)
+
+set.seed(42)
+
+# --- Hilfsfunktion: stochastischer Lagerabbau ---
+make_inventory <- function(t_start, t_end, y_start, y_end, n = 200) {
+  t <- seq(t_start, t_end, length.out = n)
+  # Linearer Trend + Brownsche Bewegung
+  trend <- seq(0, y_end - y_start, length.out = n)
+  noise <- cumsum(rnorm(n, 0, (y_start - y_end) * 0.015))
+  noise <- noise - noise  # bei 0 starten[1]
+  y <- y_start + trend + noise
+  # Clipping: nicht unter y_end fallen
+  y <- pmax(y, min(y_end, y_start))
+  data.frame(t = t, y = y)
+}
+
+# Parameter
+S  <- 100   # Anfangslagerbestand
+sb <- 18    # Sicherheitsbestand
+t1 <- 0     # Periodenanfang 1
+t2 <- 6     # Periodenende 1 / Bestellzeitpunkt
+t3 <- 10    # Ende der Darstellung
+
+# Periode 1: S -> sb (stochastischer Abbau)
+p1 <- make_inventory(t1, t2, S, sb, n = 300)
+
+# Periode 2: Auffüllung auf S, dann stochastischer Abbau
+p2 <- make_inventory(t2, t3, S, S * 0.65, n = 200)
+
+# Vertikale Linie (Bestellzeitpunkt)
+x_order <- t2
+
+fig <- plot_ly(type = "scatter", mode = "lines")
+
+# Periode 1 - Kurve
+fig <- fig %>% add_trace(
+  x = p1$t, y = p1$y,
+  line = list(color = "#2F3E46", width = 2),
+  hoverinfo = "skip", showlegend = FALSE
+)
+
+# Periode 2 - Kurve
+fig <- fig %>% add_trace(
+  x = p2$t, y = p2$y,
+  line = list(color = "#2F3E46", width = 2),
+  hoverinfo = "skip", showlegend = FALSE
+)
+
+# Horizontale Linie: Anfangslagerbestand S (oben)
+fig <- fig %>% add_segments(
+  x = t1, xend = t3, y = S, yend = S,
+  line = list(color = "#2D9E8E", width = 1.8, dash = "solid"),
+  hoverinfo = "skip", showlegend = FALSE
+)
+
+# Horizontale Linie: Sicherheitsbestand sb (gestrichelt)
+fig <- fig %>% add_segments(
+  x = t1, xend = t3, y = sb, yend = sb,
+  line = list(color = "#2F3E46", width = 1.5, dash = "dash"),
+  hoverinfo = "skip", showlegend = FALSE
+)
+
+# Horizontale Linie: y = 0
+fig <- fig %>% add_segments(
+  x = t1, xend = t3, y = 0, yend = 0,
+  line = list(color = "#2F3E46", width = 1.2, dash = "solid"),
+  hoverinfo = "skip", showlegend = FALSE
+)
+
+# Vertikale Linie: Bestellzeitpunkt (Periodentrenner)
+fig <- fig %>% add_segments(
+  x = x_order, xend = x_order, y = 0, yend = S,
+  line = list(color = "#2F3E46", width = 1.5, dash = "solid"),
+  hoverinfo = "skip", showlegend = FALSE
+)
+
+# --- Annotations ---
+
+# "Anfangslagerbestand S" (oben rechts der Linie)
+fig <- fig %>% add_annotations(
+  x = t1 + 0.15, y = S,
+  xref = "x", yref = "y",
+  text = "Anfangslagerbestand <i>S</i>",
+  showarrow = FALSE, xanchor = "left", yanchor = "bottom",
+  font = list(size = 12, color = "#1F2933", family = "Arial")
+)
+
+# "Sicherheitsbestand sb" (gestrichelte Linie)
+fig <- fig %>% add_annotations(
+  x = t1 + 0.15, y = sb,
+  xref = "x", yref = "y",
+  text = "Sicherheitsbestand <i>sb</i>",
+  showarrow = FALSE, xanchor = "left", yanchor = "bottom",
+  font = list(size = 12, color = "#1F2933", family = "Arial")
+)
+
+# "0" auf der x-Achse
+fig <- fig %>% add_annotations(
+  x = t1, y = 0,
+  xref = "x", yref = "y",
+  text = "0", showarrow = FALSE,
+  xanchor = "right", yanchor = "top",
+  font = list(size = 12, color = "#1F2933", family = "Arial")
+)
+
+# Doppelpfeil "Periode" unter Periode 1 (via zwei Pfeile + Text)
+y_arrow <- -10  # unter 0
+
+# Pfeil links → Mitte (Periode 1)
+fig <- fig %>% add_annotations(
+  x = (t1 + t2) / 2, y = y_arrow,
+  ax = t1, ay = y_arrow,
+  xref = "x", yref = "y", axref = "x", ayref = "y",
+  showarrow = TRUE, arrowhead = 2, arrowsize = 0.9,
+  arrowwidth = 1.2, arrowcolor = "#2D9E8E", text = ""
+)
+# Pfeil rechts → Mitte (Periode 1)
+fig <- fig %>% add_annotations(
+  x = (t1 + t2) / 2, y = y_arrow,
+  ax = t2, ay = y_arrow,
+  xref = "x", yref = "y", axref = "x", ayref = "y",
+  showarrow = TRUE, arrowhead = 2, arrowsize = 0.9,
+  arrowwidth = 1.2, arrowcolor = "#2D9E8E", text = ""
+)
+fig <- fig %>% add_annotations(
+  x = (t1 + t2) / 2, y = y_arrow - 6,
+  xref = "x", yref = "y",
+  text = "Periode", showarrow = FALSE,
+  font = list(size = 12, color = "#1F2933", family = "Arial"),
+  xanchor = "center"
+)
+
+# Pfeil links → Mitte (Periode 2)
+fig <- fig %>% add_annotations(
+  x = (t2 + t3) / 2, y = y_arrow,
+  ax = t2, ay = y_arrow,
+  xref = "x", yref = "y", axref = "x", ayref = "y",
+  showarrow = TRUE, arrowhead = 2, arrowsize = 0.9,
+  arrowwidth = 1.2, arrowcolor = "#2D9E8E", text = ""
+)
+# Pfeil rechts → Mitte (Periode 2)
+fig <- fig %>% add_annotations(
+  x = (t2 + t3) / 2, y = y_arrow,
+  ax = t3, ay = y_arrow,
+  xref = "x", yref = "y", axref = "x", ayref = "y",
+  showarrow = TRUE, arrowhead = 2, arrowsize = 0.9,
+  arrowwidth = 1.2, arrowcolor = "#2D9E8E", text = ""
+)
+fig <- fig %>% add_annotations(
+  x = (t2 + t3) / 2, y = y_arrow - 6,
+  xref = "x", yref = "y",
+  text = "Periode", showarrow = FALSE,
+  font = list(size = 12, color = "#1F2933", family = "Arial"),
+  xanchor = "center"
+)
+
+# y-Achsen-Beschriftung "Lagerbestand" (via Annotation, da Plotly kein vertikales Label hat)
+fig <- fig %>% add_annotations(
+  x = -0.08, y = 0.5,
+  xref = "paper", yref = "paper",
+  text = "Lagerbestand",
+  showarrow = FALSE, textangle = -90,
+  font = list(size = 13, color = "#1F2933", family = "Arial"),
+  xanchor = "center", yanchor = "middle"
+)
+
+# --- Layout ---
+fig <- fig %>% layout(
+  xaxis = list(
+    visible = FALSE,
+    range = c(t1 - 0.3, t3 + 0.1),
+    fixedrange = TRUE
+  ),
+  yaxis = list(
+    visible = FALSE,
+    range = c(y_arrow - 12, S + 12),
+    fixedrange = TRUE
+  ),
+  plot_bgcolor  = "transparent",
+  paper_bgcolor = "transparent",
+  margin = list(l = 60, r = 20, t = 20, b = 30),
+  height = 360,
+  width  = 680
+)
+
+fig
+```
+:::
+:::
+
+
 
 ::::
 
