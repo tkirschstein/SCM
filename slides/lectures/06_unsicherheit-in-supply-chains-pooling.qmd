@@ -436,21 +436,24 @@ make_mismatch_fig(
 
 ---
 
-## Originalkonfiguration {#slide-cp-original}
+## Kapazitätspooling {#slide-cp-original}
 ::: slide-subtitle
-Empirisches Beispiel – Jedes Werk produziert nur ein Modell
+Originalkonfiguration – Jedes Werk produziert nur ein Modell
 :::
 
+**Monatliche Nachfrage und Produktion (C¹ = C² = 90)**
+
 ::: columns
-::: {.column width="52%"}
+::: {.column width="25%"}
 
 ::: small-text
-**Monatliche Nachfrage und Produktion (C¹ = C² = 90)**
 
 ```{r cp-original-table}
 #| echo: false
 #| warning: false
 #| message: false
+
+C1 <- C2 <- 90
 
 cp_data <- data.frame(
   Monat = 1:12,
@@ -482,75 +485,148 @@ kbl(cp_data,
 ```
 
 :::
-
 :::
+
+
+::: {.column width="27%"}
+
+```{r cp-original-graph}
+#| echo: false
+#| warning: false
+#| message: false
+#| out-width: "99%"
+#| fig-height: 3
+
+# Original-Setting: C1->1->A, C2->2->B (getrennte Linien, kein Pooling)
+plants <- data.frame(
+  id  = c("P1","P2"),
+  lbl = c("1","2"),
+  cl  = c("C<sup>1</sup>","C<sup>2</sup>"),
+  x   = 0.35,
+  y   = c(0.72, 0.28)
+)
+
+markets <- data.frame(
+  id  = c("A","B"),
+  lbl = c("A","B"),
+  dj  = c("d<sup>A</sup>","d<sup>B</sup>"),
+  x   = 0.72,
+  y   = c(0.72, 0.28)
+)
+
+pxy <- setNames(plants[,  c("x","y")], c("x","y")); rownames(pxy) <- plants$id
+mxy <- setNames(markets[, c("x","y")], c("x","y")); rownames(mxy) <- markets$id
+
+r <- 0.055  # Knotenradius in Plot-Koordinaten
+
+edges <- data.frame(
+  from = c("P1","P2"),
+  to   = c("A","B"),
+  lbl  = c("x<sup>1A</sup>","x<sup>2B</sup>"),
+  dash = c(FALSE, FALSE),
+  stringsAsFactors = FALSE
+)
+
+fig <- plot_ly(type = "scatter", mode = "markers")
+
+for (i in seq_len(nrow(edges))) {
+  x0 <- pxy[edges$from[i], "x"];  y0 <- pxy[edges$from[i], "y"]
+  x1 <- mxy[edges$to[i],   "x"];  y1 <- mxy[edges$to[i],   "y"]
+  dx <- x1 - x0;  dy <- y1 - y0;  d <- sqrt(dx^2 + dy^2)
+  ax <- x0 + r * dx / d;  ay <- y0 + r * dy / d
+  ex <- x1 - r * dx / d;  ey <- y1 - r * dy / d
+
+  fig <- fig %>% add_annotations(
+    x = ex, y = ey, ax = ax, ay = ay,
+    xref = "x", yref = "y", axref = "x", ayref = "y",
+    showarrow = TRUE, arrowhead = 2, arrowsize = 1,
+    arrowwidth = 1.5, arrowcolor = "#4B4B4B", text = ""
+  )
+
+  if (nchar(edges$lbl[i]) > 0) {
+    fig <- fig %>% add_annotations(
+      x = (ax + ex) / 2, y = (ay + ey) / 2 + 0.06,
+      xref = "x", yref = "y",
+      text = edges$lbl[i], showarrow = FALSE,
+      font = list(size = 13, color = "#1F2933", family = "Arial")
+    )
+  }
+}
+
+# Kostenlabels links der Pflanzen
+fig <- fig %>% add_annotations(
+  x = plants$x - 0.12, y = plants$y,
+  xref = "x", yref = "y",
+  text = plants$cl, showarrow = FALSE,
+  font = list(size = 14, color = "#1F2933", family = "Arial"),
+  xanchor = "right"
+)
+
+# Pflanzen-Knoten (Hexagon)
+fig <- fig %>% add_trace(
+  x = plants$x, y = plants$y, text = plants$lbl,
+  mode = "markers+text",
+  marker = list(symbol = "hexagon", size = 42,
+                color = "#BFDBF7", line = list(color = "#4B5563", width = 1.5)),
+  textfont = list(size = 16, color = "#1F2933", family = "Arial"),
+  textposition = "middle center",
+  hoverinfo = "skip", showlegend = FALSE
+)
+
+# Markt-Knoten (Circle)
+fig <- fig %>% add_trace(
+  x = markets$x, y = markets$y, text = markets$lbl,
+  mode = "markers+text",
+  marker = list(symbol = "circle", size = 42,
+                color = "#2D9E8E", line = list(color = "#2F3E46", width = 1.5)),
+  textfont = list(size = 16, color = "white", family = "Arial"),
+  textposition = "middle center",
+  hoverinfo = "skip", showlegend = FALSE
+)
+
+# Nachfragelabels rechts der Märkte
+fig <- fig %>% add_annotations(
+  x = markets$x + 0.09, y = markets$y,
+  xref = "x", yref = "y",
+  text = markets$dj, showarrow = FALSE,
+  font = list(size = 14, color = "#1F2933", family = "Arial"),
+  xanchor = "left"
+)
+
+# Set-Labels oben
+fig <- fig %>% add_annotations(
+  x = c(0.35, 0.72), y = c(1.00, 1.00),
+  xref = "x", yref = "y",
+  text = c("<b>Plant / vehicle type</b>", "<b>vehicle market</b>"),
+  showarrow = FALSE,
+  font = list(size = 13, color = "#1F2933", family = "Arial")
+)
+
+fig <- fig %>% layout(
+  xaxis = list(visible = FALSE, range = c(0, 1), fixedrange = TRUE),
+  yaxis = list(visible = FALSE, range = c(0, 1.08),  fixedrange = TRUE),
+  plot_bgcolor  = "transparent",
+  paper_bgcolor = "transparent",
+  margin = list(l = 50, r = 50, t = 10, b = 10),
+  height = 250,
+  width  = 400
+)
+
+fig
+```
+:::
+
+
 ::: {.column width="46%"}
-
-::: {.fragment .fade-up}
-
-<!-- Netzwerk-Diagramm: Dezentrale Konfiguration -->
-<div style="display:flex; justify-content:center; align-items:center; padding: 0.5rem 0 0.8rem 0;">
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 380 160" width="100%" style="max-width:380px; font-family: Arial, sans-serif;">
-
-  <!-- Labels oben -->
-  <text x="70"  y="18" text-anchor="middle" font-size="12" font-weight="bold" fill="#374151">Plant / vehicle type</text>
-  <text x="290" y="18" text-anchor="middle" font-size="12" font-weight="bold" fill="#374151">vehicle market</text>
-
-  <!-- Werk C1 (Hexagon, oben links) -->
-  <polygon points="50,35 70,24 90,35 90,57 70,68 50,57"
-           fill="#CBD5E1" stroke="#475569" stroke-width="1.5"/>
-  <text x="70" y="49" text-anchor="middle" font-size="11" font-weight="bold" fill="#1e293b">C¹</text>
-  <text x="103" y="49" text-anchor="middle" font-size="10" fill="#374151">1</text>
-  <circle cx="103" cy="46" r="10" fill="#e2e8f0" stroke="#475569" stroke-width="1.2"/>
-  <text x="103" y="50" text-anchor="middle" font-size="10" fill="#374151">1</text>
-
-  <!-- Werk C2 (Hexagon, unten links) -->
-  <polygon points="50,105 70,94 90,105 90,127 70,138 50,127"
-           fill="#CBD5E1" stroke="#475569" stroke-width="1.5"/>
-  <text x="70" y="119" text-anchor="middle" font-size="11" font-weight="bold" fill="#1e293b">C²</text>
-  <circle cx="103" cy="116" r="10" fill="#e2e8f0" stroke="#475569" stroke-width="1.2"/>
-  <text x="103" y="120" text-anchor="middle" font-size="10" fill="#374151">2</text>
-
-  <!-- Pfeil Werk1 → Markt A (durchgezogen) -->
-  <line x1="113" y1="46" x2="255" y2="46"
-        stroke="#374151" stroke-width="1.8" marker-end="url(#arrowBlack)"/>
-  <text x="184" y="40" text-anchor="middle" font-size="11" fill="#374151">x¹ᴬ</text>
-
-  <!-- Pfeil Werk2 → Markt B (durchgezogen) -->
-  <line x1="113" y1="116" x2="255" y2="116"
-        stroke="#374151" stroke-width="1.8" marker-end="url(#arrowBlack)"/>
-  <text x="184" y="110" text-anchor="middle" font-size="11" fill="#374151">x²ᴮ</text>
-
-  <!-- Markt A (Kreis, oben rechts) -->
-  <circle cx="275" cy="46" r="18" fill="#6EE7B7" stroke="#059669" stroke-width="1.8"/>
-  <text x="275" y="51" text-anchor="middle" font-size="13" font-weight="bold" fill="#065f46">A</text>
-  <text x="303" y="51" text-anchor="start" font-size="12" fill="#374151">d^A</text>
-
-  <!-- Markt B (Kreis, unten rechts) -->
-  <circle cx="275" cy="116" r="18" fill="#6EE7B7" stroke="#059669" stroke-width="1.8"/>
-  <text x="275" y="121" text-anchor="middle" font-size="13" font-weight="bold" fill="#065f46">B</text>
-  <text x="303" y="121" text-anchor="start" font-size="12" fill="#374151">d^B</text>
-
-  <!-- Pfeilspitzen-Definition -->
-  <defs>
-    <marker id="arrowBlack" markerWidth="8" markerHeight="8"
-            refX="6" refY="3" orient="auto">
-      <path d="M0,0 L0,6 L8,3 z" fill="#374151"/>
-    </marker>
-  </defs>
-</svg>
-</div>
-
-:::
 
 ::: {.fragment .fade-up}
 ::: {.callout-tip appearance="simple"}
 ## System Evaluation
 
-- **Erwartete Nachfrage:** $E(d^A) = 89{,}0$; $E(d^B) = 89{,}5$
-- **Erwartete Produktion/Verkauf:** $E(x^A) = 86{,}25$; $E(x^B) = 87{,}25$
-- **Werksauslastung:** $\frac{E(x^A)}{C^1} = 95{,}8\%$; $\frac{E(x^B)}{C^2} = 96{,}9\%$
-- **Erwarteter Lieferservicegrad:** $\frac{E(x^A)}{E(d^A)} = 96{,}9\%$; $\frac{E(x^B)}{E(d^B)} = 97{,}5\%$
+- **Erwartete Nachfrage:** $E(d^A)=$ `r round(mean(cp_data$dA),1)`; $E(d^B)=$ `r round(mean(cp_data$dB),1)`
+- **Erwartete Produktion/Verkauf:** $E(x^A)=$ `r round(mean(cp_data$xA),1)`; $E(x^B)=$ `r round(mean(cp_data$xB),1)`
+- **Werksauslastung:** $\frac{E(x^A)}{C^1}=$ `r round(mean(cp_data$xA)/C1*100,1)` %; $\frac{E(x^B)}{C^2}=$ `r round(mean(cp_data$xB)/C2*100,1)` %
+- **Erwarteter Lieferservicegrad:** $\frac{E(x^A)}{E(d^A)}=$ `r round(mean(cp_data$xA/cp_data$dA)*100,1)` %; $\frac{E(x^B)}{E(d^B)}=$ `r round(mean(cp_data$xB/cp_data$dB)*100,1)` %
 :::
 :::
 
@@ -568,17 +644,17 @@ Auslastung und Lieferservicegrad sind hoch, dennoch gibt es **lost sales** und *
 
 ---
 
-## Pooling-Konfiguration {#slide-cp-pooling}
+## Kapazitätspooling {#slide-cp-pooling}
 ::: slide-subtitle
-Empirisches Beispiel – Werk 1 kann beide Modelle produzieren
+Einseitiges Pooling – Werk 1 kann beide Modelle produzieren
 :::
 
-::: columns
-::: {.column width="52%"}
-
-::: small-text
 **Pooling-Lösung: Werk 1 produziert A und ggf. B**
 
+::: columns
+::: {.column width="25%"}
+
+::: small-text
 ```{r cp-pooling-table}
 #| echo: false
 #| warning: false
@@ -586,16 +662,17 @@ Empirisches Beispiel – Werk 1 kann beide Modelle produzieren
 
 C1 <- 90; C2 <- 90
 
-cp_pool <- cp_data[-13,] %>%
+cp_pool_1 <- cp_data[-13,] %>%
   mutate(
     x1A = pmin(dA, C1),
     x1B = ifelse(dB > C2 & dA < C1,
                  pmin(C1 - dA, dB - C2), 0),
     x1  = x1A + x1B,
-    x2B = pmin(C2, dB)
+    x2B = pmin(C2, dB),
+    xB =  x2B + x1B
   )
 
-kbl(cp_pool[, c("Monat","dA","dB","x1A","x1B","x2B")],
+kbl(cp_pool_1[, c("Monat","dA","dB","x1A","x1B","x2B")],
     col.names = c("Monat", "d<sub>t</sub><sup>A</sup>", "d<sub>t</sub><sup>B</sup>",
                   "x<sub>t</sub><sup>1A</sup>", "x<sub>t</sub><sup>1B</sup>", "x<sub>t</sub><sup>2B</sup>"),
     align = c("c","r","r","r","r","r"),
@@ -606,77 +683,168 @@ kbl(cp_pool[, c("Monat","dA","dB","x1A","x1B","x2B")],
   column_spec(4:5, background = "#E8F4F1") |>
   row_spec(0, background = "#2F3E46", color = "white", bold = TRUE)
 ```
-
+:::
 :::
 
+
+::: {.column width="27%"}
+
+```{r cp-pooling-graph}
+#| echo: false
+#| warning: false
+#| message: false
+#| out-width: "99%"
+#| fig-height: 3
+
+# Pooling-Setting: C1->1->A (solid), C1->1->B (gestrichelt), C2->2->B (solid)
+plants <- data.frame(
+  id  = c("P1","P2"),
+  lbl = c("1","2"),
+  cl  = c("C<sup>1</sup>","C<sup>2</sup>"),
+  x   = 0.35,
+  y   = c(0.72, 0.28)
+)
+
+markets <- data.frame(
+  id  = c("A","B"),
+  lbl = c("A","B"),
+  dj  = c("d<sup>A</sup>","d<sup>B</sup>"),
+  x   = 0.72,
+  y   = c(0.72, 0.28)
+)
+
+pxy <- setNames(plants[,  c("x","y")], c("x","y")); rownames(pxy) <- plants$id
+mxy <- setNames(markets[, c("x","y")], c("x","y")); rownames(mxy) <- markets$id
+
+r <- 0.06  # Knotenradius in Plot-Koordinaten
+
+edges <- data.frame(
+  from  = c("P1","P1","P2"),
+  to    = c("A",  "B",  "B"),
+  lbl   = c("x<sup>1A</sup>", "x<sup>1B</sup>", "x<sup>2B</sup>"),
+  dash  = c(FALSE, TRUE, FALSE),   # TRUE = gestrichelt (Pooling-Pfeil)
+  stringsAsFactors = FALSE
+)
+
+fig <- plot_ly(type = "scatter", mode = "markers")
+
+for (i in seq_len(nrow(edges))) {
+  x0 <- pxy[edges$from[i], "x"];  y0 <- pxy[edges$from[i], "y"]
+  x1 <- mxy[edges$to[i],   "x"];  y1 <- mxy[edges$to[i],   "y"]
+  dx <- x1 - x0;  dy <- y1 - y0;  d <- sqrt(dx^2 + dy^2)
+  ax <- x0 + r * dx / d;  ay <- y0 + r * dy / d
+  ex <- x1 - r * dx / d;  ey <- y1 - r * dy / d
+
+  # Gestrichelter Pfeil via Liniensegmente (Plotly unterstützt kein dash bei add_annotations)
+  if (edges$dash[i]) {
+    # Segmentierte gestrichelte Linie mit 6 Abschnitten
+    n_seg <- 10
+    xs <- seq(ax, ex, length.out = n_seg + 1)
+    ys <- seq(ay, ey, length.out = n_seg + 1)
+    for (s in seq(1, n_seg, by = 2)) {
+      fig <- fig %>% add_segments(
+        x = xs[s], xend = xs[s+1],
+        y = ys[s], yend = ys[s+1],
+        line = list(color = "#4B4B4B", width = 1.8, dash = "solid"),
+        hoverinfo = "skip", showlegend = FALSE
+      )
+    }
+    # Pfeilspitze am Endpunkt
+    fig <- fig %>% add_annotations(
+      x = ex, y = ey, ax = xs[n_seg], ay = ys[n_seg],
+      xref = "x", yref = "y", axref = "x", ayref = "y",
+      showarrow = TRUE, arrowhead = 2, arrowsize = 1,
+      arrowwidth = 1.8, arrowcolor = "#4B4B4B", text = ""
+    )
+  } else {
+    fig <- fig %>% add_annotations(
+      x = ex, y = ey, ax = ax, ay = ay,
+      xref = "x", yref = "y", axref = "x", ayref = "y",
+      showarrow = TRUE, arrowhead = 2, arrowsize = 1,
+      arrowwidth = 1.5, arrowcolor = "#4B4B4B", text = ""
+    )
+  }
+
+  # Kantenlabel
+  if (nchar(edges$lbl[i]) > 0) {
+    # x^1B-Label leicht versetzt (Überkreuzungspfeil)
+    lbl_off_x <- ifelse(edges$dash[i],  0.03, 0.00)
+    lbl_off_y <- ifelse(edges$dash[i], -0.05, 0.06)
+    fig <- fig %>% add_annotations(
+      x = (ax + ex) / 2 + lbl_off_x,
+      y = (ay + ey) / 2 + lbl_off_y,
+      xref = "x", yref = "y",
+      text = edges$lbl[i], showarrow = FALSE,
+      font = list(size = 13, color = "#1F2933", family = "Arial")
+    )
+  }
+}
+
+# Kostenlabels links der Pflanzen
+fig <- fig %>% add_annotations(
+  x = plants$x - 0.12, y = plants$y,
+  xref = "x", yref = "y",
+  text = plants$cl, showarrow = FALSE,
+  font = list(size = 14, color = "#1F2933", family = "Arial"),
+  xanchor = "right"
+)
+
+# Pflanzen-Knoten (Hexagon)
+fig <- fig %>% add_trace(
+  x = plants$x, y = plants$y, text = plants$lbl,
+  mode = "markers+text",
+  marker = list(symbol = "hexagon", size = 42,
+                color = "#BFDBF7", line = list(color = "#4B5563", width = 1.5)),
+  textfont = list(size = 16, color = "#1F2933", family = "Arial"),
+  textposition = "middle center",
+  hoverinfo = "skip", showlegend = FALSE
+)
+
+# Markt-Knoten (Circle)
+fig <- fig %>% add_trace(
+  x = markets$x, y = markets$y, text = markets$lbl,
+  mode = "markers+text",
+  marker = list(symbol = "circle", size = 42,
+                color = "#2D9E8E", line = list(color = "#2F3E46", width = 1.5)),
+  textfont = list(size = 16, color = "white", family = "Arial"),
+  textposition = "middle center",
+  hoverinfo = "skip", showlegend = FALSE
+)
+
+# Nachfragelabels rechts der Märkte
+fig <- fig %>% add_annotations(
+  x = markets$x + 0.09, y = markets$y,
+  xref = "x", yref = "y",
+  text = markets$dj, showarrow = FALSE,
+  font = list(size = 14, color = "#1F2933", family = "Arial"),
+  xanchor = "left"
+)
+
+# Set-Labels oben
+fig <- fig %>% add_annotations(
+  x = c(0.35, 0.72), y = c(1.00, 1.00),
+  xref = "x", yref = "y",
+  text = c("<b>Plant / vehicle type</b>", "<b>vehicle market</b>"),
+  showarrow = FALSE,
+  font = list(size = 13, color = "#1F2933", family = "Arial")
+)
+
+fig <- fig %>% layout(
+  xaxis = list(visible = FALSE, range = c(0.2, .9), fixedrange = TRUE),
+  yaxis = list(visible = FALSE, range = c(0.2, 1),  fixedrange = TRUE),
+  plot_bgcolor  = "transparent",
+  paper_bgcolor = "transparent",
+  margin = list(l = 50, r = 50, t = 10, b = 10),
+  height = 250,
+  width  = 400
+)
+
+fig
+```
 :::
+
+
 ::: {.column width="46%"}
-
-::: {.fragment .fade-up}
-
-<!-- Netzwerk-Diagramm: Pooling-Konfiguration -->
-<div style="display:flex; justify-content:center; align-items:center; padding: 0.5rem 0 0.8rem 0;">
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 380 160" width="100%" style="max-width:380px; font-family: Arial, sans-serif;">
-
-  <!-- Labels oben -->
-  <text x="70"  y="18" text-anchor="middle" font-size="12" font-weight="bold" fill="#374151">Plant / vehicle type</text>
-  <text x="290" y="18" text-anchor="middle" font-size="12" font-weight="bold" fill="#374151">vehicle market</text>
-
-  <!-- Werk C1 (Hexagon, oben links) – flexibles Werk -->
-  <polygon points="50,35 70,24 90,35 90,57 70,68 50,57"
-           fill="#A7F3D0" stroke="#059669" stroke-width="2"/>
-  <text x="70" y="49" text-anchor="middle" font-size="11" font-weight="bold" fill="#065f46">C¹</text>
-  <circle cx="103" cy="46" r="10" fill="#e2e8f0" stroke="#475569" stroke-width="1.2"/>
-  <text x="103" y="50" text-anchor="middle" font-size="10" fill="#374151">1</text>
-
-  <!-- Werk C2 (Hexagon, unten links) -->
-  <polygon points="50,105 70,94 90,105 90,127 70,138 50,127"
-           fill="#CBD5E1" stroke="#475569" stroke-width="1.5"/>
-  <text x="70" y="119" text-anchor="middle" font-size="11" font-weight="bold" fill="#1e293b">C²</text>
-  <circle cx="103" cy="116" r="10" fill="#e2e8f0" stroke="#475569" stroke-width="1.2"/>
-  <text x="103" y="120" text-anchor="middle" font-size="10" fill="#374151">2</text>
-
-  <!-- Pfeil Werk1 → Markt A (durchgezogen, x^1A) -->
-  <line x1="113" y1="43" x2="255" y2="43"
-        stroke="#374151" stroke-width="1.8" marker-end="url(#arrowBlack2)"/>
-  <text x="184" y="37" text-anchor="middle" font-size="11" fill="#374151">x¹ᴬ</text>
-
-  <!-- Pfeil Werk1 → Markt B (gestrichelt, x^1B – Pooling-Fluss) -->
-  <line x1="113" y1="56" x2="255" y2="109"
-        stroke="#059669" stroke-width="1.8" stroke-dasharray="5,3"
-        marker-end="url(#arrowGreen2)"/>
-  <text x="184" y="92" text-anchor="middle" font-size="11" fill="#059669">x¹ᴮ</text>
-
-  <!-- Pfeil Werk2 → Markt B (durchgezogen, x^2B) -->
-  <line x1="113" y1="116" x2="255" y2="116"
-        stroke="#374151" stroke-width="1.8" marker-end="url(#arrowBlack2)"/>
-  <text x="184" y="110" text-anchor="middle" font-size="11" fill="#374151">x²ᴮ</text>
-
-  <!-- Markt A (Kreis, oben rechts) -->
-  <circle cx="275" cy="46" r="18" fill="#6EE7B7" stroke="#059669" stroke-width="1.8"/>
-  <text x="275" y="51" text-anchor="middle" font-size="13" font-weight="bold" fill="#065f46">A</text>
-  <text x="303" y="51" text-anchor="start" font-size="12" fill="#374151">d^A</text>
-
-  <!-- Markt B (Kreis, unten rechts) -->
-  <circle cx="275" cy="116" r="18" fill="#6EE7B7" stroke="#059669" stroke-width="1.8"/>
-  <text x="275" y="121" text-anchor="middle" font-size="13" font-weight="bold" fill="#065f46">B</text>
-  <text x="303" y="121" text-anchor="start" font-size="12" fill="#374151">d^B</text>
-
-  <!-- Pfeilspitzen-Definitionen -->
-  <defs>
-    <marker id="arrowBlack2" markerWidth="8" markerHeight="8"
-            refX="6" refY="3" orient="auto">
-      <path d="M0,0 L0,6 L8,3 z" fill="#374151"/>
-    </marker>
-    <marker id="arrowGreen2" markerWidth="8" markerHeight="8"
-            refX="6" refY="3" orient="auto">
-      <path d="M0,0 L0,6 L8,3 z" fill="#059669"/>
-    </marker>
-  </defs>
-</svg>
-</div>
-
-:::
 
 ::: {.fragment .fade-up}
 ::: {.callout-note appearance="minimal" icon=false}
@@ -691,10 +859,10 @@ $$x_t^{2B} = C^2$$
 ::: {.callout-tip appearance="simple"}
 ## System Evaluation (Pooling)
 
-- **Produktion Werk 1:** $E(x^1) = \mathbf{87{,}4}$ (> 86,3)
-- **Versorgung Markt B gesamt:** $E(x^{1B}+x^{2B}) = \mathbf{88{,}4}$ (> 87,3)
-- **Auslastung Werk 1:** $\frac{E(x^1)}{C^1} = \mathbf{97{,}1\%}$ (> 95,8 %)
-- **Lieferservicegrad Markt B:** $\frac{E(x^{1B}+x^{2B})}{E(d^B)} = \mathbf{98{,}8\%}$ (> 97,5 %)
+- **Produktion Werk 1:** $E(x^1)=$ `r round(mean(cp_pool_1$x1),1)`
+- **Versorgung Markt B:** $E(x^{1B}+x^{2B})=$ `r round(mean(cp_pool_1$xB),1)`
+- **Auslastung Werk 1:** $\frac{E(x^1)}{C^1}=$ `r round(mean(cp_pool_1$x1)/C1*100,1)` %
+- **Lieferservicegrad Markt B:** $\frac{E(x^{1B}+x^{2B})}{E(d^B)}=$ `r round(mean(cp_pool_1$xB)/mean(cp_pool_1$dB)*100,1)` %
 :::
 :::
 
@@ -703,9 +871,236 @@ $$x_t^{2B} = C^2$$
 
 ---
 
-## Kapazitätspooling – Kennzahlenvergleich {#slide-cp-kpis}
+
+## Kapazitätspooling {#slide-cp-pooling}
 ::: slide-subtitle
-Dezentral vs. Pooling: Auswertung des empirischen Beispiels
+Zweiseitiges Pooling – Beide Werke können beide Modelle produzieren
+:::
+
+
+**Pooling-Lösung**
+
+:::: columns
+::: {.column width="27%"}
+
+::: small-text
+```{r cp-pooling-table2}
+#| echo: false
+#| warning: false
+#| message: false
+
+cp_pool <- cp_data[-13,] %>%
+  mutate(
+    x1A = pmin(dA, C1),
+    x1B = ifelse(dB > C2 & dA < C1,
+                 pmin(C1 - dA, dB - C2), 0),
+    x1  = x1A + x1B,
+    x2B = pmin(C2, dB),
+    x2A = ifelse(dA > C1 & dB < C2,
+                 pmin(C2 - dB, dA - C1), 0),
+    x2  = x2A + x2B,
+    xA = x2A + x1A,
+    xB = x2B + x1B
+  )
+
+kbl(cp_pool[, c("Monat","dA","dB","x1A","x1B","x2B", "x2A")],
+    col.names = c("Monat", "d<sub>t</sub><sup>A</sup>", "d<sub>t</sub><sup>B</sup>",
+                  "x<sub>t</sub><sup>1A</sup>", "x<sub>t</sub><sup>1B</sup>", "x<sub>t</sub><sup>2B</sup>", "x<sub>t</sub><sup>2A</sup>"),
+    align = c("c","r","r","r","r","r","r"),
+    escape = FALSE) |>
+  kable_styling(bootstrap_options = c("condensed","striped"),
+                full_width = TRUE, font_size = 22) |>
+  column_spec(1, bold = TRUE, background = "#2F3E46", color = "white") |>
+  column_spec(4:5, background = "#E8F4F1") |>
+  column_spec(6:7, background = "#E8F4A1") |>
+  row_spec(0, background = "#2F3E46", color = "white", bold = TRUE)
+```
+:::
+:::
+
+
+::: {.column width="27%"}
+
+```{r cp-pooling-graph2}
+#| echo: false
+#| warning: false
+#| message: false
+#| out-width: "99%"
+#| fig-height: 3
+
+# Pooling-Setting: C1->1->A (solid), C1->1->B (gestrichelt), C2->2->B (solid)
+plants <- data.frame(
+  id  = c("P1","P2"),
+  lbl = c("1","2"),
+  cl  = c("C<sup>1</sup>","C<sup>2</sup>"),
+  x   = 0.35,
+  y   = c(0.72, 0.28)
+)
+
+markets <- data.frame(
+  id  = c("A","B"),
+  lbl = c("A","B"),
+  dj  = c("d<sup>A</sup>","d<sup>B</sup>"),
+  x   = 0.72,
+  y   = c(0.72, 0.28)
+)
+
+pxy <- setNames(plants[,  c("x","y")], c("x","y")); rownames(pxy) <- plants$id
+mxy <- setNames(markets[, c("x","y")], c("x","y")); rownames(mxy) <- markets$id
+
+r <- 0.06  # Knotenradius in Plot-Koordinaten
+
+edges <- data.frame(
+  from  = c("P1","P1","P2", "P2"),
+  to    = c("A",  "B",  "B", "A"),
+  lbl   = c("x<sup>1A</sup>", "x<sup>1B</sup>", "x<sup>2B</sup>",  "x<sup>2A</sup>"),
+  dash  = c(FALSE, TRUE, FALSE, TRUE),   # TRUE = gestrichelt (Pooling-Pfeil)
+  stringsAsFactors = FALSE
+)
+
+fig <- plot_ly(type = "scatter", mode = "markers")
+
+for (i in seq_len(nrow(edges))) {
+  x0 <- pxy[edges$from[i], "x"];  y0 <- pxy[edges$from[i], "y"]
+  x1 <- mxy[edges$to[i],   "x"];  y1 <- mxy[edges$to[i],   "y"]
+  dx <- x1 - x0;  dy <- y1 - y0;  d <- sqrt(dx^2 + dy^2)
+  ax <- x0 + r * dx / d;  ay <- y0 + r * dy / d
+  ex <- x1 - r * dx / d;  ey <- y1 - r * dy / d
+
+  # Gestrichelter Pfeil via Liniensegmente (Plotly unterstützt kein dash bei add_annotations)
+  if (edges$dash[i]) {
+    # Segmentierte gestrichelte Linie mit 6 Abschnitten
+    n_seg <- 10
+    xs <- seq(ax, ex, length.out = n_seg + 1)
+    ys <- seq(ay, ey, length.out = n_seg + 1)
+    for (s in seq(1, n_seg, by = 2)) {
+      fig <- fig %>% add_segments(
+        x = xs[s], xend = xs[s+1],
+        y = ys[s], yend = ys[s+1],
+        line = list(color = "#4B4B4B", width = 1.8, dash = "solid"),
+        hoverinfo = "skip", showlegend = FALSE
+      )
+    }
+    # Pfeilspitze am Endpunkt
+    fig <- fig %>% add_annotations(
+      x = ex, y = ey, ax = xs[n_seg], ay = ys[n_seg],
+      xref = "x", yref = "y", axref = "x", ayref = "y",
+      showarrow = TRUE, arrowhead = 2, arrowsize = 1,
+      arrowwidth = 1.8, arrowcolor = "#4B4B4B", text = ""
+    )
+  } else {
+    fig <- fig %>% add_annotations(
+      x = ex, y = ey, ax = ax, ay = ay,
+      xref = "x", yref = "y", axref = "x", ayref = "y",
+      showarrow = TRUE, arrowhead = 2, arrowsize = 1,
+      arrowwidth = 1.5, arrowcolor = "#4B4B4B", text = ""
+    )
+  }
+
+  # Kantenlabel
+  # x^1B-Label leicht versetzt (Überkreuzungspfeil)
+  lbl_off_x <- ifelse(i >= 3, ifelse(i==3, 0.03 , -0.02), 0.00)
+  lbl_off_y <- ifelse(i >= 3, ifelse(i==3, -0.05 , -0.08), 0.06)
+  fig <- fig %>% add_annotations(
+    x = (ax + ex) / 2 + lbl_off_x,
+    y = (ay + ey) / 2 + lbl_off_y,
+    xref = "x", yref = "y",
+    text = edges$lbl[i], showarrow = FALSE,
+    font = list(size = 13, color = "#1F2933", family = "Arial")
+  )
+  
+}
+
+# Kostenlabels links der Pflanzen
+fig <- fig %>% add_annotations(
+  x = plants$x - 0.12, y = plants$y,
+  xref = "x", yref = "y",
+  text = plants$cl, showarrow = FALSE,
+  font = list(size = 14, color = "#1F2933", family = "Arial"),
+  xanchor = "right"
+)
+
+# Pflanzen-Knoten (Hexagon)
+fig <- fig %>% add_trace(
+  x = plants$x, y = plants$y, text = plants$lbl,
+  mode = "markers+text",
+  marker = list(symbol = "hexagon", size = 42,
+                color = "#BFDBF7", line = list(color = "#4B5563", width = 1.5)),
+  textfont = list(size = 16, color = "#1F2933", family = "Arial"),
+  textposition = "middle center",
+  hoverinfo = "skip", showlegend = FALSE
+)
+
+# Markt-Knoten (Circle)
+fig <- fig %>% add_trace(
+  x = markets$x, y = markets$y, text = markets$lbl,
+  mode = "markers+text",
+  marker = list(symbol = "circle", size = 42,
+                color = "#2D9E8E", line = list(color = "#2F3E46", width = 1.5)),
+  textfont = list(size = 16, color = "white", family = "Arial"),
+  textposition = "middle center",
+  hoverinfo = "skip", showlegend = FALSE
+)
+
+# Nachfragelabels rechts der Märkte
+fig <- fig %>% add_annotations(
+  x = markets$x + 0.09, y = markets$y,
+  xref = "x", yref = "y",
+  text = markets$dj, showarrow = FALSE,
+  font = list(size = 14, color = "#1F2933", family = "Arial"),
+  xanchor = "left"
+)
+
+# Set-Labels oben
+fig <- fig %>% add_annotations(
+  x = c(0.35, 0.72), y = c(1.00, 1.00),
+  xref = "x", yref = "y",
+  text = c("<b>Plant / vehicle type</b>", "<b>vehicle market</b>"),
+  showarrow = FALSE,
+  font = list(size = 13, color = "#1F2933", family = "Arial")
+)
+
+fig <- fig %>% layout(
+  xaxis = list(visible = FALSE, range = c(0.2, .9), fixedrange = TRUE),
+  yaxis = list(visible = FALSE, range = c(0.2, 1),  fixedrange = TRUE),
+  plot_bgcolor  = "transparent",
+  paper_bgcolor = "transparent",
+  margin = list(l = 50, r = 50, t = 10, b = 10),
+  height = 250,
+  width  = 400
+)
+
+fig
+```
+:::
+
+
+::: {.column width="46%"}
+
+::: {.fragment .fade-up}
+::: {.callout-tip appearance="simple"}
+## System Evaluation
+
+- **Produktion Werk 1:** $E(x^1)=$ `r round(mean(cp_pool$x1),1)`
+- **Produktion Werk 2:** $E(x^2)=$ `r round(mean(cp_pool$x2),1)`
+- **Versorgung Markt A:** $E(x^{1A}+x^{2A})=$ `r round(mean(cp_pool$xA),1)`
+- **Versorgung Markt B:** $E(x^{1B}+x^{2B})=$ `r round(mean(cp_pool$xB),1)`
+- **Auslastung Werk 1:** $\frac{E(x^1)}{C^1}=$ `r round(mean(cp_pool$x1)/C1*100,1)` % 
+- **Auslastung Werk 2:** $\frac{E(x^2)}{C^2}=$ `r round(mean(cp_pool$x2)/C2*100,1)` % 
+- **Lieferservicegrad Markt A:** $\frac{E(x^{1A}+x^{2A})}{E(d^A)}=$ `r round(mean(cp_pool$xA)/mean(cp_pool$dA)*100,1)` % 
+- **Lieferservicegrad Markt B:** $\frac{E(x^{2B}+x^{1B})}{E(d^B)}=$  `r round(mean(cp_pool$xB)/mean(cp_pool$dB)*100,1)` % 
+:::
+:::
+
+:::
+::::
+
+
+---
+
+## Kapazitätspooling {#slide-cp-kpis}
+::: slide-subtitle
+Kennzahlenvergleich
 :::
 
 ```{r cp-kpi-compute}
@@ -713,63 +1108,59 @@ Dezentral vs. Pooling: Auswertung des empirischen Beispiels
 #| warning: false
 #| message: false
 
-# cp_data und cp_pool wurden auf slide-cp-original / slide-cp-pooling definiert
-# Sicherheitshalber neu berechnen
-cp_data2 <- data.frame(
-  Monat = 1:12,
-  dA    = c(78, 79, 92, 76, 95,104, 87, 92, 91, 85, 96, 93),
-  dB    = c(102, 92, 93, 87, 80, 97, 90, 76, 89, 86, 89, 93)
-)
-C1b <- 90; C2b <- 90
 
-cp_data2 <- cp_data2 %>%
-  mutate(
-    xA_dez = pmin(dA, C1b),
-    xB_dez = pmin(dB, C2b),
-    x1A    = pmin(dA, C1b),
-    x1B    = ifelse(dB > C2b & dA < C1b, pmin(C1b - dA, dB - C2b), 0),
-    x2B    = C2b,
-    xB_pool = x1B + x2B,
-    # Lost Sales
-    ls_A_dez  = pmax(0, dA - C1b),
-    ls_B_dez  = pmax(0, dB - C2b),
-    ls_B_pool = pmax(0, dB - xB_pool),
-    # Idle
-    idle_1_dez  = pmax(0, C1b - dA),
-    idle_2_dez  = pmax(0, C2b - dB),
-    idle_1_pool = pmax(0, C1b - (x1A + x1B))
-  )
+cp_data <- cp_data[-13,]
+
+tot.demand <- c(sum(cp_data$dA), sum(cp_data$dB))
 
 kpi_df <- data.frame(
   Kennzahl = c(
     "Ø Produktion Werk 1 (Einh.)",
-    "Ø Verkäufe Markt B (Einh.)",
+    "Ø Produktion Werk 2 (Einh.)",
+    "Ø Verkäufe Markt A (Einh.)",
+    "Ø Verkäufe Markt B (Ei,nh.)",
+    "Lost Sales Markt A (Einh.)",
+    "Lost Sales Markt B (Einh.)",
     "Auslastung Werk 1 (%)",
+    "Auslastung Werk 2 (%)",
     "Verkaufsquote Markt A (%)",
-    "Verkaufsquote Markt B (%)",
-    "Ø Lost Sales Markt A (Einh.)",
-    "Ø Lost Sales Markt B (Einh.)",
-    "Ø Idle Capacity Werk 1 (Einh.)"
+    "Verkaufsquote Markt B (%)"
   ),
   Dezentral = c(
-    round(mean(cp_data2$xA_dez), 1),
-    round(mean(cp_data2$xB_dez), 1),
-    round(mean(cp_data2$xA_dez) / C1b * 100, 1),
-    round(mean(cp_data2$xA_dez) / mean(cp_data2$dA) * 100, 1),
-    round(mean(cp_data2$xB_dez) / mean(cp_data2$dB) * 100, 1),
-    round(mean(cp_data2$ls_A_dez), 2),
-    round(mean(cp_data2$ls_B_dez), 2),
-    round(mean(cp_data2$idle_1_dez), 1)
+    round(mean(cp_data$xA), 1),
+    round(mean(cp_data$xB), 1),
+    round(mean(cp_data$xA), 1),
+    round(mean(cp_data$xB), 1),
+    sum(cp_data$dA)-sum(cp_data$xA),
+    sum(cp_data$dB)-sum(cp_data$xB),
+    round(mean(cp_data$xA/C1*100), 1),
+    round(mean(cp_data$xB/C2*100), 1),
+    round(sum(cp_data$xA)/tot.demand[1]*100, 1),
+    round(sum(cp_data$xB)/tot.demand[2]*100, 1)
   ),
-  Pooling = c(
-    round(mean(cp_data2$x1A + cp_data2$x1B), 1),
-    round(mean(cp_data2$xB_pool), 1),
-    round(mean(cp_data2$x1A + cp_data2$x1B) / C1b * 100, 1),
-    round(mean(cp_data2$x1A) / mean(cp_data2$dA) * 100, 1),
-    round(mean(cp_data2$xB_pool) / mean(cp_data2$dB) * 100, 1),
-    round(mean(cp_data2$ls_A_dez), 2),   # A unverändert
-    round(mean(cp_data2$ls_B_pool), 2),
-    round(mean(cp_data2$idle_1_pool), 1)
+  "Pooling einseitig" = c(
+    round(mean(cp_pool_1$x1), 1),
+    round(mean(cp_pool_1$x2B), 1),
+    round(mean(cp_pool_1$xA), 1),
+    round(mean(cp_pool_1$xB), 1),
+    sum(cp_pool_1$dA)-sum(cp_pool_1$xA),
+    sum(cp_pool_1$dB)-sum(cp_pool_1$xB),
+    round(mean(cp_pool_1$xA/C1*100), 1),
+    round(mean(cp_pool_1$xB/C2*100), 1),
+    round(sum(cp_pool_1$xA)/tot.demand[1]*100, 1),
+    round(sum(cp_pool_1$xB)/tot.demand[2]*100, 1)
+  ),
+  "Pooling zweiseitig" = c(
+    round(mean(cp_pool$x1), 1),
+    round(mean(cp_pool$x2), 1),
+    round(mean(cp_pool$xA), 1),
+    round(mean(cp_pool$xB), 1),
+    sum(cp_pool$dA)-sum(cp_pool$xA),
+    sum(cp_pool$dB)-sum(cp_pool$xB),
+    round(mean(cp_pool$xA/C1*100), 1),
+    round(mean(cp_pool$xB/C2*100), 1),
+    round(sum(cp_pool$xA)/tot.demand[1]*100, 1),
+    round(sum(cp_pool$xB)/tot.demand[2]*100, 1)
   )
 )
 ```
@@ -783,8 +1174,8 @@ kpi_df <- data.frame(
 #| message: false
 
 kbl(kpi_df,
-    col.names = c("Kennzahl", "Dezentral", "Pooling"),
-    align = c("l", "r", "r")) |>
+    col.names = c("Kennzahl", "Dezentral", "Pooling einseitig", "Pooling zweiseitig"),
+    align = c("l", "r", "r", "r")) |>
   kable_styling(bootstrap_options = c("condensed", "striped"),
                 full_width = TRUE, font_size = 20) |>
   column_spec(1) |>
@@ -793,12 +1184,6 @@ kbl(kpi_df,
   row_spec(0, background = "#2F3E46", color = "white", bold = TRUE)
 ```
 
-::: {.fragment .fade-up}
-::: {.callout-tip appearance="simple"}
-## Fazit
-Pooling verbessert **alle** Servicekennzahlen gleichzeitig: mehr Verkäufe, höhere Auslastung, weniger Leerkapazität – ohne zusätzliche Gesamtkapazität.
-:::
-:::
 
 :::
 ::: {.column width="48%"}
@@ -810,11 +1195,12 @@ Pooling verbessert **alle** Servicekennzahlen gleichzeitig: mehr Verkäufe, höh
 #| warning: false
 #| message: false
 #| out-width: "99%"
-#| fig-height: 4.8
+#| fig-height: 4
 
-metriken <- c("Auslastung\nWerk 1 (%)", "Verkaufsquote\nMarkt A (%)", "Verkaufsquote\nMarkt B (%)")
-dez_vals  <- kpi_df$Dezentral[c(3, 4, 5)]
-pool_vals <- kpi_df$Pooling[c(3, 4, 5)]
+metriken <- c("Auslastung\nWerk 1 (%)","Auslastung\nWerk 2 (%)", "Verkaufsquote\nMarkt A (%)", "Verkaufsquote\nMarkt B (%)")
+dez_vals  <- kpi_df$Dezentral[c(7:10)]
+pool1_vals <- kpi_df$Pooling.einseitig[c(7:10)]
+pool2_vals <- kpi_df$Pooling.zweiseitig[c(7:10)]
 
 fig_kpi <- plot_ly()
 
@@ -829,11 +1215,21 @@ fig_kpi <- fig_kpi %>% add_trace(
 )
 
 fig_kpi <- fig_kpi %>% add_trace(
-  x = metriken, y = pool_vals,
-  type = "bar", name = "Pooling",
+  x = metriken, y = pool1_vals,
+  type = "bar", name = "Pooling einseitig",
   marker = list(color = cols$top,
                 line = list(color = "#01696f", width = 1)),
-  text = paste0(pool_vals, " %"),
+  text = paste0(pool1_vals, " %"),
+  textposition = "outside",
+  textfont = list(size = 13, family = "Arial", color = "#1F2933")
+)
+
+fig_kpi <- fig_kpi %>% add_trace(
+  x = metriken, y = pool2_vals,
+  type = "bar", name = "Pooling zweiseitig",
+  marker = list(color = cols$mid,
+                line = list(color = "#a16a61", width = 1)),
+  text = paste0(pool2_vals, " %"),
   textposition = "outside",
   textfont = list(size = 13, family = "Arial", color = "#1F2933")
 )
@@ -858,6 +1254,19 @@ fig_kpi
 :::
 :::
 
+::: {.fragment .fade-up}
+::: {.callout-tip appearance="simple"}
+## Nutzen des Kapazitätspooling
+Kapazitätspooling verbessert **alle** Servicekennzahlen gleichzeitig: mehr Verkäufe, höhere Auslastung, weniger Leerkapazität – ohne zusätzliche Produktionskapazität.
+:::
+:::
+
+::: {.fragment .fade-up}
+::: {.callout-warning appearance="simple"}
+## Kosten des Kapazitätspooling
+Kapazitätspooling benötigt jedoch zusätzliche logistische Kapazitäten und vor allem technologische Flexibilität
+:::
+:::
 
 ---
 
