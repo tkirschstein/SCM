@@ -649,8 +649,6 @@ Auslastung und Lieferservicegrad sind hoch, dennoch gibt es **lost sales** und *
 Einseitiges Pooling – Werk 1 kann beide Modelle produzieren
 :::
 
-**Pooling-Lösung: Werk 1 produziert A und ggf. B**
-
 ::: columns
 ::: {.column width="25%"}
 
@@ -878,8 +876,6 @@ Zweiseitiges Pooling – Beide Werke können beide Modelle produzieren
 :::
 
 
-**Pooling-Lösung**
-
 :::: columns
 ::: {.column width="27%"}
 
@@ -1095,6 +1091,11 @@ fig
 :::
 ::::
 
+::: {.fragment .fade-up}
+::: {.callout-tip appearance="simple"}
+Versorgungssystem reagiert als wäre die Trennung zwischen Märkten/Produkten und Werken aufgehoben $\rightarrow$ Gesamtkapazität und Gesamtnachfrage entscheidend
+:::
+:::
 
 ---
 
@@ -1270,348 +1271,214 @@ Kapazitätspooling benötigt jedoch zusätzliche logistische Kapazitäten und vo
 
 ---
 
-## Kapazitätspooling – Grundidee {#slide-cp-intuition}
+## Kapazitätspooling {#slide-chaining}
 ::: slide-subtitle
-Warum hilft Pooling? (Cachon & Terwiesch, Kap. 17)
+Chaining
 :::
 
-::: {.callout-note appearance="minimal" icon=false}
-**Kernidee:** Zwei Märkte mit unkorrelierter Nachfrage – wenn Markt A boomt, läuft Markt B schleppend, und umgekehrt. Ein **flexibles Werk** kann in solchen Situationen die Überlast des einen Markts mit Leerkapazität des anderen abfedern.
+::: {.callout-note appearance="minimal"}
+**Chaining**
+
+Kapazitätspooling ermöglicht die gemeinsame Nutzung von Kapazitäten für verschiedene Märkte. Es erfordert jedoch technologische und logistische Flexibilität. Je mehr Märkte und Produkte zu bedienen sind, desto komplexer und kostspieliger ist Kapazitätspooling. Die Frage ist also, wie Kapazitätspooling bei mehreren Produkten und Märkten organisiert werden kann?
 :::
 
-::: columns
-::: {.column width="52%"}
+::::: {.smaller-text}
+:::: columns
 
+::: {.column width="33%"}
 ::: {.fragment .fade-up}
-::: smaller-text
+**vollständiges Chaining**
 
-**Intuition: Kompensationseffekt**
-
-```{r cp-intuition-plot}
+```{r cp-full-chain1}
 #| echo: false
 #| warning: false
 #| message: false
-#| out-width: "99%"
-#| fig-height: 4.2
+#| out-width: "95%"
+#| fig-height: 3.2
 
-set.seed(42)
-n <- 24
-mu <- 89
-sig <- 12
-dA_sim <- pmax(55, round(rnorm(n, mu, sig)))
-# negativ korreliert für maximale Illustration
-dB_sim <- pmax(55, round(mu * 2 - dA_sim + rnorm(n, 0, 4)))
-pool_sim <- (dA_sim + dB_sim) / 2
-C_sim <- 90
+draw_network <- function(edges, plants, markets, r = 0.055, range.x = c(0,1), range.y = c(0,1), width = 120, height = 320 ) {
+  fig <- plot_ly(type = "scatter", mode = "markers")
 
-df_int <- data.frame(t = 1:n, dA = dA_sim, dB = dB_sim, pool = pool_sim)
+  for (i in seq_len(nrow(edges))) {
+    p  <- plants[edges$from[i], ]
+    m  <- markets[edges$to[i], ]
+    dx <- m$x - p$x; dy <- m$y - p$y; d <- sqrt(dx^2+dy^2)
+    ax <- p$x + r*dx/d; ay <- p$y + r*dy/d
+    ex <- m$x - r*dx/d; ey <- m$y - r*dy/d
 
-fig_int <- plot_ly(df_int, x = ~t)
+    if (edges$dash[i]) {
+      n_seg <- 12
+      xs <- seq(ax, ex, length.out = n_seg+1)
+      ys <- seq(ay, ey, length.out = n_seg+1)
+      for (s in seq(1, n_seg-1, by=2)) {
+        fig <- fig %>% add_segments(
+          x = xs[s], xend = xs[s+1], y = ys[s], yend = ys[s+1],
+          line = list(color="#4B4B4B", width=1.6),
+          hoverinfo="skip", showlegend=FALSE
+        )
+      }
+      fig <- fig %>% add_annotations(
+        x=ex, y=ey, ax=xs[n_seg], ay=ys[n_seg],
+        xref="x", yref="y", axref="x", ayref="y",
+        showarrow=TRUE, arrowhead=2, arrowsize=0.9,
+        arrowwidth=1.6, arrowcolor="#4B4B4B", text=""
+      )
+    } else {
+      fig <- fig %>% add_annotations(
+        x=ex, y=ey, ax=ax, ay=ay,
+        xref="x", yref="y", axref="x", ayref="y",
+        showarrow=TRUE, arrowhead=2, arrowsize=0.9,
+        arrowwidth=2.0, arrowcolor="#222222", text=""
+      )
+    }
+  }
 
-fig_int <- fig_int %>% add_trace(
-  y = ~dA, type = "scatter", mode = "lines",
-  name = "Nachfrage Markt A",
-  line = list(color = cols$top, width = 1.8, dash = "dot")
-)
-fig_int <- fig_int %>% add_trace(
-  y = ~dB, type = "scatter", mode = "lines",
-  name = "Nachfrage Markt B",
-  line = list(color = cols$mid, width = 1.8, dash = "dot")
-)
-fig_int <- fig_int %>% add_trace(
-  y = ~pool, type = "scatter", mode = "lines",
-  name = "Ø Pool-Nachfrage",
-  line = list(color = "#a12c7b", width = 2.5)
-)
-fig_int <- fig_int %>% add_trace(
-  x = c(1, n), y = c(C_sim, C_sim),
-  type = "scatter", mode = "lines",
-  name = "Kapazität C = 90",
-  line = list(color = "#6B7280", width = 1.5, dash = "dash"),
-  hoverinfo = "skip"
-)
-
-fig_int <- fig_int %>% layout(
-  xaxis = list(title = "Periode", dtick = 3, fixedrange = TRUE),
-  yaxis = list(title = "Einheiten", fixedrange = TRUE,
-               range = c(50, 130)),
-  legend = list(orientation = "h", y = -0.22, font = list(size = 11)),
-  plot_bgcolor  = "transparent",
-  paper_bgcolor = "transparent",
-  margin = list(l = 50, r = 20, t = 10, b = 70),
-  height = 340
-)
-
-fig_int
-```
-
-:::
-:::
-
-:::
-::: {.column width="46%"}
-
-::: {.fragment .fade-up}
-::: {.callout-tip appearance="simple"}
-## Drei Voraussetzungen für effektives Pooling
-
-1. **Negative/geringe Korrelation** der Nachfragen — kompensieren sich
-2. **Flexible Kapazität** — mindestens ein Werk kann beide Produkte fertigen
-3. **Ausreichende Gesamtkapazität** — $C^1 + C^2 \geq E(d^A) + E(d^B)$
-:::
-:::
-
-::: {.fragment .fade-up}
-::: {.callout-warning appearance="simple"}
-## Kosten der Flexibilität
-- Flexible Werke erfordern **Mehrinvestitionen** (Umrüstanlagen, Qualifikation)
-- Lohnt sich nur bei **ausreichender Nachfragevariabilität**
-- $\rightarrow$ Trade-off: Flexibilitätskosten vs. Mismatch-Kosten
-:::
-:::
-
-:::
-:::
-
----
-
-## Kapazitätspooling – Formales Modell {#slide-cp-model}
-::: slide-subtitle
-Zwei Werke, zwei Märkte (Cachon & Terwiesch, Kap. 17)
-:::
-
-::: columns
-::: {.column width="50%"}
-
-::: {.callout-note appearance="minimal" icon=false}
-**Modellrahmen**
-
-- Zwei Märkte $A$, $B$ mit stochastischer Nachfrage $d^A$, $d^B$
-- Zwei Werke mit Kapazitäten $C^1$, $C^2$
-- **Dezentral:** Werk $k$ bedient nur Markt $k$
-- **Pooling:** Werk 1 kann ggf. auch Markt B bedienen
-:::
-
-::: {.fragment .fade-up}
-::: smaller-text
-
-**Erwartete Verkäufe – Dezentral**
-
-$$E(x^k_\text{dez}) = E[\min(d^k, C^k)]$$
-
-**Erwartete Verkäufe Markt B – Pooling**
-
-$$E(x^B_\text{pool}) = E[\min(d^B,\; C^2 + \max(0, C^1 - d^A))]$$
-
-**Gewinn durch Pooling**
-
-$$\Delta = E(x^A_\text{pool}) + E(x^B_\text{pool}) - E(x^A_\text{dez}) - E(x^B_\text{dez})$$
-
-:::
-:::
-
-:::
-::: {.column width="48%"}
-
-::: {.fragment .fade-up}
-
-```{r cp-model-plot}
-#| echo: false
-#| warning: false
-#| message: false
-#| out-width: "99%"
-#| fig-height: 5
-
-# Simulation: Dezentral vs. Pooling über Korrelationsbereich
-set.seed(7)
-N_sim <- 10000
-mu_AB <- 89; sig_AB <- 12; C_k <- 90
-
-rho_vals <- seq(-1, 1, by = 0.05)
-
-sim_results <- sapply(rho_vals, function(rho) {
-  # Korrelierte Normalverteilung
-  Sigma <- matrix(c(sig_AB^2, rho * sig_AB^2,
-                    rho * sig_AB^2, sig_AB^2), 2, 2)
-  L <- chol(Sigma + diag(1e-10, 2))
-  Z <- matrix(rnorm(N_sim * 2), N_sim, 2) %*% L
-  dA_s <- pmax(0, Z[,1] + mu_AB)
-  dB_s <- pmax(0, Z[,2] + mu_AB)
-
-  # Dezentral
-  xA_dez <- pmin(dA_s, C_k)
-  xB_dez <- pmin(dB_s, C_k)
-
-  # Pooling: Werk 1 flex (bedient A first, then spare cap to B)
-  xA_pool <- pmin(dA_s, C_k)
-  spare1   <- pmax(0, C_k - dA_s)
-  short_B  <- pmax(0, dB_s - C_k)
-  xB_pool  <- pmin(dB_s, C_k + pmin(spare1, short_B))
-
-  c(
-    dez   = mean(xA_dez + xB_dez),
-    pool  = mean(xA_pool + xB_pool),
-    delta = mean(xA_pool + xB_pool) - mean(xA_dez + xB_dez)
+  # Werke-Knoten (Hexagon)
+  fig <- fig %>% add_trace(
+    x=plants$x, y=plants$y, text=plants$lbl, mode="markers+text",
+    marker=list(symbol="hexagon", size=36,
+                color="#BFDBF7", line=list(color="#4B5563",width=1.5)),
+    textfont=list(size=14, color="#1F2933", family="Arial"),
+    textposition="middle center", hoverinfo="skip", showlegend=FALSE
   )
-})
 
-df_sim <- data.frame(
-  rho   = rho_vals,
-  dez   = sim_results["dez", ],
-  pool  = sim_results["pool", ],
-  delta = sim_results["delta", ]
+  # Markt-Knoten (Circle)
+  fig <- fig %>% add_trace(
+    x=markets$x, y=markets$y, text=markets$lbl, mode="markers+text",
+    marker=list(symbol="circle", size=36,
+                color="#2D9E8E", line=list(color="#2F3E46",width=1.5)),
+    textfont=list(size=14, color="white", family="Arial"),
+    textposition="middle center", hoverinfo="skip", showlegend=FALSE
+  )
+
+  fig %>% layout(
+    xaxis=list(visible=FALSE, range=range.x, fixedrange=TRUE),
+    yaxis=list(visible=FALSE, range=range.y, fixedrange=TRUE),
+    plot_bgcolor="transparent", paper_bgcolor="transparent",
+    margin=list(l=10,r=10,t=30,b=10), height=height, width=width
+  )
+}
+
+
+plants  <- data.frame(id = paste0("P",1:4), lbl = as.character(1:4),
+                      x = 0.20, y = c(0.85,0.58,0.38,0.12))
+markets <- data.frame(id = c("A","B","C","D"), lbl = c("A","B","C","D"),
+                      x = 0.78, y = c(0.85,0.58,0.38,0.12))
+rownames(plants)  <- plants$id
+rownames(markets) <- markets$id
+
+r <- 0.055
+
+edges <- data.frame(
+  from = c("P1","P2","P3","P4",   "P1","P2","P3","P4",   "P1","P2","P3","P4",   "P1","P2","P3","P4"),
+  to   = c("A","B","C","D",       "B","C","D","A",       "C","D","A","B",       "D","A","B","C"),
+  dash = c(rep(FALSE,4),          rep(TRUE,4),          rep(TRUE,4),          rep(TRUE,4)),
+  stringsAsFactors = FALSE
 )
 
-fig_mod <- plot_ly(df_sim, x = ~rho)
+draw_network(edges, plants, markets, range.y = c(.05,.925), width = 300, height = 300)
 
-fig_mod <- fig_mod %>% add_trace(
-  y = ~dez, type = "scatter", mode = "lines",
-  name = "Dezentral",
-  line = list(color = "#6B7280", width = 2, dash = "dash")
-)
-fig_mod <- fig_mod %>% add_trace(
-  y = ~pool, type = "scatter", mode = "lines",
-  name = "Pooling",
-  line = list(color = cols$top, width = 2.5)
-)
-fig_mod <- fig_mod %>% add_trace(
-  y = ~delta, type = "scatter", mode = "lines",
-  name = "Δ Pooling-Gewinn",
-  line = list(color = "#a12c7b", width = 2),
-  yaxis = "y2"
-)
-
-fig_mod <- fig_mod %>% layout(
-  xaxis = list(title = "Korrelation ρ(d^A, d^B)", fixedrange = TRUE,
-               range = c(-1, 1)),
-  yaxis  = list(title = "Erwartete Gesamtverkäufe", fixedrange = TRUE),
-  yaxis2 = list(title = "Δ Pooling-Gewinn (Einheiten)",
-                overlaying = "y", side = "right",
-                fixedrange = TRUE, showgrid = FALSE),
-  legend = list(orientation = "h", y = -0.22, font = list(size = 11)),
-  plot_bgcolor  = "transparent",
-  paper_bgcolor = "transparent",
-  margin = list(l = 55, r = 55, t = 15, b = 70),
-  height = 390
-)
-
-fig_mod
 ```
 
+Verbindungen: $n \cdot n = 16$
+
+Technologien je Werk: $n=4$
+
+Märkte je Werk: $n=4$
+:::
 :::
 
-:::
-:::
-
-
----
-
-## Kapazitätspooling – Grenzen {#slide-cp-limits}
-::: slide-subtitle
-Wann wirkt Pooling nicht? Und wie stark?
-:::
-
-::: columns
-::: {.column width="50%"}
-
-::: {.callout-warning appearance="simple"}
-## Grenzen des Kapazitätspoolings
-
-1. **Hohe Korrelation** ($\rho \to 1$): Beide Märkte boomen oder schwächeln gleichzeitig – kein Ausgleichseffekt
-2. **Hohe Auslastung:** Bei nahezu vollständig ausgelasteten Werken gibt es keine Reservekapazität zum Umverteilen
-3. **Hohe Flexibilitätskosten:** Investitionen in flexible Werke können den Nutzen übersteigen
-4. **Logistische Restriktionen:** Transport, Rüstzeiten und regulatorische Anforderungen limitieren Flexibilität in der Praxis
-:::
-
-:::
-::: {.column width="48%"}
+::: {.column width="33%"}
 
 ::: {.fragment .fade-up}
+**Kurzes Chaining**  
 
-```{r cp-rho-sensitivity}
+```{r chaining-short}
 #| echo: false
 #| warning: false
 #| message: false
-#| out-width: "99%"
-#| fig-height: 5.2
+#| out-width: "95%"
+#| fig-height: 3.2
 
-set.seed(99)
-N_s <- 8000
-mu_s <- 89; sig_s <- 12; C_s <- 90
-
-rho_s <- seq(-1, 1, by = 0.04)
-
-gains <- sapply(rho_s, function(rho) {
-  Sigma <- matrix(c(sig_s^2, rho * sig_s^2,
-                    rho * sig_s^2, sig_s^2), 2, 2)
-  eig_vals <- eigen(Sigma, only.values = TRUE)$values
-  if (any(eig_vals < -1e-8)) return(NA_real_)
-  L <- chol(Sigma + diag(1e-8, 2))
-  Z <- matrix(rnorm(N_s * 2), N_s, 2) %*% L
-  dA_s <- pmax(0, Z[,1] + mu_s)
-  dB_s <- pmax(0, Z[,2] + mu_s)
-
-  xA_dez <- pmin(dA_s, C_s)
-  xB_dez <- pmin(dB_s, C_s)
-
-  xA_p  <- pmin(dA_s, C_s)
-  spare <- pmax(0, C_s - dA_s)
-  short <- pmax(0, dB_s - C_s)
-  xB_p  <- pmin(dB_s, C_s + pmin(spare, short))
-
-  mean(xA_p + xB_p) - mean(xA_dez + xB_dez)
-})
-
-df_rho <- data.frame(rho = rho_s, gain = gains) %>% filter(!is.na(gain))
-
-fig_rho <- plot_ly(df_rho, x = ~rho, y = ~gain,
-                   type = "scatter", mode = "lines",
-                   line = list(color = cols$top, width = 2.5),
-                   fill = "tozeroy",
-                   fillcolor = "rgba(44,158,142,0.15)",
-                   name = "Δ Pooling-Gewinn")
-
-fig_rho <- fig_rho %>% add_trace(
-  x = c(-1, 1), y = c(0, 0),
-  type = "scatter", mode = "lines",
-  line = list(color = "#6B7280", width = 1, dash = "dot"),
-  showlegend = FALSE, hoverinfo = "skip"
+# Solid: 1->A, 2->B, 3->C, 4->D
+# Dashed (short chain, next neighbour +1): 1->B, 2->C, 3->D, 4->A  (wrap-around)
+# Dashed cross-down: 2->A, 3->B  etc. (Cachon: "short" = neighbor skip)
+edges <- data.frame(
+  from = c("P1","P2","P3","P4",   "P1","P2","P3","P4"),
+  to   = c("A","B","C","D",       "B","A","D","C"),
+  dash = c(rep(FALSE,4),          rep(TRUE,4)),
+  stringsAsFactors = FALSE
 )
 
-fig_rho <- fig_rho %>% layout(
-  xaxis = list(title = "Korrelation ρ(d^A, d^B)", fixedrange = TRUE,
-               range = c(-1, 1), dtick = 0.25),
-  yaxis = list(title = "Δ Erwartete Mehrverkäufe (Einh.)",
-               fixedrange = TRUE),
-  annotations = list(
-    list(x = -0.85, y = max(df_rho$gain, na.rm = TRUE) * 0.9,
-         text = "<b>Pooling am\nwirksamsten</b>",
-         showarrow = FALSE,
-         font = list(size = 12, color = cols$top, family = "Arial")),
-    list(x = 0.85, y = max(df_rho$gain, na.rm = TRUE) * 0.08,
-         text = "<b>Pooling\nwirkungslos</b>",
-         showarrow = FALSE,
-         font = list(size = 12, color = "#6B7280", family = "Arial"))
-  ),
-  plot_bgcolor  = "transparent",
-  paper_bgcolor = "transparent",
-  margin = list(l = 55, r = 20, t = 15, b = 60),
-  height = 400
-)
-
-fig_rho
+draw_network(edges, plants, markets, range.y = c(.05,.925), width = 300, height = 300)
 ```
 
+Verbindungen: $2 \cdot n = 8$
+
+Technologien je Werk: $n=2$
+
+Märkte je Werk: $n=2$
 :::
+:::
+
+
+::: {.column width="33%"}
+
+::: {.fragment .fade-up}
+**Langes Chaining**  
+
+```{r chaining-long}
+#| echo: false
+#| warning: false
+#| message: false
+#| out-width: "95%"
+#| fig-height: 3.2
+
+# Long SC alternative: Solid: 1->A, 2->B, 3->C, 4->D
+# Dashed (long chain, skip +2): 1->C, 2->D, 3->A, 4->B
+edges_long <- data.frame(
+  from = c("P1","P2","P3","P4",   "P1","P2","P3","P4"),
+  to   = c("A","B","C","D",       "B","C","D","A"),
+  dash = c(rep(FALSE,4),          rep(TRUE,4)),
+  stringsAsFactors = FALSE
+)
+
+draw_network(edges_long, plants, markets, range.y = c(.05,.925), width = 300, height = 300)
+```
+
+Verbindungen: $2 \cdot n = 8$
+
+Technologien je Werk: $n=2$
+
+Märkte je Werk: $n=4$
 
 :::
 :::
+::::
+:::::
 
 ---
 
-## Lagerbestandspooling – Grundidee {#slide-inv-pooling-intro}
+## Umgang mit Unsicherheit {#slide-inv-pooling-intro}
 ::: slide-subtitle
-Sicherheitsbestand und Zentralisierung (Cachon & Terwiesch, Kap. 13)
+Pooling über die Zeit - Sicherheitsbestände 
+:::
+
+::: {.callout-note appearance="minimal" icon=false}
+## Definition Sicherheitsbestand (Wiederholung)
+
+Sicherheitsbestände dienen dem Ausgleich von Nachfrageschwankungen über die Zeit. Der Sicherheitsbestand ist der erwarte Lagerbestand am Ende einer Risikoperiode. Sei $S$ der Anfangslagerbestand zu Begin der Risikoperiode und $\mu$ der erwartete Bedarf in der Risikoperiode, dann gilt für den Sicherheitsbestand $sb$
+$$ sb = S - \mu$$ 
+:::
+
+
+
+
+---
+
+## Lagerbestandspooling {#slide-inv-pooling-intro}
+::: slide-subtitle
+Allokation von Sicherheitsbeständen 
 :::
 
 ::: {.callout-note appearance="minimal" icon=false}
