@@ -1488,201 +1488,138 @@ Sicherheitsbestände gleichen Nachfrageschwankungen über die Zeit aus. Sei $S$ 
 ::: {.column width="65%"}
 
 ::: {.fragment .fade-up}
-```{r lagerbestand-graph}
+
+```{r ts-lager-graph}
 #| echo: false
 #| warning: false
 #| message: false
-#| out-width: "90%"
-#| fig-height: 4.5
-
-library(plotly)
+#| out-width: "95%"
+#| fig-height: 6
 
 set.seed(42)
+n   <- 24        # Perioden
+lam <- 20        # mittlere Nachfrage (Poisson)
+t   <- 4         # Bestellintervall
+S   <- 135       # Order-up-to-Level
+wbz <- 2         # Wiederbeschaffungszeit (Perioden)
+l.ini <- 120     # Anfangslagerbestand
+sb <- S - (t + wbz) * lam
 
-# --- Hilfsfunktion: stochastischer Lagerabbau ---
-make_inventory <- function(t_start, t_end, y_start, y_end, n = 200) {
-  t <- seq(t_start, t_end, length.out = n)
-  # Linearer Trend + Brownsche Bewegung
-  trend <- seq(0, y_end - y_start, length.out = n)
-  noise <- cumsum(rnorm(n, 0, (y_start - y_end) * 0.015))
-  noise <- noise - noise  # bei 0 starten[1]
-  y <- y_start + trend + noise
-  # Clipping: nicht unter y_end fallen
-  y <- pmax(y, min(y_end, y_start))
-  data.frame(t = t, y = y)
+demand <- rpois(n, lambda = lam)
+
+# --- Simulation ---
+res <- tS.lager(d = demand, t = t, S = S, l.ini = l.ini, wbz = wbz)
+res <- as.data.frame(res)
+
+# --- Subset: nur Perioden 2 bis 22 ---
+idx      <- 2:22
+perioden <- seq_len(nrow(res))[idx]
+res_sub  <- res[idx, ]
+
+# --- Doppelpfeile: Länge 3.95, lückenlos nebeneinander ---
+arrow_len <- t - 0.05          # 3.95 (leicht kürzer als Bestellintervall t=4)
+x_start   <- perioden[1]
+x_end     <- perioden[length(perioden)]
+
+# Pfeil-Startpunkte: lückenlos ab x_start
+arrow_x0 <- seq(x_start, x_end - arrow_len + 0.01, by = arrow_len)
+arrow_x1 <- arrow_x0 + arrow_len
+
+# y-Position der Pfeile: knapp unterhalb Nulllinie
+y_min_data <- min(pmin(0, res_sub$Lagerbestand), na.rm = TRUE)
+y_arrow    <- y_min_data - abs(y_min_data) * 0.15 - 5
+
+fig <- plot_ly()
+
+# Lagerbestand
+fig <- fig |> add_lines(
+  x = perioden, y = res_sub$Lagerbestand,
+  line = list(shape = "hvh"), name = "Lagerbestand"
+)
+
+# Sicherheitsbestand
+fig <- fig |> add_lines(
+  x = perioden, y = sb,
+  name = "Sicherheitsbestand"
+)
+
+# Fehlmengen-Füllung
+fig <- fig |> add_trace(
+  x = perioden, y = pmin(0, res_sub$Lagerbestand),
+  type = "scatter", mode = "lines",
+  line = list(shape = "hvh", color = "transparent"),
+  name = "Fehlmengen",
+  fill = "tozeroy", fillcolor = "#FF000050"
+)
+
+# --- Doppelpfeile zeichnen ---
+for (i in seq_along(arrow_x0)) {
+  x0 <- arrow_x0[i]
+  x1 <- arrow_x1[i]
+  xm <- (x0 + x1) / 2
+
+  # Horizontale Linie (Schaft des Doppelpfeils)
+  fig <- fig |> add_segments(
+    x = x0, xend = x1,
+    y = y_arrow, yend = y_arrow,
+    line = list(color = "#333333", width = 1.5),
+    showlegend = FALSE, hoverinfo = "skip"
+  )
+
+  # Linke Pfeilspitze (zeigt nach links)
+  fig <- fig |> add_annotations(
+    x = x0, y = y_arrow,
+    ax = x0 + 0.6, ay = y_arrow,
+    xref = "x", yref = "y", axref = "x", ayref = "y",
+    showarrow = TRUE, arrowhead = 2, arrowsize = 0.9,
+    arrowwidth = 1.5, arrowcolor = "#333333", text = ""
+  )
+
+  # Rechte Pfeilspitze (zeigt nach rechts)
+  fig <- fig |> add_annotations(
+    x = x1, y = y_arrow,
+    ax = x1 - 0.6, ay = y_arrow,
+    xref = "x", yref = "y", axref = "x", ayref = "y",
+    showarrow = TRUE, arrowhead = 2, arrowsize = 0.9,
+    arrowwidth = 1.5, arrowcolor = "#333333", text = ""
+  )
+
+  # Beschriftung "Periode" zentriert unter dem Pfeil
+  fig <- fig |> add_annotations(
+    x = xm, y = y_arrow,
+    xref = "x", yref = "y",
+    text = "Periode", showarrow = FALSE,
+    yshift = -16,
+    font = list(size = 11, color = "#333333", family = "Arial")
+  )
 }
 
-# Parameter
-S  <- 100   # Anfangslagerbestand
-sb <- 18    # Sicherheitsbestand
-t1 <- 0     # Periodenanfang 1
-t2 <- 6     # Periodenende 1 / Bestellzeitpunkt
-t3 <- 10    # Ende der Darstellung
-
-# Periode 1: S -> sb (stochastischer Abbau)
-p1 <- make_inventory(t1, t2, S, sb, n = 300)
-
-# Periode 2: Auffüllung auf S, dann stochastischer Abbau
-p2 <- make_inventory(t2, t3, S, S * 0.65, n = 200)
-
-# Vertikale Linie (Bestellzeitpunkt)
-x_order <- t2
-
-fig <- plot_ly(type = "scatter", mode = "lines")
-
-# Periode 1 - Kurve
-fig <- fig %>% add_trace(
-  x = p1$t, y = p1$y,
-  line = list(color = "#2F3E46", width = 2),
-  hoverinfo = "skip", showlegend = FALSE
-)
-
-# Periode 2 - Kurve
-fig <- fig %>% add_trace(
-  x = p2$t, y = p2$y,
-  line = list(color = "#2F3E46", width = 2),
-  hoverinfo = "skip", showlegend = FALSE
-)
-
-# Horizontale Linie: Anfangslagerbestand S (oben)
-fig <- fig %>% add_segments(
-  x = t1, xend = t3, y = S, yend = S,
-  line = list(color = "#2D9E8E", width = 1.8, dash = "solid"),
-  hoverinfo = "skip", showlegend = FALSE
-)
-
-# Horizontale Linie: Sicherheitsbestand sb (gestrichelt)
-fig <- fig %>% add_segments(
-  x = t1, xend = t3, y = sb, yend = sb,
-  line = list(color = "#2F3E46", width = 1.5, dash = "dash"),
-  hoverinfo = "skip", showlegend = FALSE
-)
-
-# Horizontale Linie: y = 0
-fig <- fig %>% add_segments(
-  x = t1, xend = t3, y = 0, yend = 0,
-  line = list(color = "#2F3E46", width = 1.2, dash = "solid"),
-  hoverinfo = "skip", showlegend = FALSE
-)
-
-# Vertikale Linie: Bestellzeitpunkt (Periodentrenner)
-fig <- fig %>% add_segments(
-  x = x_order, xend = x_order, y = 0, yend = S,
-  line = list(color = "#2F3E46", width = 1.5, dash = "solid"),
-  hoverinfo = "skip", showlegend = FALSE
-)
-
-# --- Annotations ---
-
-# "Anfangslagerbestand S" (oben rechts der Linie)
-fig <- fig %>% add_annotations(
-  x = t1 + 0.15, y = S,
-  xref = "x", yref = "y",
-  text = "Anfangslagerbestand <i>S</i>",
-  showarrow = FALSE, xanchor = "left", yanchor = "bottom",
-  font = list(size = 12, color = "#1F2933", family = "Arial")
-)
-
-# "Sicherheitsbestand sb" (gestrichelte Linie)
-fig <- fig %>% add_annotations(
-  x = t1 + 0.15, y = sb,
-  xref = "x", yref = "y",
-  text = "Sicherheitsbestand <i>sb</i>",
-  showarrow = FALSE, xanchor = "left", yanchor = "bottom",
-  font = list(size = 12, color = "#1F2933", family = "Arial")
-)
-
-# "0" auf der x-Achse
-fig <- fig %>% add_annotations(
-  x = t1, y = 0,
-  xref = "x", yref = "y",
-  text = "0", showarrow = FALSE,
-  xanchor = "right", yanchor = "top",
-  font = list(size = 12, color = "#1F2933", family = "Arial")
-)
-
-# Doppelpfeil "Periode" unter Periode 1 (via zwei Pfeile + Text)
-y_arrow <- -10  # unter 0
-
-# Pfeil links → Mitte (Periode 1)
-fig <- fig %>% add_annotations(
-  x = (t1 + t2) / 2, y = y_arrow,
-  ax = t1, ay = y_arrow,
-  xref = "x", yref = "y", axref = "x", ayref = "y",
-  showarrow = TRUE, arrowhead = 2, arrowsize = 0.9,
-  arrowwidth = 1.2, arrowcolor = "#2D9E8E", text = ""
-)
-# Pfeil rechts → Mitte (Periode 1)
-fig <- fig %>% add_annotations(
-  x = (t1 + t2) / 2, y = y_arrow,
-  ax = t2, ay = y_arrow,
-  xref = "x", yref = "y", axref = "x", ayref = "y",
-  showarrow = TRUE, arrowhead = 2, arrowsize = 0.9,
-  arrowwidth = 1.2, arrowcolor = "#2D9E8E", text = ""
-)
-fig <- fig %>% add_annotations(
-  x = (t1 + t2) / 2, y = y_arrow - 6,
-  xref = "x", yref = "y",
-  text = "Periode", showarrow = FALSE,
-  font = list(size = 12, color = "#1F2933", family = "Arial"),
-  xanchor = "center"
-)
-
-# Pfeil links → Mitte (Periode 2)
-fig <- fig %>% add_annotations(
-  x = (t2 + t3) / 2, y = y_arrow,
-  ax = t2, ay = y_arrow,
-  xref = "x", yref = "y", axref = "x", ayref = "y",
-  showarrow = TRUE, arrowhead = 2, arrowsize = 0.9,
-  arrowwidth = 1.2, arrowcolor = "#2D9E8E", text = ""
-)
-# Pfeil rechts → Mitte (Periode 2)
-fig <- fig %>% add_annotations(
-  x = (t2 + t3) / 2, y = y_arrow,
-  ax = t3, ay = y_arrow,
-  xref = "x", yref = "y", axref = "x", ayref = "y",
-  showarrow = TRUE, arrowhead = 2, arrowsize = 0.9,
-  arrowwidth = 1.2, arrowcolor = "#2D9E8E", text = ""
-)
-fig <- fig %>% add_annotations(
-  x = (t2 + t3) / 2, y = y_arrow - 6,
-  xref = "x", yref = "y",
-  text = "Periode", showarrow = FALSE,
-  font = list(size = 12, color = "#1F2933", family = "Arial"),
-  xanchor = "center"
-)
-
-# y-Achsen-Beschriftung "Lagerbestand" (via Annotation, da Plotly kein vertikales Label hat)
-fig <- fig %>% add_annotations(
-  x = -0.08, y = 0.5,
-  xref = "paper", yref = "paper",
-  text = "Lagerbestand",
-  showarrow = FALSE, textangle = -90,
-  font = list(size = 13, color = "#1F2933", family = "Arial"),
-  xanchor = "center", yanchor = "middle"
-)
-
-# --- Layout ---
-fig <- fig %>% layout(
+fig <- fig |> layout(
+  legend = list(
+    orientation = "h",
+    x           = 0.5,
+    y           = 1.12,
+    xanchor     = "center",
+    yanchor     = "top"
+  ),
   xaxis = list(
-    visible = FALSE,
-    range = c(t1 - 0.3, t3 + 0.1),
-    fixedrange = TRUE
+    showticklabels = FALSE,     # keine Zahlen auf der x-Achse
+    showgrid       = FALSE,
+    zeroline       = FALSE,
+    range          = c(x_start - 0.3, x_end + 0.3)
   ),
   yaxis = list(
-    visible = FALSE,
-    range = c(y_arrow - 12, S + 12),
-    fixedrange = TRUE
+    title = "Bestand",
+    range = c(y_arrow - 10, NA)  # y-Achse nach unten erweitern für Pfeile
   ),
-  plot_bgcolor  = "transparent",
-  paper_bgcolor = "transparent",
-  margin = list(l = 60, r = 20, t = 20, b = 30),
-  height = 360,
-  width  = 680
+  margin = list(b = 55),           # Randplatz für Beschriftung unterhalb
+  height= 550,
+  width = 1000
 )
 
 fig
 ```
+
 :::
 :::
 
