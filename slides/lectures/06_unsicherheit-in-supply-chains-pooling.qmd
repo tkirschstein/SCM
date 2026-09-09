@@ -1622,14 +1622,476 @@ fig
 
 :::
 :::
+::::
 
 
+---
 
+## Lagerbestandspooling – α-Servicegrad {#slide-alpha-empirisch}
+::: slide-subtitle
+Sicherheitsbestand aus empirischer Verteilungsfunktion
+:::
+
+::: {.callout-note appearance="minimal" icon=false}
+Gehen Sie davon aus, dass ein Fehlmengenrisiko von 5% akzeptable ist und der $\alpha$-Servicegrad daher 95% beträgt.
+*Frage*: Welcher (minimale) Anfangslagerbestand sichert diesen Servicegrad?
+*Antwort*:  Formal soll gelten $P(d \leq S) \geq \alpha$. Für eine empirische Nachfrageverteilung $F(d)$ gilt also $\hat{F}(S) \geq \alpha$ oder $S \geq \hat{F}^{-1}(\alpha)$. Wir suchen also ein **(empirisches) Quantil**.
+:::
+
+:::: columns
+::: {.column width="25%"}
+
+```{r alpha-ecdf-table}
+#| echo: false
+#| warning: false
+#| message: false
+
+dA <- cp_data$dA
+mu_A <- mean(dA)
+dA_sorted <- unique(sort(dA))
+dA_freq <- table(dA)
+n_obs <- length(dA)
+F_emp <- cumsum(dA_freq)/ n_obs
+F_emp_pct <- paste0(round(F_emp * 100, 1), " %")
+
+# α-Schwellen hervorheben (75%, 90%, 95%)
+alpha_rows <- sapply(c(0.75, 0.90, 0.95), function(a) which(F_emp >= a)[1])
+
+ecdf_df <- data.frame(
+  Rang = seq_len(length(dA_freq)),
+  d    = dA_sorted,
+  H    = as.numeric(dA_freq),
+  F    = F_emp_pct
+)
+
+tbl <- kbl(ecdf_df,
+    col.names = c("Rang", "d<sub>t</sub>", "Anzahl", "F̂(d)"),
+    align = c("c", "r","r", "r"),
+    escape = FALSE,
+    caption = paste0("μ = ", round(mu_A, 1), " | n = ", n_obs)) |>
+  kable_styling(
+    bootstrap_options = c("condensed", "striped"),
+    full_width = TRUE,
+    font_size = 22
+  ) |>
+  column_spec(1, color = "gray") |>
+  column_spec(2, bold = TRUE) |>
+  column_spec(3, bold = TRUE) |>
+  row_spec(0, background = "#2F3E46", color = "white", bold = TRUE)
+
+# α-Zeilen farblich markieren
+tbl <- tbl |>
+  row_spec(alpha_rows[1], background = "#FFF3CD", bold = TRUE) |>  # α=75%
+  row_spec(alpha_rows[2], background = "#CCE5FF", bold = TRUE) |>  # α=90%
+  row_spec(alpha_rows[3], background = "#FFD6CC", bold = TRUE)    # α=95%
+
+tbl
+```
+
+:::
+
+::: {.column width="74%"}
+::: {.fragment .fade-up}
+```{r alpha-ecdf-plot}
+#| echo: false
+#| warning: false
+#| message: false
+#| out-width: "99%"
+#| fig-height: 4.5
+
+mu_A <- mean(dA)
+dA_sorted <- sort(dA)
+n_obs <- length(dA_sorted)
+F_emp <- seq_len(n_obs) / n_obs
+
+# Korrekte rechtsseitig-stetige Treppenfunktion
+x_ecdf <- c(min(dA_sorted) - 6, min(dA_sorted))
+y_ecdf <- c(0, 0)
+for (i in seq_len(n_obs)) {
+  x_ecdf <- c(x_ecdf, dA_sorted[i], dA_sorted[i])
+  y_ecdf <- c(y_ecdf, if (i == 1) 0 else F_emp[i - 1], F_emp[i])
+  if (i < n_obs) {
+    x_ecdf <- c(x_ecdf, dA_sorted[i], dA_sorted[i + 1])
+    y_ecdf <- c(y_ecdf, F_emp[i], F_emp[i])
+  }
+}
+x_ecdf <- c(x_ecdf, dA_sorted[n_obs], dA_sorted[n_obs] + 6)
+y_ecdf <- c(y_ecdf, 1, 1)
+
+alpha_show  <- c(0.75, 0.90, 0.95)
+alpha_cols  <- c("#E9A000", "#2196F3", "#E76F51")
+alpha_labels <- c("α = 75%", "α = 90%", "α = 95%")
+
+fig <- plot_ly()
+
+# ECDF-Treppe
+fig <- fig %>% add_trace(
+  x = x_ecdf, y = y_ecdf,
+  type = "scatter", mode = "lines",
+  name = "F̂(d)",
+  line = list(color = cols$top, width = 2.8),
+  hovertemplate = "d = %{x}<br>F̂(d) = %{y:.3f}<extra></extra>"
+)
+
+# Beobachtungspunkte
+fig <- fig %>% add_trace(
+  x = dA_sorted, y = F_emp,
+  type = "scatter", mode = "markers",
+  name = "Beobachtungen",
+  marker = list(color = cols$top, size = 9,
+                line = list(color = "white", width = 1.5)),
+  hovertemplate = "d = %{x}<br>F̂ = %{y:.3f}<extra></extra>"
+)
+
+# α-Linien + Ablese-Linien
+for (j in seq_along(alpha_show)) {
+  a     <- alpha_show[j]
+  idx_a <- which(F_emp >= a)[1]
+  S_a   <- dA_sorted[idx_a]
+  sb_a  <- round(S_a - mu_A, 1)
+  col_a <- alpha_cols[j]
+
+  fig <- fig %>% add_trace(
+    x = c(min(dA_sorted) - 6, S_a), y = c(a, a),
+    type = "scatter", mode = "lines",
+    name = alpha_labels[j],
+    line = list(color = col_a, width = 1.8, dash = "dot"),
+    hoverinfo = "skip", showlegend = TRUE
+  )
+  fig <- fig %>% add_trace(
+    x = c(S_a, S_a), y = c(0, a),
+    type = "scatter", mode = "lines",
+    line = list(color = col_a, width = 1.8, dash = "dot"),
+    hoverinfo = "skip", showlegend = FALSE
+  )
+  fig <- fig %>% add_annotations(
+    x = S_a, y = -0.045,
+    xref = "x", yref = "paper",
+    text = paste0("<b>S=", S_a, "<br>sb=", sb_a, "</b>"),
+    showarrow = FALSE,
+    font = list(size = 16, color = col_a, family = "Arial"),
+    xanchor = "center"
+  )
+}
+
+# μ-Linie
+fig <- fig %>% add_trace(
+  x = c(mu_A, mu_A), y = c(0, 1),
+  type = "scatter", mode = "lines",
+  name = paste0("μ = ", round(mu_A, 1)),
+  line = list(color = "#6B7280", width = 1.4, dash = "dashdot"),
+  hoverinfo = "skip"
+)
+
+fig <- fig %>% layout(
+  xaxis = list(
+    title = "Nachfrage d<sub>t</sub><sup>A</sup>",
+    fixedrange = TRUE,
+    range = c(min(dA_sorted) - 7, max(dA_sorted) + 7)
+  ),
+  yaxis = list(
+    title = "F̂(d)",
+    fixedrange = TRUE,
+    range = c(-0.05, 1.08),
+    tickformat = ".0%"
+  ),
+  #legend = list(orientation = "h", y = -0.26, font = list(size = 16)),
+  legend = list(
+    orientation = "v",
+    x           = 0.99,
+    y           = 0.75,
+    xanchor     = "right",
+    yanchor     = "top"
+  ),
+  
+  plot_bgcolor  = "transparent",
+  paper_bgcolor = "transparent",
+  margin = list(l = 50, r = 15, t = 10, b = 85),
+  height = 420,
+  width = 1100
+)
+
+fig
+```
+:::
+
+::: {.fragment .fade-up}
+::: {.callout-note appearance="minimal" icon=false}
+Sicherheitsbestände $sb=S-\mu$: $sb_{75\%}=4$, $sb_{90\%}=7$, $sb_{95\%}=15$
+:::
+:::
+
+:::
 ::::
 
 ---
 
-## Lagerbestandspooling {#slide-inv-pooling-intro}
+## Sicherheitsbestand via α-Servicegrad {#slide-dezentral-zentral-empirisch}
+::: slide-subtitle
+Dezentral vs. zentral — empirische Verteilungsfunktionen im Vergleich
+:::
+
+:::: columns
+
+<!-- ══════════════════ LINKE SPALTE: DEZENTRAL ══════════════════ -->
+::: {.column width="50%"}
+
+**Dezentrales Netzwerk**
+
+```{r alpha-decentral-network}
+#| echo: false
+#| warning: false
+#| message: false
+#| out-width: "99%"
+#| fig-height: 1.75
+
+plants  <- data.frame(id = 1:2, lbl = as.character(1:2),
+                      x = 0.20, y = c(0.85,0.48))
+markets <- data.frame(id = c("A","B"), lbl = c("A","B"),
+                      x = 0.78, y = c(0.85,0.48))
+rownames(plants)  <- plants$id
+rownames(markets) <- markets$id
+
+r <- 0.055
+
+edges <- data.frame(
+  from = c("1","2"),
+  to   = c("A","B"),
+  dash = c(rep(FALSE,2)),
+  stringsAsFactors = FALSE
+)
+
+draw_network(edges, plants, markets, range.y = c(.35,1), width = 300, height = 150)
+
+```
+
+```{r alpha-ecdf-dec}
+#| echo: false
+#| warning: false
+#| message: false
+#| out-width: "99%"
+#| fig-height: 3.75
+
+dA <- cp_data$dA
+dB <- cp_data$dB
+mu_A <- mean(dA); mu_B <- mean(dB)
+
+# Hilfsfunktion: ECDF-Treppenpunkte
+make_ecdf_xy <- function(d) {
+  ds <- sort(d); n <- length(ds); Fe <- seq_len(n) / n
+  x <- c(min(ds)-5, min(ds)); y <- c(0, 0)
+  for (i in seq_len(n)) {
+    x <- c(x, ds[i], ds[i])
+    y <- c(y, if(i==1) 0 else Fe[i-1], Fe[i])
+    if (i < n) { x <- c(x, ds[i], ds[i+1]); y <- c(y, Fe[i], Fe[i]) }
+  }
+  x <- c(x, ds[n], ds[n]+5); y <- c(y, 1, 1)
+  list(x=x, y=y, sorted=ds, F=Fe)
+}
+
+eA <- make_ecdf_xy(dA)
+eB <- make_ecdf_xy(dB)
+
+alpha <- 0.95
+S_A <- eA$sorted[which(eA$F >= alpha)][1]
+S_B <- eB$sorted[which(eB$F >= alpha)][1]
+S_mid <- (S_A + S_B)/2
+
+sb_A <- round(S_A - mu_A, 1)
+sb_B <- round(S_B - mu_B, 1)
+col_A <- cols$top     # Markt A — Hauptfarbe
+col_B <- cols$mid     # Markt B — sekundäre Farbe
+
+fig_dec2 <- plot_ly()
+
+# ECDF Markt A
+fig_dec2 <- fig_dec2%>% add_trace(
+  x=eA$x, y=eA$y, type="scatter", mode="lines",
+  name="F̂<sub>A</sub>(d)", line=list(color=col_A, width=2.5),
+  hovertemplate="d=%{x}<br>F̂A=%{y:.2f}<extra></extra>"
+) %>% add_trace(
+  x=eA$sorted, y=eA$F, type="scatter", mode="markers",
+  showlegend=FALSE, marker=list(color=col_A, size=7,
+  line=list(color="white", width=1)), hoverinfo="skip"
+)
+
+# ECDF Markt B
+fig_dec2 <- fig_dec2%>% add_trace(
+  x=eB$x, y=eB$y, type="scatter", mode="lines",
+  name="F̂<sub>B</sub>(d)", line=list(color=col_B, width=2.5, dash="dash"),
+  hovertemplate="d=%{x}<br>F̂B=%{y:.2f}<extra></extra>"
+) %>% add_trace(
+  x=eB$sorted, y=eB$F, type="scatter", mode="markers",
+  showlegend=FALSE, marker=list(color=col_B, size=7,
+  line=list(color="white", width=1)), hoverinfo="skip"
+)
+
+# α = 95%-Linie
+fig_dec2 <- fig_dec2%>% add_trace(
+  x=c(min(c(dA,dB))-6, max(S_A, S_B)), y=c(alpha, alpha),
+  type="scatter", mode="lines", name="α = 95%",
+  line=list(color="#E76F51", width=1.6, dash="dot"), hoverinfo="skip"
+)
+# Vertikale Ablese-Linien
+for (vals in list(list(S=S_A, mu=mu_A, sb=sb_A, col=col_A, lbl="A"),
+                  list(S=S_B, mu=mu_B, sb=sb_B, col=col_B, lbl="B"))) {
+  fig_dec2 <- fig_dec2%>%
+    add_trace(x=c(vals$S, vals$S), y=c(0, alpha), type="scatter", mode="lines",
+              line=list(color=vals$col, width=1.3, dash="dot"),
+              hoverinfo="skip", showlegend=FALSE) %>%
+    add_annotations(x=ifelse(vals$S < S_mid, vals$S*.975,  vals$S*1.025) , y=0.05, xref="x", yref="paper",
+      text=paste0("<b>S<sub>",vals$lbl,"</sub>=",vals$S,"<br>sb<sub>",vals$lbl,"</sub>=",vals$sb,"</b>"),
+      showarrow=FALSE, font=list(size=15, color=vals$col, family="Arial"),
+      xanchor="center")
+}
+# μ-Linien
+for (vals in list(list(mu=mu_A, col=col_A, nm=paste0("μ<sub>A</sub>=",round(mu_A,1))),
+                  list(mu=mu_B, col=col_B, nm=paste0("μ<sub>B</sub>=",round(mu_B,1))))) {
+  fig_dec2 <- fig_dec2%>% add_trace(
+    x=c(vals$mu, vals$mu), y=c(0,1), type="scatter", mode="lines",
+    name=vals$nm, line=list(color=vals$col, width=1.2, dash="dashdot"),
+    hoverinfo="skip"
+  )
+}
+
+fig_dec2 <- fig_dec2%>% layout(
+  xaxis=list(title="Nachfrage d", fixedrange=F,
+             range=c(min(c(dA,dB))-8, max(S_A,S_B)+8)),
+  yaxis=list(title="F̂(d)", fixedrange=F, range=c(-0.06,1.08),
+             tickformat=".0%"),
+  #legend=list(orientation="h", y=-0.28, font=list(size=10)),
+  legend = list(
+    orientation = "v",
+    x           = 0.99,
+    y           = 0.75,
+    xanchor     = "right",
+    yanchor     = "top",
+    size = 13
+  ),
+  plot_bgcolor="transparent", paper_bgcolor="transparent",
+  margin=list(l=50, r=10, t=5, b=85), height=350, width = 750
+)
+fig_dec2
+```
+
+:::
+
+<!-- ══════════════════ RECHTE SPALTE: ZENTRAL ══════════════════ -->
+::: {.column width="50%"}
+
+::: {.fragment .fade-up}
+
+**Zentrales Netzwerk (Pooling)**
+
+```{r alpha-central-network}
+#| echo: false
+#| warning: false
+#| message: false
+#| out-width: "99%"
+#| fig-height: 1.75
+
+plants  <- data.frame(id = 0, lbl = as.character(0),
+                      x = 0.20, y = c(0.61))
+markets <- data.frame(id = c("A","B"), lbl = c("A","B"),
+                      x = 0.78, y = c(0.85,0.48))
+rownames(plants)  <- plants$id
+rownames(markets) <- markets$id
+
+r <- 0.055
+
+edges <- data.frame(
+  from = c("0"),
+  to   = c("A","B"),
+  dash = c(rep(FALSE,2)),
+  stringsAsFactors = FALSE
+)
+
+draw_network(edges, plants, markets, range.y = c(.35,1), width = 300, height = 150)
+
+```
+
+```{r alpha-ecdf-central}
+#| echo: false
+#| warning: false
+#| message: false
+#| out-width: "99%"
+#| fig-height: 3.75
+
+dTotal <- cp_data$dA + cp_data$dB
+mu_T   <- mean(dTotal)
+eT     <- make_ecdf_xy(dTotal)
+
+S_T  <- eT$sorted[which(eT$F >= alpha)][1]
+sb_T <- round(S_T - mu_T, 1)
+col_T <- "#F4A261"  # Zentrallager-Farbe (orange)
+
+fig_cen2 <- plot_ly()
+
+# ECDF Gesamtnachfrage
+fig_cen2 <- fig_cen2%>% add_trace(
+  x=eT$x, y=eT$y, type="scatter", mode="lines",
+  name="F̂<sub>A+B</sub>(d)", line=list(color=col_T, width=2.8),
+  hovertemplate="d=%{x}<br>F̂=%{y:.2f}<extra></extra>"
+) %>% add_trace(
+  x=eT$sorted, y=eT$F, type="scatter", mode="markers",
+  showlegend=FALSE, marker=list(color=col_T, size=7,
+  line=list(color="white", width=1)), hoverinfo="skip"
+)
+
+# α = 95%-Linie
+fig_cen2 <- fig_cen2%>% add_trace(
+  x=c(min(dTotal)-8, S_T), y=c(alpha, alpha),
+  type="scatter", mode="lines", name="α = 95%",
+  line=list(color="#E76F51", width=1.6, dash="dot"), hoverinfo="skip"
+) %>% add_trace(
+  x=c(S_T, S_T), y=c(0, alpha), type="scatter", mode="lines",
+  line=list(color=col_T, width=1.3, dash="dot"),
+  hoverinfo="skip", showlegend=FALSE
+) %>% add_annotations(
+  x=S_T, y=0.05, xref="x", yref="paper",
+  text=paste0("<b>S<sub>0</sub>=",S_T,"<br>sb<sub>0</sub>=",sb_T,"</b>"),
+  showarrow=FALSE, font=list(size=15, color=col_T, family="Arial"),
+  xanchor="center"
+) %>% add_trace(
+  x=c(mu_T, mu_T), y=c(0,1), type="scatter", mode="lines",
+  name=paste0("μ<sub>A+B</sub>=",round(mu_T,1)),
+  line=list(color="#6B7280", width=1.2, dash="dashdot"), hoverinfo="skip"
+)
+
+fig_cen2 <- fig_cen2%>% layout(
+  xaxis=list(title="Gesamtnachfrage d<sup>A</sup>+d<sup>B</sup>",
+             fixedrange=TRUE, range=c(min(dTotal)-10, S_T+12)),
+  yaxis=list(title="F̂(d)", fixedrange=TRUE, range=c(-0.06,1.08),
+             tickformat=".0%"),
+#  legend=list(orientation="h", y=-0.28, font=list(size=10)),
+legend = list(
+    orientation = "v",
+    x           = 0.99,
+    y           = 0.75,
+    xanchor     = "right",
+    yanchor     = "top",
+    size = 13
+  ),
+  plot_bgcolor="transparent", paper_bgcolor="transparent",
+  margin=list(l=50, r=10, t=5, b=85), height=350, width = 750
+)
+fig_cen2
+```
+
+:::
+:::
+
+::::
+
+::: {.fragment .fade-up}
+::: {.callout-note appearance="minimal" icon="info"}
+Einsparung an Sicherheitsbestand: $sb_{dezentral}=sb_{A}+sb_{B}=27.5$ vs. $sb_{0}=22.5$  $\rightarrow$ 5 Einheiten oder 18 %
+:::
+:::
+
+---
+
+## Lagerbestandspooling {#slide-inv-pooling-intro2}
 ::: slide-subtitle
 Allokation von Sicherheitsbeständen 
 :::
