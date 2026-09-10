@@ -2090,3 +2090,430 @@ Einsparung an Sicherheitsbestand: $sb_{dezentral}=sb_{A}+sb_{B}=27.5$ vs. $sb_{0
 :::
 
 
+## Lagerbestandspooling {#slide-dezentral-zentral-empirisch}
+::: slide-subtitle
+Sicherheitsbestände bei bekannter Nachfrageverteilung  
+:::
+
+::: {.callout-note appearance="minimal" icon=false}
+## Nachfrageverteilung
+
+Oft wird davon ausgegangen, dass die Nachfrage nach Gütern in einer bestimmten Zeitspanne eine Zufallsvariable ist, deren Verteilungsparamter (wie Mittelwert und Varianz) bekannt sind oder geschätzt werden können.
+
+:::
+
+---
+
+## Lagerbestandspooling {#slide-pooling-normal-intro}
+::: slide-subtitle
+Normalverteilte Nachfrage – Sicherheitsbestand für zwei Standorte
+:::
+
+::: {.callout-note appearance="minimal" icon=false}
+Seien $D_1 \sim \mathcal{N}(\mu_1, \sigma_1^2)$ und $D_2 \sim \mathcal{N}(\mu_2, \sigma_2^2)$ die **normalverteilten Nachfragen** an zwei Standorten mit Korrelation $\rho = \text{Cor}(D_1, D_2)$.
+
+Der Sicherheitsbestand am Standort $i$ bei $\alpha$-Servicegrad beträgt: $sb_i = z_\alpha \cdot \sigma_i$, sodass in Summe: $sb_{dez} = z_\alpha \cdot (\sigma_1 + \sigma_2)$
+:::
+
+::: columns
+::: {.column width="50%"}
+
+::: {.fragment .fade-up}
+::: {.callout-note appearance="simple"}
+## Zentrales Lager: Verteilung der Gesamtnachfrage
+
+Die aggregierte Nachfrage $D_0 = D_1 + D_2$ ist ebenfalls normalverteilt:
+
+$$D_0 \sim \mathcal{N}\!\left(\mu_1 + \mu_2,\; \sigma_1^2 + \sigma_2^2 + 2\rho\,\sigma_1\sigma_2\right)$$
+
+Damit gilt für den zentralen Sicherheitsbestand:
+
+$$sb_{zen} = z_\alpha \cdot \sqrt{\sigma_1^2 + \sigma_2^2 + 2\rho\,\sigma_1\sigma_2}$$
+:::
+:::
+
+:::
+::: {.column width="48%"}
+
+::: {.fragment .fade-up}
+::: smaller-text
+**Vergleich dezentral vs. zentral**
+
+| Konfiguration | Sicherheitsbestand |
+|---|---|
+| Dezentral (2 Lager) | $z_\alpha \cdot (\sigma_1 + \sigma_2)$ |
+| Zentral ($\rho = -1$) | $z_\alpha \cdot \|\sigma_1 - \sigma_2\|$ |
+| Zentral ($\rho = 0$) | $z_\alpha \cdot \sqrt{\sigma_1^2 + \sigma_2^2}$ |
+| Zentral ($\rho = +1$) | $z_\alpha \cdot (\sigma_1 + \sigma_2)$ |
+$\rightarrow$ $\|\sigma_1 - \sigma_2\| \leq \sqrt{\sigma_1^2 + \sigma_2^2} \leq \sigma_1 + \sigma_2$
+$\rightarrow$ **Pooling lohnt sich, solange $\rho < 1$**
+:::
+:::
+
+:::
+:::
+
+::: {.fragment .fade-up}
+::: {.callout-warning appearance="simple"}
+Je **kleiner** die Korrelation $\rho$, desto größer das Einsparungspotenzial durch zentrales Pooling. (**Risikoausgleichseffekt**)
+:::
+:::
+
+---
+
+## Lagerbestandspooling {#slide-pooling-zeitreihen}
+::: slide-subtitle
+Empirische Illustration 
+:::
+
+
+```{r pooling-sim-data}
+#| echo: false
+#| warning: false
+#| message: false
+
+library(MASS)
+
+set.seed(43)
+n    <- 12
+mu1  <- 100; mu2 <- 100
+sig1 <- 20;  sig2 <- 20
+rhos <- c(-0.8, 0.0, 0.8)
+
+# Hilfsfunktion: bivariates Sample erzeugen
+gen_biv <- function(rho, n, mu1, mu2, sig1, sig2) {
+  Sigma <- matrix(c(sig1^2, rho*sig1*sig2,
+                    rho*sig1*sig2, sig2^2), 2, 2)
+  raw   <- mvrnorm(n, mu = c(mu1, mu2), Sigma = Sigma)
+  raw   <- round(raw)
+  data.frame(t = 1:n, D1 = raw[,1], D2 = raw[,2])
+}
+
+# Hilfsfunktion: scatter plot
+make_scatter_fig <- function(df, rho_label, col_pt, height = 300, width= 300) {
+  rho_emp <- round(cor(df$D1, df$D2), 2)
+  fig <- plot_ly() 
+  
+  fig <- fig |> add_trace(
+    data = df,
+    x = ~D1, y = ~D2,
+    type = "scatter", mode = "markers+text",
+    text = ~paste0("t=", t),
+    textposition = "top right",
+    textfont = list(size = 10, color = "#6B7280"),
+    marker = list(size = 12, color = col_pt, opacity = 0.85,
+                  line = list(color = "white", width = 1.5)),
+    hovertemplate = "t=%{text}<br>D₁=%{x}<br>D₂=%{y}<extra></extra>"
+  )
+  # Regressionslinie
+  fit   <- lm(D2 ~ D1, data = df)
+  x_seq <- seq(min(df$D1)-5, max(df$D1)+5, length.out = 40)
+  y_fit <- predict(fit, newdata = data.frame(D1 = x_seq))
+  fig <- fig |>
+    add_trace(x = x_seq, y = as.numeric(y_fit),
+              type = "scatter", mode = "lines",
+              name = "Regressionsgerade",
+              showlegend = FALSE,
+              line = list(color = "#6B7280", width = 1.5, dash = "dot"))
+  fig |> layout(
+    title  = list(
+      # text = paste0("<b>ρ = ", rho_label,
+      #               "</b>  (empirisch: ", rho_emp, ")"),
+      font = list(size = 13, color = "#1F2933", family = "Arial"),
+      x = 0.04, xanchor = "left"),
+    xaxis  = list(title = "D₁", fixedrange = TRUE,
+                  range = c(min(df$D1)-10, max(df$D1)+15)),
+    yaxis  = list(title = "D₂", fixedrange = TRUE,
+                  range = c(min(df$D2)-10, max(df$D2)+15)),
+    plot_bgcolor  = "transparent",
+    paper_bgcolor = "transparent",
+    margin = list(l = 45, r = 10, t = 40, b = 50),
+    height = height, width = width 
+  )
+}
+
+# Hilfsfunktion: Time series plot
+make_ts_fig <- function(df, rho_label, col1 = "red", col2 = "blue", col0 ="green", height = 300, width = 300) {
+  df$D0 <- df$D1 + df$D2
+  fig <- plot_ly(df, x = ~t)
+  fig <- fig |>
+    add_trace(y = ~D1, type = "scatter", mode = "lines+markers",
+              name = "D₁", line = list(color = col1, width = 2),
+              marker = list(color = col1, size = 7)) |>
+    add_trace(y = ~D2, type = "scatter", mode = "lines+markers",
+              name = "D₂", line = list(color = col2, width = 2, dash = "dash"),
+              marker = list(color = col2, size = 7, symbol = "square")) |>
+    add_trace(y = ~D0, type = "scatter", mode = "lines+markers",
+              name = "D₀ = D₁+D₂",
+              line = list(color = col0, width = 2.5),
+              marker = list(color = col0, size = 8, symbol = "diamond"))
+  fig |> layout(
+    # title  = list(text = paste0("<b>ρ = ", rho_label, "</b>"),
+    #               font = list(size = 14, color = "#1F2933", family = "Arial"),
+    #               x = 0.04, xanchor = "left"),
+    xaxis  = list(title = "Periode t", dtick = 2, fixedrange = TRUE),
+    yaxis  = list(title = "Nachfrage", fixedrange = TRUE,
+                  range = c(30, 280)),
+    legend = list(orientation = "h", y = +0.95, font = list(size = 12)),
+    plot_bgcolor  = "transparent",
+    paper_bgcolor = "transparent",
+    margin = list(l = 45, r = 10, t = 35, b = 65),
+    height = height, width = width 
+  )
+}
+
+sim_data <- lapply(rhos, gen_biv,
+                   n = n, mu1 = mu1, mu2 = mu2, sig1 = sig1, sig2 = sig2)
+names(sim_data) <- paste0("rho_", gsub("\\.", "", rhos))
+
+# Tatsächliche Korrelationen
+rho_actual <- sapply(sim_data, function(df) round(cor(df$D1, df$D2), 2))
+```
+
+
+::: {.small-text}
+
+:::: columns
+
+::: {.column width="32%"}
+**negative Korrelation** $\rho = -0.8$ 
+```{r pooling-zeitreihen-plot}
+#| echo: false
+#| warning: false
+#| message: false
+#| out-width: "99%"
+#| fig-height: 2.8
+
+gen.wid <- 380
+gen.hei <- 260
+
+make_ts_fig(sim_data$`rho_-08`, "-0.8", height = gen.hei, width = gen.wid)
+
+```
+
+```{r pooling-scatter-plot}
+#| echo: false
+#| warning: false
+#| message: false
+#| out-width: "99%"
+#| fig-height: 2.8
+
+make_scatter_fig(df = sim_data$`rho_-08`, "-0.8", cols$top, height = gen.hei, width = gen.wid)
+
+```
+
+:::
+
+::: {.column width="32%"}
+::: {.fragment .fade-up}
+**keine Korrelation** $\rho = 0$ 
+```{r pooling-zeitreihen-plot2}
+#| echo: false
+#| warning: false
+#| message: false
+#| out-width: "99%"
+#| fig-height: 2.8
+
+make_ts_fig(sim_data$rho_0, "0", height = gen.hei, width = gen.wid)
+
+```
+
+```{r pooling-scatter-plot2}
+#| echo: false
+#| warning: false
+#| message: false
+#| out-width: "99%"
+#| fig-height: 2.8
+
+make_scatter_fig(df = sim_data$rho_0, "0", cols$top, height = gen.hei, width = gen.wid)
+
+```
+:::
+:::
+
+::: {.column width="32%"}
+::: {.fragment .fade-up}
+**positive Korrelation** $\rho = +0.8$ 
+```{r pooling-zeitreihen-plot3}
+#| echo: false
+#| warning: false
+#| message: false
+#| out-width: "99%"
+#| fig-height: 2.8
+
+make_ts_fig(sim_data$rho_08, "+0.8", height = gen.hei, width = gen.wid)
+
+```
+
+```{r pooling-scatter-plot3}
+#| echo: false
+#| warning: false
+#| message: false
+#| out-width: "99%"
+#| fig-height: 2.8
+
+make_scatter_fig(df = sim_data$rho_08, "+0.8", cols$top, height = gen.hei, width = gen.wid)
+
+```
+:::
+:::
+::::
+:::
+
+::: {.fragment .fade-up}
+::: {.callout-note appearance="minimal" icon=false}
+Bei **negativer Korrelation** dämpfen sich die Schwankungen von $D_0$ gegenseitig — die Gesamtnachfrage ist **stabiler** als die Einzelnachfragen. Bei **positiver Korrelation** verstärken sie sich.
+:::
+:::
+
+---
+
+## Lagerbestandspooling {#slide-pooling-sb-vergleich}
+::: slide-subtitle
+Sicherheitsbestand in Abhängigkeit der Korrelation $\rho$
+:::
+
+```{r pooling-sb-berechnung}
+#| echo: false
+#| warning: false
+#| message: false
+
+alpha_sl <- 0.95
+z_alpha  <- qnorm(alpha_sl)
+
+# Theoretische Werte (sigma1 = sigma2 = 20, mu1=mu2=100)
+rho_seq  <- seq(-1, 1, by = 0.01)
+sig1 <- sig2 <- 20
+
+sb_dez <- z_alpha * (sig1 + sig2)         # konstant
+sb_zen <- z_alpha * sqrt(sig1^2 + sig2^2 + 2 * rho_seq * sig1 * sig2)
+einspar <- round((1 - sb_zen / sb_dez) * 100, 1)
+
+df_sb <- data.frame(rho = rho_seq, sb_dez = sb_dez,
+                    sb_zen = sb_zen, einspar = einspar)
+
+# Markierpunkte für rho = -0.8, 0, +0.8
+rho_marks <- c(-0.8, 0.0, 0.8)
+mark_df   <- data.frame(
+  rho     = rho_marks,
+  sb_zen  = z_alpha * sqrt(sig1^2 + sig2^2 + 2*rho_marks*sig1*sig2),
+  einspar = round((1 - z_alpha * sqrt(sig1^2 + sig2^2 +
+              2*rho_marks*sig1*sig2) / sb_dez) * 100, 1)
+)
+```
+
+::: columns
+::: {.column width="55%"}
+
+```{r pooling-sb-plot}
+#| echo: false
+#| warning: false
+#| message: false
+#| out-width: "99%"
+#| fig-height: 4.5
+
+fig_sb <- plot_ly()
+
+# Dezentraler SB (Referenzlinie)
+fig_sb <- fig_sb |>
+  add_trace(x = df_sb$rho, y = df_sb$sb_dez,
+            type = "scatter", mode = "lines",
+            name = "sb<sub>dez</sub> (Summe)",
+            line = list(color = "#6B7280", width = 2, dash = "dash"))
+
+# Zentraler SB
+fig_sb <- fig_sb |>
+  add_trace(x = df_sb$rho, y = df_sb$sb_zen,
+            type = "scatter", mode = "lines",
+            name = "sb<sub>zen</sub>(ρ)",
+            line = list(color = cols$top, width = 3))
+
+# Einspar-Fläche
+fig_sb <- fig_sb |>
+  add_trace(x = df_sb$rho, y = df_sb$sb_zen,
+            type = "scatter", mode = "lines",
+            fill = "tonexty", fillcolor = "rgba(45,158,142,0.15)",
+            line = list(color = "transparent"),
+            showlegend = FALSE, hoverinfo = "skip")
+
+# Markierungspunkte
+farben_marks <- c("#E76F51", cols$mid, "#E9C46A")
+for (i in seq_along(rho_marks)) {
+  fig_sb <- fig_sb |>
+    add_trace(x = mark_df$rho[i], y = mark_df$sb_zen[i],
+              type = "scatter", mode = "markers",
+              name = paste0("ρ = ", rho_marks[i]),
+              marker = list(size = 13, color = farben_marks[i],
+                            line = list(color = "white", width = 2))) |>
+    add_annotations(
+      x = mark_df$rho[i],
+      y = mark_df$sb_zen[i] - 3.5,
+      xref = "x", yref = "y",
+      text = paste0("<b>", round(mark_df$sb_zen[i], 1),
+                    "<br>(−", mark_df$einspar[i], "%)</b>"),
+      showarrow = FALSE,
+      font = list(size = 12, color = farben_marks[i], family = "Arial"),
+      xanchor = "center"
+    )
+}
+
+fig_sb |> layout(
+  xaxis  = list(title = "Korrelation ρ", fixedrange = TRUE,
+                tickvals = seq(-1, 1, 0.25)),
+  yaxis  = list(title = "Sicherheitsbestand sb",
+                fixedrange = TRUE, range = c(0, sb_dez * 1.08)),
+  legend = list(orientation = "h", y = -0.22, font = list(size = 12)),
+  plot_bgcolor  = "transparent",
+  paper_bgcolor = "transparent",
+  margin = list(l = 50, r = 15, t = 15, b = 70),
+  height = 400, width = 700
+)
+```
+
+:::
+::: {.column width="43%"}
+
+::: {.fragment .fade-up}
+::: {.callout-tip appearance="simple"}
+## Drei Szenarien ($\sigma_1 = \sigma_2 = 20$, $\alpha = 95\%$)
+
+| $\rho$ | $sb_{zen}$ | Einsparung |
+|:---:|---:|---:|
+| $-0.8$ | `r round(mark_df$sb_zen[1],1)` | `r mark_df$einspar[1]` % |
+| $\;\;\;0$ | `r round(mark_df$sb_zen[2],1)` | `r mark_df$einspar[2]` % |
+| $+0.8$ | `r round(mark_df$sb_zen[3],1)` | `r mark_df$einspar[3]` % |
+| $(+1)$ | `r round(sb_dez,1)` | 0 % |
+
+$sb_{dez} = z_\alpha \cdot (\sigma_1 + \sigma_2) =$ `r round(sb_dez,1)`
+:::
+:::
+
+
+:::
+:::
+
+::: {.small-text}
+:::: columns
+::: {.column width="49%"}
+
+::: {.fragment .fade-up}
+::::: {.callout-warning appearance="simple"}
+## Zentralitätsgewinn wenn $\sigma_1 \neq \sigma_2$
+
+$$\frac{sb_{zen}}{sb_{dez}} = \frac{\sqrt{\sigma_1^2 + \sigma_2^2 + 2\rho\,\sigma_1\sigma_2}}{\sigma_1 + \sigma_2}$$
+:::::
+::: 
+:::
+
+::: {.column width="49%"}
+
+::: {.fragment .fade-up}
+::::: {.callout-warning appearance="simple"}
+## Zentralitätsgewinn wenn $\sigma_1 = \sigma_2$
+
+$$\frac{sb_{zen}}{sb_{dez}} = \sqrt{\frac{1+\rho}{2}}$$
+:::::
+:::
+:::
+::::
+:::
