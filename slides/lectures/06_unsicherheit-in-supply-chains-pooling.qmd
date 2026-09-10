@@ -9,10 +9,14 @@ title: "Unsicherheit in Supply Chains: Pooling"
 
 source("../../R/scm_functions.R")
 
+library(readr)
 library(tidyverse)
 library(plotly)
 library(knitr)
 library(kableExtra)
+library(planr)
+library(dplyr)
+library(MASS)
 ```
 
 ---
@@ -2088,8 +2092,6 @@ fig_cen2
 Einsparung an Sicherheitsbestand: $sb_{dezentral}=sb_{A}+sb_{B}=27.5$ vs. $sb_{0}=22.5$  $\rightarrow$ 5 Einheiten oder 18 %
 :::
 :::
-
-
 ## Lagerbestandspooling {#slide-dezentral-zentral-empirisch}
 ::: slide-subtitle
 Sicherheitsbestände bei bekannter Nachfrageverteilung  
@@ -2098,9 +2100,212 @@ Sicherheitsbestände bei bekannter Nachfrageverteilung
 ::: {.callout-note appearance="minimal" icon=false}
 ## Nachfrageverteilung
 
-Oft wird davon ausgegangen, dass die Nachfrage nach Gütern in einer bestimmten Zeitspanne eine Zufallsvariable ist, deren Verteilungsparamter (wie Mittelwert und Varianz) bekannt sind oder geschätzt werden können.
+Oft wird davon ausgegangen, dass die Nachfrage nach Gütern in einer bestimmten Zeitspanne eine Zufallsvariable ist, deren Verteilungsparameter (wie Mittelwert und Varianz) bekannt sind oder geschätzt werden können.
 
 :::
+
+
+```{r}
+#| label: walmart-data-prep
+#| echo: false
+#| warning: false
+#| message: false
+
+# ── Rohdaten von GitHub laden ─────────────────────────────────────────────────
+
+# GitHub Raw-URL (wichtig: raw.githubusercontent.com statt github.com)
+url <- "https://raw.githubusercontent.com/demand-prediction-guide/public/main/data/data_raw.csv"
+
+data_processed <- read_csv(url)
+
+pdata <- data_processed |>
+  dplyr::filter(functionality %in% c("01.Streaming sticks", "09.Smartphone stands" )) |> 
+  dplyr::select(week, weekly_sales, sku, functionality) |> 
+  dplyr::group_by(functionality, week) |>
+  dplyr::summarise(weekly_sales = sum(weekly_sales, na.rm = TRUE), .groups = "drop") |> 
+  dplyr::rename(product = functionality) |>
+  dplyr::mutate(product = dplyr::recode(product,
+    "09.Smartphone stands" = "Smartphone_stand",
+    "01.Streaming sticks"  = "Streaming_stick"
+  ))
+
+prod.names <- unique(pdata$product)
+
+dA <- pdata$weekly_sales[pdata$product == "Smartphone_stand"]
+dB <- pdata$weekly_sales[pdata$product == "Streaming_stick"]
+dpool <- dA + dB
+
+# ── Parameter schätzen ────────────────────────────────────────────────────────
+muA  <- mean(dA, na.rm = TRUE);  sigA <- sd(dA, na.rm = TRUE)
+muB  <- mean(dB, na.rm = TRUE);  sigB <- sd(dB, na.rm = TRUE)
+mupool  <- mean(dpool, na.rm = TRUE);  sigpool <- sd(dpool, na.rm = TRUE)
+
+n_perioden <- length(dA)
+```
+
+
+::: columns
+::: {.column width="52%"}
+
+```{r}
+#| label: walmart-ecdf-fit
+#| echo: false
+#| warning: false
+#| message: false
+#| out-width: "99%"
+#| fig-height: 4.2
+
+# ── Farben ────────────────────────────────────────────────────────────────────
+colA <- cols$top
+colB <- cols$atp
+colpool <- cols$dash
+
+# ── Hilfsfunktion: ECDF-Treppenpunkte ─────────────────────────────────────────
+make_ecdf_xy <- function(d) {
+  d <- d[!is.na(d)]
+  ds <- sort(d); n <- length(ds); Fe <- seq_len(n) / n
+  x <- c(min(ds) - 0.08 * diff(range(ds)), min(ds))
+  y <- c(0, 0)
+  for (i in seq_len(n)) {
+    x <- c(x, ds[i], ds[i])
+    y <- c(y, if (i == 1) 0 else Fe[i - 1], Fe[i])
+    if (i < n) { x <- c(x, ds[i], ds[i + 1]); y <- c(y, Fe[i], Fe[i]) }
+  }
+  x <- c(x, ds[n], ds[n] + 0.08 * diff(range(ds)))
+  y <- c(y, 1, 1)
+  list(x = x, y = y, sorted = ds, F = Fe)
+}
+
+eA <- make_ecdf_xy(dA);  eB <- make_ecdf_xy(dB); ePool <- make_ecdf_xy(dpool)
+
+# ── Normalverteilungs-CDF-Kurven ──────────────────────────────────────────────
+xgridA <- seq(min(dA, na.rm=TRUE) - 200, max(dA, na.rm=TRUE) + 200, length.out = 300)
+xgridB <- seq(min(dB, na.rm=TRUE) - 200, max(dB, na.rm=TRUE) + 200, length.out = 300)
+xgridpool <- seq(min(dpool, na.rm=TRUE) - 5000, max(dpool, na.rm=TRUE) + 200, length.out = 300)
+
+# ── KS-Test ───────────────────────────────────────────────────────────────────
+ksA <- ks.test(dA, "pnorm", muA, sigA)
+ksB <- ks.test(dB, "pnorm", muB, sigB)
+kspool <- ks.test(dpool, "pnorm", mupool, sigpool)
+
+fmt_p <- function(p) if (p < 0.001) "<0.001" else paste0("= ", round(p, 3))
+
+# ── Plot ──────────────────────────────────────────────────────────────────────
+fig <- plotly::plot_ly()
+
+fig <- fig |>
+  plotly::add_trace(x = eA$x, y = eA$y, type = "scatter", mode = "lines",
+            name = paste0("ECDF ",prod.names[1]),
+            line = list(color = colA, width = 2.2),
+            marker = list(color = colA, size = 6,
+                          line = list(color = "white", width = 1))) |>
+  plotly::add_trace(x = xgridA, y = pnorm(xgridA, muA, sigA),
+            type = "scatter", mode = "lines",
+            name = paste0("N(", round(muA), ", ", round(sigA), "²)"),
+            line = list(color = colA, width = 2.2, dash = "dot")) 
+  
+
+
+fig <- fig |>
+  plotly::add_trace(x = eB$x, y = eB$y, type = "scatter", mode = "lines+markers",
+            name = paste0("ECDF ",prod.names[2]),
+            line = list(color = colB, width = 2.2),
+            marker = list(color = colB, size = 6,
+                          line = list(color = "white", width = 1))) |>
+  plotly::add_trace(x = xgridB, y = pnorm(xgridB, muB, sigB),
+            type = "scatter", mode = "lines",
+            name = paste0("N(", round(muB), ", ", round(sigB), "²)"),
+            line = list(color = colB, width = 2.2, dash = "dot"))
+
+
+fig <- fig |>  
+  plotly::add_trace(x = ePool$x, y = ePool$y, type = "scatter", mode = "lines+markers",
+            name = "ECDF Gesamtnachfrage",
+            line = list(color = colpool, width = 2.2), 
+            marker = list(color = colpool, size = 6, line = list(color = "white", width = 1))) |>
+  plotly::add_trace(x = xgridpool, y = pnorm(xgridpool, mupool, sigpool),
+            type = "scatter", mode = "lines",
+            name = paste0("N(", round(mupool), ", ", round(sigpool), "²) "),
+            line = list(color = colpool, width = 2.2, dash = "dot"))
+
+fig <- fig |>
+  plotly::add_annotations(x = 0.02, y = 0.93, xref = "paper", yref = "paper",
+    text = paste0("<b>KS-Test Produkt A:</b> p ", fmt_p(ksA$p.value)),
+    showarrow = FALSE, font = list(size = 16, color = colA, family = "Arial"),
+    xanchor = "left") |>
+  plotly::add_annotations(x = 0.02, y = 0.83, xref = "paper", yref = "paper",
+    text = paste0("<b>KS-Test Produkt B:</b> p ", fmt_p(ksB$p.value)),
+    showarrow = FALSE, font = list(size = 16, color = colB, family = "Arial"),
+    xanchor = "left") |> 
+  plotly::add_annotations(x = 0.02, y = 0.73, xref = "paper", yref = "paper",
+    text = paste0("<b>KS-Test Gesamtnachfrage:</b> p ", fmt_p(kspool$p.value)),
+    showarrow = FALSE, font = list(size = 16, color = colpool, family = "Arial"),
+    xanchor = "left")
+
+fig |> plotly::layout(
+  xaxis = list(title = "Wöchentliche Nachfrage (Stück)", fixedrange = FALSE,
+               tickformat = ",.0f", range = c(-100, 800), font = list(size = 14)),
+  yaxis = list(title = "F(d)", fixedrange = TRUE,
+               range = c(-0.05, 1.08), tickformat = ".0%", font = list(size = 14)),
+  legend = list(orientation = "h", y = -0.28, font = list(size = 18)),
+  plot_bgcolor  = "transparent", paper_bgcolor = "transparent",
+  margin = list(l = 55, r = 15, t = 10, b = 90),
+  height = 390, width = 750
+)
+```
+
+:::
+::: {.column width="46%"}
+
+::: {.callout-note appearance="minimal" icon=false}
+**Datenbasis:** Verkaufsmengen eines Online Händlers über 100 Wochen  
+[(Quelle: [Demand Prediction in Retail](https://demandprediction.github.io/dataset.html))]{.smaller}
+
+
+- **ECDF** (durchgezogen) = empirische Verteilung
+- **Normalverteilung** (gepunktet) = parametrisches Modell
+:::
+
+::: {.fragment .fade-up}
+
+```{r}
+#| label: walmart-fit-table
+#| echo: false
+#| warning: false
+#| message: false
+
+fitdf <- data.frame(
+  Standort = c("A", "B", "A+B (Pooled)"),
+  mu       = round(c(muA, muB, mupool)),
+  sigma    = round(c(sigA, sigB, sigpool)),
+  KS_p     = c(round(ksA$p.value, 3), round(ksB$p.value, 3), round(kspool$p.value, 3)),
+  SB_95    = round(c(quantile(dA, 0.95) ,
+                      quantile(dB, 0.95),
+                      quantile(dpool, 0.95)))
+)
+
+kableExtra::kbl(fitdf,
+    col.names = c("Produkt", "μ̂", "σ̂", "KS p-Wert", "emp. SB (α=95%)"),
+    align = c("l", "r", "r", "r", "r"), escape = FALSE,
+    format.args = list(big.mark = ",")) |>
+  kableExtra::kable_styling(
+    bootstrap_options = c("condensed", "striped"),
+    full_width = TRUE, font_size = 18) |>
+  kableExtra::row_spec(0, background = "#2F3E46", color = "white", bold = TRUE) |>
+  kableExtra::row_spec(3, bold = TRUE, background = "#E8F4F1") |>
+  kableExtra::column_spec(5, bold = TRUE, color = "#02818a")
+```
+
+:::
+:::
+:::
+
+::: {.fragment .fade-up}
+::: {.callout-tip appearance="simple"}
+Die Normalverteilung approximiert die Nachfrage bedingt gut. Für Produkt A (Streaming stick) funktioniert die Approximation gut, für Produkt B (Smartphone-Halter) und die Gesamtnachfrage schlecht.
+:::
+:::
+
 
 ---
 
@@ -2500,7 +2705,7 @@ $sb_{dez} = z_\alpha \cdot (\sigma_1 + \sigma_2) =$ `r round(sb_dez,1)`
 ::::: {.callout-warning appearance="simple"}
 ## Zentralitätsgewinn wenn $\sigma_1 \neq \sigma_2$
 
-$$\frac{sb_{zen}}{sb_{dez}} = \frac{\sqrt{\sigma_1^2 + \sigma_2^2 + 2\rho\,\sigma_1\sigma_2}}{\sigma_1 + \sigma_2}$$
+$$1-\frac{sb_{zen}}{sb_{dez}} = 1-\frac{\sqrt{\sigma_1^2 + \sigma_2^2 + 2\rho\,\sigma_1\sigma_2}}{\sigma_1 + \sigma_2}$$
 :::::
 ::: 
 :::
@@ -2511,7 +2716,7 @@ $$\frac{sb_{zen}}{sb_{dez}} = \frac{\sqrt{\sigma_1^2 + \sigma_2^2 + 2\rho\,\sigm
 ::::: {.callout-warning appearance="simple"}
 ## Zentralitätsgewinn wenn $\sigma_1 = \sigma_2$
 
-$$\frac{sb_{zen}}{sb_{dez}} = \sqrt{\frac{1+\rho}{2}}$$
+$$1-\frac{sb_{zen}}{sb_{dez}} = 1-\sqrt{\frac{1+\rho}{2}}$$
 :::::
 :::
 :::
