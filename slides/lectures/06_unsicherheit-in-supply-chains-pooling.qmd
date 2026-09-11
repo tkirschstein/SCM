@@ -2844,42 +2844,33 @@ col_Pool_r <- cols$dash
 
 plot_ly() |>
   # ECDF SKU 27
-  add_trace(x = eA_r$x, y = eA_r$y, type = "scatter", mode = "lines",
+  add_trace(x = eA_r$x, y = eA_r$y, type = "scatter", mode = "lines+markers",
             name = "ECDF SKU 27",
-            line = list(color = col_A_r, width = 2.2)) |>
-  add_trace(x = eA_r$sorted, y = eA_r$F, type = "scatter", mode = "markers",
-            showlegend = FALSE,
+            line = list(color = col_A_r, width = 2.2),
             marker = list(color = col_A_r, size = 6,
-                          line = list(color = "white", width = 1)),
-            hoverinfo = "skip") |>
+                          line = list(color = "white", width = 1))) |>
   # Normalverteilung SKU 27
   add_trace(x = xg_A, y = pnorm(xg_A, muA_r, sigA_r),
             type = "scatter", mode = "lines",
             name = paste0("N(", round(muA_r), ", ", round(sigA_r), "\u00b2)"),
             line = list(color = col_A_r, width = 2, dash = "dot")) |>
   # ECDF SKU 34
-  add_trace(x = eB_r$x, y = eB_r$y, type = "scatter", mode = "lines",
+  add_trace(x = eB_r$x, y = eB_r$y, type = "scatter", mode = "lines+markers",
             name = "ECDF SKU 34",
-            line = list(color = col_B_r, width = 2.2, dash = "dash")) |>
-  add_trace(x = eB_r$sorted, y = eB_r$F, type = "scatter", mode = "markers",
-            showlegend = FALSE,
+            line = list(color = col_B_r, width = 2.2, dash = "dash"),
             marker = list(color = col_B_r, size = 6, symbol = "square",
-                          line = list(color = "white", width = 1)),
-            hoverinfo = "skip") |>
+                          line = list(color = "white", width = 1))) |>
   # Normalverteilung SKU 34
   add_trace(x = xg_B, y = pnorm(xg_B, muB_r, sigB_r),
             type = "scatter", mode = "lines",
             name = paste0("N(", round(muB_r), ", ", round(sigB_r), "\u00b2)"),
             line = list(color = col_B_r, width = 2, dash = "dot")) |>
   # ECDF Gesamtnachfrage (Pool)
-  add_trace(x = ePool_r$x, y = ePool_r$y, type = "scatter", mode = "lines",
+  add_trace(x = ePool_r$x, y = ePool_r$y, type = "scatter", mode = "lines+markers",
             name = "ECDF D\u2080 (Pool)",
-            line = list(color = col_Pool_r, width = 2.2)) |>
-  add_trace(x = ePool_r$sorted, y = ePool_r$F, type = "scatter", mode = "markers",
-            showlegend = FALSE,
+            line = list(color = col_Pool_r, width = 2.2),
             marker = list(color = col_Pool_r, size = 6, symbol = "diamond",
-                          line = list(color = "white", width = 1)),
-            hoverinfo = "skip") |>
+                          line = list(color = "white", width = 1))) |>
   # Normalverteilung Pool
   add_trace(x = xg_Pool, y = pnorm(xg_Pool, muP_r, sigP_r),
             type = "scatter", mode = "lines",
@@ -3045,6 +3036,269 @@ fig_bar
 Korrelation $\hat{\rho} =$ `r round(rho_r, 2)` $\rightarrow$ Pooling-Einsparung empirisch: **`r einspar_emp` %**, parametrisch: **`r einspar_par` %**
 :::
 :::
+
+:::
+::::
+
+
+## Exkurs: Normalverteilung {#slide-exkurs-normal-intro}
+::: slide-subtitle
+Wahrscheinlichkeitsdichtefunktion & Verteilungsfunktion
+:::
+
+::: {.callout-note appearance="minimal" icon=false}
+## Formale Definition
+
+**Dichtefunktion** $f(x)$ gibt die relative Häufigkeit an, mit der ein Wert $x$ auftritt und **Verteilungsfunktion** $F(x)$ ist die kumulierte Wahrscheinlichkeit:
+
+$$f(x) = \frac{1}{\sigma\sqrt{2\pi}}\,\exp\!\left(-\frac{(x-\mu)^2}{2\sigma^2}\right) \qquad F(x) = P(X \leq x) = \int_{-\infty}^{x} f(t)\,dt$$
+
+:::
+
+
+:::: columns
+::: {.column width="50%"}
+
+```{r exkurs-normal-pdf-cdf}
+#| echo: false
+#| warning: false
+#| message: false
+#| out-width: "99%"
+#| fig-height: 4.8
+
+mu_ex    <- 0
+sig_ex   <- 1
+x_ex     <- seq(-4, 4, length.out = 400)
+y_pdf_ex <- dnorm(x_ex, mu_ex, sig_ex)
+y_cdf_ex <- pnorm(x_ex, mu_ex, sig_ex)
+
+# Schraffurfläche: μ ± σ
+x_shade <- seq(-1, 1, length.out = 200)
+y_shade <- dnorm(x_shade, mu_ex, sig_ex)
+
+plot_ly() |>
+  # ── PDF ──────────────────────────────────────────────────────────
+  add_trace(x = x_ex, y = y_pdf_ex, type = "scatter", mode = "lines",
+            name = "f(x) — Dichte",
+            line = list(color = cols$top, width = 2.8),
+            yaxis = "y") |>
+  # Schraffur μ ± σ (ca. 68%)
+  add_trace(
+    x = c(x_shade, rev(x_shade)),
+    y = c(rep(0, 200), rev(y_shade)),
+    type = "scatter", mode = "none",
+    fill = "toself",
+    fillcolor = "rgba(1,105,111,0.18)",
+    name = "\u00b11\u03c3 \u2248 68\u202f%",
+    yaxis = "y", showlegend = TRUE) |>
+  # CDF auf zweiter y-Achse
+  add_trace(x = x_ex, y = y_cdf_ex, type = "scatter", mode = "lines",
+            name = "F(x) — Verteilungsfunktion",
+            line = list(color = cols$dash, width = 2.4, dash = "dash"),
+            yaxis = "y2") |>
+  # Quantil-Markierung: F(1) ≈ 0.841
+  add_segments(x = 1, xend = 1, y = 0, yend = 1,
+               line = list(color = cols$mid, width = 1.4, dash = "dot"),
+               yaxis = "y2", showlegend = FALSE) |>
+  add_annotations(x = 1.08, y = 0.84, yref = "y2",
+    text = "<b>F(1) ≈ 0,841</b>",
+    showarrow = FALSE, xanchor = "left",
+    font = list(size = 12, color = cols$mid, family = "Arial")) |>
+  layout(
+    xaxis  = list(title = "x", fixedrange = TRUE,
+                  tickvals = list(-3,-2,-1,0,1,2,3),
+                  ticktext = list("μ−3σ","μ−2σ","μ−σ","μ","μ+σ","μ+2σ","μ+3σ")),
+    yaxis  = list(title = "f(x) — Dichtefunktion", fixedrange = TRUE,
+                  range = c(0, 0.46), side = "left"),
+    yaxis2 = list(title = "F(x) — Verteilungsfunktion", overlaying = "y",
+                  side = "right", range = c(0, 1.05),
+                  tickformat = ".0%", fixedrange = TRUE),
+    legend = list(orientation = "h", y = -0.28, font = list(size = 11)),
+    plot_bgcolor  = "transparent", paper_bgcolor = "transparent",
+    margin = list(l = 55, r = 65, t = 5, b = 70), height = 420, width = 680
+  )
+```
+
+:::
+
+::: {.column width="50%"}
+
+
+::: {.callout-tip appearance="minimal" icon=false}
+**Symmetrie-Eigenschaft und 68–95–99,7-Regel::**
+
+$$F(-z) = 1 - F(z)$$
+
+| Wertebereich | Wahrscheinlichkeit |
+|:--------|:--------:|
+| $\mu \pm 1\sigma$ | ≈ 68,3 % |
+| $\mu \pm 2\sigma$ | ≈ 95,4 % |
+| $\mu \pm 3\sigma$ | ≈ 99,7 % |
+
+:::
+
+:::
+::::
+
+---
+
+## Exkurs: Standardnormalverteilung {#slide-exkurs-stdnorm}
+::: slide-subtitle
+z-Transformation & Standardisierung
+:::
+
+::: {.callout-note appearance="minimal" icon=false}
+**z-Transformation** überführt jede Normalverteilung $X \sim \mathcal{N}(\mu, \sigma^2)$ in die **Standardnormalverteilung** $Z \sim \mathcal{N}(0, 1)$:
+
+$$Z = \frac{X - \mu}{\sigma} \quad \Rightarrow P(X \leq x) = P\!\left(Z \leq \frac{x-\mu}{\sigma}\right) = \Phi(z)$$
+$\rightarrow$ alle $\mathcal{N}(\mu, \sigma^2)$ lassen sich auf *eine* Tabelle zurückführen — die **Standard-Normalverteilungstabelle** $\Phi(z)$
+:::
+
+:::: columns
+::: {.column width="52%"}
+
+```{r exkurs-stdnorm-plot}
+#| echo: false
+#| warning: false
+#| message: false
+#| out-width: "99%"
+#| fig-height: 4.8
+
+z_seq    <- seq(-4, 4, length.out = 400)
+y_z_pdf  <- dnorm(z_seq)
+y_z_cdf  <- pnorm(z_seq)
+
+# Schraffuren
+make_shade <- function(a, b) {
+  xs <- seq(a, b, length.out = 150)
+  list(x = c(xs, rev(xs)), y = c(rep(0, 150), rev(dnorm(xs))))
+}
+sh1 <- make_shade(-1.96, 1.96)   # 95%
+sh2 <- make_shade(min(z_seq), -1.96)
+sh3 <- make_shade( 1.96,  max(z_seq))
+
+plot_ly() |>
+  add_trace(x = sh1$x, y = sh1$y, type = "scatter", mode = "none",
+            fill = "toself", fillcolor = "rgba(1,105,111,0.20)",
+            name = "95\u202f%  (±1,96)", showlegend = TRUE) |>
+  add_trace(x = sh2$x, y = sh2$y, type = "scatter", mode = "none",
+            fill = "toself", fillcolor = "rgba(193,58,46,0.20)",
+            name = "Ablehnungsbereich", showlegend = TRUE) |>
+  add_trace(x = sh3$x, y = sh3$y, type = "scatter", mode = "none",
+            fill = "toself", fillcolor = "rgba(193,58,46,0.20)",
+            showlegend = FALSE) |>
+  add_trace(x = z_seq, y = y_z_pdf, type = "scatter", mode = "lines",
+            name = "φ(z) — Standarddichte",
+            line = list(color = cols$top, width = 2.8)) |>
+  # Vertikale Markierungen ± 1.96
+  add_segments(x = 1.96,  xend = 1.96,  y = 0, yend = dnorm(1.96),
+               line = list(color = cols$mid, dash = "dot", width = 1.4),
+               showlegend = FALSE) |>
+  add_segments(x = -1.96, xend = -1.96, y = 0, yend = dnorm(1.96),
+               line = list(color = cols$mid, dash = "dot", width = 1.4),
+               showlegend = FALSE) |>
+  add_annotations(x = 2.05,  y = 0.08, text = "<b>z = 1,96</b>",
+    showarrow = FALSE, xanchor = "left",
+    font = list(size = 11, color = cols$mid, family = "Arial")) |>
+  add_annotations(x = -2.05, y = 0.08, text = "<b>z = −1,96</b>",
+    showarrow = FALSE, xanchor = "right",
+    font = list(size = 11, color = cols$mid, family = "Arial")) |>
+  layout(
+    xaxis  = list(title = "z = (x − μ) / σ", fixedrange = TRUE,
+                  tickvals = list(-3,-2,-1,0,1,2,3)),
+    yaxis  = list(title = "φ(z)", fixedrange = TRUE, range = c(0, 0.44)),
+    legend = list(orientation = "h", y = -0.28, font = list(size = 11)),
+    plot_bgcolor  = "transparent", paper_bgcolor = "transparent",
+    margin = list(l = 50, r = 15, t = 5, b = 70), height = 420, width = 680
+  )
+```
+
+:::
+
+::: {.column width="48%"}
+
+::: {.callout-note appearance="minimal" icon=false}
+**Wichtige Quantile der $\mathcal{N}(0,1)$:**
+
+| Servicegrad $\alpha$ | $z_\alpha = \Phi^{-1}(\alpha)$ |
+|:--------------------:|:------------------------------:|
+| 90,0 % | 1,282 |
+| 95,0 % | 1,645 |
+| 97,5 % | 1,960 |
+| 99,0 % | 2,326 |
+| 99,9 % | 3,090 |
+
+:::
+
+:::
+::::
+
+---
+
+## Exkurs: Quantils-/Verteilungstabelle {#slide-exkurs-ztable}
+::: slide-subtitle
+Ablesen von $\Phi(z)$ und Umkehrung $z_\alpha = \Phi^{-1}(\alpha)$
+:::
+
+:::: columns
+::: {.column width="58%"}
+
+```{r exkurs-ztable}
+#| echo: false
+#| warning: false
+#| message: false
+
+# Interaktive z-Tabelle (Zeilen: z ganzzahlig + eine Dezimalstelle,
+#                         Spalten: zweite Dezimalstelle 0.00 … 0.09)
+z_rows <- seq(0.0, 3.0, by = 0.1)
+z_cols <- seq(0.00, 0.09, by = 0.01)
+
+z_mat <- outer(z_rows, z_cols, function(a, b) {
+  sprintf("%.4f", pnorm(a + b))
+})
+
+df_ztab <- as.data.frame(z_mat)
+colnames(df_ztab) <- sprintf("+%.2f", z_cols)
+rownames(df_ztab) <- sprintf("%.1f", z_rows)
+
+# Highlight-Zeilen: z = 1.6 (≈ 95%) und z = 2.3 (≈ 99%)
+highlight_rows <- which(rownames(df_ztab) %in% c("1.6", "2.3"))
+
+kbl(df_ztab,
+    caption = "Φ(z) — Standardnormalverteilung (z ≥ 0)",
+    align = "r", escape = FALSE) |>
+  kable_styling(bootstrap_options = c("condensed", "striped", "hover"),
+                full_width = TRUE, font_size = 12) |>
+  row_spec(0, background = "#2F3E46", color = "white", bold = TRUE) |>
+  row_spec(highlight_rows,
+           background = "#E8F4F1", bold = TRUE) |>
+  column_spec(6,  bold = TRUE, color = "#01696f") |>   # Spalte +0.04 (→ 1.645)
+  column_spec(4,  bold = TRUE, color = "#8B6914")       # Spalte +0.02 (→ 2.326)
+```
+
+:::
+
+::: {.column width="42%"}
+
+::: {.callout-note appearance="minimal" icon=false}
+**Ablesen der Tabelle:**  
+Gesucht: $P(X \leq x)$ für $X \sim \mathcal{N}(\mu, \sigma^2)$
+
+1. Berechne $z = (x - \mu)/\sigma$  
+2. Zeile = erste Dezimalstelle von $z$  
+3. Spalte = zweite Dezimalstelle von $z$  
+4. Tabellenwert = $\Phi(z)$
+:::
+
+::: {.callout-tip appearance="minimal" icon=false}
+**Beispiel Lagerbestand:**  
+$D \sim \mathcal{N}(500, 80^2)$, Servicegrad $\alpha = 95\,\%$
+
+$$z_{0{,}95} = \Phi^{-1}(0{,}95) = 1{,}645$$
+
+$$\Rightarrow\; \text{SB} = z_\alpha \cdot \sigma = 1{,}645 \cdot 80 \approx \mathbf{132\;\text{Stück}}$$
+:::
+
 
 :::
 ::::
