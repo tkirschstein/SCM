@@ -2723,3 +2723,328 @@ $$1-\frac{sb_{zen}}{sb_{dez}} = 1-\sqrt{\frac{1+\rho}{2}}$$
 :::
 ::::
 :::
+
+
+---
+
+## Lagerbestandspooling {#slide-pooling-realdata}
+::: slide-subtitle
+Realdaten: Portable Smartphone Chargers (SKU 27 & 34)
+:::
+
+```{r pooling-real-data-prep}
+#| echo: false
+#| warning: false
+#| message: false
+
+# Filtere die relevante Warengruppe und SKUs
+pdata_charger <- data_processed |>
+  dplyr::filter(
+    functionality == "02.Portable smartphone chargers",
+    sku %in% c(27, 34)
+  ) |>
+  dplyr::select(week, weekly_sales, sku) |>
+  dplyr::mutate(sku = paste0("SKU ", sku))
+
+dA_r <- pdata_charger$weekly_sales[pdata_charger$sku == "SKU 27"]
+dB_r <- pdata_charger$weekly_sales[pdata_charger$sku == "SKU 34"]
+n_r  <- min(length(dA_r), length(dB_r))
+dA_r <- dA_r[seq_len(n_r)]
+dB_r <- dB_r[seq_len(n_r)]
+dPool_r <- dA_r + dB_r
+
+muA_r  <- mean(dA_r);  sigA_r  <- sd(dA_r)
+muB_r  <- mean(dB_r);  sigB_r  <- sd(dB_r)
+muP_r  <- mean(dPool_r); sigP_r <- sd(dPool_r)
+rho_r  <- cor(dA_r, dB_r)
+
+alpha_r <- 0.95
+z_r     <- qnorm(alpha_r)
+
+# Empirische Sicherheitsbestände
+SB_A_emp  <- quantile(dA_r,    alpha_r) - muA_r
+SB_B_emp  <- quantile(dB_r,    alpha_r) - muB_r
+SB_dez_emp <- SB_A_emp + SB_B_emp
+SB_zen_emp <- quantile(dPool_r, alpha_r) - muP_r
+
+# Parametrische Sicherheitsbestände (Normalverteilung)
+SB_A_par   <- z_r * sigA_r
+SB_B_par   <- z_r * sigB_r
+SB_dez_par <- SB_A_par + SB_B_par
+SB_zen_par <- z_r * sqrt(sigA_r^2 + sigB_r^2 + 2 * rho_r * sigA_r * sigB_r)
+
+einspar_emp <- round((1 - SB_zen_emp / SB_dez_emp) * 100, 1)
+einspar_par <- round((1 - SB_zen_par / SB_dez_par) * 100, 1)
+
+eA_r    <- make_ecdf_xy(dA_r)
+eB_r    <- make_ecdf_xy(dB_r)
+ePool_r <- make_ecdf_xy(dPool_r)
+```
+
+:::: columns
+::: {.column width="50%"}
+
+```{r pooling-real-ts}
+#| echo: false
+#| warning: false
+#| message: false
+#| out-width: "99%"
+#| fig-height: 2.6
+
+df_ts <- data.frame(
+  t  = seq_len(n_r),
+  D1 = dA_r,
+  D2 = dB_r,
+  D0 = dPool_r
+)
+
+fig_ts <- plot_ly(df_ts, x = ~t)
+
+fig_ts <- fig_ts |>
+  add_trace(y = ~D1, type = "scatter", mode = "lines+markers",
+            name = "SKU 27",
+            line   = list(color = cols$top, width = 2),
+            marker = list(color = cols$top, size = 5)) |>
+  add_trace(y = ~D2, type = "scatter", mode = "lines+markers",
+            name = "SKU 34",
+            line   = list(color = cols$mid, width = 2, dash = "dash"),
+            marker = list(color = cols$mid, size = 5, symbol = "square")) |>
+  add_trace(y = ~D0, type = "scatter", mode = "lines+markers",
+            name = "D₀ = SKU27 + SKU34",
+            line   = list(color = cols$dash, width = 2.5),
+            marker = list(color = cols$dash, size = 6, symbol = "diamond")) |>
+  layout(
+    xaxis  = list(title = "Woche", fixedrange = TRUE),
+    yaxis  = list(title = "Absatz (Stück)", fixedrange = TRUE),
+    legend = list(orientation = "h", x= 0.1, y = 0.88, font = list(size = 14)),
+    plot_bgcolor  = "transparent",
+    paper_bgcolor = "transparent",
+    margin = list(l = 50, r = 10, t = 10, b = 70),
+    height = 240, width = 680
+  )
+
+fig_ts
+```
+
+::: {.fragment .fade-up}
+```{r pooling-real-ecdf}
+#| echo: false
+#| warning: false
+#| message: false
+#| out-width: "99%"
+#| fig-height: 2.6
+
+xg_A    <- seq(min(dA_r)    - 200, max(dA_r)    + 200, length.out = 300)
+xg_B    <- seq(min(dB_r)    - 200, max(dB_r)    + 200, length.out = 300)
+xg_Pool <- seq(min(dPool_r) - 300, max(dPool_r) + 300, length.out = 300)
+
+col_A_r    <- cols$top
+col_B_r    <- cols$mid
+col_Pool_r <- cols$dash
+
+plot_ly() |>
+  # ECDF SKU 27
+  add_trace(x = eA_r$x, y = eA_r$y, type = "scatter", mode = "lines",
+            name = "ECDF SKU 27",
+            line = list(color = col_A_r, width = 2.2)) |>
+  add_trace(x = eA_r$sorted, y = eA_r$F, type = "scatter", mode = "markers",
+            showlegend = FALSE,
+            marker = list(color = col_A_r, size = 6,
+                          line = list(color = "white", width = 1)),
+            hoverinfo = "skip") |>
+  # Normalverteilung SKU 27
+  add_trace(x = xg_A, y = pnorm(xg_A, muA_r, sigA_r),
+            type = "scatter", mode = "lines",
+            name = paste0("N(", round(muA_r), ", ", round(sigA_r), "\u00b2)"),
+            line = list(color = col_A_r, width = 2, dash = "dot")) |>
+  # ECDF SKU 34
+  add_trace(x = eB_r$x, y = eB_r$y, type = "scatter", mode = "lines",
+            name = "ECDF SKU 34",
+            line = list(color = col_B_r, width = 2.2, dash = "dash")) |>
+  add_trace(x = eB_r$sorted, y = eB_r$F, type = "scatter", mode = "markers",
+            showlegend = FALSE,
+            marker = list(color = col_B_r, size = 6, symbol = "square",
+                          line = list(color = "white", width = 1)),
+            hoverinfo = "skip") |>
+  # Normalverteilung SKU 34
+  add_trace(x = xg_B, y = pnorm(xg_B, muB_r, sigB_r),
+            type = "scatter", mode = "lines",
+            name = paste0("N(", round(muB_r), ", ", round(sigB_r), "\u00b2)"),
+            line = list(color = col_B_r, width = 2, dash = "dot")) |>
+  # ECDF Gesamtnachfrage (Pool)
+  add_trace(x = ePool_r$x, y = ePool_r$y, type = "scatter", mode = "lines",
+            name = "ECDF D\u2080 (Pool)",
+            line = list(color = col_Pool_r, width = 2.2)) |>
+  add_trace(x = ePool_r$sorted, y = ePool_r$F, type = "scatter", mode = "markers",
+            showlegend = FALSE,
+            marker = list(color = col_Pool_r, size = 6, symbol = "diamond",
+                          line = list(color = "white", width = 1)),
+            hoverinfo = "skip") |>
+  # Normalverteilung Pool
+  add_trace(x = xg_Pool, y = pnorm(xg_Pool, muP_r, sigP_r),
+            type = "scatter", mode = "lines",
+            name = paste0("N(", round(muP_r), ", ", round(sigP_r), "\u00b2)"),
+            line = list(color = col_Pool_r, width = 2, dash = "dot")) |>
+  
+  layout(
+    xaxis  = list(title = "Wöchentl. Nachfrage (Stück)", fixedrange = FALSE,
+                  tickformat = ",.0f"),
+    yaxis  = list(title = "F(d)", fixedrange = TRUE,
+                  range = c(-0.05, 1.08), tickformat = ".0%"),
+    legend = list(orientation = "h", x = .1, y = 0.38, font = list(size = 11)),
+    plot_bgcolor  = "transparent", paper_bgcolor = "transparent",
+    margin = list(l = 50, r = 10, t = 5, b = 75), height = 240, width = 660
+  )
+```
+:::
+
+::: {.fragment .fade-up}
+```{r pooling-real-scatter}
+#| echo: false
+#| warning: false
+#| message: false
+#| out-width: "99%"
+#| fig-height: 2.5
+
+fit_r   <- lm(dB_r ~ dA_r)
+x_seq_r <- seq(min(dA_r) - 5, max(dA_r) + 5, length.out = 80)
+y_fit_r <- predict(fit_r, newdata = data.frame(dA_r = x_seq_r))
+
+fig_sc <- plot_ly() |>
+  add_trace(
+    x = dA_r, y = dB_r,
+    type = "scatter", mode = "markers",
+    name = "Beobachtungen",
+    marker = list(size = 9, color = cols$top, opacity = 0.8,
+                  line = list(color = "white", width = 1.2)),
+    hovertemplate = "SKU 27: %{x}<br>SKU 34: %{y}<extra></extra>"
+  ) |>
+  add_trace(
+    x = x_seq_r, y = as.numeric(y_fit_r),
+    type = "scatter", mode = "lines",
+    name = "Regressionsgerade",
+    line = list(color = "#6B7280", width = 1.6, dash = "dot"),
+    hoverinfo = "skip"
+  ) |>
+  add_annotations(
+    x = 0.97, y = 0.95, xref = "paper", yref = "paper",
+    text = paste0("<b>ρ̂ = ", round(rho_r, 2), "</b>"),
+    showarrow = FALSE,
+    font = list(size = 16, color = "#1F2933", family = "Arial"),
+    xanchor = "right"
+  ) |>
+  layout(
+    xaxis  = list(title = "wöchentl. Absatz SKU 27", fixedrange = TRUE),
+    yaxis  = list(title = "Absatz SKU 34", fixedrange = TRUE),
+    legend = list(orientation = "h", x = .1, y = 0.88, font = list(size = 14)),
+    plot_bgcolor  = "transparent",
+    paper_bgcolor = "transparent",
+    margin = list(l = 50, r = 10, t = 10, b = 70),
+    height = 240, width = 680
+  )
+
+fig_sc
+```
+:::
+
+:::
+
+::: {.column width="50%"}
+
+::: {.fragment .fade-up}
+
+```{r pooling-real-sb-table}
+#| echo: false
+#| warning: false
+#| message: false
+
+sb_df <- data.frame(
+  Kennzahl = c(
+    "μ̂", "σ̂",
+    "SB dezentral (emp.)", "SB zentral (emp.)", "Einsparung (emp.)",
+    "SB dezentral (norm.)", "SB zentral (norm.)", "Einsparung (norm.)"
+  ),
+  SKU27 = c(round(muA_r, 1), round(sigA_r, 1),
+            round(SB_A_emp, 1), "—", "—",
+            round(SB_A_par, 1), "—", "—"),
+  SKU34 = c(round(muB_r, 1), round(sigB_r, 1),
+            round(SB_B_emp, 1), "—", "—",
+            round(SB_B_par, 1), "—", "—"),
+  Pool  = c(round(muP_r, 1), round(sigP_r, 1),
+            round(SB_dez_emp, 1), round(SB_zen_emp, 1),
+            paste0(einspar_emp, " %"),
+            round(SB_dez_par, 1), round(SB_zen_par, 1),
+            paste0(einspar_par, " %"))
+)
+
+kbl(sb_df,
+    col.names = c("Kennzahl", "SKU 27", "SKU 34", "Gesamt / Pool"),
+    align = c("l", "r", "r", "r"),
+    escape = FALSE) |>
+  kable_styling(bootstrap_options = c("condensed", "striped"),
+                full_width = TRUE, font_size = 18) |>
+  row_spec(0, background = "#2F3E46", color = "white", bold = TRUE) |>
+  row_spec(1:2, background = "#F8F9FA") |>
+  row_spec(3:5, background = "#E8F4F1") |>
+  row_spec(6:8, background = "#FFF3CD") |>
+  row_spec(c(5, 8), bold = TRUE)
+```
+
+:::
+
+::: {.fragment .fade-up}
+
+```{r pooling-real-sb-bar}
+#| echo: false
+#| warning: false
+#| message: false
+#| out-width: "99%"
+#| fig-height: 3.0
+
+kategorien <- c("Empirisch", "Normalverteilung")
+sb_dez_vals <- c(round(SB_dez_emp, 1), round(SB_dez_par, 1))
+sb_zen_vals <- c(round(SB_zen_emp, 1), round(SB_zen_par, 1))
+
+fig_bar <- plot_ly() |>
+  add_trace(
+    x = kategorien, y = sb_dez_vals,
+    type = "bar", name = "Dezentral (SB₁ + SB₂)",
+    marker = list(color = "#E9C46A",
+                  line = list(color = "#B8951A", width = 1)),
+    text  = round(sb_dez_vals, 1), textposition = "outside",
+    textfont = list(size = 13, family = "Arial", color = "#1F2933")
+  ) |>
+  add_trace(
+    x = kategorien, y = sb_zen_vals,
+    type = "bar", name = "Zentral (Pooling)",
+    marker = list(color = cols$top,
+                  line = list(color = "#01696f", width = 1)),
+    text  = round(sb_zen_vals, 1), textposition = "outside",
+    textfont = list(size = 13, family = "Arial", color = "#1F2933")
+  ) |>
+  layout(
+    barmode = "group",
+    xaxis   = list(title = "", fixedrange = TRUE),
+    yaxis   = list(title = "Sicherheitsbestand (Stück)",
+                   fixedrange = TRUE,
+                   range = c(0, max(sb_dez_vals) * 1.25)),
+    legend  = list(orientation = "h", y = -0.28, font = list(size = 11)),
+    plot_bgcolor  = "transparent",
+    paper_bgcolor = "transparent",
+    margin = list(l = 50, r = 20, t = 20, b = 70),
+    height = 270, width = 680
+  )
+
+fig_bar
+```
+
+:::
+
+::: {.fragment .fade-up}
+::: {.callout-note appearance="minimal" icon=false}
+Korrelation $\hat{\rho} =$ `r round(rho_r, 2)` $\rightarrow$ Pooling-Einsparung empirisch: **`r einspar_emp` %**, parametrisch: **`r einspar_par` %**
+:::
+:::
+
+:::
+::::
