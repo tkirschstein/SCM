@@ -2119,20 +2119,22 @@ url <- "https://raw.githubusercontent.com/demand-prediction-guide/public/main/da
 data_processed <- read_csv(url)
 
 pdata <- data_processed |>
-  dplyr::filter(functionality %in% c("01.Streaming sticks", "09.Smartphone stands" )) |> 
-  dplyr::select(week, weekly_sales, sku, functionality) |> 
+  dplyr::filter(functionality %in% c("01.Streaming sticks", "09.Smartphone stands" )) |>
+  dplyr::select(week, weekly_sales, sku, functionality) |>
   dplyr::group_by(functionality, week) |>
   dplyr::summarise(weekly_sales = sum(weekly_sales, na.rm = TRUE), .groups = "drop") |> 
-  dplyr::rename(product = functionality) |>
-  dplyr::mutate(product = dplyr::recode(product,
-    "09.Smartphone stands" = "Smartphone_stand",
-    "01.Streaming sticks"  = "Streaming_stick"
-  ))
+   dplyr::rename(product = functionality) |>
+   dplyr::mutate(product = dplyr::recode(product,
+     "09.Smartphone stands" = "Smartphone_stand",
+     "01.Streaming sticks"  = "Streaming_stick"
+   ))
 
 prod.names <- unique(pdata$product)
 
 dA <- pdata$weekly_sales[pdata$product == "Smartphone_stand"]
 dB <- pdata$weekly_sales[pdata$product == "Streaming_stick"]
+#dA <- pdata$weekly_sales[pdata$sku == 27]
+#dB <- pdata$weekly_sales[pdata$sku == 34]
 dpool <- dA + dB
 
 # ── Parameter schätzen ────────────────────────────────────────────────────────
@@ -2218,15 +2220,15 @@ fig <- fig |>
             line = list(color = colB, width = 2.2, dash = "dot"))
 
 
-fig <- fig |>  
-  plotly::add_trace(x = ePool$x, y = ePool$y, type = "scatter", mode = "lines+markers",
-            name = "ECDF Gesamtnachfrage",
-            line = list(color = colpool, width = 2.2), 
-            marker = list(color = colpool, size = 6, line = list(color = "white", width = 1))) |>
-  plotly::add_trace(x = xgridpool, y = pnorm(xgridpool, mupool, sigpool),
-            type = "scatter", mode = "lines",
-            name = paste0("N(", round(mupool), ", ", round(sigpool), "²) "),
-            line = list(color = colpool, width = 2.2, dash = "dot"))
+# fig <- fig |>  
+#   plotly::add_trace(x = ePool$x, y = ePool$y, type = "scatter", mode = "lines+markers",
+#             name = "ECDF Gesamtnachfrage",
+#             line = list(color = colpool, width = 2.2), 
+#             marker = list(color = colpool, size = 6, line = list(color = "white", width = 1))) |>
+#   plotly::add_trace(x = xgridpool, y = pnorm(xgridpool, mupool, sigpool),
+#             type = "scatter", mode = "lines",
+#             name = paste0("N(", round(mupool), ", ", round(sigpool), "²) "),
+#             line = list(color = colpool, width = 2.2, dash = "dot"))
 
 fig <- fig |>
   plotly::add_annotations(x = 0.02, y = 0.93, xref = "paper", yref = "paper",
@@ -2236,11 +2238,11 @@ fig <- fig |>
   plotly::add_annotations(x = 0.02, y = 0.83, xref = "paper", yref = "paper",
     text = paste0("<b>KS-Test Produkt B:</b> p ", fmt_p(ksB$p.value)),
     showarrow = FALSE, font = list(size = 16, color = colB, family = "Arial"),
-    xanchor = "left") |> 
-  plotly::add_annotations(x = 0.02, y = 0.73, xref = "paper", yref = "paper",
-    text = paste0("<b>KS-Test Gesamtnachfrage:</b> p ", fmt_p(kspool$p.value)),
-    showarrow = FALSE, font = list(size = 16, color = colpool, family = "Arial"),
-    xanchor = "left")
+    xanchor = "left") 
+  # plotly::add_annotations(x = 0.02, y = 0.73, xref = "paper", yref = "paper",
+  #   text = paste0("<b>KS-Test Gesamtnachfrage:</b> p ", fmt_p(kspool$p.value)),
+  #   showarrow = FALSE, font = list(size = 16, color = colpool, family = "Arial"),
+  #   xanchor = "left")
 
 fig |> plotly::layout(
   xaxis = list(title = "Wöchentliche Nachfrage (Stück)", fixedrange = FALSE,
@@ -2275,24 +2277,23 @@ fig |> plotly::layout(
 #| message: false
 
 fitdf <- data.frame(
-  Standort = c("A", "B", "A+B (Pooled)"),
-  mu       = round(c(muA, muB, mupool)),
-  sigma    = round(c(sigA, sigB, sigpool)),
-  KS_p     = c(round(ksA$p.value, 3), round(ksB$p.value, 3), round(kspool$p.value, 3)),
-  SB_95    = round(c(quantile(dA, 0.95) ,
-                      quantile(dB, 0.95),
-                      quantile(dpool, 0.95)))
+  Standort = c("A", "B"),
+  mu       = round(c(muA, muB)),
+  sigma    = round(c(sigA, sigB)),
+  KS_p     = c(round(ksA$p.value, 3), round(ksB$p.value, 3)),
+  SB_95    = round(c(quantile(dA, 0.95) , quantile(dB, 0.95))),
+  pSB_95    = round(c( qnorm(.95, muA, sigA), qnorm(.95, muB, sigB)))
 )
 
 kableExtra::kbl(fitdf,
-    col.names = c("Produkt", "μ̂", "σ̂", "KS p-Wert", "emp. SB (α=95%)"),
-    align = c("l", "r", "r", "r", "r"), escape = FALSE,
+    col.names = c("Produkt", "μ̂", "σ̂", "KS p-Wert", "emp. SB (α=95%)","param. SB"),
+    align = c("l", "r", "r", "r", "r","r"), escape = FALSE,
     format.args = list(big.mark = ",")) |>
   kableExtra::kable_styling(
     bootstrap_options = c("condensed", "striped"),
     full_width = TRUE, font_size = 18) |>
   kableExtra::row_spec(0, background = "#2F3E46", color = "white", bold = TRUE) |>
-  kableExtra::row_spec(3, bold = TRUE, background = "#E8F4F1") |>
+  #kableExtra::row_spec(3, bold = TRUE, background = "#E8F4F1") |>
   kableExtra::column_spec(5, bold = TRUE, color = "#02818a")
 ```
 
@@ -2302,7 +2303,7 @@ kableExtra::kbl(fitdf,
 
 ::: {.fragment .fade-up}
 ::: {.callout-tip appearance="simple"}
-Die Normalverteilung approximiert die Nachfrage bedingt gut. Für Produkt A (Streaming stick) funktioniert die Approximation gut, für Produkt B (Smartphone-Halter) und die Gesamtnachfrage schlecht.
+Die Normalverteilung approximiert die Nachfrage bedingt gut. Für Produkt A (Streaming stick) funktioniert die Approximation gut, für Produkt B (Smartphone-Halter) sehr schlecht.
 :::
 :::
 
