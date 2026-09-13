@@ -324,6 +324,7 @@ $\rightarrow$ **Deckungsbeitrag pro verkaufte Sushi-Box**: $c^u=p-c = 10-5=5$ �
 ::: {.fragment .fade-up}
 $\rightarrow$ **Verwertungsverlust pro nicht verkaufte Sushi-Box**: $c^o=c-v=5-2=3$ €
 :::
+
 ------------------------------------------------------------------------------
 
 ## Fallbeispiel
@@ -336,7 +337,7 @@ Zwei möglische Situation aus Sicht des Lieferanten
 **Zu viele Boxen:** 
 
 ::: incremental
-- weniger Nachfrage $D$ als produzierte Sushi-Boxen $q$
+- weniger Nachfrage $D$ als produzierte Sushi-Boxen $q$ $\rightarrow$ Überbestand $q-D$
 - verkaufte Menge: $\min(D,q) = D$
 - Deckungsbeitrag aus Verkauf: $D \cdot c^u$
 - zusätzliche Kosten der Verwertung: $(q-D) \cdot c^o$
@@ -346,7 +347,8 @@ Zwei möglische Situation aus Sicht des Lieferanten
 :::
 
 ::: {.fragment .fade-up}
-**Gesamtdeckungsbeitrag:** $\begin{align} P= & D \cdot c^u - (q - D) \cdot c^o \\ =& D \cdot (c^u + c^o) - q \cdot c^o \end{align}$
+**Gesamtdeckungsbeitrag:** $\begin{align} P= & D \cdot c^u - (q - D) \cdot c^o \\
+=& D \cdot (c^u + c^o) - q \cdot c^o \end{align}$
 :::
 
 :::
@@ -356,7 +358,7 @@ Zwei möglische Situation aus Sicht des Lieferanten
 **Zu wenige Boxen:** 
 
 ::: incremental
-- mehr Nachfrage $D$ als produzierte Sushi-Boxen $q$ $\rightarrow$ unzufriedene Kunden
+- mehr Nachfrage $D$ als produzierte Sushi-Boxen $q$ $\rightarrow$ Fehlmenge $D-q$
 - verkaufte Menge: $\min(D,q) = q$
 - gesamter Deckungsbeitrag: $q \cdot c^u$
 - Opportunitätskosten aus entgangenem Deckungsbeitrag: $(D-q) \cdot c^u$
@@ -367,20 +369,25 @@ Zwei möglische Situation aus Sicht des Lieferanten
 :::
 
 ::: {.fragment .fade-up}
-**Gesamtdeckungsbeitrag:** $\begin{align} P=& q \cdot c^u - (D - q) \cdot c^u\\ =&  (2 \cdot q - D) \cdot c^u \end{align}$
+**Gesamtdeckungsbeitrag:** $\begin{align} P=& q \cdot c^u - (D - q) \cdot c^u\\
+=&  (2 \cdot q - D) \cdot c^u \end{align}$
 :::
 :::
 :::
 :::::
 
+------------------------------------------------------------------------------
 
-## Nachfrageprognose für heute
+## Fallbeispiel
+::: slide-subtitle
+Mögliche Nachfrage & Produktionsmenge
+:::
 
 Aus Verkaufshistorie, Wochentag, Wetterprognose und aktuellen Aktionen
 schätzt der Lieferant vier mögliche Nachfrageszenarien:
 
 | Nachfrage $D$ | Wahrscheinlichkeit $P(D=d)$ | Kumulierte Wahrscheinlichkeit $F(d)$ |
-|-----------------------:|-----------------------:|-----------------------:|
+|----------:|-------------------:|-----------------------:|
 | 30 Sushi-Boxen | 0,20 | 0,20 |
 | 40 Sushi-Boxen | 0,35 | 0,55 |
 | 50 Sushi-Boxen | 0,30 | 0,85 |
@@ -389,32 +396,54 @@ schätzt der Lieferant vier mögliche Nachfrageszenarien:
 > Welche Menge sollte der Lieferant morgens vorbereiten: 30, 40, 50 oder
 > 60 Sushi-Boxen?
 
-## Erste Intuition
+------------------------------------------------------------------------------
 
-Die erwartete Nachfrage beträgt:
+## Fallbeispiel
+::: slide-subtitle
+Erwartetes Ergebnis 
+:::
 
-$$\mathbb{E}[D]
-=
-30 \cdot 0{,}20
-+
-40 \cdot 0{,}35
-+
-50 \cdot 0{,}30
-+
-60 \cdot 0{,}15
-=
-44.$$
 
-Eine Bestellung von 44 Boxen ist jedoch nicht automatisch optimal.
+::::: columns
+::: {.column width="50%"}
+Setze $q=40$ Sushi-Boxen
+::: {.smaller-text}
+| Nachfrage $D$ | Wahrsch. $P(D=d)$ | Überbestand $q-D$ |  Fehlmenge $q-D$ |  Deckungs-\n beitrag $P$ |
+|------:|------:|------:|-----:|------:|
+| 30 Sushi-Boxen | 0,20 | 10 |  0 | 120 €
+| 40 Sushi-Boxen | 0,35 | 0  |  0 | 200 €
+| 50 Sushi-Boxen | 0,30 | 0  | 10 | 170 €
+| 60 Sushi-Boxen | 0,15 | 0  | 20 | 140 €
+:::
 
-- Bei 40 Boxen besteht in den Szenarien $D=50$ und $D=60$ eine
-  Fehlmenge.
-- Bei 50 Boxen verbleiben im Szenario $D=30$ zwanzig Boxen.
-- Die Entscheidung hängt davon ab, ob eine Fehlmenge oder ein
-  Restbestand teurer ist.
+::: {.vspace-2}
+:::
 
-> Das Newsvendor-Modell liefert eine systematische Antwort auf diese
-> Abwägung.
+::: {.fragment .fade-up}
+**erwarteter Gesamtdeckungsbeitrag:** $\begin{align} E(P|q=40)= & 0.2 \cdot 120 + 0.35 \cdot 200 + \\
+& 0.30 \cdot 170 + 0.15 \cdot 140= 166 \end{align}$
+:::
+
+:::
+
+
+::: {.column width="30%"}
+::: {.fragment .fade-up}
+
+:::
+
+
+::: {.vspace-2}
+:::
+
+::: {.fragment .fade-up}
+
+:::
+
+:::
+
+:::::
+
 
 ## Das Grundproblem
 
