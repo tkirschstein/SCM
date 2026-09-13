@@ -1,5 +1,13 @@
 ---
 title: "Das Newsvendor-Modell"
+subtitle: "Bestellentscheidungen bei unsicherer Nachfrage"
+execute:
+  echo: false
+  warning: false
+  message: false
+editor: 
+  markdown: 
+    wrap: 72
 ---
 
 ## Unsicherheit in Supply Chains {#slide-158}
@@ -8,3 +16,856 @@ title: "Das Newsvendor-Modell"
 - **Newsvendor-Modell**
 - Bullwhip-Effekt
 
+```{r}
+#| include: false
+
+library(ggplot2)
+library(dplyr)
+library(scales)
+library(plotly)
+library(tidyverse)
+
+# Beispielparameter -------------------------------------------------------
+
+mu <- 1000
+sigma <- 200
+p <- 20
+c <- 8
+v <- 2
+g <- 0
+
+underage_cost <- p - c + g
+overage_cost <- c - v
+critical_ratio <- underage_cost / (underage_cost + overage_cost)
+q_star <- qnorm(critical_ratio, mean = mu, sd = sigma)
+
+# Lokale Hilfsfunktion für die Visualisierung ----------------------------
+
+plot_newsvendor_distribution <- function(
+    mean_demand,
+    sd_demand,
+    order_quantity,
+    critical_ratio = NULL,
+    title = "Newsvendor-Modell: Nachfrage und Bestellmenge"
+) {
+  stopifnot(
+    is.finite(mean_demand),
+    is.finite(sd_demand),
+    sd_demand > 0,
+    is.finite(order_quantity)
+  )
+
+  x_min <- min(0, mean_demand - 4 * sd_demand)
+  x_max <- max(order_quantity, mean_demand + 4 * sd_demand)
+
+  demand <- tibble(
+    demand = seq(x_min, x_max, length.out = 1000),
+    density = dnorm(demand, mean = mean_demand, sd = sd_demand)
+  )
+
+  left_area <- demand |> filter(demand <= order_quantity)
+  right_area <- demand |> filter(demand >= order_quantity)
+
+  ggplot(demand, aes(x = demand, y = density)) +
+    geom_area(
+      data = left_area,
+      fill = "#00843D",
+      alpha = 0.25
+    ) +
+    geom_area(
+      data = right_area,
+      fill = "#E85D04",
+      alpha = 0.20
+    ) +
+    geom_line(
+      linewidth = 1.1,
+      colour = "#1F2937"
+    ) +
+    geom_vline(
+      xintercept = mean_demand,
+      linetype = "dashed",
+      colour = "#6B7280"
+    ) +
+    geom_vline(
+      xintercept = order_quantity,
+      linewidth = 1.2,
+      colour = "#00843D"
+    ) +
+    annotate(
+      "text",
+      x = order_quantity,
+      y = max(demand$density) * 0.95,
+      label = paste0(
+        "Q* = ",
+        format(
+          round(order_quantity, 0),
+          big.mark = ".",
+          scientific = FALSE
+        )
+      ),
+      hjust = -0.05,
+      colour = "#00843D",
+      fontface = "bold"
+    ) +
+    labs(
+      title = title,
+      subtitle = if (is.null(critical_ratio)) {
+        NULL
+      } else {
+        paste0(
+          "Kritische Fraktil: ",
+          number(
+            critical_ratio,
+            accuracy = 0.001,
+            decimal.mark = ","
+          )
+        )
+      },
+      x = "Nachfrage",
+      y = "Dichte"
+    ) +
+    theme_minimal(base_size = 18) +
+    theme(
+      plot.title = element_text(face = "bold"),
+      panel.grid.minor = element_blank()
+    )
+}
+```
+
+## Lernziele
+
+Nach dieser Einheit können Sie …
+
+- das **Newsvendor-Problem** als einmalige Bestellentscheidung bei
+  unsicherer Nachfrage einordnen,
+- Über- und Unterdeckungskosten bestimmen,
+- die kritische Fraktilregel herleiten und interpretieren,
+- eine optimale Bestellmenge bei gegebener Nachfrageverteilung
+  berechnen,
+- den Einfluss zentraler Modellparameter auf die Bestellentscheidung
+  erklären.
+
+------------------------------------------------------------------------------
+
+## Fallbeispiel
+::: slide-subtitle
+Sushi-Boxen im Supermarkt
+:::
+
+Ein Supermarkt bezieht täglich frisch produzierte Sushi-Boxen von einem
+regionalen Sushi-Lieferanten.
+
+```{r}
+#| fig-height: 2
+#| fig-width: 15
+#| out-width: 100%
+#| fig-align: center
+#| fig-alt: "Interaktiver zeitlicher Ablauf der täglichen Sushi-Box-Entscheidung"
+
+library(plotly)
+library(tibble)
+
+timeline <- tibble(
+  zeitpunkt = c(0, 6, 24, 30),
+  label = c(
+    "Morgens, 7 Uhr<br>Sushi-Boxen füllen",
+    "8 Uhr<br>Verkaufsbeginn Supermarkt",
+    "19 Uhr<br>Abholung der Restware",
+    "20 Uhr<br>Restware verwerten"
+  ),
+  tooltip = c(
+    "<b>7 Uhr</b><br>Sushi-Boxen werden frisch vorbereitet.",
+    "<b>8 Uhr</b><br>Der Verkauf im Supermarkt beginnt.",
+    "<b>19 Uhr</b><br>Nicht verkaufte Boxen werden abgeholt.",
+    "<b>20 Uhr</b><br>Restbestand wird rabattiert, gespendet oder entsorgt."
+  )
+)
+
+plot_ly(
+  data = timeline,
+  x = ~zeitpunkt,
+  y = ~rep(0, nrow(timeline)),
+  type = "scatter",
+  mode = "markers",
+  marker = list(
+    size = 18,
+    color = "#00843D",
+    line = list(
+      color = "white",
+      width = 2
+    )
+  ),
+  text = ~tooltip,
+  hoverinfo = "text",
+  showlegend = FALSE
+) |>
+  add_segments(
+    x = 0,
+    xend = 30.5,
+    y = 0,
+    yend = 0,
+    line = list(
+      color = "#6B7280",
+      width = 2
+    ),
+    inherit = FALSE,
+    hoverinfo = "none",
+    showlegend = FALSE
+  ) |>
+  add_segments(
+    x = 6,
+    xend = 24,
+    y = 0,
+    yend = 0,
+    line = list(
+      color = "#00843D",
+      width = 5
+    ),
+    inherit = FALSE,
+    hoverinfo = "none",
+    showlegend = FALSE
+  ) |>
+  add_annotations(
+    x = timeline$zeitpunkt,
+    y = 0,
+    text = timeline$label,
+    showarrow = FALSE,
+    yshift = -65,
+    font = list(
+      size = 18,
+      color = "#1F2937"
+    ),
+    align = "center"
+  ) |>
+  add_annotations(
+    x = 15,
+    y = 0,
+    text = "Verkaufszeitraum",
+    showarrow = FALSE,
+    yshift = 35,
+    font = list(
+      size = 18,
+      color = "#00843D"
+    )
+  ) |>
+  layout(
+    margin = list(
+      l = 10,
+      r = 10,
+      t = 20,
+      b = 80
+    ),
+    xaxis = list(
+      range = c(-5, 35),
+      visible = FALSE,
+      fixedrange = TRUE
+    ),
+    yaxis = list(
+      range = c(-.5, .75),
+      visible = FALSE,
+      fixedrange = TRUE
+    ),
+    hoverlabel = list(
+      bgcolor = "white",
+      bordercolor = "#00843D",
+      font = list(
+        size = 16,
+        color = "#1F2937"
+      )
+    ),
+    width = 1500,
+    height = 150
+  ) |>
+  config(
+    displayModeBar = FALSE,
+    responsive = TRUE
+  )
+```
+
+- Die Boxen werden morgens vorbereitet und vor Ladenöffnung geliefert.
+- Die Nachfrage ist bis zum Abend unsicher. Nachlieferungen tagsüber
+  sind ausgeschlossen.
+- Nicht verkaufte Sushi-Boxen dürfen am Folgetag nicht mehr regulär
+  verkauft werden.
+
+::: {.fragment .fade-up}
+> **Entscheidungsfrage:** Wie viele Sushi-Boxen sollte der Lieferant
+> vorbereiten?
+:::
+
+
+------------------------------------------------------------------------------
+
+## Fallbeispiel
+::: slide-subtitle
+Kosten- und Erlösstruktur
+:::
+
+Für eine Sushi-Box gelten die folgenden, vereinfachten Werte:
+
+| Größe | Bedeutung | Wert |
+|-------------------|----------------------|----:|
+| Verkaufspreis $p$ | Erlös je verkaufter Sushi-Box | 10 EUR |
+| Herstell- und Lieferkosten $c$ | Kosten je vorbereiteter Sushi-Box | 5 EUR |
+| Restwert $v$ | Erlös bei Abendrabatt bzw. Verwertung | 2 EUR |
+
+**typischerweise gilt allgemein: $p > c > v$**
+
+::: {.vspace-2}
+:::
+
+::: {.fragment .fade-up}
+$\rightarrow$ **Deckungsbeitrag pro verkaufte Sushi-Box**: $c^u=p-c = 10-5=5$ €
+:::
+
+::: {.vspace-2}
+:::
+
+::: {.fragment .fade-up}
+$\rightarrow$ **Verwertungsverlust pro nicht verkaufte Sushi-Box**: $c^o=c-v=5-2=3$ €
+:::
+------------------------------------------------------------------------------
+
+## Fallbeispiel
+::: slide-subtitle
+Zwei möglische Situation aus Sicht des Lieferanten
+:::
+
+::::: columns
+::: {.column width="50%"}
+**Zu viele Boxen:** 
+
+::: incremental
+- weniger Nachfrage $D$ als produzierte Sushi-Boxen $q$
+- verkaufte Menge: $\min(D,q) = D$
+- Deckungsbeitrag aus Verkauf: $D \cdot c^u$
+- zusätzliche Kosten der Verwertung: $(q-D) \cdot c^o$
+:::
+
+::: {.vspace-2}
+:::
+
+::: {.fragment .fade-up}
+**Gesamtdeckungsbeitrag:** $\begin{align} P= & D \cdot c^u - (q - D) \cdot c^o \\ =& D \cdot (c^u + c^o) - q \cdot c^o \end{align}$
+:::
+
+:::
+
+::: {.column width="50%"}
+::: {.fragment .fade-up}
+**Zu wenige Boxen:** 
+
+::: incremental
+- mehr Nachfrage $D$ als produzierte Sushi-Boxen $q$ $\rightarrow$ unzufriedene Kunden
+- verkaufte Menge: $\min(D,q) = q$
+- gesamter Deckungsbeitrag: $q \cdot c^u$
+- Opportunitätskosten aus entgangenem Deckungsbeitrag: $(D-q) \cdot c^u$
+:::
+
+
+::: {.vspace-2}
+:::
+
+::: {.fragment .fade-up}
+**Gesamtdeckungsbeitrag:** $\begin{align} P=& q \cdot c^u - (D - q) \cdot c^u\\ =&  (2 \cdot q - D) \cdot c^u \end{align}$
+:::
+:::
+:::
+:::::
+
+
+## Nachfrageprognose für heute
+
+Aus Verkaufshistorie, Wochentag, Wetterprognose und aktuellen Aktionen
+schätzt der Lieferant vier mögliche Nachfrageszenarien:
+
+| Nachfrage $D$ | Wahrscheinlichkeit $P(D=d)$ | Kumulierte Wahrscheinlichkeit $F(d)$ |
+|-----------------------:|-----------------------:|-----------------------:|
+| 30 Sushi-Boxen | 0,20 | 0,20 |
+| 40 Sushi-Boxen | 0,35 | 0,55 |
+| 50 Sushi-Boxen | 0,30 | 0,85 |
+| 60 Sushi-Boxen | 0,15 | 1,00 |
+
+> Welche Menge sollte der Lieferant morgens vorbereiten: 30, 40, 50 oder
+> 60 Sushi-Boxen?
+
+## Erste Intuition
+
+Die erwartete Nachfrage beträgt:
+
+$$\mathbb{E}[D]
+=
+30 \cdot 0{,}20
++
+40 \cdot 0{,}35
++
+50 \cdot 0{,}30
++
+60 \cdot 0{,}15
+=
+44.$$
+
+Eine Bestellung von 44 Boxen ist jedoch nicht automatisch optimal.
+
+- Bei 40 Boxen besteht in den Szenarien $D=50$ und $D=60$ eine
+  Fehlmenge.
+- Bei 50 Boxen verbleiben im Szenario $D=30$ zwanzig Boxen.
+- Die Entscheidung hängt davon ab, ob eine Fehlmenge oder ein
+  Restbestand teurer ist.
+
+> Das Newsvendor-Modell liefert eine systematische Antwort auf diese
+> Abwägung.
+
+## Das Grundproblem
+
+::::: columns
+::: {.column width="58%"}
+Ein Händler muss **vor Realisation der Nachfrage** einmalig eine
+Bestellmenge $Q$ festlegen.
+
+- Nachfrage $D$ ist unsicher.
+- Nachbestellung ist nicht möglich oder nicht wirtschaftlich.
+- Nicht verkaufte Einheiten besitzen nur einen Restwert.
+- Nicht bediente Nachfrage führt zu entgangenem Deckungsbeitrag und
+  gegebenenfalls weiteren Kosten.
+:::
+
+::: {.column width="42%"}
+```{r}
+#| fig-height: 4
+#| fig-width: 5.5
+#| fig-alt: "Zeitlicher Ablauf des Newsvendor-Problems"
+
+timeline <- tibble(
+  zeitpunkt = c(1, 2, 3),
+  label = c(
+    "Bestellung\nQ festlegen",
+    "Nachfrage\nD realisiert sich",
+    "Verkauf und\nRestwert"
+  )
+)
+
+ggplot(timeline, aes(x = zeitpunkt, y = 0)) +
+  geom_segment(
+    aes(x = 1, xend = 3, y = 0, yend = 0),
+    linewidth = 1,
+    colour = "#6B7280"
+  ) +
+  geom_point(
+    size = 6,
+    colour = "#00843D"
+  ) +
+  geom_text(
+    aes(label = label),
+    vjust = -1.2,
+    size = 5
+  ) +
+  annotate(
+    "segment",
+    x = 1.35,
+    xend = 1.65,
+    y = 0,
+    yend = 0,
+    arrow = grid::arrow(length = grid::unit(0.25, "cm")),
+    colour = "#6B7280"
+  ) +
+  annotate(
+    "segment",
+    x = 2.35,
+    xend = 2.65,
+    y = 0,
+    yend = 0,
+    arrow = grid::arrow(length = grid::unit(0.25, "cm")),
+    colour = "#6B7280"
+  ) +
+  coord_cartesian(ylim = c(-0.5, 0.7)) +
+  theme_void()
+```
+:::
+:::::
+
+## Typische Anwendungen
+
+- Tageszeitungen und Zeitschriften
+- Saison- und Aktionsartikel
+- Frischwaren mit kurzer Haltbarkeit
+- Tickets für Veranstaltungen oder Verkehrsmittel
+- Kapazitätsentscheidungen bei verderblicher Leistung
+
+> Das Newsvendor-Modell eignet sich für Entscheidungen, bei denen heute
+> eine Menge festgelegt wird und sich die Nachfrage erst später
+> realisiert.
+
+## Modellannahmen
+
+| Element                | Annahme                                            |
+|------------------------|----------------------------------------------------|
+| Entscheidungszeitpunkt | Eine Bestellung vor der Nachfrage                  |
+| Bestellmenge           | $Q \geq 0$                                         |
+| Nachfrage              | Zufallsvariable $D$ mit Verteilungsfunktion $F(d)$ |
+| Verkaufspreis          | $p$ je verkaufter Einheit                          |
+| Beschaffungskosten     | $c$ je bestellter Einheit                          |
+| Restwert               | $v$ je nicht verkaufter Einheit                    |
+| Fehlmengenkosten       | $g$ je nicht bedienter Einheit, optional           |
+
+Typischerweise gilt:
+
+$$p > c > v.$$
+
+## Zwei Arten von Fehlentscheidungen
+
+::::: columns
+::: {.column width="50%"}
+### Überbestellung: $Q>D$
+
+- Bestand bleibt nach Ende der Periode übrig.
+- Kapital wird gebunden.
+- Ware wird abgeschrieben, zurückgegeben oder nur zum Restwert $v$
+  verwertet.
+
+Die Grenzkosten einer zusätzlich bestellten, aber nicht benötigten
+Einheit sind
+
+$$C_o=c-v.$$
+:::
+
+::: {.column width="50%"}
+### Unterbestellung: $Q<D$
+
+- Potenzielle Nachfrage kann nicht bedient werden.
+- Es entsteht entgangener Deckungsbeitrag.
+- Möglich sind zusätzliche Straf-, Kulanz- oder Imagekosten $g$.
+
+Die Grenzkosten einer fehlenden Einheit sind
+
+$$C_u=p-c+g.$$
+:::
+:::::
+
+## Gewinnfunktion
+
+Die realisierte Absatzmenge ist durch Angebot und Nachfrage begrenzt:
+
+$$S(Q,D)=\min\{Q,D\}.$$
+
+Mit Restbestand $(Q-D)^+$ und Fehlmenge $(D-Q)^+$ ergibt sich:
+
+$$\pi(Q,D)
+=
+p\min\{Q,D\}
++
+v(Q-D)^+
+-
+cQ
+-
+g(D-Q)^+.$$
+
+Ziel ist die Wahl einer Bestellmenge $Q$, die den erwarteten Gewinn
+maximiert:
+
+$$Q^*
+\in
+\arg\max_Q
+\;
+\mathbb{E}[\pi(Q,D)].$$
+
+## Marginale Entscheidungslogik
+
+Betrachten wir eine **zusätzliche Einheit**:
+
+- Mit Wahrscheinlichkeit $P(D>Q)=1-F(Q)$ wird sie benötigt. Ihr Nutzen
+  entspricht $C_u$.
+- Mit Wahrscheinlichkeit $P(D\leq Q)=F(Q)$ wird sie nicht benötigt. Dann
+  entstehen Überdeckungskosten $C_o$.
+
+Die optimale Grenze liegt dort, wo erwarteter Grenznutzen und erwartete
+Grenzkosten gleich sind:
+
+$$(1-F(Q^*))C_u
+=
+F(Q^*)C_o.$$
+
+## Kritische Fraktilregel
+
+Durch Umformung ergibt sich die zentrale Entscheidungsregel:
+
+$$F(Q^*)
+=
+\frac{C_u}{C_u+C_o}.$$
+
+Die rechte Seite heißt **kritische Fraktil** oder *critical ratio*.
+
+::: callout-important
+Die optimale Bestellmenge ist genau jenes Nachfragequantil, dessen
+kumulierte Wahrscheinlichkeit dem Verhältnis von Unterdeckungs- zu
+Gesamtkosten entspricht.
+:::
+
+## Intuition der kritischen Fraktil
+
+::::: columns
+::: {.column width="50%"}
+### Hohe Unterdeckungskosten
+
+Steigt $C_u$, dann steigt die kritische Fraktil.
+
+- Höherer Preis $p$
+- Höhere Fehlmengenkosten $g$
+- Niedrigere Beschaffungskosten $c$
+
+$$\Longrightarrow
+\quad
+\text{höhere Bestellmenge}$$
+:::
+
+::: {.column width="50%"}
+### Hohe Überdeckungskosten
+
+Steigt $C_o$, dann sinkt die kritische Fraktil.
+
+- Höhere Beschaffungskosten $c$
+- Niedrigerer Restwert $v$
+
+$$\Longrightarrow
+\quad
+\text{vorsichtigere Bestellmenge}$$
+:::
+:::::
+
+## Grafische Interpretation
+
+```{r}
+#| fig-height: 5
+#| fig-width: 10
+#| fig-alt: "Normalverteilte Nachfrage mit markierter optimaler Bestellmenge und kritischem Fraktil"
+
+plot_newsvendor_distribution(
+  mean_demand = mu,
+  sd_demand = sigma,
+  order_quantity = q_star,
+  critical_ratio = critical_ratio
+)
+```
+
+Die grüne Fläche links von $Q^*$ entspricht dem kritischen Fraktil
+$F(Q^*)$. Die orange Fläche zeigt Situationen, in denen die Bestellmenge
+größer als die realisierte Nachfrage ist.
+
+## Lösung bei normalverteilter Nachfrage
+
+Für eine normalverteilte Nachfrage
+
+$$D \sim \mathcal{N}(\mu,\sigma)$$
+
+gilt:
+
+$$Q^*
+=
+\mu
++
+z_{CR}\sigma,$$
+
+wobei
+
+$$z_{CR}
+=
+\Phi^{-1}
+\left(
+\frac{C_u}{C_u+C_o}
+\right).$$
+
+$\Phi^{-1}$ bezeichnet die Quantilsfunktion der
+Standardnormalverteilung.
+
+## Beispiel: Saisonartikel
+
+Ein Händler verkauft einen Saisonartikel zu $p=20$ EUR. Die
+Beschaffungskosten betragen $c=8$ EUR, der Restwert $v=2$ EUR.
+Fehlmengenkosten werden nicht angesetzt.
+
+Die Nachfrage sei normalverteilt mit:
+
+$$\mu=1{.}000,
+\qquad
+\sigma=200.$$
+
+::: incremental
+1.  Unterdeckungskosten: $C_u=p-c=12$ EUR
+2.  Überdeckungskosten: $C_o=c-v=6$ EUR
+3.  Kritische Fraktil: $CR=12/(12+6)=0{,}667$
+4.  Standardnormalquantil: $z_{0.667}\approx 0{,}431$
+5.  Optimale Bestellmenge:
+
+$$Q^*
+=
+1{.}000
++
+0{,}431 \cdot 200
+\approx
+1{.}086$$
+:::
+
+## Beispiel: Ergebnis
+
+```{r}
+#| fig-height: 5
+#| fig-width: 10
+#| fig-alt: "Nachfrageverteilung im Saisonartikelbeispiel mit optimaler Bestellmenge"
+
+plot_newsvendor_distribution(
+  mean_demand = mu,
+  sd_demand = sigma,
+  order_quantity = q_star,
+  critical_ratio = critical_ratio,
+  title = paste0(
+    "Optimale Bestellmenge: Q* = ",
+    comma(round(q_star, 0)),
+    " Einheiten"
+  )
+)
+```
+
+Die optimale Menge liegt **über dem Erwartungswert** der Nachfrage. Die
+Kosten einer Unterbestellung betragen 12 EUR und sind damit doppelt so
+hoch wie die Überdeckungskosten von 6 EUR.
+
+## Sensitivität: Restwert
+
+```{r}
+#| fig-height: 5
+#| fig-width: 10
+#| fig-alt: "Einfluss des Restwerts auf die optimale Bestellmenge"
+
+rest_values <- seq(0, 7.5, by = 0.25)
+
+sensitivity_restwert <- tibble(
+  restwert = rest_values,
+  critical_ratio = (p - c) / ((p - c) + (c - restwert)),
+  q_star = qnorm(
+    critical_ratio,
+    mean = mu,
+    sd = sigma
+  )
+)
+
+ggplot(sensitivity_restwert, aes(x = restwert, y = q_star)) +
+  geom_line(
+    linewidth = 1.2,
+    colour = "#00843D"
+  ) +
+  geom_point(
+    data = filter(
+      sensitivity_restwert,
+      abs(restwert - v) < 1e-9
+    ),
+    size = 3,
+    colour = "#E85D04"
+  ) +
+  labs(
+    title = "Ein höherer Restwert erhöht die optimale Bestellmenge",
+    x = "Restwert je Einheit $v$ in EUR",
+    y = "Optimale Bestellmenge $Q^*$"
+  ) +
+  theme_minimal(base_size = 18)
+```
+
+Ein höherer Restwert reduziert das Risiko einer Überbestellung. Daher
+wird es rational, mehr zu bestellen.
+
+## Sensitivität: Nachfrageunsicherheit
+
+::::: columns
+::: {.column width="55%"}
+```{r}
+#| fig-height: 4.5
+#| fig-width: 7
+#| fig-alt: "Einfluss der Standardabweichung auf die optimale Bestellmenge"
+
+uncertainty <- tibble(
+  sigma = seq(0, 500, by = 10),
+  q_star = mu + qnorm(critical_ratio) * sigma
+)
+
+ggplot(uncertainty, aes(x = sigma, y = q_star)) +
+  geom_line(
+    linewidth = 1.2,
+    colour = "#00843D"
+  ) +
+  labs(
+    title = "Unsicherheit und Sicherheitszuschlag",
+    x = "Standardabweichung der Nachfrage $\\sigma$",
+    y = "Optimale Bestellmenge $Q^*$"
+  ) +
+  theme_minimal(base_size = 16)
+```
+:::
+
+::: {.column width="45%"}
+Bei $CR>0{,}5$ ist $z_{CR}>0$. Der Sicherheitszuschlag
+
+$$z_{CR}\sigma$$
+
+steigt somit mit der Nachfrageunsicherheit.
+
+- $CR=0{,}5$: Bestellung im Erwartungswert
+- $CR>0{,}5$: Bestellung oberhalb von $\mu$
+- $CR<0{,}5$: Bestellung unterhalb von $\mu$
+:::
+:::::
+
+## Praxis: Welche Daten werden benötigt?
+
+- Eine belastbare Nachfrageprognose einschließlich Verteilung oder
+  Quantilen
+- Verkaufspreise, Einstandspreise und mögliche Preisaktionen
+- Verwertungs- bzw. Restwerte aus Rückgabe, Abschrift, Weiterverkauf
+  oder Recycling
+- Kosten nicht bedienter Nachfrage, etwa entgangener Deckungsbeitrag
+  oder Vertragsstrafen
+- Operative Restriktionen wie Mindestmengen, Kapazitäten, Packungsgrößen
+  und Budget
+
+> Die Modelllogik ist einfach. Die Qualität der Entscheidung hängt
+> jedoch wesentlich von der Prognosequalität und der realistischen
+> Bewertung von Über- und Unterdeckungskosten ab.
+
+## Grenzen des Basismodells
+
+| Annahme des Basismodells | Praktische Erweiterung |
+|------------------------------------|------------------------------------|
+| Eine Bestellperiode | Mehrperiodische Bestandsmodelle |
+| Exogene Nachfrage | Preis- und promotionsabhängige Nachfrage |
+| Ein Produkt | Substitution und Sortimentsentscheidungen |
+| Ein Lieferant | Lieferzuverlässigkeit, Kapazitäts- und Beschaffungsrisiken |
+| Keine Koordination | Verträge zur Abstimmung von Anreizen |
+
+## Kernaussagen
+
+- Das Newsvendor-Modell beschreibt eine **einmalige
+  Bestellentscheidung** unter unsicherer Nachfrage.
+- Entscheidend ist nicht der Erwartungswert der Nachfrage allein,
+  sondern das Verhältnis von Über- zu Unterdeckungskosten.
+- Die optimale Bestellmenge ist ein Nachfragequantil:
+
+$$F(Q^*)
+=
+\frac{C_u}{C_u+C_o}.$$
+
+- Höhere Fehlmengenkosten oder höhere Restwerte führen zu höheren
+  Bestellmengen.
+- Das Modell ist eine zentrale Grundlage für Bestandssteuerung und
+  Supply-Chain-Koordination.
+
+## Ausblick: Dezentrale Entscheidungen
+
+Das Newsvendor-Modell betrachtet zunächst einen einzelnen Entscheider.
+In einer Supply Chain können jedoch unterschiedliche Akteure
+unterschiedliche Kosten tragen und unterschiedliche Anreize besitzen.
+
+**Frage für die nächste Einheit:** Warum können rationale, lokale
+Bestellentscheidungen entlang einer Lieferkette zu stark schwankenden
+Bestellungen führen?
+
+$$\Longrightarrow
+\quad
+\text{Bullwhip-Effekt und Koordination in Supply Chains}$$
