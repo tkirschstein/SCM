@@ -347,8 +347,7 @@ Zwei möglische Situation aus Sicht des Lieferanten
 :::
 
 ::: {.fragment .fade-up}
-**Gesamtdeckungsbeitrag:** $\begin{align} P= & D \cdot c^u - (q - D) \cdot c^o \\
-=& D \cdot (c^u + c^o) - q \cdot c^o \end{align}$
+**Gesamtdeckungsbeitrag:** $P(D,q)=  D \cdot c^u - (q - D) \cdot c^o$
 :::
 
 :::
@@ -369,8 +368,7 @@ Zwei möglische Situation aus Sicht des Lieferanten
 :::
 
 ::: {.fragment .fade-up}
-**Gesamtdeckungsbeitrag:** $\begin{align} P=& q \cdot c^u - (D - q) \cdot c^u\\
-=&  (2 \cdot q - D) \cdot c^u \end{align}$
+**Gesamtdeckungsbeitrag:** $P(D,q) = q \cdot c^u $
 :::
 :::
 :::
@@ -405,15 +403,17 @@ Erwartetes Ergebnis
 
 
 ::::: columns
-::: {.column width="50%"}
-Setze $q=40$ Sushi-Boxen
+::: {.column width="55%"}
+
+**Setze $q=40$ Sushi-Boxen**
+
 ::: {.smaller-text}
 | Nachfrage $D$ | Wahrsch. $P(D=d)$ | Überbestand $q-D$ |  Fehlmenge $q-D$ |  Deckungs-\n beitrag $P$ |
 |------:|------:|------:|-----:|------:|
 | 30 Sushi-Boxen | 0,20 | 10 |  0 | 120 €
 | 40 Sushi-Boxen | 0,35 | 0  |  0 | 200 €
-| 50 Sushi-Boxen | 0,30 | 0  | 10 | 170 €
-| 60 Sushi-Boxen | 0,15 | 0  | 20 | 140 €
+| 50 Sushi-Boxen | 0,30 | 0  | 10 | 150 €
+| 60 Sushi-Boxen | 0,15 | 0  | 20 | 100 €
 :::
 
 ::: {.vspace-2}
@@ -421,97 +421,246 @@ Setze $q=40$ Sushi-Boxen
 
 ::: {.fragment .fade-up}
 **erwarteter Gesamtdeckungsbeitrag:** $\begin{align} E(P|q=40)= & 0.2 \cdot 120 + 0.35 \cdot 200 + \\
-& 0.30 \cdot 170 + 0.15 \cdot 140= 166 \end{align}$
+& 0.30 \cdot 150 + 0.15 \cdot 100= 154 \end{align}$
 :::
 
 :::
 
 
-::: {.column width="30%"}
-::: {.fragment .fade-up}
-
-:::
-
-
-::: {.vspace-2}
-:::
+::: {.column width="45%"}
 
 ::: {.fragment .fade-up}
+**$E(P|q)$ für alle $q$**
 
-:::
-
-:::
-
-:::::
-
-
-## Das Grundproblem
-
-::::: columns
-::: {.column width="58%"}
-Ein Händler muss **vor Realisation der Nachfrage** einmalig eine
-Bestellmenge $Q$ festlegen.
-
-- Nachfrage $D$ ist unsicher.
-- Nachbestellung ist nicht möglich oder nicht wirtschaftlich.
-- Nicht verkaufte Einheiten besitzen nur einen Restwert.
-- Nicht bediente Nachfrage führt zu entgangenem Deckungsbeitrag und
-  gegebenenfalls weiteren Kosten.
-:::
-
-::: {.column width="42%"}
 ```{r}
-#| fig-height: 4
-#| fig-width: 5.5
-#| fig-alt: "Zeitlicher Ablauf des Newsvendor-Problems"
+#| fig-height: 4.75
+#| fig-width: 5
+#| out-width: 100%
+#| fig-align: center
+#| fig-alt: "Erwarteter Deckungsbeitrag für unterschiedliche Bestellmengen von Sushi-Boxen"
 
-timeline <- tibble(
-  zeitpunkt = c(1, 2, 3),
-  label = c(
-    "Bestellung\nQ festlegen",
-    "Nachfrage\nD realisiert sich",
-    "Verkauf und\nRestwert"
+# Nachfrageverteilung aus dem Sushi-Fallbeispiel
+demand <- c(30, 40, 50, 60)
+probability <- c(0.20, 0.35, 0.30, 0.15)
+
+# Parameter des Fallbeispiels
+p <- 10  # Verkaufspreis je Sushi-Box
+c <- 5  # Herstell- und Lieferkosten je Sushi-Box
+v <- 2  # Restwert je nicht verkaufter Sushi-Box
+
+# Erwarteter Deckungsbeitrag bzw. erwarteter Periodengewinn
+expected_profit <- function(order_quantity) {
+  realised_profit <- p * pmin(order_quantity, demand) +
+    v * pmax(order_quantity - demand, 0) -
+    c * order_quantity -
+    (p-c) * pmax(demand - order_quantity, 0)
+
+  sum(probability * realised_profit)
+}
+
+profit_table <- tibble(
+  bestellmenge = demand,
+  erwarteter_deckungsbeitrag = sapply(demand, expected_profit)
+) |>
+  mutate(
+    optimal = erwarteter_deckungsbeitrag == max(erwarteter_deckungsbeitrag),
+    hover_text = paste0(
+      "<b>Bestellmenge: ", bestellmenge, " Sushi-Boxen</b>",
+      "<br>Erwarteter Deckungsbeitrag: ",
+      number(
+        erwarteter_deckungsbeitrag,
+        accuracy = 0.01,
+        decimal.mark = ",",
+        big.mark = "."
+      ),
+      " EUR",
+      ifelse(
+        optimal,
+        "<br><span style='color:#E85D04'><b>Optimale Bestellmenge</b></span>",
+        ""
+      )
+    )
   )
-)
 
-ggplot(timeline, aes(x = zeitpunkt, y = 0)) +
-  geom_segment(
-    aes(x = 1, xend = 3, y = 0, yend = 0),
-    linewidth = 1,
-    colour = "#6B7280"
-  ) +
-  geom_point(
-    size = 6,
-    colour = "#00843D"
-  ) +
-  geom_text(
-    aes(label = label),
-    vjust = -1.2,
-    size = 5
-  ) +
-  annotate(
-    "segment",
-    x = 1.35,
-    xend = 1.65,
-    y = 0,
-    yend = 0,
-    arrow = grid::arrow(length = grid::unit(0.25, "cm")),
-    colour = "#6B7280"
-  ) +
-  annotate(
-    "segment",
-    x = 2.35,
-    xend = 2.65,
-    y = 0,
-    yend = 0,
-    arrow = grid::arrow(length = grid::unit(0.25, "cm")),
-    colour = "#6B7280"
-  ) +
-  coord_cartesian(ylim = c(-0.5, 0.7)) +
-  theme_void()
+optimal_row <- profit_table |>
+  filter(optimal)
+
+plot_ly(
+  data = profit_table,
+  x = ~bestellmenge,
+  y = ~erwarteter_deckungsbeitrag,
+  type = "scatter",
+  mode = "lines+markers",
+  text = ~hover_text,
+  hoverinfo = "text",
+  line = list(
+    color = "#00843D",
+    width = 4
+  ),
+  marker = list(
+    color = "#00843D",
+    size = 13,
+    line = list(
+      color = "white",
+      width = 2
+    )
+  ),
+  showlegend = FALSE
+) |>
+  add_markers(
+    data = optimal_row,
+    x = ~bestellmenge,
+    y = ~erwarteter_deckungsbeitrag,
+    text = ~hover_text,
+    hoverinfo = "text",
+    marker = list(
+      color = "#E85D04",
+      size = 19,
+      line = list(
+        color = "white",
+        width = 3
+      )
+    ),
+    inherit = FALSE,
+    showlegend = FALSE
+  ) |>
+  add_annotations(
+    x = optimal_row$bestellmenge,
+    y = optimal_row$erwarteter_deckungsbeitrag,
+    text = paste0(
+      "<b>Optimum:</b> ",
+      optimal_row$bestellmenge,
+      " Boxen"
+    ),
+    showarrow = TRUE,
+    arrowhead = 2,
+    ax = 55,
+    ay = -45,
+    font = list(
+      size = 17,
+      color = "#E85D04"
+    ),
+    arrowcolor = "#E85D04",
+    bgcolor = "rgba(255,255,255,0.9)",
+    bordercolor = "#E85D04",
+    borderwidth = 1
+  ) |>
+  layout(
+    margin = list(
+      l = 80,
+      r = 25,
+      t = 25,
+      b = 70
+    ),
+    xaxis = list(
+      title = list(
+        text = "Bestellmenge q"
+      ),
+      tickmode = "array",
+      tickvals = profit_table$bestellmenge,
+      ticktext = profit_table$bestellmenge,
+      fixedrange = TRUE,
+      zeroline = FALSE
+    ),
+    yaxis = list(
+      title = list(
+        text = "Erwarteter Deckungsbeitrag E(P(Q)) in €"
+      ),
+      tickprefix = "",
+      ticksuffix = " EUR",
+      separatethousands = TRUE,
+      fixedrange = TRUE,
+      zeroline = FALSE
+    ),
+    hoverlabel = list(
+      bgcolor = "white",
+      bordercolor = "#00843D",
+      font = list(
+        size = 16,
+        color = "#1F2937"
+      )
+    ),
+    paper_bgcolor = "rgba(0,0,0,0)",
+    plot_bgcolor = "rgba(0,0,0,0)",
+    width = 600,
+    height = 450
+  ) |>
+  config(
+    displayModeBar = FALSE,
+    responsive = TRUE
+  )
 ```
 :::
+
+::: {.fragment .fade-up}
+$\rightarrow$ maximaler erwarteter Deckungsbeitrag bei $q=50$ mit `r round(expected_profit(50),2)` € pro Tag
+:::
+
+:::
+
 :::::
+
+------------------------------------------------------------------------------
+
+## Newsvendormodell
+::: slide-subtitle
+Herleitung der Zielfunktion
+::: 
+
+::::: columns
+::: {.column width="50%"}
+**Überdeckung** $q > D$
+
+$$P(D,q) = D \cdot c^u - (q-D)\cdot c^o$$
+
+$$\Downarrow$$
+:::
+
+::: {.column width="50%"}
+**Unterdeckung** $q < D$
+
+$$P(D,q) = q \cdot c^u$$
+
+$$\Downarrow$$
+:::
+:::::
+
+::: {.small-text}
+
+::: {.fragment .fade-up}
+**einheitliche Zielfunktion**: 
+mit $(q-D)^+ = \max(0,q-D)$, $(D-q)^+ = \max(0,D-q)$ und $\min(D,q) = D - (D-q)^+$ folgt
+$$\begin{align} P(D,q) =& \min(D,q) \cdot c^u - (q-D)^+ \cdot c^o \\
+= & (D-(D-q)^+) \cdot c^u - (q-D)^+ \cdot c^o \\
+= & \underset{\text{Deckungsbeitrag}}{D \cdot c^u} - \underset{\text{ entgangener DB}}{(D-q)^+ \cdot c^u} - \underset{\text{Verwertungsverlust}}{(q-D)^+ \cdot c^o}
+\end{align}
+$$
+
+<!-- $\Rightarrow$ erwarteter Profit:  -->
+
+
+:::
+:::
+
+------------------------------------------------------------------------------
+
+## Newsvendor-Modell {#newsvendor-formal-model}
+::: slide-subtitle
+Formales Modell
+::: 
+
+::: {.callout-note appearance="minimal" icon=false}
+## Problembeschreibung 
+
+Suche die Bestellmenge $q$, die den erwarteten Profit maximiert oder die erwarteten Kosten minimiert:
+$$ \underset{q}{\max} E(P(q)) = \mu \cdot c^u - E((D-q)^+) \cdot c^u - E((q-D)^+) \cdot c^o \quad \Leftrightarrow \quad \underset{q}{\min} E(C(q)) =  E((D-q)^+) \cdot c^u + E((q-D)^+) \cdot c^o $$
+:::
+
+
+
+
+
+------------------------------------------------------------------------------
 
 ## Typische Anwendungen
 
