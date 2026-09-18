@@ -1,13 +1,7 @@
 ---
 title: "Das Newsvendor-Modell"
 subtitle: "Bestellentscheidungen bei unsicherer Nachfrage"
-execute:
-  echo: false
-  warning: false
-  message: false
-editor: 
-  markdown: 
-    wrap: 72
+author: "Prof. Dr. Thomas Kirschstein"
 ---
 
 ## Unsicherheit in Supply Chains 
@@ -18,6 +12,14 @@ editor:
 
 ```{r}
 #| include: false
+
+source(
+  file.path(
+    quarto::quarto_project_dir(),
+    "R",
+    "scm_functions.R"
+  )
+)
 
 library(ggplot2)
 library(dplyr)

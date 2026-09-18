@@ -1,5 +1,6 @@
 ---
 title: "Unsicherheit in Supply Chains: Pooling"
+author: "Prof. Dr. Thomas Kirschstein"
 ---
 
 ```{r}
@@ -7,8 +8,8 @@ title: "Unsicherheit in Supply Chains: Pooling"
 #| warning: false
 #| message: false
 
-source("../../R/scm_functions.R")
 
+library(quarto)
 library(readr)
 library(tidyverse)
 library(plotly)
@@ -17,6 +18,14 @@ library(kableExtra)
 library(planr)
 library(dplyr)
 library(MASS)
+
+source(
+  file.path(
+    quarto::quarto_project_dir(),
+    "R",
+    "scm_functions.R"
+  )
+)
 ```
 
 ---

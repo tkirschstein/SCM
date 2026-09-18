@@ -1,6 +1,30 @@
 ---
 title: "Ziele, Zielkonflikte und Logistikkosten"
+subtitle: "Bestellentscheidungen bei unsicherer Nachfrage"
+author: "Prof. Dr. Thomas Kirschstein"
 ---
+
+```{r}
+#| echo: false
+#| warning: false
+#| message: false
+
+# Funktionen aus scm_functions.R einbinden
+source(
+  file.path(
+    quarto::quarto_project_dir(),
+    "R",
+    "scm_functions.R"
+  )
+)
+
+library(tidyverse)
+library(leaflet)
+library(readxl)
+library(dplyr)
+library(plotly)
+
+```
 
 ## Grundlagen des Supply Chain Managements {#slide-52}
 

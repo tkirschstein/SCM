@@ -2,21 +2,6 @@
 title: "Der Bullwhip-Effekt und das Beergame"
 subtitle: "Koordination von Bestellentscheidungen in Supply Chains"
 author: "Prof. Dr. Thomas Kirschstein"
-format:
-  revealjs:
-    slide-number: c/t
-    chalkboard: true
-    incremental: true
-    transition: slide
-    center: false
-    html-math-method: mathjax
-execute:
-  echo: false
-  warning: false
-  message: false
-editor:
-  markdown:
-    wrap: 72
 ---
 
 ```{r}
@@ -34,7 +19,13 @@ library(xml2)
 library(datawizard)
 
 # Funktionen aus scm_functions.R einbinden
-source("../../R/scm_functions.R")
+source(
+  file.path(
+    quarto::quarto_project_dir(),
+    "R",
+    "scm_functions.R"
+  )
+)
 
 set.seed(1234)
 

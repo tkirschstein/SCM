@@ -1,14 +1,7 @@
 ---
 title: "Wertschöpfung, strategische Fertigung und Strategic Fit"
-subtitle: "Supply Chain Management"
+subtitle: "Prozesse & Strategien"
 author: "Prof. Dr. Thomas Kirschstein"
-format:
-  revealjs:
-    slide-number: true
-    footer: "Supply Chain Management"
-    chalkboard: true
-    smaller: true
-    scrollable: true
 ---
 
 
@@ -18,7 +11,13 @@ format:
 #| message: false
 
 # Funktionen aus scm_functions.R einbinden
-source("../../R/scm_functions.R")
+source(
+  file.path(
+    quarto::quarto_project_dir(),
+    "R",
+    "scm_functions.R"
+  )
+)
 
 library(tidyverse)
 library(leaflet)
