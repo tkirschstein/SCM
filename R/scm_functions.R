@@ -91,6 +91,196 @@ arrow_ann <- function(x, y, ax, ay, dash = FALSE,
 
 
 # 0. Inventor management ─────────────────────────────────────────────────────
+
+#' Simulation einer periodischen (t, S)-Bestandspolitik
+#'
+#' Zeitliche Reihenfolge innerhalb einer Periode k:
+#'   1. Eingang der Bestellung aus Periode k - wbz
+#'   2. Realisierung des Bedarfs
+#'   3. Fortschreibung von Nettobestand und physischem Bestand
+#'   4. Ermittlung der offenen Bestellungen
+#'   5. Bestellentscheidung in jeder t-ten Periode
+#'
+#' @param bedarf Numerischer Vektor der periodischen Bedarfe d[k].
+#' @param t Positives ganzzahliges Bestell- bzw. Überprüfungsintervall.
+#' @param S Order-up-to-Level beziehungsweise Zielbestand.
+#' @param anfangsbestand Physischer Anfangsbestand vor Periode 1.
+#' @param wbz Feste Wiederbeschaffungszeit in ganzen Perioden.
+#' @param backorders Logisch. Bei TRUE werden Fehlmengen als Backorders
+#'   fortgeschrieben. Bei FALSE handelt es sich um Lost Sales.
+#'
+#' @return Ein tibble mit Bestands-, Bestell- und Lieferinformationen.
+#'
+#' @examples
+#' simuliere_tS(
+#'   bedarf = c(8, 9, 13, 16, 12, 8, 9, 11),
+#'   t = 2,
+#'   S = 30,
+#'   anfangsbestand = 20,
+#'   wbz = 2
+#' )
+simuliere_tS <- function(bedarf,
+                         t,
+                         S,
+                         anfangsbestand,
+                         wbz,
+                         backorders = TRUE) {
+  
+  if (!is.numeric(bedarf) || length(bedarf) == 0L) {
+    stop("'bedarf' muss ein nicht-leerer numerischer Vektor sein.")
+  }
+  
+  if (any(is.na(bedarf)) || any(bedarf < 0)) {
+    stop("'bedarf' darf keine fehlenden oder negativen Werte enthalten.")
+  }
+  
+  if (length(t) != 1L || is.na(t) || t < 1 || t != as.integer(t)) {
+    stop("'t' muss eine positive ganze Zahl sein.")
+  }
+  
+  if (length(S) != 1L || is.na(S) || S < 0) {
+    stop("'S' muss eine nicht-negative Zahl sein.")
+  }
+  
+  if (length(anfangsbestand) != 1L ||
+      is.na(anfangsbestand) ||
+      anfangsbestand < 0) {
+    stop("'anfangsbestand' muss eine nicht-negative Zahl sein.")
+  }
+  
+  if (length(wbz) != 1L ||
+      is.na(wbz) ||
+      wbz < 0 ||
+      wbz != as.integer(wbz)) {
+    stop("'wbz' muss eine nicht-negative ganze Zahl sein.")
+  }
+  
+  n_perioden <- length(bedarf)
+  
+  periode <- seq_len(n_perioden)
+  
+  liefermenge <- numeric(n_perioden)
+  bestellmenge <- numeric(n_perioden)
+  offene_bestellungen <- numeric(n_perioden)
+  
+  physischer_bestand_vor_bedarf <- numeric(n_perioden)
+  physischer_bestand <- numeric(n_perioden)
+  
+  nettobestand_vor_bestellung <- numeric(n_perioden)
+  nettobestand <- numeric(n_perioden)
+  
+  fehlmenge <- numeric(n_perioden)
+  disponibler_bestand_vor_bestellung <- numeric(n_perioden)
+  disponibler_bestand_nach_bestellung <- numeric(n_perioden)
+  
+  # n_0 ist bei Backorders identisch mit dem physischen Anfangsbestand.
+  netto_vorperiode <- anfangsbestand
+  
+  for (k in periode) {
+    
+    # 1. Lieferung zu Periodenbeginn:
+    # Bestellung o_(k-wbz) trifft in Periode k ein.
+    if (wbz == 0L) {
+      liefermenge[k] <- 0
+    } else if (k > wbz) {
+      liefermenge[k] <- bestellmenge[k - wbz]
+    }
+    
+    # 2. Nettobestand nach Lieferung und Bedarfsrealisierung.
+    nettobestand_vor_bestellung[k] <-
+      netto_vorperiode + liefermenge[k] - bedarf[k]
+    
+    # Bei Backordering wird der Nettobestand einschließlich Fehlmengen
+    # fortgeschrieben. Bei Lost Sales geht nicht bedienter Bedarf verloren.
+    if (backorders) {
+      nettobestand[k] <- nettobestand_vor_bestellung[k]
+    } else {
+      nettobestand[k] <- max(
+        0,
+        nettobestand_vor_bestellung[k]
+      )
+    }
+    
+    # Physischer Bestand ist nie negativ.
+    physischer_bestand[k] <- max(
+      0,
+      nettobestand[k]
+    )
+    
+    # Der Bestand unmittelbar vor Bedarfsrealisierung ergibt sich aus
+    # dem Nettobestand der Vorperiode zuzüglich der eingetroffenen Menge.
+    physischer_bestand_vor_bedarf[k] <- max(
+      0,
+      netto_vorperiode + liefermenge[k]
+    )
+    
+    # Fehlmenge ist nur bei Backordering relevant.
+    fehlmenge[k] <- if (backorders) {
+      max(0, -netto_vorperiode - liefermenge[k] + bedarf[k])
+    } else {
+      max(0, -netto_vorperiode - liefermenge[k] + bedarf[k])
+    }
+    
+    # 3. Noch offene Bestellungen vor der Neubestellung:
+    # Alle Bestellungen der letzten wbz Perioden, die noch nicht
+    # eingetroffen sind.
+    if (wbz == 0L) {
+      offene_bestellungen[k] <- 0
+    } else {
+      start_offen <- max(1L, k - wbz + 1L)
+      ende_offen <- k - 1L
+      
+      offene_bestellungen[k] <- if (start_offen <= ende_offen) {
+        sum(bestellmenge[start_offen:ende_offen])
+      } else {
+        0
+      }
+    }
+    
+    # 4. Disponibler Bestand bzw. Bestandsposition vor Neubestellung.
+    disponibler_bestand_vor_bestellung[k] <-
+      nettobestand[k] + offene_bestellungen[k]
+    
+    # 5. Bestellentscheidung:
+    # In Perioden 1, 1+t, 1+2t, ... wird auf S aufgefüllt.
+    if ((k - 1L) %% t == 0L) {
+      bestellmenge[k] <- max(
+        0,
+        S - disponibler_bestand_vor_bestellung[k]
+      )
+    }
+    
+    # Bestandsposition unmittelbar nach der Bestellung.
+    disponibler_bestand_nach_bestellung[k] <-
+      disponibler_bestand_vor_bestellung[k] + bestellmenge[k]
+    
+    # Fortschreibung für die nächste Periode.
+    netto_vorperiode <- nettobestand[k]
+  }
+  
+  tibble::tibble(
+    Periode = periode,
+    Bedarf = bedarf,
+    Lieferung = liefermenge,
+    Physischer_Bestand_vor_Bedarf = physischer_bestand_vor_bedarf,
+    Physischer_Bestand = physischer_bestand,
+    Nettobestand = nettobestand,
+    Fehlmenge = fehlmenge,
+    Offene_Bestellungen = offene_bestellungen,
+    Disponibler_Bestand_vor_Bestellung =
+      disponibler_bestand_vor_bestellung,
+    Bestellmenge = bestellmenge,
+    Disponibler_Bestand_nach_Bestellung =
+      disponibler_bestand_nach_bestellung,
+    Bestellperiode = (periode - 1L) %% t == 0L
+  )
+}
+
+
+
+
+
+
 #' (t,S) Inventory control function
 #'
 #' calculates inventory stocks for a (t,S)-controlled storage
@@ -122,6 +312,36 @@ tS.lager <- function(d, t, S, l.ini,  wbz){
     
     tmp.mat[i, "dis.LB"] <- tmp.mat[i-1, "dis.LB"] - tmp.mat[i, "Bedarf"] + tmp.mat[i, "Bestellung"]
     tmp.mat[i, "Lagerbestand"] <- tmp.mat[i-1, "Lagerbestand"] - tmp.mat[i, "Bedarf"] + tmp.mat[i, "Lieferung"]
+    
+  }
+  return(tmp.mat[2:(n+1),]) 
+}
+
+tS.lager.new <- function(d, t, S, l.ini,  wbz){
+  n <- length(d)
+  tmp.mat <- matrix(0, nrow= n+1+wbz, ncol= 7 )
+  colnames(tmp.mat) <- c("Bedarf","Lagerbestand","Nettobestand", "offene_Bestellungen", "Bestellmenge", "Lieferung", "disp_LB", "disp_LB_vor_Nachfrage")
+  
+  tmp.mat[,"Bedarf"] <- c(0,d, rep(0,wbz))
+  tmp.mat[1,"Lagerbestand"] <- tmp.mat[1,"dis.LB"] <- tmp.mat[1,"Nettobestand"] <- l.ini
+  tmp.mat[1,"offene_Bestellungen"] <- 0
+  
+  for(i in 2:(n+1)){
+    
+    tmp.mat[i, "Nettobestand"] <- tmp.mat[i-1, "Nettobestand"] - tmp.mat[i, "Bedarf"] + tmp.mat[i, "Lieferung"]
+    
+    tmp.mat[i, "offene_Bestellungen"] <- tmp.mat[i-1, "offene_Bestellungen"] - tmp.mat[i, "Lieferung"]
+    
+    
+    if((i-1) %% t == 0){
+      tmp.mat[i, "Bestellung"] <- S - tmp.mat[i-1, "dis.LB"] #+ tmp.mat[i, "Bedarf"] + tmp.mat[i, "Lieferung"]
+      tmp.mat[i+wbz, "Lieferung"] <- tmp.mat[i, "Bestellung"]
+    }
+    
+    tmp.mat[i, "dis.LB"] <- tmp.mat[i-1, "dis.LB"] - tmp.mat[i, "Bedarf"] + tmp.mat[i, "Bestellung"]
+    
+    
+    tmp.mat[i, "Lagerbestand"] <- max(0,tmp.mat[i, "Nettobestand"])
     
   }
   return(tmp.mat[2:(n+1),]) 

@@ -10,7 +10,7 @@ editor:
     wrap: 72
 ---
 
-## Unsicherheit in Supply Chains {#slide-158}
+## Unsicherheit in Supply Chains 
 
 - Pooling
 - **Newsvendor-Modell**
