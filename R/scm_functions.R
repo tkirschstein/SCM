@@ -88,7 +88,50 @@ arrow_ann <- function(x, y, ax, ay, dash = FALSE,
     arrowdash = if (dash) "dash" else "solid"
   )
 }
-
+kable_zeilenweise <- function(data,
+                              fragment_typ = "fade-up",
+                              start_index = 1,
+                              ...) {
+  
+  tab_html <- knitr::kable(
+    data,
+    format = "html",
+    escape = FALSE,
+    ...
+  )
+  
+  doc <- xml2::read_html(as.character(tab_html))
+  
+  zeilen <- xml2::xml_find_all(
+    doc,
+    ".//tbody/tr"
+  )
+  
+  for (i in seq_along(zeilen)) {
+    
+    xml2::xml_attr(
+      zeilen[i],
+      "class"
+    ) <- paste(
+      "fragment",
+      fragment_typ
+    )
+    
+    xml2::xml_attr(
+      zeilen[i],
+      "data-fragment-index"
+    ) <- start_index + i - 1
+  }
+  
+  knitr::asis_output(
+    as.character(
+      xml2::xml_find_first(
+        doc,
+        ".//table"
+      )
+    )
+  )
+}
 
 # 0. Inventor management ─────────────────────────────────────────────────────
 

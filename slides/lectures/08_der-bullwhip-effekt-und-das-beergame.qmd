@@ -28,6 +28,10 @@ library(purrr)
 library(ggplot2)
 library(scales)
 library(plotly)
+library(knitr)
+library(kableExtra)
+library(xml2)
+library(datawizard)
 
 # Funktionen aus scm_functions.R einbinden
 source("../../R/scm_functions.R")
@@ -487,357 +491,236 @@ Bestellentscheidungen und deren Auswirkungen
 
 Die Parameter der Nachfrageverteilung werden durch statistische Schätzverfahren (Schätzer) ermittelt, wie dem (gleitenden) Mittelwert und der empirischen Standardabweichung: 
 
-$$ \hat{\mu} = \frac{1}{T} \sum_{\tau=t-T}^{t-1} d_\tau \qquad \qquad \hat{\sigma} = \sqrt{ \frac{1}{T-1} \sum_{\tau=t-T}^{t-1} (d_\tau - \hat{\mu})^2 } $$
+$\hat{\mu} = \frac{1}{T} \sum_{\tau=t-T}^{t-1} d_\tau \qquad \qquad \hat{\sigma} = \sqrt{ \frac{1}{T-1} \sum_{\tau=t-T}^{t-1} (d_\tau - \hat{\mu})^2 } \rightarrow \;\text{Prognosefehler}$ 
 :::
 
-
-
-------------------------------------------------------------------------------
-
-## Wie sieht das aus
+::: {.smaller-text}
 
 ```{r}
-#| fig-width: 12
-#| fig-height: 6
+#| echo: false
+#| results: asis
 
-daten_sushi <- tibble(
-  Woche = 1:10,
-  Endkundennachfrage = c(
-    100, 100, 105, 105, 105,
-    105, 105, 105, 105, 105
+# ---------------------------------------------------------------
+# Parameter der Bestands- und Prognosepolitik
+# ---------------------------------------------------------------
+
+n_perioden <- length(dem)
+
+fenster <- 3L
+wbz <- 2L
+servicegrad <- 0.95
+z_alpha <- qnorm(servicegrad)
+
+anfangsbestand <- i.ini
+
+# Der Zielbestand wird in jeder Periode neu bestimmt.
+# Dadurch lässt sich die direkte Wirkung der Parameterschätzung
+# auf die Bestellentscheidung illustrieren.
+bestellintervall <- 1L
+
+# ---------------------------------------------------------------
+# Rollierende Parameterschätzung
+# Für die Entscheidung in Periode t werden nur die Bedarfe der
+# vorherigen Perioden verwendet:
+# mu_hat[t]    = mean(d[t-fenster], ..., d[t-1])
+# sigma_hat[t] = sd(d[t-fenster], ..., d[t-1])
+# In den ersten Perioden wird mit allen bis dahin verfügbaren
+# Beobachtungen gearbeitet. Bei nur einer Beobachtung wird
+# sigma_hat konservativ als 0 gesetzt.
+# ---------------------------------------------------------------
+
+mu_hat <- numeric(n_perioden)
+sigma_hat <- numeric(n_perioden)
+n_beobachtungen <- integer(n_perioden)
+
+for (t in seq_len(n_perioden)) {
+
+  index_vorperiode <- seq_len(t - 1L)
+
+  if (length(index_vorperiode) == 0L) {
+    beobachtungen <- dem[2]
+  } else {
+    index_fenster <- tail(
+      index_vorperiode,
+      min(fenster, length(index_vorperiode))
+    )
+
+    beobachtungen <- dem[index_fenster]
+  }
+
+  n_beobachtungen[t] <- length(beobachtungen)
+  mu_hat[t] <- mean(beobachtungen)
+
+  sigma_hat[t] <- if (length(beobachtungen) > 1L) {
+    sd(beobachtungen)
+  } else {
+    1
+  }
+}
+
+# ---------------------------------------------------------------
+# Dynamischer Order-up-to-Level
+# Bei täglicher Überprüfung gilt R = 1.
+# Die Schutzperiode beträgt daher:
+# P = R + L = 1 + wbz
+# ---------------------------------------------------------------
+
+schutzperiode <- 1L + wbz
+
+sicherheitsbestand <- z_alpha * sigma_hat * sqrt(schutzperiode)
+
+S_t <- round(schutzperiode * mu_hat + sicherheitsbestand)
+
+# ---------------------------------------------------------------
+# Simulation der täglichen Bestellentscheidungen
+# Reihenfolge innerhalb der Periode t:
+# 1. Lieferung q[t-wbz] trifft ein.
+# 2. Bedarf dem[t] wird realisiert.
+# 3. Physischer Bestand und Nettobestand werden aktualisiert.
+# 4. Offene Bestellungen werden berücksichtigt.
+# 5. Es wird auf den dynamischen Zielbestand S_t aufgefüllt.
+# ---------------------------------------------------------------
+
+liefermenge <- numeric(n_perioden)
+bestellmenge <- numeric(n_perioden)
+offene_bestellungen <- numeric(n_perioden)
+
+physischer_bestand <- numeric(n_perioden)
+nettobestand <- numeric(n_perioden)
+disponibler_bestand <- numeric(n_perioden)
+
+netto_vorperiode <- anfangsbestand
+
+for (t in seq_len(n_perioden)) {
+
+  liefermenge[t] <- if (t > wbz) {
+    bestellmenge[t - wbz]
+  } else {
+    0
+  }
+
+  nettobestand[t] <- netto_vorperiode +
+    liefermenge[t] -
+    dem[t]
+
+  physischer_bestand[t] <- max(
+    0,
+    nettobestand[t]
+  )
+
+  offene_bestellungen[t] <- if (wbz == 0L) {
+    0
+  } else {
+    index_offen <- seq.int(
+      from = max(1L, t - wbz + 1L),
+      to = t - 1L
+    )
+
+    if (length(index_offen) == 0L || t == 1L) {
+      0
+    } else {
+      sum(bestellmenge[index_offen])
+    }
+  }
+
+  disponibler_bestand[t] <- nettobestand[t] +
+    offene_bestellungen[t]
+
+  bestellmenge[t] <- max(
+    0,
+    S_t[t] - disponibler_bestand[t]
+  )
+
+  netto_vorperiode <- nettobestand[t]
+}
+
+daten_order_decisions <- tibble(
+  Periode = seq_len(n_perioden),
+  Bedarf = dem,
+  Anzahl_Beobachtungen = n_beobachtungen,
+  Mittelwert_Schaetzung = mu_hat,
+  Standardabweichung_Schaetzung = sigma_hat,
+  Sicherheitsbestand = sicherheitsbestand,
+  Zielbestand = S_t,
+  Liefermenge = liefermenge,
+  Physischer_Bestand = physischer_bestand,
+  Nettobestand = nettobestand,
+  Offene_Bestellungen = offene_bestellungen,
+  Disponibler_Bestand = disponibler_bestand,
+  Bestellmenge = bestellmenge
+)
+
+sd_bedarf <- sd(daten_order_decisions$Bedarf)
+
+sd_bestellung <- sd(daten_order_decisions$Bestellmenge)
+
+bullwhip_mass <- var(daten_order_decisions$Bestellmenge) /
+  var(daten_order_decisions$Bedarf)
+
+sd_vergleich <- tibble(
+  Groesse = c(
+    "Endkunden-Nachfrage d[t]",
+    "Bestellmenge q[t]"
   ),
-  Bestellung_Filiale = c(
-    100, 100, 118, 122, 112,
-    105, 101, 103, 105, 105
+  Standardabweichung = c(
+    sd_bedarf,
+    sd_bestellung
   ),
-  Bestellung_Zentrallager = c(
-    100, 100, 100, 128, 145,
-    132, 115, 103, 97, 105
+  Farbe = c(
+    farbe_nachfrage,
+    farbe_bestellung
   )
 )
 
-p_sushi_bullwhip <- plot_ly()
-
-p_sushi_bullwhip <- p_sushi_bullwhip |>
-  add_lines(
-    data = daten_sushi,
-    x = ~Woche,
-    y = ~Endkundennachfrage,
-    name = "Endkundennachfrage",
-    line = list(
-      colour = "#1F4E79",
-      width = 4
-    )
+daten_order_decisions |>
+  select(Periode, Bedarf, Mittelwert_Schaetzung,Standardabweichung_Schaetzung, Zielbestand, Bestellmenge) |> 
+  transmute(
+    Tag = Periode,
+    'Bedarf d[t]' = round(Bedarf,1),
+    `Mittelwert μ̂[t]` = round(Mittelwert_Schaetzung,1),
+    `Standardabweichung σ̂[t]` = round(Standardabweichung_Schaetzung, 1),
+    `Zielbestand S[t]` = round(Zielbestand, 1),
+    `Bestellung q[t]` = round(Bestellmenge, 1)
   ) |>
-  add_markers(
-    data = daten_sushi,
-    x = ~Woche,
-    y = ~Endkundennachfrage,
-    name = "Endkundennachfrage",
-    marker = list(
-      colour = "#1F4E79",
-      size = 8
-    ),
-    showlegend = FALSE
-  ) |>
-  add_lines(
-    data = daten_sushi,
-    x = ~Woche,
-    y = ~Bestellung_Filiale,
-    name = "Bestellung der Filiale",
-    line = list(
-      colour = "#ED7D31",
-      width = 3
-    )
-  ) |>
-  add_markers(
-    data = daten_sushi,
-    x = ~Woche,
-    y = ~Bestellung_Filiale,
-    name = "Bestellung der Filiale",
-    marker = list(
-      colour = "#ED7D31",
-      size = 7
-    ),
-    showlegend = FALSE
-  ) |>
-  add_lines(
-    data = daten_sushi,
-    x = ~Woche,
-    y = ~Bestellung_Zentrallager,
-    name = "Bestellung des Zentrallagers",
-    line = list(
-      colour = "#C00000",
-      width = 3
-    )
-  ) |>
-  add_markers(
-    data = daten_sushi,
-    x = ~Woche,
-    y = ~Bestellung_Zentrallager,
-    name = "Bestellung des Zentrallagers",
-    marker = list(
-      colour = "#C00000",
-      size = 7
-    ),
-    showlegend = FALSE
-  ) |>
-  layout(
-    title = list(
-      text = "5% mehr Endkundennachfrage – stark schwankende Bestellungen",
-      x = 0
-    ),
-    xaxis = list(
-      title = "Woche",
-      dtick = 1
-    ),
-    yaxis = list(
-      title = "Sushi-Boxen je Tag",
-      rangemode = "tozero"
-    ),
-    legend = list(
-      orientation = "h",
-      x = 0,
-      y = -0.2
-    ),
-    margin = list(
-      l = 70,
-      r = 30,
-      b = 80,
-      t = 70
-    ),
-    paper_bgcolor = "white",
-    plot_bgcolor = "white"
+  t() |> 
+  row_to_colnames(row = 1) |> 
+  kable_zeilenweise(
+    align = c("l", rep("r", n_perioden)  ),
+    digits = 1,
+    table.attr = 'class="table table-sm table-striped"'
   )
-
-p_sushi_bullwhip
 ```
 
-::: {.fragment .fade-up}
-
-Die Grafik ist ein stilisiertes Lehrbeispiel: Der Nachfrageanstieg
-beträgt lediglich $5\%$, während die Bestellung des Zentrallagers
-zeitweise von $100$ auf $145$ Boxen steigt.
-
-:::
-
-------------------------------------------------------------------------------
-
-## Was beobachtet der Lieferant?
-
-Der Sushi-Lieferant beobachtet nicht unmittelbar die
-Endkundennachfrage $d_t$.
-
-Er beobachtet die Bestellung des Zentrallagers $q_t$:
-
-$$
-q_t
-\neq
-d_t.
-$$
-
-Die Bestellung enthält mehrere Bestandteile:
-
-$$
-q_t
-=
-\text{erwarteter Bedarf}
-+
-\text{Bestandskorrektur}
-+
-\text{Sicherheitsbestandskorrektur}.
-$$
-
-::: {.fragment .fade-up}
-
-Der Lieferant könnte den Eindruck gewinnen, die Nachfrage nach
-Sushi-Boxen sei stark und instabil gestiegen.
-
 :::
 
 ::: {.fragment .fade-up}
-
-Tatsächlich haben sich jedoch vor allem die Bestands- und
-Bestellentscheidungen der vorgelagerten Stufen verändert.
-
-:::
-
-------------------------------------------------------------------------------
-
-## Der Bullwhip-Effekt im Sushi-Fall
-
-Der **Bullwhip-Effekt** liegt vor, wenn die Varianz der Bestellungen
-einer Stufe größer ist als die Varianz der Nachfrage der
-nachgelagerten Stufe:
-
-$$
-B
-=
-\frac{\operatorname{Var}(q_t)}
-{\operatorname{Var}(d_t)}.
-$$
-
-$$
-B
->
-1
-\quad \Rightarrow \quad
-\text{Bullwhip-Effekt}.
-$$
-
-Im Sushi-Fall:
-
-- Die Endkundennachfrage steigt moderat und dauerhaft.
-- Die Filiale erhöht ihre Bestellungen zusätzlich zur
-  Nachfrageänderung.
-- Das Zentrallager reagiert auf diese Bestellungen statt auf
-  tatsächliche Abverkaufsdaten.
-- Der Lieferant plant auf Basis einer verstärkten und verzerrten
-  Nachfrageinformation.
-
-------------------------------------------------------------------------------
-
-## Übergang zur Bestandssteuerung
-
-Die zentrale Frage für jede Stufe lautet:
-
-> Wie hoch muss der Zielbestand sein, damit die Nachfrage während der
-> Wiederbeschaffungszeit mit hoher Wahrscheinlichkeit gedeckt wird?
-
-Bei einem Überprüfungsintervall $R$ und einer festen
-Wiederbeschaffungszeit $L$ beträgt die Schutzperiode:
-
-$$
-P
-=
-R+L.
-$$
-
-Bei unabhängiger, normalverteilter Periodennachfrage gilt:
-
-$$
-SB
-=
-z_\alpha\sigma\sqrt{R+L}.
-$$
-
-$$
-S
-=
-(R+L)\mu
-+
-z_\alpha\sigma\sqrt{R+L}.
-$$
-
-::: {.fragment .fade-up}
-
-Wenn die Bestellvarianz durch Bullwhip steigt, steigt auch die
-geschätzte Standardabweichung $\sigma$ — und damit der erforderliche
-Sicherheitsbestand.
-
-:::
-
-
-
-
-
-
-
-
-
-
-
-------------------------------------------------------------------------------
-
-## Der Bullwhip-Effekt
-
-::: columns
-::: column{width="20%"}
-
-**Kunde**
-
-Endkundennachfrage $d_t$
-
-:::
-
-::: column{width="20%"}
-
-**Handel**
-
-Bestellung $q_t^{H}$
-
-:::
-
-::: column{width="20%"}
-
-**Großhandel**
-
-Bestellung $q_t^{G}$
-
-:::
-
-::: column{width="20%"}
-
-**Distributor**
-
-Bestellung $q_t^{D}$
-
-:::
-
-::: column{width="20%"}
-
-**Hersteller**
-
-Produktionsauftrag $q_t^{P}$
-
-:::
-:::
-
-$$
-\text{Kunde}
-\rightarrow
-\text{Handel}
-\rightarrow
-\text{Großhandel}
-\rightarrow
-\text{Distributor}
-\rightarrow
-\text{Hersteller}
-$$
-
-- Material fließt stromabwärts.
-- Bestellungen und Informationen fließen stromaufwärts.
-- Kleine Nachfrageschwankungen können sich stromaufwärts
-  verstärken.
-
----
-
+::: {.callout-important}
 ## Beobachtung
 
-Bei einem Bullwhip-Effekt gilt häufig:
+Die Schwankung der Nachfrage $\sigma_d=$ `r round(sd_vergleich$Standardabweichung[1],1)` ist deutlich kleiner als die Standardabweichung der Bestellmengen $\sigma_q=$ `r round(sd_vergleich$Standardabweichung[2],1)` $\rightarrow$ **zusätzliche Unsicherheit** für Lachsfilet-Lieferanten wird generiert
+::: 
+:::
 
-$$
-\operatorname{Var}(q_t^{P})
->
-\operatorname{Var}(q_t^{D})
->
-\operatorname{Var}(q_t^{G})
->
-\operatorname{Var}(q_t^{H})
->
-\operatorname{Var}(d_t)
-$$
 
-- Die Endkundennachfrage kann relativ stabil sein.
-- Die beobachteten Bestellungen schwanken dennoch stark.
-- Jede Stufe reagiert auf lokale Informationen, offene Bestellungen,
-  Lagerbestände und erwartete Lieferzeiten.
-- Die Summe lokal plausibler Entscheidungen kann eine instabile
-  Supply Chain erzeugen.
+------------------------------------------------------------------------------
 
----
+##  Bullwhip-Effekt
+::: slide-subtitle
+Definition & Illustration
+:::
 
-## Beispiel: Verstärkung
+::: {.callout-important}
+## Definition (Cachon/Terwich, 2022)
+
+The bullwhip effect is present in a supply chain if the variability of demand at one level of the supply chain is greater than the variability of demand at the next downstream level in the supply chain, where variability is  measured with the coefficient of variation.
+
+::: 
+
+:::: columns
+
+::: {.column width="60%"}
+
+**Typische Verläufe**
 
 ```{r}
 #| fig-width: 12
@@ -869,124 +752,214 @@ daten_bullwhip <- tibble(
   Großhandel = bestellung_grosshandel
 )
 
-p_bullwhip <- plot_ly()
 
-p_bullwhip <- p_bullwhip |>
-  add_lines(
-    data = daten_bullwhip,
+p_sushi_bullwhip <- daten_bullwhip |>
+  plot_ly() |> 
+  add_trace(
     x = ~Periode,
     y = ~Endkundennachfrage,
     name = "Endkundennachfrage",
+    type = "scatter",
+    mode = "lines+markers",
     line = list(
-      colour = farbe_nachfrage,
+      colour = "#1F4E79",
       width = 4
+    ),
+    marker = list(
+      colour = "#1F4E79",
+      size = 8
     )
   ) |>
-  add_markers(
-    data = daten_bullwhip,
-    x = ~Periode,
-    y = ~Endkundennachfrage,
-    name = "Endkundennachfrage",
-    marker = list(
-      colour = farbe_nachfrage,
-      size = 7
-    ),
-    showlegend = FALSE
-  ) |>
-  add_lines(
-    data = daten_bullwhip,
+  add_trace(
     x = ~Periode,
     y = ~Handel,
-    name = "Bestellung Handel",
+    name = "Bestellmenge Einzelhändler",
+    type = "scatter",
+    mode = "lines+markers",
     line = list(
       colour = "#ED7D31",
       width = 3
+    ),
+    marker = list(
+      colour = "#ED7D31",
+      size = 7
     )
   ) |>
-  add_lines(
-    data = daten_bullwhip,
+  add_trace(
     x = ~Periode,
     y = ~Großhandel,
-    name = "Bestellung Großhandel",
+    type = "scatter",
+    mode = "lines+markers",
+    name = "Bestellmenge Großhändler",
     line = list(
-      colour = farbe_bestellung,
+      colour = "#C00000",
       width = 3
+    ),
+    marker = list(
+      colour = "#C00000",
+      size = 7
     )
   ) |>
-  plotly_layout(
-    title = "Kleine Nachfrageänderung – große Bestellschwankungen",
-    x_title = "Periode",
-    y_title = "Nachfrage bzw. Bestellmenge"
+  layout(
+    xaxis = list(
+      title = "Periode",
+      dtick = 1
+    ),
+    yaxis = list(
+      title = "Bestellmenge",
+      range = c(0,15)
+    ),
+    legend = list(
+      orientation = "h",
+      x = 0,
+      y = 0.1
+    ),
+    margin = list(
+      l = 70,
+      r = 30,
+      b = 50,
+      t = 70
+    ),
+    paper_bgcolor = "white",
+    plot_bgcolor = "white",
+    width = 1200,
+    height = 480  
   )
 
-p_bullwhip
+p_sushi_bullwhip
 ```
 
----
+:::
 
-## Definition
+::: {.column width="39%"}
+::: {.small-text}
+**Upstream-Effekte**
 
-Der Bullwhip-Effekt beschreibt die Verstärkung von
-Nachfrageschwankungen durch Bestell- und Prognoseentscheidungen in
-einer mehrstufigen Supply Chain.
+- "Aufschaukeln" der Bestellmengen 
+- Volatilität der Bestände steigt
+- häufigere Fehlmengen
+:::
+:::
 
-Ein einfaches Maß lautet:
+::::
+------------------------------------------------------------------------------
+
+##  Bullwhip-Effekt
+::: slide-subtitle
+Typische Beobachtungen
+:::
+
+::: {.small-text}
+- meist gilt $q_t \neq d_t$, denn die Bestellmenge enthält mehrere Bestandteile $$
+q_t=\text{erwarteter Bedarf}+\text{Bestandskorrektur}+\text{Sicherheitsbestandskorrektur}.$$
+- für Lieferanten ist es nicht ersichtlich, ob Bestellmengenschwankungen langfristig Verschiebungen anzeigen (d.h. die Endkundennachfrage steigt) oder ob es kurzfristige Bestandskorrekturen sind $\rightarrow$  Schätzung der zukünftigen Nachfrage schwierig $\rightarrow$ **Prognosefehler steigen** $\rightarrow$ Bestellmengen schwanken stärker
+- daher folgt oft das die Schwankungen der Bestellmengen mit jeder Wertschöpfungsstufe steigen: $\operatorname{Var}(d_t)< \operatorname{Var}(q_t^{i})<\operatorname{Var}(q_t^{i+1})<\operatorname{Var}(q_t^{i+2})< ...$
+:::
+
+::: {.fragment .fade-up}
+::: {.callout-important}
+## Messung des Bullwhip-Effekts
+
+Maße für den Bullwhip-Effekt sind die Varianzquotienten $B=\frac{\operatorname{Var}(q_t)}{\operatorname{Var}(d_t)}>1$ und $B=\frac{\operatorname{Var}(q^{i}_t)}{\operatorname{Var}(q^{i-1}_t)}>1$ 
+
+$\rightarrow$ je größer $B$ desto stärker der Bullwhip-Effekt
+
+::: 
+:::
+
+
+------------------------------------------------------------------------------
+
+## Bullwhip-Effekt
+
+::: slide-subtitle
+Empirie (Bray & Mendelson, 2012; Chen & Lee, 2012; Yao et al. 2020)
+:::
+
+::: columns
+::: {.column width="48%"}
+
+::: {.callout-note appearance="minimal" icon="false"}
+### $2/3$ der Unternehmen
+
+In einer Stichprobe von **4.689 börsennotierten US-Unternehmen**
+zeigten rund zwei Drittel eine positive Verstärkung der
+Beschaffungs- gegenüber der Absatzvariabilität.
+
+:::
+
+::: {.callout-important appearance="minimal" icon="false"}
+
+### $+15{,}8\%$ im Durchschnitt
+
+Die mittlere Bullwhip-Verstärkung betrug $15{,}8\%$ der
+Nachfragevariabilität; der Median lag bei $6{,}7\%$.
+
+:::
+
+::: {.callout-warning appearance="minimal" icon="false"}
+### Größenordnung
+
+Im Mittel lag die quartalsweise Standardabweichung vorgelagerter
+Bestellungen um rund **20 Mio. US-Dollar** über derjenigen der
+beobachteten Nachfrage.
+
+:::
+
+:::
+
+::: {.column width="48%"}
+
+::: {.callout-tip appearance="minimal" icon="false"}
+
+### Reale Performance-Folgen (Yao et al., 2020)
+
+Ein stärkerer Bullwhip-Effekt geht mit einem höheren Bestandsverhältnis und
+zugleich mehr Fehlmengen einher $\rightarrow$ Sicherhietsbestände reichen nicht
+
+:::
+
+::: {.callout-note appearance="minimal" icon="false"}
+
+### Aggregation verdeckt das Problem
+
+Auf Produkt-, Filial- oder Zeitaggregate verdichtete Kennzahlen
+unterschätzen den Bullwhip-Effekt gegenüber einer Messung auf
+SKU-Ebene.
+
+:::
+
+::: {.callout-important appearance="minimal" icon="false"}
+
+### Management-Botschaft
+
+Nicht nur die Endkundennachfrage erzeugt Volatilität:
 
 $$
-B
+\text{Nachfragesignal}
++
+\text{lokale Disposition}
 =
-\frac{\operatorname{Var}(q_t)}
-{\operatorname{Var}(d_t)}
+\text{Bestellvarianz}
 $$
 
-mit
+:::
 
-- $d_t$: Nachfrage der nachgelagerten Stufe in Periode $t$
-- $q_t$: Bestellung der betrachteten Stufe in Periode $t$
-- $B$: Bullwhip-Maß
+:::
+:::
 
-$$
-B
-\begin{cases}
-> 1 & \text{Varianzverstärkung beziehungsweise Bullwhip-Effekt} \\
-= 1 & \text{keine Varianzverstärkung} \\
-< 1 & \text{Bestellglättung}
-\end{cases}
-$$
 
----
+------------------------------------------------------------------------------
 
-## Das Beergame
+##  Bullwhip-Effekt
+::: slide-subtitle
+Ursachen des Bullwhip-Effekts
+:::
 
-Das **Beer Distribution Game** simuliert eine mehrstufige
-Bierlieferkette:
-
-$$
-\text{Einzelhandel}
-\rightarrow
-\text{Großhandel}
-\rightarrow
-\text{Distributor}
-\rightarrow
-\text{Brauerei}
-$$
-
-- Jede Stufe trifft eigene Bestellentscheidungen.
-- Material- und Informationsflüsse sind zeitlich verzögert.
-- Jede Stufe verfügt nur über eine lokale Sicht auf die Supply Chain.
-- Selbst eine konstante Endkundennachfrage kann hohe Bestands- und
-  Bestellschwankungen auslösen.
-
-> Die Kernerfahrung des Beergames lautet: Der Bullwhip-Effekt ist
-> häufig eine Systemeigenschaft und nicht primär das Ergebnis
-> individueller Fehlentscheidungen.
-
----
-
-## Ursachen des Bullwhip-Effekts
+::: {.small-text}
 
 | Ursache | Wirkungsmechanismus |
-|---|---|
+|---|---------|
 | Lokale Prognosen | Bestellungen werden als tatsächliche Nachfrage interpretiert |
 | Prognoseaktualisierung | Kleine Nachfrageänderungen führen zu Anpassungen der Zielbestände |
 | Lange Lieferzeiten | Entscheidungen müssen weit in die Zukunft wirken |
@@ -996,14 +969,19 @@ $$
 | Fehlende Transparenz | Endkundennachfrage ist nicht für alle Stufen sichtbar |
 | Lokale Zielsysteme | Stufen optimieren individuell statt systemweit |
 
----
+::: 
 
-## Folgen
+------------------------------------------------------------------------------
+
+##  Bullwhip-Effekt
+::: slide-subtitle
+Typische Folgen
+:::
 
 ::: columns
-::: column{width="50%"}
+::: {.column width="50%"}
 
-### Operative Folgen
+**Operative Folgen**
 
 - Schwankende Produktionsprogramme
 - Instabile Kapazitätsauslastung
@@ -1014,9 +992,8 @@ $$
 
 :::
 
-::: column{width="50%"}
-
-### Ökonomische Folgen
+::: {.column width="50%"}
+**Ökonomische Folgen**
 
 - Höhere Kapitalbindung
 - Höhere Lagerkosten
@@ -1028,1191 +1005,22 @@ $$
 :::
 :::
 
----
+------------------------------------------------------------------------------
 
-## Bestandspolitik bei fester Lead Time
 
-Wir betrachten eine Stufe mit periodischer Bestandsüberprüfung.
-
-| Symbol | Bedeutung |
-|---|---|
-| $R$ | Überprüfungsintervall |
-| $L$ | feste Wiederbeschaffungszeit |
-| $D_t$ | zufällige Nachfrage in Periode $t$ |
-| $\mu$ | erwartete Periodennachfrage |
-| $\sigma$ | Standardabweichung der Periodennachfrage |
-| $\alpha$ | Zyklusservicegrad |
-| $S$ | Order-up-to-Level beziehungsweise Zielbestand |
-
-Die Politik heißt **periodische $(R,S)$-Politik** oder
-**Order-up-to-Policy**.
-
-$$
-\boxed{
-\text{Nach jeder Überprüfung wird die Bestandsposition auf } S
-\text{ angehoben.}
-}
-$$
-
----
-
-## Bestandsposition
-
-Die Bestandsposition erfasst den gesamten zukünftigen
-Bestandszugang abzüglich bereits eingegangener Rückstände:
-
-$$
-IP_t
-=
-OH_t
-+
-OO_t
--
-BO_t
-$$
-
-mit
-
-- $IP_t$: Bestandsposition
-- $OH_t$: physischer Lagerbestand, On-Hand Inventory
-- $OO_t$: offene Bestellungen, On-Order Inventory
-- $BO_t$: Rückstände, Backorders
-
-Die ausgelöste Bestellmenge ist:
-
-$$
-\boxed{
-q_t = S - IP_t
-}
-$$
-
----
-
-## Schutzperiode
-
-Nach dem Auslösen einer Bestellung muss der Bestand die Nachfrage
-bis zum Eintreffen der nächsten Auffüllung absichern.
-
-Die Schutzperiode beträgt:
-
-$$
-\boxed{
-P = R + L
-}
-$$
-
-- Während $L$ Perioden trifft die aktuelle Bestellung nicht ein.
-- Während der nächsten $R$ Perioden erfolgt keine weitere
-  Bestandsüberprüfung.
-- Der Zielbestand $S$ muss deshalb die Nachfrage über $R+L$
-  Perioden abdecken.
-
----
-
-## Nachfrage während der Schutzperiode
-
-Sei $D_t$ die Nachfrage je Periode mit
-
-$$
-E(D_t) = \mu
-\qquad \text{und} \qquad
-\operatorname{SD}(D_t) = \sigma.
-$$
-
-Für unabhängige, identisch verteilte Periodennachfragen ergibt sich:
-
-$$
-D_P
-=
-\sum_{t=1}^{R+L} D_t
-$$
-
-$$
-E(D_P)
-=
-(R+L)\mu
-$$
-
-$$
-\operatorname{SD}(D_P)
-=
-\sigma\sqrt{R+L}.
-$$
-
----
-
-## Zyklusservicegrad
-
-Der Zyklusservicegrad $\alpha$ ist die Wahrscheinlichkeit, dass
-während der Schutzperiode keine Fehlmenge entsteht:
-
-$$
-P(D_P \leq S)
-=
-\alpha.
-$$
-
-Bei normalverteilter Nachfrage während der Schutzperiode gilt:
-
-$$
-D_P
-\sim
-\mathcal{N}
-\left(
-(R+L)\mu,
-(R+L)\sigma^2
-\right).
-$$
-
-Der Order-up-to-Level ist damit:
-
-$$
-\boxed{
-S
-=
-(R+L)\mu
-+
-z_\alpha \sigma \sqrt{R+L}.
-}
-$$
-
----
-
-## Sicherheitsbestand
-
-Der Zielbestand besteht aus dem erwarteten Verbrauch während der
-Schutzperiode und einem Sicherheitsbestand:
-
-$$
-S
-=
-\underbrace{(R+L)\mu}_{\text{erwartete Nachfrage}}
-+
-\underbrace{z_\alpha \sigma \sqrt{R+L}}_{\text{Sicherheitsbestand}}.
-$$
-
-Damit gilt:
-
-$$
-\boxed{
-SB
-=
-z_\alpha \sigma \sqrt{R+L}.
-}
-$$
-
-- Der erwartete Verbrauch deckt die mittlere Nachfrage ab.
-- Der Sicherheitsbestand sichert gegen zufällige
-  Nachfrageschwankungen.
-- Höhere Nachfragevariabilität, höhere Servicegrade und längere
-  Schutzperioden erhöhen $SB$.
-
----
-
-## Servicegrade und Quantile
-
-| Zyklusservicegrad $\alpha$ | Quantil $z_\alpha$ |
-|---:|---:|
-| 90 % | 1,282 |
-| 95 % | 1,645 |
-| 97,5 % | 1,960 |
-| 99 % | 2,326 |
-| 99,9 % | 3,090 |
-
-Es gilt:
-
-$$
-SB
-=
-z_\alpha \sigma \sqrt{R+L}.
-$$
-
-Die letzten Prozentpunkte des Servicegrads sind besonders
-bestandsintensiv, weil $z_\alpha$ bei hohen Servicegraden stark
-ansteigt.
-
----
-
-## Beispiel: Parameter
-
-| Parameter | Wert |
-|---|---:|
-| Mittlere Wochennachfrage $\mu$ | 100 Einheiten |
-| Standardabweichung $\sigma$ | 25 Einheiten |
-| Überprüfungsintervall $R$ | 1 Woche |
-| Wiederbeschaffungszeit $L$ | 3 Wochen |
-| Zyklusservicegrad $\alpha$ | 95 % |
-| Quantil $z_{0.95}$ | 1,645 |
-
-Die Schutzperiode beträgt:
-
-$$
-P
-=
-R+L
-=
-1+3
-=
-4.
-$$
-
----
-
-## Beispiel: Berechnung
-
-Erwartete Nachfrage während der Schutzperiode:
-
-$$
-E(D_P)
-=
-(R+L)\mu
-=
-4 \cdot 100
-=
-400.
-$$
-
-Sicherheitsbestand:
-
-$$
-SB
-=
-z_{0.95}\sigma\sqrt{R+L}
-=
-1{,}645 \cdot 25 \cdot \sqrt{4}
-=
-82{,}25.
-$$
-
-Order-up-to-Level:
-
-$$
-\boxed{
-S
-=
-400+82{,}25
-=
-482{,}25
-\approx
-483.
-}
-$$
-
----
-
-## Bestellentscheidung
-
-Angenommen, die aktuelle Bestandsposition beträgt:
-
-$$
-IP_t
-=
-310.
-$$
-
-Dann lautet die auszulösende Bestellung:
-
-$$
-q_t
-=
-S-IP_t
-=
-483-310
-=
-173.
-$$
-
-$$
-\boxed{
-\text{Es werden 173 Einheiten bestellt.}
-}
-$$
-
-Die Bestellung enthält dabei nicht nur den erwarteten Verbrauch bis
-zur nächsten Auffüllung, sondern stellt auch den Sicherheitsbestand
-wieder her.
-
----
-
-## Schutzperiode visualisiert
-
-```{r}
-#| fig-width: 12
-#| fig-height: 6
-
-mu <- 100
-sigma <- 25
-R <- 1
-L <- 3
-alpha <- 0.95
-z_alpha <- qnorm(alpha)
-
-P <- R + L
-mean_protection <- P * mu
-sd_protection <- sigma * sqrt(P)
-safety_stock <- z_alpha * sd_protection
-S <- mean_protection + safety_stock
-
-x <- seq(
-  mean_protection - 4 * sd_protection,
-  mean_protection + 4 * sd_protection,
-  length.out = 600
-)
-
-daten_normal <- tibble(
-  Nachfrage = x,
-  Dichte = dnorm(
-    x,
-    mean = mean_protection,
-    sd = sd_protection
-  ),
-  Bereich = if_else(
-    x <= S,
-    "Keine Fehlmenge",
-    "Fehlmenge"
-  )
-)
-
-p_servicegrad <- plot_ly(
-  data = filter(daten_normal, Bereich == "Keine Fehlmenge"),
-  x = ~Nachfrage,
-  y = ~Dichte,
-  type = "scatter",
-  mode = "lines",
-  fill = "tozeroy",
-  fillcolor = "rgba(31, 78, 121, 0.30)",
-  line = list(
-    colour = farbe_nachfrage,
-    width = 2
-  ),
-  name = "Keine Fehlmenge"
-)
-
-p_servicegrad <- p_servicegrad |>
-  add_trace(
-    data = filter(daten_normal, Bereich == "Fehlmenge"),
-    x = ~Nachfrage,
-    y = ~Dichte,
-    type = "scatter",
-    mode = "lines",
-    fill = "tozeroy",
-    fillcolor = "rgba(192, 0, 0, 0.35)",
-    line = list(
-      colour = farbe_bestellung,
-      width = 2
-    ),
-    name = "Fehlmengenrisiko"
-  ) |>
-  add_segments(
-    x = mean_protection,
-    xend = mean_protection,
-    y = 0,
-    yend = max(daten_normal$Dichte),
-    line = list(
-      dash = "dash",
-      colour = "#595959",
-      width = 2
-    ),
-    name = "Erwartete Nachfrage",
-    showlegend = FALSE
-  ) |>
-  add_segments(
-    x = S,
-    xend = S,
-    y = 0,
-    yend = max(daten_normal$Dichte),
-    line = list(
-      dash = "solid",
-      colour = farbe_bestellung,
-      width = 3
-    ),
-    name = "Order-up-to-Level S",
-    showlegend = FALSE
-  ) |>
-  add_annotations(
-    x = mean_protection,
-    y = max(daten_normal$Dichte) * 0.95,
-    text = paste0(
-      "Erwartete Nachfrage<br>",
-      round(mean_protection)
-    ),
-    showarrow = FALSE,
-    xanchor = "right",
-    font = list(size = 15)
-  ) |>
-  add_annotations(
-    x = S,
-    y = max(daten_normal$Dichte) * 0.72,
-    text = paste0(
-      "S = ", round(S),
-      "<br>SB = ", round(safety_stock)
-    ),
-    showarrow = FALSE,
-    xanchor = "left",
-    font = list(
-      size = 15,
-      colour = farbe_bestellung
-    )
-  ) |>
-  plotly_layout(
-    title = "Nachfrage während der Schutzperiode",
-    x_title = "Kumulierte Nachfrage über vier Wochen",
-    y_title = "Dichte"
-  )
-
-p_servicegrad
-```
-
----
-
-## Einfluss der Wiederbeschaffungszeit
-
-Bei konstantem $R=1$, $\mu=100$, $\sigma=25$ und $\alpha=95\%$
-steigt der Sicherheitsbestand mit der Wiederbeschaffungszeit.
-
-$$
-SB
-=
-z_\alpha \sigma \sqrt{R+L}.
-$$
-
-```{r}
-#| fig-width: 12
-#| fig-height: 6
-
-lead_times <- 0:12
-
-daten_lead_time <- tibble(
-  L = lead_times,
-  Schutzperiode = R + L,
-  Sicherheitsbestand = z_alpha * sigma * sqrt(R + L),
-  Order_up_to_Level = (R + L) * mu +
-    z_alpha * sigma * sqrt(R + L)
-)
-
-p_lead_time <- plot_ly(
-  data = daten_lead_time,
-  x = ~L,
-  y = ~Sicherheitsbestand,
-  type = "scatter",
-  mode = "lines+markers",
-  line = list(
-    colour = farbe_nachfrage,
-    width = 4
-  ),
-  marker = list(
-    colour = farbe_nachfrage,
-    size = 9
-  ),
-  name = "Sicherheitsbestand"
-)
-
-p_lead_time <- p_lead_time |>
-  add_trace(
-    data = daten_lead_time,
-    x = ~L,
-    y = ~Order_up_to_Level,
-    type = "scatter",
-    mode = "lines+markers",
-    line = list(
-      colour = farbe_bestand,
-      width = 4
-    ),
-    marker = list(
-      colour = farbe_bestand,
-      size = 9
-    ),
-    name = "Order-up-to-Level S",
-    yaxis = "y2"
-  ) |>
-  layout(
-    title = list(
-      text = "Einfluss der Wiederbeschaffungszeit",
-      x = 0
-    ),
-    xaxis = list(
-      title = "Wiederbeschaffungszeit L in Wochen",
-      dtick = 1
-    ),
-    yaxis = list(
-      title = "Sicherheitsbestand in Einheiten",
-      rangemode = "tozero"
-    ),
-    yaxis2 = list(
-      title = "Order-up-to-Level S in Einheiten",
-      overlaying = "y",
-      side = "right",
-      rangemode = "tozero"
-    ),
-    legend = list(
-      orientation = "h",
-      x = 0,
-      y = -0.2
-    ),
-    margin = list(
-      l = 80,
-      r = 80,
-      b = 80,
-      t = 70
-    )
-  )
-
-p_lead_time
-```
-
----
-
-## Einfluss der Nachfragevariabilität
-
-Bei unveränderten Parametern $R$, $L$ und $\alpha$ steigt der
-Sicherheitsbestand proportional mit der Standardabweichung:
-
-$$
-SB
-=
-z_\alpha \sigma \sqrt{R+L}.
-$$
-
-```{r}
-#| fig-width: 12
-#| fig-height: 6
-
-sigma_werte <- seq(5, 60, by = 1)
-
-daten_sigma <- tibble(
-  sigma = sigma_werte,
-  Sicherheitsbestand = z_alpha * sigma * sqrt(R + L)
-)
-
-p_sigma <- plot_ly(
-  data = daten_sigma,
-  x = ~sigma,
-  y = ~Sicherheitsbestand,
-  type = "scatter",
-  mode = "lines",
-  line = list(
-    colour = farbe_nachfrage,
-    width = 4
-  ),
-  name = "Sicherheitsbestand"
-)
-
-p_sigma <- p_sigma |>
-  add_markers(
-    data = filter(daten_sigma, sigma == 25),
-    x = ~sigma,
-    y = ~Sicherheitsbestand,
-    marker = list(
-      colour = farbe_bestellung,
-      size = 13
-    ),
-    name = "Ausgangsfall"
-  ) |>
-  add_annotations(
-    x = 25,
-    y = safety_stock,
-    text = paste0(
-      "σ = 25<br>",
-      "SB = ", round(safety_stock)
-    ),
-    showarrow = TRUE,
-    arrowhead = 2,
-    ax = 65,
-    ay = -45,
-    font = list(
-      size = 15,
-      colour = farbe_bestellung
-    )
-  ) |>
-  plotly_layout(
-    title = "Einfluss der Nachfragevariabilität",
-    x_title = "Standardabweichung der Periodennachfrage σ",
-    y_title = "Sicherheitsbestand in Einheiten"
-  )
-
-p_sigma
-```
-
----
-
-## Bullwhip und Sicherheitsbestand
-
-Der Bullwhip-Effekt erhöht die beobachtete Bestellvarianz:
-
-$$
-\operatorname{Var}(q_t)
->
-\operatorname{Var}(d_t).
-$$
-
-Wenn eine vorgelagerte Stufe die Bestellungen ihres Kunden als
-Nachfrage interpretiert, gilt typischerweise:
-
-$$
-\sigma_q
->
-\sigma_d.
-$$
-
-Da der Sicherheitsbestand von der Standardabweichung abhängt, folgt:
-
-$$
-SB_q
-=
-z_\alpha \sigma_q \sqrt{R+L}
->
-z_\alpha \sigma_d \sqrt{R+L}
-=
-SB_d.
-$$
-
-> Der Bullwhip-Effekt verstärkt daher nicht nur die operative
-> Instabilität, sondern erhöht direkt Sicherheitsbestände und
-> Bestandskosten.
-
----
-
-## Quantifizierung des Effekts
-
-Sei das Bullwhip-Maß
-
-$$
-B
-=
-\frac{\operatorname{Var}(q_t)}
-{\operatorname{Var}(d_t)}.
-$$
-
-Dann folgt:
-
-$$
-\sigma_q
-=
-\sqrt{B}\sigma_d.
-$$
-
-Der Sicherheitsbestand der vorgelagerten Stufe beträgt:
-
-$$
-SB_q
-=
-z_\alpha \sqrt{B}\sigma_d\sqrt{R+L}.
-$$
-
-Damit ergibt sich:
-
-$$
-\boxed{
-\frac{SB_q}{SB_d}
-=
-\sqrt{B}.
-}
-$$
-
----
-
-## Beispiel: Bestandszunahme
-
-Angenommen, das Bullwhip-Maß beträgt:
-
-$$
-B
-=
-2{,}25.
-$$
-
-Dann steigt die Standardabweichung von:
-
-$$
-\sigma_d
-=
-25
-$$
-
-auf:
-
-$$
-\sigma_q
-=
-\sqrt{2{,}25}\cdot25
-=
-37{,}5.
-$$
-
-Daraus folgt:
-
-$$
-SB_d
-=
-1{,}645\cdot25\cdot\sqrt{4}
-=
-82{,}25
-$$
-
-$$
-SB_q
-=
-1{,}645\cdot37{,}5\cdot\sqrt{4}
-=
-123{,}38.
-$$
-
-$$
-\boxed{
-SB_q-SB_d
-=
-41{,}13
-\text{ zusätzliche Einheiten.}
-}
-$$
-
----
-
-## Bestandswirkung visualisiert
-
-```{r}
-#| fig-width: 12
-#| fig-height: 6
-
-bullwhip_werte <- seq(1, 4, by = 0.05)
-
-daten_bullwhip_sb <- tibble(
-  Bullwhip_Maß = bullwhip_werte,
-  Sicherheitsbestand = z_alpha *
-    sqrt(Bullwhip_Maß) *
-    sigma *
-    sqrt(R + L)
-)
-
-sb_ohne_bullwhip <- z_alpha * sigma * sqrt(R + L)
-
-p_bullwhip_sb <- plot_ly(
-  data = daten_bullwhip_sb,
-  x = ~Bullwhip_Maß,
-  y = ~Sicherheitsbestand,
-  type = "scatter",
-  mode = "lines",
-  line = list(
-    colour = farbe_bestellung,
-    width = 4
-  ),
-  name = "Sicherheitsbestand"
-)
-
-p_bullwhip_sb <- p_bullwhip_sb |>
-  add_markers(
-    data = tibble(
-      Bullwhip_Maß = 1,
-      Sicherheitsbestand = sb_ohne_bullwhip
-    ),
-    x = ~Bullwhip_Maß,
-    y = ~Sicherheitsbestand,
-    marker = list(
-      colour = farbe_nachfrage,
-      size = 12
-    ),
-    name = "Kein Bullwhip-Effekt"
-  ) |>
-  add_markers(
-    data = tibble(
-      Bullwhip_Maß = 2.25,
-      Sicherheitsbestand = z_alpha *
-        sqrt(2.25) *
-        sigma *
-        sqrt(R + L)
-    ),
-    x = ~Bullwhip_Maß,
-    y = ~Sicherheitsbestand,
-    marker = list(
-      colour = farbe_bestand,
-      size = 12
-    ),
-    name = "Beispiel: B = 2,25"
-  ) |>
-  add_annotations(
-    x = 2.25,
-    y = z_alpha *
-      sqrt(2.25) *
-      sigma *
-      sqrt(R + L),
-    text = "B = 2,25<br>SB = 123",
-    showarrow = TRUE,
-    arrowhead = 2,
-    ax = 60,
-    ay = -40,
-    font = list(
-      size = 15,
-      colour = farbe_bestand
-    )
-  ) |>
-  plotly_layout(
-    title = "Bullwhip-Effekt erhöht den Sicherheitsbestand",
-    x_title = "Bullwhip-Maß B",
-    y_title = "Sicherheitsbestand in Einheiten"
-  )
-
-p_bullwhip_sb
-```
-
----
-
-## Prognoseaktualisierung
-
-Eine verbreitete Prognosemethode ist die exponentielle Glättung:
-
-$$
-\hat d_t
-=
-\lambda d_{t-1}
-+
-(1-\lambda)\hat d_{t-1}.
-$$
-
-mit $0 < \lambda \leq 1$.
-
-- Bei hohem $\lambda$ reagiert die Prognose stark auf die jüngste
-  Beobachtung.
-- Änderungen der Prognose verändern den erwarteten Bedarf während
-  der Schutzperiode.
-- Lange Wiederbeschaffungszeiten verstärken die Wirkung von
-  Prognoseänderungen auf die Bestellmenge.
-
-Eine vereinfachte Order-up-to-Regel lautet:
-
-$$
-q_t
-=
-d_{t-1}
-+
-(R+L)
-\left(
-\hat d_t-\hat d_{t-1}
-\right).
-$$
-
----
-
-## Prognose und Bestellvarianz
-
-```{r}
-#| fig-width: 12
-#| fig-height: 6
-
-simuliere_bestellungen <- function(lambda, R, L, nachfrage) {
-  n <- length(nachfrage)
-
-  prognose <- numeric(n)
-  bestellung <- numeric(n)
-
-  prognose <- mean(nachfrage[1:5])[1]
-  bestellung <- prognose[1]
-
-  for (t in 2:n) {
-    prognose[t] <- lambda * nachfrage[t - 1] +
-      (1 - lambda) * prognose[t - 1]
-
-    bestellung[t] <- nachfrage[t - 1] +
-      (R + L) * (prognose[t] - prognose[t - 1])
-  }
-
-  tibble(
-    Periode = seq_len(n),
-    Nachfrage = nachfrage,
-    Bestellung = bestellung,
-    lambda = paste0("λ = ", format(lambda, nsmall = 2))
-  )
-}
-
-set.seed(42)
-
-T <- 80
-
-simulierte_nachfrage <- pmax(
-  round(rnorm(T, mean = 100, sd = 10)),
-  0
-)
-
-sim_langsam <- simuliere_bestellungen(
-  lambda = 0.10,
-  R = R,
-  L = L,
-  nachfrage = simulierte_nachfrage
-)
-
-sim_schnell <- simuliere_bestellungen(
-  lambda = 0.50,
-  R = R,
-  L = L,
-  nachfrage = simulierte_nachfrage
-)
-
-daten_prognose <- bind_rows(
-  sim_langsam,
-  sim_schnell
-) |>
-  filter(Periode <= 35)
-
-p_prognose <- plot_ly()
-
-for (lambda_wert in unique(daten_prognose$lambda)) {
-  daten_lambda <- filter(
-    daten_prognose,
-    lambda == lambda_wert
-  )
-
-  p_prognose <- p_prognose |>
-    add_lines(
-      data = daten_lambda,
-      x = ~Periode,
-      y = ~Nachfrage,
-      name = paste0("Nachfrage, ", lambda_wert),
-      legendgroup = lambda_wert,
-      line = list(
-        colour = farbe_nachfrage,
-        width = 2
-      ),
-      visible = ifelse(lambda_wert == "λ = 0.10", TRUE, "legendonly")
-    ) |>
-    add_lines(
-      data = daten_lambda,
-      x = ~Periode,
-      y = ~Bestellung,
-      name = paste0("Bestellung, ", lambda_wert),
-      legendgroup = lambda_wert,
-      line = list(
-        colour = farbe_bestellung,
-        width = 3
-      ),
-      visible = ifelse(lambda_wert == "λ = 0.10", TRUE, "legendonly")
-    )
-}
-
-p_prognose <- p_prognose |>
-  plotly_layout(
-    title = "Einfluss der Prognoseanpassung auf Bestellschwankungen",
-    x_title = "Periode",
-    y_title = "Nachfrage bzw. Bestellmenge"
-  )
-
-p_prognose
-```
-
----
-
-## Interpretation der Prognosegrafik
-
-- Eine hohe Gewichtung $\lambda$ bewirkt schnelle Anpassungen der
-  Nachfrageprognose.
-- Jede Prognoseänderung verändert den Zielbestand über die gesamte
-  Schutzperiode $R+L$.
-- Bei langen Wiederbeschaffungszeiten werden kleine
-  Prognoseänderungen deshalb in größere Bestelländerungen übersetzt.
-- Eine vorsichtige Prognoseanpassung kann Bestellungen glätten.
-- Zu langsame Anpassungen können jedoch bei echten
-  Nachfrageverschiebungen Fehlmengen verursachen.
-
----
-
-## Vom Newsvendor zum Order-up-to-Level
-
-::: columns
-::: column{width="48%"}
-
-### Newsvendor-Modell
-
-- Einmalige Bestellentscheidung
-- Einperiodige Nachfrage
-- Keine Nachbestellung
-- Abwägung zwischen Über- und Unterdeckung
-- Zielgröße: optimale Bestellmenge $q^\ast$
-
+##  Bullwhip-Effekt
+::: slide-subtitle
+Gegenmaßnahmen
 :::
 
-::: column{width="48%"}
-
-### Periodische $(R,S)$-Politik
-
-- Wiederholte Bestellentscheidungen
-- Laufende Nachfrage
-- Feste Wiederbeschaffungszeit
-- Sicherheitsbestand für die Schutzperiode
-- Zielgröße: Order-up-to-Level $S$
-
-:::
-:::
-
-Beide Modelle verbinden Nachfrageunsicherheit mit einer
-wirtschaftlich begründeten Bestandsentscheidung.
-
----
-
-## Maßnahmen gegen Bullwhip
-
+::: {.small-text}
 | Hebel | Maßnahme | Wirkung auf Bestände und Varianz |
-|---|---|---|
+|--|-----|-----|
 | Informationsfluss | Point-of-Sale-Daten teilen | $\sigma$ der Prognosefehler sinkt |
 | Planung | Gemeinsame Prognosen und CPFR | Lokale Prognoseverzerrungen sinken |
 | Bestellpolitik | Kleine, häufige Bestellungen | Auftragsbündelung sinkt |
-| Lieferzeit | Informations- und Lieferzeiten verkürzen | $R+L$ sinkt |
+| Lieferzeit | Informations- und Lieferzeiten verkürzen | Risikozeitraum sinkt |
 | Preise | Stabile Preise statt Vorratsanreize | Künstliche Bedarfsspitzen sinken |
 | Allokation | Rationierung nach historischen Mengen | Strategische Überbestellung sinkt |
 | Steuerung | Gesamtoptimum statt lokaler Zielgrößen | Bestell- und Bestandsentscheidungen werden koordiniert |
-
----
-
-## Wirkung auf den Zielbestand
-
-Die Maßnahmen wirken direkt auf:
-
-$$
-S
-=
-(R+L)\mu
-+
-z_\alpha\sigma\sqrt{R+L}.
-$$
-
-| Maßnahme | Betroffener Parameter | Wirkung |
-|---|---|---|
-| Kürzere Wiederbeschaffungszeit | $L \downarrow$ | Erwartete Nachfrage und $SB$ sinken |
-| Häufigere Überprüfung | $R \downarrow$ | Schutzperiode sinkt |
-| Informationsaustausch | $\sigma \downarrow$ | $SB$ sinkt |
-| Bestellglättung | $\sigma_q \downarrow$ | Bullwhip-bedingter Bestand sinkt |
-| Niedrigerer Servicegrad | $z_\alpha \downarrow$ | $SB$ sinkt |
-| Pooling | effektives $\sigma \downarrow$ | $SB$ sinkt |
-
----
-
-## Übungsaufgabe
-
-Ein Händler überprüft seinen Bestand jede Woche. Die
-Wiederbeschaffungszeit beträgt konstant zwei Wochen.
-
-| Parameter | Wert |
-|---|---:|
-| Mittlere Wochennachfrage $\mu$ | 80 Einheiten |
-| Standardabweichung $\sigma$ | 20 Einheiten |
-| Überprüfungsintervall $R$ | 1 Woche |
-| Wiederbeschaffungszeit $L$ | 2 Wochen |
-| Zyklusservicegrad $\alpha$ | 97,5 % |
-| Aktuelle Bestandsposition $IP_t$ | 185 Einheiten |
-
-Bestimmen Sie:
-
-1. Schutzperiode $P$
-2. Sicherheitsbestand $SB$
-3. Order-up-to-Level $S$
-4. Bestellmenge $q_t$
-
----
-
-## Lösung der Übungsaufgabe
-
-$$
-P
-=
-R+L
-=
-1+2
-=
-3.
-$$
-
-$$
-SB
-=
-z_{0.975}\sigma\sqrt{P}
-=
-1{,}96\cdot20\cdot\sqrt{3}
-=
-67{,}90.
-$$
-
-$$
-S
-=
-P\mu+SB
-=
-3\cdot80+67{,}90
-=
-307{,}90
-\approx
-308.
-$$
-
-$$
-q_t
-=
-S-IP_t
-=
-308-185
-=
-123.
-$$
-
-$$
-\boxed{
-\text{Es werden 123 Einheiten bestellt.}
-}
-$$
-
----
-
-## Zusammenfassung
-
-- Der Bullwhip-Effekt beschreibt die Verstärkung von
-  Nachfrageschwankungen durch dezentrale Bestell- und
-  Prognoseentscheidungen.
-- Bei einer periodischen $(R,S)$-Politik beträgt die Schutzperiode:
-
-$$
-P
-=
-R+L.
-$$
-
-- Der Sicherheitsbestand bei unabhängiger, normalverteilter
-  Periodennachfrage lautet:
-
-$$
-SB
-=
-z_\alpha\sigma\sqrt{R+L}.
-$$
-
-- Der Order-up-to-Level beträgt:
-
-$$
-S
-=
-(R+L)\mu
-+
-z_\alpha\sigma\sqrt{R+L}.
-$$
-
-- Der Bullwhip-Effekt erhöht $\sigma$ und damit unmittelbar den
-  erforderlichen Sicherheitsbestand.
-- Transparente Nachfrageinformationen, kürzere Lieferzeiten und
-  koordinierte Bestellentscheidungen senken die Unsicherheits- und
-  Bestandskosten.
-
----
-
-## Ausblick
-
-Die dargestellte $(R,S)$-Politik setzt voraus:
-
-- feste Wiederbeschaffungszeiten $L$
-- bekannte oder schätzbare Nachfrageparameter $\mu$ und $\sigma$
-- eine definierte Servicegradvorgabe $\alpha$
-- eine explizite Behandlung von Fehlmengen als Backorders oder
-  Lost Sales
-
-Mögliche Erweiterungen sind:
-
-- stochastische Wiederbeschaffungszeiten
-- mehrstufige Bestandsmodelle
-- Bestellfixkosten und optimale Bestellintervalle
-- kapazitätsbeschränkte Lieferanten
-- gemeinsame Planung, Bestands- und Nachfrageinformationen in
-  koordinierten Supply Chains
+:::
