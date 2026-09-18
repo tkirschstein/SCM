@@ -1,8 +1,12 @@
 project:
-  title: "slides_quarto"
+  output-dir: _output
 
-editor: visual
+format:
+  revealjs:
+    slide-number: true
+    chalkboard: true
+    css: styles.css
 
-filters:
-  - diagram
-  
+bibliography: ../literature/references.bib
+
+citeproc: true
