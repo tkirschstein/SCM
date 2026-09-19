@@ -38,6 +38,14 @@ Nach dieser Einheit können Sie …
 - zentrale Entscheidungsvariablen, Zielfunktionen und Nebenbedingungen **interpretieren**,
 - Ergebnisse diskreter Netzwerkmodelle für strategische Standortentscheidungen **bewerten**.
 
+**Literatur zur Vertiefung**
+
+- **Transport-, Umschlags- und Netzwerkmodelle:** einschlägige Abschnitte zur Standort-, Transport- und Netzwerkplanung in [@guenther2012produktion].
+- **Diskrete Standortmodelle, Algorithmen und Anwendungen:** Kapitel 1–4 in [@daskin2013network].
+- **Theorie und Anwendungen der 
+
+---
+
 ## Planung von Distributionsnetzen {#slide-93}
 ::: slide-subtitle
 Einordnung

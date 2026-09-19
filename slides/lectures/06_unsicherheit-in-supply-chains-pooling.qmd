@@ -37,6 +37,12 @@ Nach dieser Einheit können Sie …
 - den Effekt von Risikopooling auf Nachfragevarianz und Sicherheitsbestände **analysieren**,
 - zentrale und dezentrale Bestandsstrukturen unter Unsicherheit **vergleichen und beurteilen**.
 
+**Literatur zur Vertiefung**
+
+- **Implizierte Unsicherheit, Reaktionsfähigkeit und Strategic Fit:** Kapitel 2–3 in [@chopra2025supply].
+- **Pooling, Nachfragevariabilität und Bestandsentscheidungen:** Kapitel 10–13 in [@cachon2024matching].
+- **Sicherheitsbestände, Servicegrade und Inventory-Management:** Kapitel 6–8 in [@silver2017inventory].
+
 ---
 
 ## Die Natur der Unsicherheit {#slide-pooling-1}

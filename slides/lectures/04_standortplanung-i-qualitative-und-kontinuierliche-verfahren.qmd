@@ -40,6 +40,12 @@ Nach dieser Einheit können Sie …
 - die Eigenschaften unterschiedlicher Distanzmetriken **erläutern** und diese **berechnen**,
 - kontinuierliche Standortverfahren auf einfache Entscheidungsprobleme **anwenden und interpretieren**.
 
+**Literatur zur Vertiefung**
+
+- **Modellgestützte regionale Standortplanung und -entwicklung:** [@kik2022standortplanung].
+- **Standortplanung und kontinuierliche Entscheidungsmodelle:** einschlägige Abschnitte zur Standortplanung in [@guenther2012produktion].
+- **Kontinuierliche Standortmodelle und lokationale Gleichgewichte:** [@cooper1968locational].
+
 ## Planung im Supply Chain Management {#slide-67}
 
 ::: slide-subtitle

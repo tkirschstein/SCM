@@ -68,6 +68,11 @@ Nach dieser Einheit können Sie …
 - den Zusammenhang zwischen Bestellvarianz und Sicherheitsbestand erläutern
 - Maßnahmen zur Reduktion des Bullwhip-Effekts einordnen
 
+**Literatur zur Vertiefung**
+
+- **Grundlegende Ursachen und Gegenmaßnahmen des Bullwhip-Effekts:** [@lee1997bullwhip].
+- **Empirische Untersuchung der Informationsübertragung:** [@bray2012information, S. 860–875].
+- **Messung, Aggregation und Wirkung von Bullwhip-Effekten:** [@yao2020empirically, S. 5–30].
 
 ------------------------------------------------------------------------------
 
