@@ -45,11 +45,12 @@ format:
     lang: de
     toc: true
     number-sections: true
+    prefer-html: true
 
 execute:
   echo: true
   warning: false
   message: false
-  freeze: auto
+  freeze: false
 
 bibliography: ../literature/!references.bib

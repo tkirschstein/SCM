@@ -25,5 +25,32 @@
   },
   "references.qmd": {
     "references.html": "322c22ac"
+  },
+  "chapters/01_einfuehrung-und-grundbegriffe-des-supply-chain-managements.qmd": {
+    "01_einfuehrung-und-grundbegriffe-des-supply-chain-managements.html": "216a9ab6"
+  },
+  "chapters/02_wertschoepfung-strategische-fertigung-und-strategic-fit.qmd": {
+    "02_wertschoepfung-strategische-fertigung-und-strategic-fit.html": "7dca093d"
+  },
+  "chapters/03_ziele-zielkonflikte-und-logistikkosten.qmd": {
+    "03_ziele-zielkonflikte-und-logistikkosten.html": "343b2678"
+  },
+  "chapters/04_standortplanung-i-qualitative-und-kontinuierliche-verfahren.qmd": {
+    "04_standortplanung-i-qualitative-und-kontinuierliche-verfahren.html": "5366e558"
+  },
+  "chapters/05_standortplanung-ii-diskrete-netzwerkplanungsmodelle.qmd": {
+    "05_standortplanung-ii-diskrete-netzwerkplanungsmodelle.html": "c055ddd0"
+  },
+  "chapters/06_unsicherheit-in-supply-chains-pooling.qmd": {
+    "06_unsicherheit-in-supply-chains-pooling.html": "77ea89fe"
+  },
+  "chapters/07_das-newsvendor-modell.qmd": {
+    "07_das-newsvendor-modell.html": "b3b139c7"
+  },
+  "chapters/08_der-bullwhip-effekt-und-das-beergame.qmd": {
+    "08_der-bullwhip-effekt-und-das-beergame.html": "e1a10541"
+  },
+  "chapters/09_nachhaltigkeit-im-supply-chain-management.qmd": {
+    "09_nachhaltigkeit-im-supply-chain-management.html": "8896d8c3"
   }
 }

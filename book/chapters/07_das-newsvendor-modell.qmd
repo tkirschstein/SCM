@@ -234,7 +234,7 @@ Die kritische Verhältniszahl erlaubt zudem eine anschauliche Fallunterscheidung
 
 ## Stetige Nachfrage: Die Normalverteilung
 
-In der Praxis liegt Nachfrage selten in Form weniger diskreter Szenarien vor, sondern wird — wie in Kapitel 6 besprochen — häufig durch eine stetige Verteilung angenähert, meist die Normalverteilung $D \sim N(\mu, \sigma^2)$. Nehmen wir an, der Sushi-Lieferant hätte inzwischen so viele Verkaufstage dokumentiert, dass sich die Tagesnachfrage gut durch $\mu = 45$ Boxen und $\sigma = 8$ Boxen beschreiben lässt (bei unveränderter Kostenstruktur $c^u = 5\,€$, $c^o = 3\,€$).
+In der Praxis liegt Nachfrage selten in Form weniger diskreter Szenarien vor, sondern wird — wie in Kapitel 6 besprochen — häufig durch eine stetige Verteilung angenähert, meist die Normalverteilung $D \sim N(\mu, \sigma^2)$. Nehmen wir an, der Sushi-Lieferant hätte inzwischen so viele Verkaufstage dokumentiert, dass sich die Tagesnachfrage gut durch $\mu = 45$ Boxen und $\sigma = 8$ Boxen beschreiben lässt (bei unveränderter Kostenstruktur $c^u = 5\,$ €, $c^o = 3$ €).
 
 Da die Normalverteilung eine streng monoton wachsende, stetige Verteilungsfunktion $F$ besitzt, existiert die Umkehrfunktion $F^{-1}$ exakt — die Fraktilregel muss hier nicht mehr näherungsweise über eine Treppenfunktion, sondern kann direkt ausgewertet werden. Wie in Kapitel 6 gilt für die Standardisierung $Z = (D-\mu)/\sigma \sim N(0,1)$, sodass sich $q^*$ mit dem Quantil der Standardnormalverteilung ausdrücken lässt, das `qnorm()` liefert:
 
@@ -272,7 +272,7 @@ q_stern_normal
 kosten_optimum
 ```
 
-Mit $CR = 0{,}625$ ergibt sich $z^* = \Phi^{-1}(0{,}625) \approx 0{,}32$ und damit $q^* = 45 + 8 \cdot 0{,}32 \approx 47{,}5$ Sushi-Boxen. Da nur ganze Boxen produziert werden können, würde man in der Praxis auf $q^* = 48$ aufrunden. Die erwarteten Fehlmengen- und Überbestandskosten am Optimum betragen rund $24{,}3\,€$ pro Tag, sodass der erwartete Gewinn $E[P(q^*)] = \mu \cdot c^u - E[C(q^*)] \approx 45 \cdot 5 - 24{,}3 \approx 200{,}7\,€$ pro Tag beträgt.
+Mit $CR = 0{,}625$ ergibt sich $z^* = \Phi^{-1}(0{,}625) \approx 0{,}32$ und damit $q^* = 45 + 8 \cdot 0{,}32 \approx 47{,}5$ Sushi-Boxen. Da nur ganze Boxen produziert werden können, würde man in der Praxis auf $q^* = 48$ aufrunden. Die erwarteten Fehlmengen- und Überbestandskosten am Optimum betragen rund $24{,}3\,$€ pro Tag, sodass der erwartete Gewinn $E[P(q^*)] = \mu \cdot c^u - E[C(q^*)] \approx 45 \cdot 5 - 24{,}3 \approx 200{,}7\,$€ pro Tag beträgt.
 
 Zur Kontrolle vergleichen wir unser eigenes Ergebnis direkt mit der fertigen Funktion aus `R/scm_functions.R`:
 
@@ -332,9 +332,9 @@ ggplot(nachfrage_grid, aes(x = d, y = dichte)) +
 
 Ein methodischer Exkurs sei an dieser Stelle erlaubt: Anstatt die Formel für $q^*$ direkt zu verwenden, ließe sich der erwartete Gewinn $E[P(q)]$ auch näherungsweise per **Monte-Carlo-Simulation** bestimmen — genau wie in Kapitel 6 eingeführt. Man würde mit `rnorm()` eine sehr große Zahl zufälliger Tagesnachfragen ziehen, für jede Ziehung den realisierten Gewinn gemäß der Gewinnfunktion $P(D,q)$ berechnen und anschließend über alle Wiederholungen mitteln (etwa mit `replicate()`). Für eine hinreichend große Anzahl von Simulationsläufen konvergiert dieser simulierte Mittelwert gegen den hier analytisch berechneten Erwartungswert $E[P(q)]$ — ein guter Plausibilitätstest, wenn eine geschlossene Formel wie hier verfügbar ist, und die einzige praktikable Lösung, wenn sie es nicht ist.
 
-## Wurzelfindung und Optimierung als Alternative zur geschlossenen Lösung
+## Numerische Optimierung als Alternative zur geschlossenen Lösung
 
-Für die Normalverteilung konnten wir $q^*$ bequem über `qnorm()` bestimmen, weil ihre Verteilungsfunktion eine bekannte Umkehrfunktion besitzt. Bei vielen praktisch relevanten Verteilungen — etwa einer Lognormal-, Gamma- oder empirisch aus Daten geschätzten Verteilung — existiert keine geschlossene Form für $F^{-1}$. In solchen Fällen hilft numerische **Wurzelfindung** bzw. **Optimierung**, wie sie im folgenden Exkurs eingeführt wird.
+Für die Normalverteilung konnten wir $q^*$ bequem über `qnorm()` bestimmen, weil ihre Verteilungsfunktion eine bekannte Umkehrfunktion besitzt. Bei vielen praktisch relevanten Verteilungen — etwa einer Lognormal-, Gamma- oder empirisch aus Daten geschätzten Verteilung — existiert keine geschlossene Form für $F^{-1}$. In solchen Fällen hilft numerische  **Optimierung**, wie sie im folgenden Exkurs eingeführt wird.
 
 ::: {.r-exkurs}
 **R-Exkurs: `uniroot()` und `optimize()` statt analytischer Lösung**
