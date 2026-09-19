@@ -68,6 +68,15 @@ Werner, H. Supply Chain Management. Springer Fachmedien Wiesbaden, aktuelle Aufl
 - Ziele & Zielkonflikte
 - Kosten & Management
 
+## Lernziele {#learning-objectives-introduction}
+
+Nach dieser Einheit können Sie …
+
+- zentrale Begriffe, Akteure und Flüsse einer Supply Chain **erläutern**,
+- Supply Chain Management gegenüber Logistik und Beschaffung **abgrenzen**,
+- strategische, taktische und operative Entscheidungen in Supply Chains **unterscheiden**,
+- die Bedeutung von Koordination für Wertschöpfung und Wettbewerbsfähigkeit **beurteilen**.
+
 ## Supply chains in History {#slide-6}
 
 ::: slide-subtitle

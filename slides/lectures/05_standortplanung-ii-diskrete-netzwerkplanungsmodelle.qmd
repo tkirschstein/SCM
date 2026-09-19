@@ -29,6 +29,15 @@ library(DiagrammeR)
 
 ---
 
+## Lernziele {#learning-objectives-location-discrete}
+
+Nach dieser Einheit können Sie …
+
+- diskrete Standort- und Netzwerkplanungsprobleme **formulieren**,
+- Transport-, Umschlags- und Standortentscheidungen in einem Netzwerk **modellieren**,
+- zentrale Entscheidungsvariablen, Zielfunktionen und Nebenbedingungen **interpretieren**,
+- Ergebnisse diskreter Netzwerkmodelle für strategische Standortentscheidungen **bewerten**.
+
 ## Planung von Distributionsnetzen {#slide-93}
 ::: slide-subtitle
 Einordnung

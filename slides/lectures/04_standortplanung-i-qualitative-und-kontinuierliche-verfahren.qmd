@@ -29,6 +29,17 @@ library(units)
 - Kontinuierliche Standortplanung
 - Diskrete Standortplanung
 
+## Lernziele {#learning-objectives-location-continuous}
+
+Nach dieser Einheit können Sie …
+
+- Standortentscheidungen im strategischen Supply-Chain-Design **einordnen**,
+- qualitative Standortfaktoren systematisch **erfassen und bewerten**,
+- das AHP-Verfahren und Nutzwertverfahren **erläutern und anwenden**,
+- das Steiner-Weber-Modell und seine Annahmen **erläutern**,
+- die Eigenschaften unterschiedlicher Distanzmetriken **erläutern** und diese **berechnen**,
+- kontinuierliche Standortverfahren auf einfache Entscheidungsprobleme **anwenden und interpretieren**.
+
 ## Planung im Supply Chain Management {#slide-67}
 
 ::: slide-subtitle

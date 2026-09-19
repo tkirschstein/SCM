@@ -36,6 +36,15 @@ library(plotly)
 - **Ziele & Zielkonflikte**
 - Kosten & Management
 
+## Lernziele {#learning-objectives-strategic-fit}
+
+Nach dieser Einheit können Sie …
+
+- Wertschöpfungsprozesse und die zentralen Treiber einer Supply Chain **strukturieren**,
+- die Begriffe Reaktionsfähigkeit und Effizienz **erläutern**,
+- die implizierte Unsicherheit eines Marktes und die Reaktionsfähigkeit einer Supply Chain **gegenüberstellen**,
+- den Strategic Fit einer Supply-Chain-Konfiguration **beurteilen**.
+
 ## Wertschöpfung als Prozess {#slide-31}
 
 ![](../images/clipboard-2707534972.png){width="1500"}

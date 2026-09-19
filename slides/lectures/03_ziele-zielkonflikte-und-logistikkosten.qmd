@@ -26,6 +26,16 @@ library(plotly)
 - Ziele & Zielkonflikte
 - **Kosten & Management**
 
+## Lernziele {#learning-objectives-goals-costs}
+
+Nach dieser Einheit können Sie …
+
+- zentrale ökonomische, ökologische und soziale Ziele des Supply Chain Managements **benennen**,
+- Zielkonflikte zwischen Service, Beständen, Transport, Kosten und Nachhaltigkeit **analysieren**,
+- wesentliche Komponenten von Logistikkosten **erläutern und quantifizieren**,
+- geeignete Kennzahlen zur Bewertung logistischer Entscheidungen **auswählen und interpretieren**.
+
+
 ## Arten von Zielen im Unternehmen {#slide-53}
 
 ::::::: columns

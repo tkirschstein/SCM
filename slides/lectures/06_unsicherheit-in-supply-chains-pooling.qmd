@@ -28,6 +28,15 @@ source("../R/scm_functions.R")
 - Newsvendor-Modell
 - Bullwhip-Effekt
 
+## Lernziele {#learning-objectives-uncertainty-pooling}
+
+Nach dieser Einheit können Sie …
+
+- Quellen und Auswirkungen von Unsicherheit in Supply Chains **erläutern**,
+- Nachfrageunsicherheit, implizierte Unsicherheit und Reaktionsfähigkeit **voneinander abgrenzen**,
+- den Effekt von Risikopooling auf Nachfragevarianz und Sicherheitsbestände **analysieren**,
+- zentrale und dezentrale Bestandsstrukturen unter Unsicherheit **vergleichen und beurteilen**.
+
 ---
 
 ## Die Natur der Unsicherheit {#slide-pooling-1}
