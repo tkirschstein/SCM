@@ -21,6 +21,9 @@ Thumbs.db
 # Rendered outputs (generated, not tracked)
 book/_book/
 slides/**/*_files/
+slides/**/*_cache/
 slides/**/*.html
 exercises/*.html
 case_studies/*.html
+
+**/*.quarto_ipynb
