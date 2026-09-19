@@ -1,7 +1,4 @@
----
-title: "Standortplanung I: Qualitative und kontinuierliche Verfahren"
-author: "Prof. Dr. Thomas Kirschstein"
----
+
 
 ```{r}
 #| echo: false
@@ -9,13 +6,7 @@ author: "Prof. Dr. Thomas Kirschstein"
 #| message: false
 
 # Funktionen aus scm_functions.R einbinden
-source(
-  file.path(
-    quarto::quarto_project_dir(),
-    "R",
-    "scm_functions.R"
-  )
-)
+source("../R/scm_functions.R")
 
 library(tidyverse)
 library(leaflet)
@@ -29,11 +20,13 @@ library(dplyr)
 library(units)
 ```
 
+
+# Strategische Gestaltung von Supply Chains
+
 ## Strategische Gestaltung von Supply Chains {#slide-66}
 
-- Multikriterielle Standortplanung
+- **Multikriterielle Standortplanung**
 - Kontinuierliche Standortplanung
-- Netzwerkplanung
 - Diskrete Standortplanung
 
 ## Planung im Supply Chain Management {#slide-67}

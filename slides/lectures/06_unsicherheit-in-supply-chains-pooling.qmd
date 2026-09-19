@@ -1,7 +1,4 @@
----
-title: "Unsicherheit in Supply Chains: Pooling"
-author: "Prof. Dr. Thomas Kirschstein"
----
+
 
 ```{r}
 #| echo: false
@@ -19,14 +16,17 @@ library(planr)
 library(dplyr)
 library(MASS)
 
-source(
-  file.path(
-    quarto::quarto_project_dir(),
-    "R",
-    "scm_functions.R"
-  )
-)
+source("../R/scm_functions.R")
 ```
+
+
+# Unsicherheits- und Risikomanagement in Supply Chains
+
+## Unsicherheit in Supply Chains 
+
+- **Pooling**
+- Newsvendor-Modell
+- Bullwhip-Effekt
 
 ---
 

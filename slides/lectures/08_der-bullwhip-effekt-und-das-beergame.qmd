@@ -1,8 +1,4 @@
----
-title: "Der Bullwhip-Effekt und das Beergame"
-subtitle: "Koordination von Bestellentscheidungen in Supply Chains"
-author: "Prof. Dr. Thomas Kirschstein"
----
+
 
 ```{r}
 #| include: false
@@ -19,13 +15,7 @@ library(xml2)
 library(datawizard)
 
 # Funktionen aus scm_functions.R einbinden
-source(
-  file.path(
-    quarto::quarto_project_dir(),
-    "R",
-    "scm_functions.R"
-  )
-)
+source("../R/scm_functions.R")
 
 set.seed(1234)
 
@@ -403,13 +393,10 @@ p_bestand
 
 ```{r}
 daten_bestand |>
-  transmute(
-    Periode,
-    Nachfrage = Bedarf
-  ) |>
-  select(Periode, Nachfrage) |>
+  dplyr::rename(Nachfrage = Bedarf) |>
+  dplyr::select(Periode, Nachfrage) |>
   knitr::kable(
-    align = "rrrrrrr",
+    align = "rr",
     digits = 0
   )
 ```
@@ -664,8 +651,8 @@ sd_vergleich <- tibble(
 )
 
 daten_order_decisions |>
-  select(Periode, Bedarf, Mittelwert_Schaetzung,Standardabweichung_Schaetzung, Zielbestand, Bestellmenge) |> 
-  transmute(
+  dplyr::select(Periode, Bedarf, Mittelwert_Schaetzung,Standardabweichung_Schaetzung, Zielbestand, Bestellmenge) |> 
+  dplyr::transmute(
     Tag = Periode,
     'Bedarf d[t]' = round(Bedarf,1),
     `Mittelwert μ̂[t]` = round(Mittelwert_Schaetzung,1),

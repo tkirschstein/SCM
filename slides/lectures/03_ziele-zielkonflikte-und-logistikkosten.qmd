@@ -1,8 +1,4 @@
----
-title: "Ziele, Zielkonflikte und Logistikkosten"
-subtitle: "Bestellentscheidungen bei unsicherer Nachfrage"
-author: "Prof. Dr. Thomas Kirschstein"
----
+
 
 ```{r}
 #| echo: false
@@ -10,13 +6,7 @@ author: "Prof. Dr. Thomas Kirschstein"
 #| message: false
 
 # Funktionen aus scm_functions.R einbinden
-source(
-  file.path(
-    quarto::quarto_project_dir(),
-    "R",
-    "scm_functions.R"
-  )
-)
+source("../R/scm_functions.R")
 
 library(tidyverse)
 library(leaflet)
@@ -25,6 +15,10 @@ library(dplyr)
 library(plotly)
 
 ```
+
+
+# Grundlagen des SCM - Kosten & Management
+
 
 ## Grundlagen des Supply Chain Managements {#slide-52}
 
@@ -962,16 +956,16 @@ Beispiel -- Apple Video IPod 30 GB
 ] at (10.85,3.80) {Verkaufspreis: \$299};
 
 % Passe den Pfad an den tatsächlichen Ablageort an.
-\node[
-  anchor=north west,
-  inner sep=0pt
-] at (10.72,3.48) {
-  \includegraphics[
-    width=2.5cm,
-    height=2.9cm,
-    keepaspectratio
-  ]{../images/image52.jpeg}
-};
+%\node[
+%  anchor=north west,
+%  inner sep=0pt
+%] at (10.72,3.48) {
+%  \includegraphics[
+%    width=2.5cm,
+%    height=2.9cm,
+%    keepaspectratio
+%  ]{images/image52.jpeg}
+%};
 
 % Untere Kennzahlen
 \node[

@@ -1,7 +1,18 @@
 ---
 title: "Supply Chain Management"
-subtitle: "Gesamtausgabe der Vorlesungsfolien"
+subtitle: "Wintersemester 26/27"
 author: "Thomas Kirschstein"
+
+
+filters:
+  - diagram
+
+execute:
+  cache: true
+
+diagram:
+  cache: true
+
 format:
   revealjs:
     slide-number: c/t

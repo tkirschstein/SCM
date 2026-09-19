@@ -1,7 +1,4 @@
----
-title: "Einführung und Grundbegriffe des Supply Chain Managements"
-author: "Prof. Dr. Thomas Kirschstein"
----
+
 
 
 ```{r}
@@ -10,13 +7,7 @@ author: "Prof. Dr. Thomas Kirschstein"
 #| message: false
 
 # Funktionen aus scm_functions.R einbinden
-source(
-  file.path(
-    quarto::quarto_project_dir(),
-    "R",
-    "scm_functions.R"
-  )
-)
+source("../R/scm_functions.R")
 
 library(tidyverse)
 library(leaflet)
@@ -26,7 +17,7 @@ library(plotly)
 
 ```
 
-
+# Einführung & Organisatorisches
 
 ## Organisatorisches {#slide-2}
 
@@ -67,12 +58,13 @@ Werner, H. Supply Chain Management. Springer Fachmedien Wiesbaden, aktuelle Aufl
 1.  Grundlagen des Supply Chain Managements
 2.  Strategische Gestaltung von Supply Chains
 3.  Unsicherheits- und Risikomanagement in Supply Chains
-4.  Koordination in Supply Chains
-5.  Sustainable Supply Chain Management
+
+
+# Grundlagen des Supply Chain Managements {#slide-5}
 
 ## Grundlagen des Supply Chain Managements {#slide-5}
 
-- Aufgaben, Begriffe und Konzepte
+- **Aufgaben, Begriffe und Konzepte**
 - Ziele & Zielkonflikte
 - Kosten & Management
 

@@ -1,8 +1,16 @@
 ---
-title: "Wertschöpfung, strategische Fertigung und Strategic Fit"
-subtitle: "Prozesse & Strategien"
-author: "Prof. Dr. Thomas Kirschstein"
+filters:
+  - diagram
+
+execute:
+  cache: true
+
+diagram:
+  cache: true
+
 ---
+
+# Grundlagen des SCM - Ziele & Zielkonflikte
 
 
 ```{r}
@@ -11,13 +19,7 @@ author: "Prof. Dr. Thomas Kirschstein"
 #| message: false
 
 # Funktionen aus scm_functions.R einbinden
-source(
-  file.path(
-    quarto::quarto_project_dir(),
-    "R",
-    "scm_functions.R"
-  )
-)
+source("../R/scm_functions.R")
 
 library(tidyverse)
 library(leaflet)
@@ -31,7 +33,7 @@ library(plotly)
 ## Grundlagen des Supply Chain Managements {#slide-30}
 
 - Aufgaben, Begriffe und Konzepte
-- Ziele & Zielkonflikte
+- **Ziele & Zielkonflikte**
 - Kosten & Management
 
 ## Wertschöpfung als Prozess {#slide-31}
@@ -39,7 +41,7 @@ library(plotly)
 ![](../images/clipboard-2707534972.png){width="1500"}
 
 :::::: columns
-::: {.column width="50%"}
+::: {.column width="59%"}
 ***Beschaffung*** ist der Prozess zum Einkauf und Bereit-stellung von Rohstoffen, Komponenten und Dienst-leistungen von externen Partnern, die für die Produktion von Waren und Dienstleistungen erforderlich sind.
 
 ***Produktion*** ist ein zielgerichteter Prozess der Kombination von Gütern und Dienstleistungen in höherwertige Produkte.
@@ -49,7 +51,7 @@ library(plotly)
 ***Absatz*** ist der Prozess des Verkaufs der Endprodukte an den Konsumenten oder Handelspartner.
 :::
 
-:::: {.column width="50%"}
+:::: {.column width="40%"}
 ::: {.fragment .fade-up}
 ![](../images/image31.png)
 :::
@@ -72,7 +74,7 @@ Denken in Zyklen
 
 :::::: columns
 :::: {.column width="50%"}
-::: large-text
+
 **Kundenbestellzyklus**: Verarbeitung von externen Kundenbedarfen
 
 **Distributions-/Versorgungszyklus**: Umwandlung von Kundenbedarfen in interne Bedarfe an Fertigprodukten
@@ -80,7 +82,7 @@ Denken in Zyklen
 **Produktionszyklus**: Umwandlung von internen Bedarfen in Produktions-bedarfe von Zwischenprodukten und Rohstoffen
 
 **Beschaffungszyklus**: Gestaltung von Bestell-/Versorgungsprozessen für Rohstoffe und Dienstleistungen, die extern bezogen werden müssen
-:::
+
 ::::
 
 ::: {.column width="50%"}
@@ -98,9 +100,7 @@ Entkopplung von Zyklen
 
 ::::::: columns
 :::: {.column width="50%"}
-::: large-text
 **Make-to-stock**
-:::
 
 ![](../images/image33.png){width="690"}
 
@@ -108,9 +108,8 @@ Entkopplung von Zyklen
 ::::
 
 :::: {.column width="50%"}
-::: large-text
 **Make-to-order**
-:::
+
 
 ![](../images/image34.png){width="600"}
 
@@ -250,7 +249,6 @@ Kundenzufriedenheit & Unsicherheit
 :::
 
 :::::::::: {.column width="60%"}
-::::::::: large-text
 ::: vspace-2
 :::
 
@@ -273,7 +271,6 @@ Unsicherheit desjenigen Nachfragesegments, das durch die Supply Chain bedient we
 :::
 ::::
 :::::::::
-::::::::::
 ::::::::::::
 
 ## Umgang mit Unsicherheit {#slide-37}
@@ -282,7 +279,6 @@ Unsicherheit desjenigen Nachfragesegments, das durch die Supply Chain bedient we
 Kundenbedürfnisse & implizierte Unsicherheit
 :::
 
-::: large-text
 | Kundenbedürfnisse | Verursacht implizite Unsicherheit da ... |
 |:-------------------------------|:---------------------------------------|
 | (max.) Nachfragemengen steigen | Erhöhte Spannweite des Bedarfs größere Varianz / Schwankung der Nachfragemengen verursacht |
@@ -291,7 +287,6 @@ Kundenbedürfnisse & implizierte Unsicherheit
 | Lieferbereitschaftsgrad erhöht sich | Nachfragespitzen müssen nun abgefedert werden |
 | Innovationsgrad erhöht sich | Nachfrage neuer Produkte in der Regel unbekannt oder schwer zu prognostizieren |
 | Anzahl der Vertriebskanäle steigt | Nachfrage der einzelnen Vertriebskanäle schwieriger zu prognostizieren |
-:::
 
 ## Umgang mit Unsicherheit {#slide-38}
 
@@ -386,7 +381,6 @@ Reaktionsfähigkeit / responsiveness
 
 :::::::::: columns
 :::::: {.column width="50%"}
-::::: large-text
 ::: callout-note
 ## Reaktionsfähigkeit
 
@@ -404,7 +398,7 @@ ist die Fähigkeit einer Supply Chain mit Nachfrageunsicherheit umzugehen
 - Kurze Entwicklungszyklen neuer Produkte
 - Hohe Bereitschaftsgrade
 - Reduktion von Versorgungsunsicherheiten
-:::::
+
 ::::::
 
 ::::: {.column width="50%"}
@@ -493,7 +487,6 @@ ist die Fähigkeit einer Supply Chain mit Nachfrageunsicherheit umzugehen
 Reaktionsfähigkeit vs. Effizienz
 :::
 
-:::::::::::: large-text
 ::::::::::: columns
 ::::::: {.column width="50%"}
 ::: callout-note
@@ -591,7 +584,7 @@ Effizienz einer Supply Chain ist das Inverse der Gesamtkosten einer Supply Chain
 ::::
 :::::
 :::::::::::
-::::::::::::
+
 
 ## Strategisches Management {#slide-41}
 
@@ -675,7 +668,7 @@ Supply Chain Treiber
 ```
 :::
 
-:::: {.large-text}
+
 ::::: columns
 ::: {.column width="20%"}
 - Produktions-  technologie
@@ -707,7 +700,7 @@ Supply Chain Treiber
 - Kollaborative Prognose & Planung
 :::
 :::::
-::::
+
 
 ## Strategisches Management
 
@@ -715,6 +708,7 @@ Supply Chain Treiber
 Teilstrategien
 :::
 
+::: {.smaller-text}
 |   | **Effiziente Supply Chains** | **Reaktive Supply Chains** |
 |--------------|:-----------------------|:-----------------------|
 | **Primärziel** | Nachfragebefriedigung zu niedrigsten Kosten | Schnellstmögliche Nachfragebefriedigung |
@@ -724,6 +718,8 @@ Teilstrategien
 | **Lagerstrategie** | Minimierung von (Sicherheits-)Beständen | Einrichtung von Sicherheitsbeständen zur Absicherung von Nachfrageschwankungen |
 | **Versorgungsstrategie** | Reduziere Zykluszeiten solange Kosten nicht steigen | Reduziere Zykluszeiten auch wenn Kosten steigen |
 | **Beschaffungsstrategie** | Lieferantenauswahl nach Kosten und Verlässlichkeit | Lieferantenauswahl nach Reaktionsfähigkeit, Geschwindigkeit, Flexibilität und Qualität |
+
+:::
 
 ## Strategisches Management {#slide-42}
 
@@ -737,7 +733,7 @@ Normstrategien & SCM
 <!-- | Definition Strategie (nach Gabler Wirtschaftslexikon) | -->
 <!-- |:-----------------------------------------------------------------------| -->
 <!-- | Strategie ist die grundsätzliche, langfristige Verhaltensweise (Maßnahmenkombination) der Unternehmung und relevanter Teilbereiche gegenüber ihrer Umwelt zur Verwirklichung der langfristigen Ziele. | -->
-
+::: {.small-text}
 
 | **Normstrategie** | **Vorteil** | **Wettbewerbsbasis** | **Beitrag des SCM** |
 |:-----------------|:-----------------|:-----------------|:-----------------|
@@ -746,5 +742,5 @@ Normstrategien & SCM
 | Serviceführer | Service auf Kunden konsequent zuschneiden | Erwartungen kundenspezifisch erfüllen | Kundenorientierte Entwicklung ermöglichen |
 | Qualitätsführer | Sichere und zuverlässige Produkte herstellen | Singuläre Produkteigenschaften | Verlässliche SC, Quality Assurance |
 | Nachhaltigkeitsführer | Nachhaltige Produkte und Prozesse | Nachhaltigkeitserwartungen der Kunden erfüllen | CO2-Neutralität, Energie- und Ressourcen-Schonung |
-
+:::
 

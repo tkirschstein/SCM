@@ -1,7 +1,4 @@
----
-title: "Standortplanung II: Diskrete Standortplanung"
-author: "Prof. Dr. Thomas Kirschstein"
----
+
 
 ```{r}
 #| echo: false
@@ -9,13 +6,7 @@ author: "Prof. Dr. Thomas Kirschstein"
 #| message: false
 
 # Funktionen aus scm_functions.R einbinden
-source(
-  file.path(
-    quarto::quarto_project_dir(),
-    "R",
-    "scm_functions.R"
-  )
-)
+source("../R/scm_functions.R")
 
 library(tidyverse)
 library(leaflet)
@@ -224,7 +215,7 @@ Ausgangslage
 #| fig-height: 6.5
 
 # Daten laden
-standorte <- readxl::read_excel("../../R/Arvato_Distributionsstandorte_Deutschland.xlsx")
+standorte <- readxl::read_excel("../R/Arvato_Distributionsstandorte_Deutschland.xlsx")
 
 # Automobilwerke in Norddeutschland und Benelux (Kunden / Bedarfsorte)
 # Bekannte Werke in der Region: VW Wolfsburg, BMW Hannover,

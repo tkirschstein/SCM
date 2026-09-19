@@ -1,12 +1,12 @@
 project:
   output-dir: _output
-
+  execute-dir: project
 format:
   revealjs:
     slide-number: true
     chalkboard: true
     css: styles.css
 
-bibliography: ../literature/references.bib
+bibliography: ../literature/!references.bib
 
 citeproc: true
