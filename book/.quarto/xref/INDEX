@@ -1,0 +1,29 @@
+{
+  "index.qmd": {
+    "index.html": "c67300f3"
+  },
+  "chapters/01_foundations.qmd": {
+    "01_foundations.html": "c5f06bb8"
+  },
+  "chapters/02_strategy.qmd": {
+    "02_strategy.html": "82bf930e"
+  },
+  "chapters/03_network_design.qmd": {
+    "03_network_design.html": "8d063c4d"
+  },
+  "chapters/04_transport.qmd": {
+    "04_transport.html": "133a0cdf"
+  },
+  "chapters/05_uncertainty.qmd": {
+    "05_uncertainty.html": "0c03781e"
+  },
+  "chapters/06_coordination.qmd": {
+    "06_coordination.html": "c341a7dd"
+  },
+  "chapters/07_sustainability.qmd": {
+    "07_sustainability.html": "f7fcd6c9"
+  },
+  "references.qmd": {
+    "references.html": "322c22ac"
+  }
+}
