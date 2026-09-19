@@ -59,20 +59,16 @@ plotly_layout <- function(p,
 
 Nach dieser Einheit können Sie …
 
-- den Bullwhip-Effekt als Verstärkung von Nachfrageschwankungen
-  entlang einer Supply Chain erklären
-- wesentliche Ursachen und Folgen des Bullwhip-Effekts beurteilen
-- eine periodische $(R,S)$-Bestandspolitik bei fester
-  Wiederbeschaffungszeit anwenden
+- den Bullwhip-Effekt entlang einer Supply Chain erklären
+- wesentliche **Ursachen und Folgen** des Bullwhip-Effekts beurteilen
 - Order-up-to-Level $S$ und Sicherheitsbestand $SB$ bestimmen
-- den Zusammenhang zwischen Bestellvarianz und Sicherheitsbestand erläutern
 - Maßnahmen zur Reduktion des Bullwhip-Effekts einordnen
 
 **Literatur zur Vertiefung**
 
-- **Grundlegende Ursachen und Gegenmaßnahmen des Bullwhip-Effekts:** [@lee1997bullwhip].
-- **Empirische Untersuchung der Informationsübertragung:** [@bray2012information, S. 860–875].
-- **Messung, Aggregation und Wirkung von Bullwhip-Effekten:** [@yao2020empirically, S. 5–30].
+- **Grundlegende Ursachen und Gegenmaßnahmen des Bullwhip-Effekts:** [@thonemann2023operations, Kapitel 8, insbesondere 8.2].
+- **Empirische Untersuchung der Informationsübertragung:** [@bray2012information].
+- **Messung, Aggregation und Wirkung von Bullwhip-Effekten:** [@yao2020empirically].
 
 ------------------------------------------------------------------------------
 
@@ -693,7 +689,7 @@ Definition & Illustration
 :::
 
 ::: {.callout-important}
-## Definition (Cachon/Terwich, 2022)
+## Definition [@cachon2024matching]
 
 The bullwhip effect is present in a supply chain if the variability of demand at one level of the supply chain is greater than the variability of demand at the next downstream level in the supply chain, where variability is  measured with the coefficient of variation.
 
@@ -856,7 +852,7 @@ $\rightarrow$ je größer $B$ desto stärker der Bullwhip-Effekt
 ## Bullwhip-Effekt
 
 ::: slide-subtitle
-Empirie (Bray & Mendelson, 2012; Chen & Lee, 2012; Yao et al. 2020)
+Empirie [@bray2012information; @chen2012bullwhip; @yao2020empirically]
 :::
 
 ::: columns
@@ -895,7 +891,7 @@ beobachteten Nachfrage.
 
 ::: {.callout-tip appearance="minimal" icon="false"}
 
-### Reale Performance-Folgen (Yao et al., 2020)
+### Reale Performance-Folgen [@yao2020empirically]
 
 Ein stärkerer Bullwhip-Effekt geht mit einem höheren Bestandsverhältnis und
 zugleich mehr Fehlmengen einher $\rightarrow$ Sicherhietsbestände reichen nicht

@@ -18,6 +18,8 @@ library(osrm)
 library(leaflet)
 library(dplyr)
 library(units)
+library(ggplot2)
+library(knitr)
 ```
 
 
@@ -36,15 +38,14 @@ Nach dieser Einheit können Sie …
 - Standortentscheidungen im strategischen Supply-Chain-Design **einordnen**,
 - qualitative Standortfaktoren systematisch **erfassen und bewerten**,
 - das AHP-Verfahren und Nutzwertverfahren **erläutern und anwenden**,
-- das Steiner-Weber-Modell und seine Annahmen **erläutern**,
 - die Eigenschaften unterschiedlicher Distanzmetriken **erläutern** und diese **berechnen**,
 - kontinuierliche Standortverfahren auf einfache Entscheidungsprobleme **anwenden und interpretieren**.
 
 **Literatur zur Vertiefung**
 
 - **Modellgestützte regionale Standortplanung und -entwicklung:** [@kik2022standortplanung].
-- **Standortplanung und kontinuierliche Entscheidungsmodelle:** einschlägige Abschnitte zur Standortplanung in [@guenther2012produktion].
-- **Kontinuierliche Standortmodelle und lokationale Gleichgewichte:** [@cooper1968locational].
+- **Standortplanung und kontinuierliche Entscheidungsmodelle:**  [@thonemann2023operations, Kapitel 3].
+- **Kontinuierliche Standortmodelle und lokale Gleichgewichte:** [@cooper1968locational].
 
 ## Planung im Supply Chain Management {#slide-67}
 
@@ -237,7 +238,7 @@ Phasen der Standortwahl
 
 ![](../images/image61.jpeg)
 
-(Chopra/Meindl, 2019)
+[@chopra2025supply]
 
 ## Strategische Netzwerkplanung {#slide-73}
 
@@ -249,7 +250,7 @@ Standortplanungsprozess
 ::: {.column width="70%"}
 ![](../images/image62.png)
 
-(Kik, 2022)
+[@kik2022standortplanung]
 :::
 
 ::: {.column width="30%"}
@@ -268,7 +269,7 @@ Standortfaktoren
 ::: {.column width="70%"}
 ![](../images/image63.png){width="950"}
 
-(Lahner, 2020)
+[@lahner2020regionaloekonomie]
 :::
 
 :::: {.column width="30%"}
@@ -292,7 +293,7 @@ Methoden der Standortplanung
 ![](../images/image64.png){width="800"}
 
 ::: small-text
-Merkmale von Optimierungsmodellen (Kik, 2022) ![](../images/image65.png){width="800"}
+Merkmale von Optimierungsmodellen [@kik2022standortplanung] ![](../images/image65.png){width="800"}
 :::
 ::::
 
@@ -922,7 +923,7 @@ label_geom <- st_line_sample(label_points, sample = 0.5)
 label_points <- st_as_sf(
   label_points |>
     st_drop_geometry() |>
-    select(route_type, label_txt),
+    dplyr::select(route_type, label_txt),
   geometry = label_geom,
   crs = crs_proj
 ) |>
@@ -1146,11 +1147,7 @@ Steiner-Weber-Modell bei euklidischer Distanz - Beispiel
 :::
 
 ```{r}
-#| include: false
-library(ggplot2)
-library(dplyr)
-library(knitr)
-library(plotly)
+#| include: true
 
 kunden <- data.frame(
   i = 1:6,

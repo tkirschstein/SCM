@@ -20,6 +20,26 @@ format:
     css: styles.css
 ---
 
+```{r}
+#| echo: false
+#| warning: false
+#| message: false
+
+
+library(quarto)
+library(readr)
+library(tidyverse)
+library(plotly)
+library(knitr)
+library(kableExtra)
+library(dplyr)
+
+
+source("../R/scm_functions.R")
+```
+
+
+
 {{< include lectures/01_einfuehrung-und-grundbegriffe-des-supply-chain-managements.qmd >}}
 
 {{< include lectures/02_wertschoepfung-strategische-fertigung-und-strategic-fit.qmd >}}

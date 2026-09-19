@@ -143,7 +143,7 @@ Nach dieser Einheit können Sie …
 
 - **Einperiodige Bestandsmodelle und Critical-Fractile-Logik:** Kapitel 13 in [@cachon2024matching].
 - **Newsvendor-Modelle im Kontext des Inventory Managements:** Kapitel 9 in [@silver2017inventory].
-- **Klassische Primärquelle zur optimalen Lagerpolitik:** [@arrow1951optimal].
+- **Einführung Newsvendor:** [@thonemann2023operations, Kapitel 5].
 
 ------------------------------------------------------------------------------
 

@@ -39,19 +39,18 @@ Nach dieser Einheit können Sie …
 
 **Literatur zur Vertiefung**
 
-- **Implizierte Unsicherheit, Reaktionsfähigkeit und Strategic Fit:** Kapitel 2–3 in [@chopra2025supply].
-- **Pooling, Nachfragevariabilität und Bestandsentscheidungen:** Kapitel 10–13 in [@cachon2024matching].
-- **Sicherheitsbestände, Servicegrade und Inventory-Management:** Kapitel 6–8 in [@silver2017inventory].
+- **Pooling, Nachfragevariabilität und Bestandsentscheidungen:** [@cachon2024matching, Kapitel 10–13].
+- **Sicherheitsbestände, Servicegrade und Inventory-Management:** [@silver2017inventory, Kapitel 6–8].
 
 ---
 
 ## Die Natur der Unsicherheit {#slide-pooling-1}
 ::: slide-subtitle
-Implizierte Unsicherheit in Supply Chains (Chopra & Meindl)
+Implizierte Unsicherheit in Supply Chains [@chopra2025supply]
 :::
 
 ::: {.callout-note appearance="minimal" icon=false}
-**Implizierte Unsicherheit** (*implied uncertainty*) bezeichnet die Unsicherheit, mit der eine Supply Chain umgehen **muss** — bestimmt durch die Kombination aus **Nachfrageunsicherheit** und den **Serviceanforderungen** des Marktes (Chopra & Meindl, Kap. 2).
+**Implizierte Unsicherheit** (*implied uncertainty*) bezeichnet die Unsicherheit, mit der eine Supply Chain umgehen **muss** — bestimmt durch die Kombination aus **Nachfrageunsicherheit** und den **Serviceanforderungen** des Marktes [@chopra2025supply, Kap. 2].
 :::
 
 ::: columns

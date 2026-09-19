@@ -37,9 +37,9 @@ Nach dieser Einheit können Sie …
 
 **Literatur zur Vertiefung**
 
-- **Zielsysteme, Kostenmodelle und logistische Entscheidungen:** Kapitel 1–3 sowie die Abschnitte zur Logistikplanung in [@guenther2012produktion].
-- **Leistungs- und Kostenperspektive der Distributionslogistik:** Kapitel 1–4 in [@tripp2024distributions].
-- **Nachhaltigkeit als Erweiterung des unternehmerischen Zielsystems:** Kapitel 1–3 in [@dyckhoff2008nachhaltige].
+- **Zielsysteme und Kostenmodelle:** [@guenther2012produktion, Kapitel 1–3].
+- **Leistungs- und Kostenperspektive der Distributionslogistik:** [@tripp2024distributions, Kapitel 1–4].
+- **Nachhaltigkeit als Unternehmensziel:** [@dyckhoff2008nachhaltige, Kapitel 1–3].
 
 ## Arten von Zielen im Unternehmen {#slide-53}
 
@@ -49,7 +49,7 @@ Nach dieser Einheit können Sie …
 **Ebenen im Managementsystem**
 :::
 
-![](../images/image45.png) (Dyckhoff, 1998)
+![](../images/image45.png) [@dyckhoff1998grundzuege]
 ::::
 
 :::: {.column width="50%"}
@@ -1000,7 +1000,7 @@ Beispiel -- Apple Video IPod 30 GB
 ```
 :::
 
-(Dedrick et al. 2008)
+[@dedrick2008profits]
 
 ## Sustainable Supply Chain management {#slide-59}
 
@@ -1011,7 +1011,7 @@ Nachhaltigkeit als Zieldimension
 ::: callout-note
 ## Definition Nachhaltigkiet (Versuch)
 
-Ein Gesellschaftssystem wird als nachhaltig bezeichnet, wenn es intra- als intergenerativ gerecht angesehen werden kann. Gerecht heisst „die Bedürfnisse der Gegenwart befriedigt, ohne zu riskieren, dass künftige Generationen ihre eigenen Bedürfnisse nicht befriedigen können" (Hauff, 1987)
+Ein Gesellschaftssystem wird als nachhaltig bezeichnet, wenn es intra- als intergenerativ gerecht angesehen werden kann. Gerecht heisst „die Bedürfnisse der Gegenwart befriedigt, ohne zu riskieren, dass künftige Generationen ihre eigenen Bedürfnisse nicht befriedigen können" [@hauff1987zukunft]
 :::
 
 ::::: columns
@@ -1028,12 +1028,12 @@ Ein Gesellschaftssystem wird als nachhaltig bezeichnet, wenn es intra- als inter
 :::
 :::::
 
-(Baumast & Pape, 2013)
+[@baumast2013nachhaltigkeitsmanagement]
 
 ## Ökologischer strategic fit {#slide-60a}
 
 ::: slide-subtitle
-Ökologieorientierung und Betroffenheit (Günther, 2008)
+Ökologieorientierung und Betroffenheit [@guenther2008oekologieorientiertes]
 :::
 
 ::::::: columns
@@ -1289,7 +1289,7 @@ document.addEventListener("DOMContentLoaded", function () {
 ## Dimensionen ökologischer SCM-Strategien {#slide-oeko-matrix}
 
 ::: slide-subtitle
-(Dyckhoff, 2008)
+[@dyckhoff2008nachhaltige]
 :::
 
 :::::::: columns

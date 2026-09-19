@@ -31,26 +31,8 @@ Klausur: zusammen mit Distribution & BBA-Kurs
 
 ## Literatur {#slide-3}
 
-::: small-text
-Chopra, S., Meindl, P., Supply Chain Management, Pearson New York, aktuelle Auflage .
 
-Eßig , M., Hofmann, E., Stölzle, W. Supply Chain Management, Vahlen München, aktuelle Auflage.
-
-Christopher, M. Logistics and supply chain management . Pearson Education Limited Edinburgh, aktuelle Auflage.
-
-Günther, H.-O., Tempelmeier, H., Produktion und Logistik, Springer Wiesbaden, aktuelle Auflage.
-
-Kummer, S., Grün, O. & Jammernegg , W. Grundzüge der Beschaffung, Produktion und Logistik, aktuelle Auflage.
-
-Schulte, C., Material- und Logistikmanagement. Verlag Franz Vahlen München, aktuelle Auflage.
-
-Silver , E., Pyke , D. & Douglas, T., Inventory and Production Management in Supply Chains; CRC Press.
-
-Simchi -Levy, D., Operations Rules -- Delivering Customer Value through Flexible Operations ; MIT Press.
-
-Thonemann , U. Operations Management, Pearson Studium, aktuelle Auflage.
-
-Werner, H. Supply Chain Management. Springer Fachmedien Wiesbaden, aktuelle Auflage.
+::: {#refs}
 :::
 
 ## Aufbau der Vorlesung {#slide-4}
@@ -588,11 +570,10 @@ p
 ## Wozu Supply Chain Management? {#slide-9}
 
 ::: slide-subtitle
-Kundennutzen entlang der Supply Chain.
+Kundennutzen entlang der Supply Chain
 :::
 
 ```{dot}
-//| label: fig-scm-nutzen
 //| fig-width: 15.0
 //| fig-height: 4.8
 //| out-width: 94%
@@ -718,8 +699,6 @@ Netzwerkgedanke & Grundparadigma
 :::
 
 ```{dot}
-//| label: fig-scn-network
-//| fig-cap: "Supply chain network mit mehreren Akteuren je Stufe."
 //| fig-width: 13
 //| fig-height: 3.5
 //| out-width: 96%
@@ -861,7 +840,7 @@ Vielfalt & gemeinsamer Kern
 :::
 
 ::: small-text
-Stadtler (2000, S. 9): "*Supply Chain Management ist die Aufgabe, Organisationseinheiten entlang der Supply Chain zu integrieren , den Material-, Informations- und Geldfluss zu koordinieren und die Wettbewerbsfähigkeit der gesamten Supply Chain zu verbessern, um Kundenbedarfe zu erfüllen*." <br><br> Hugos (2018): „*Supply Chain Management is coordination of production , inventory , location , transportation , and information among the participants in a supply chain to achieve the best mix of responsiveness and efficiency for the market being served .*" <br><br> Corsten and Gössinger (2001): „*Supply chain management encompasses the planning and management of all activities involved in sourcing and procurement, conversion, and all logistics management activities. Importantly, it also includes coordination and collaboration with channel partners, which can be suppliers, intermediaries, third party service providers, and customers. In essence, supply chain management integrates supply and demand management within and across companies .*"
+[@stadtler2000supply, S. 9]: "*Supply Chain Management ist die Aufgabe, Organisationseinheiten entlang der Supply Chain zu integrieren , den Material-, Informations- und Geldfluss zu koordinieren und die Wettbewerbsfähigkeit der gesamten Supply Chain zu verbessern, um Kundenbedarfe zu erfüllen*." <br><br> [@hugos2018essentials]: „*Supply Chain Management is coordination of production , inventory , location , transportation , and information among the participants in a supply chain to achieve the best mix of responsiveness and efficiency for the market being served .*" <br><br> [@cscmp_definition]: „*Supply chain management encompasses the planning and management of all activities involved in sourcing and procurement, conversion, and all logistics management activities. Importantly, it also includes coordination and collaboration with channel partners, which can be suppliers, intermediaries, third party service providers, and customers. In essence, supply chain management integrates supply and demand management within and across companies .*"
 :::
 
 ## Unternehmen und ihre Umwelt {#slide-14}
@@ -873,6 +852,10 @@ Offenes Unternehmensmodell
 ::::: columns
 ::: {.column width="50%"}
 ![](../images/image15.png){width="760"}
+
+:::{.smaller-text}
+[@kummer2018grundzuge]
+:::
 :::
 
 ::: {.column width="50%"}
@@ -909,7 +892,7 @@ Fokale Supply Chain
 Polyzentrische Supply Chains
 :::
 
-![](../images/clipboard-574717847.png)
+![](../images/clipboard-574717847.png){fig-align="center" width="2600"}
 
 ::: small-text
 **Charakteristiken**:

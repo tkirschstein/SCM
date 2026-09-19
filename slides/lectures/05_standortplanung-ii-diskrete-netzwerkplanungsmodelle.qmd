@@ -40,9 +40,9 @@ Nach dieser Einheit können Sie …
 
 **Literatur zur Vertiefung**
 
-- **Transport-, Umschlags- und Netzwerkmodelle:** einschlägige Abschnitte zur Standort-, Transport- und Netzwerkplanung in [@guenther2012produktion].
+- **Transport-, Umschlags- und Netzwerkmodelle:** [@guenther2012produktion, Kapitel 4].
 - **Diskrete Standortmodelle, Algorithmen und Anwendungen:** Kapitel 1–4 in [@daskin2013network].
-- **Theorie und Anwendungen der 
+- **Theorie und Anwendungen der Standortplanung:** [@drezner2002facility].
 
 ---
 
