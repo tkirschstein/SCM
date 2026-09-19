@@ -1,0 +1,58 @@
+# Vorwort {.unnumbered}
+
+Dieses Lehrbuch begleitet die Vorlesung **Supply Chain Management (SCM)** und vertieft die Inhalte der Vorlesungsfolien (`slides/`) in ausführlicher, textbasierter Form. Es ist als **Reader zum Selbststudium** gedacht: Während die Folien in der Vorlesung als visuelle Gedächtnisstütze dienen, erläutert dieses Buch dieselben Modelle, Verfahren und Fallbeispiele in vollständigen Sätzen, mit hergeleiteten Formeln und lauffähigem, kommentiertem R-Code.
+
+## Aufbau des Buches
+
+Jedes Kapitel entspricht genau einer Vorlesungseinheit:
+
+1. **Einführung und Grundbegriffe des Supply Chain Managements** — Was ist eine Supply Chain? Flüsse, Akteure, Planungsebenen.
+2. **Wertschöpfung, strategische Fertigung und Strategic Fit** — Wertschöpfungsketten, Make-or-Buy, Strategic Fit.
+3. **Ziele, Zielkonflikte und Logistikkosten** — Zielsystem des SCM, das Tetraeder der Zielkonflikte, Kostenarten.
+4. **Standortplanung I** — Qualitative Verfahren (Nutzwertanalyse, AHP) und kontinuierliche Verfahren (Center of Gravity, Weiszfeld-Algorithmus).
+5. **Standortplanung II** — Diskrete Netzwerkplanungsmodelle: Transportproblem, Warehouse-Location-Problem, Heuristiken und exakte Verfahren.
+6. **Unsicherheit in Supply Chains und Pooling** — Nachfrageunsicherheit, Sicherheitsbestände, das Quadratwurzelgesetz des Pooling.
+7. **Das Newsvendor-Modell** — Optimale Bestellmengen unter Unsicherheit, kritische Verhältniszahl, Service-Level.
+8. **Der Bullwhip-Effekt und das Beergame** — Verstärkung von Nachfrageschwankungen entlang der Kette, Ursachen und Gegenmaßnahmen.
+9. **Nachhaltigkeit im Supply Chain Management** — Ökologische, ökonomische und soziale Zieldimension, Kreislaufwirtschaft und Circular Supply Chains als Erweiterung des Zielkonflikte-Tetraeders aus Kapitel 3.
+
+Jedes Kapitel folgt derselben Struktur:
+
+- **Lernziele** zu Beginn, damit klar ist, welche Kompetenzen erworben werden sollen.
+- **Konzeptionelle Erläuterungen** mit Beispielen aus der Praxis.
+- **Mathematische Herleitungen** in nachvollziehbaren Schritten.
+- **Kommentierter R-Code**, der die Modelle direkt berechnet und visualisiert — jeder Code-Block ist lauffähig und so kommentiert, dass auch Studierende ohne Vorerfahrung in R den Ablauf nachvollziehen können. Neben den fachlichen Inhalten werden dabei grundlegende R-Konzepte (Vektoren, Funktionen, Datenrahmen, das `tidyverse`, Pipes `|>`, Visualisierung mit `ggplot2`) Schritt für Schritt eingeführt.
+- **Kontrollfragen** am Kapitelende zur Selbstüberprüfung.
+
+## Voraussetzungen
+
+- Grundlagen der linearen Algebra und Wahrscheinlichkeitsrechnung.
+- Keine R-Vorkenntnisse notwendig — die Grundlagen werden im Buch eingeführt.
+- Grundlagen der Mikroökonomie sind hilfreich, aber nicht zwingend erforderlich.
+
+## Software
+
+Der gesamte R-Code dieses Buches verwendet die folgenden Pakete:
+
+```r
+install.packages(c(
+  "tidyverse",       # Datenmanipulation (dplyr, tidyr) und Visualisierung (ggplot2)
+  "plotly",          # interaktive Grafiken
+  "knitr",           # Einbettung von R-Code in Quarto-Dokumente
+  "kableExtra",      # formatierte Tabellen
+  "sf",              # Verarbeitung von Geodaten
+  "leaflet",         # interaktive Karten
+  "ompr", "ompr.roi", "ROI.plugin.glpk",  # algebraische Optimierungsmodelle (MILP)
+  "scales"           # Achsen- und Zahlenformatierung in ggplot2
+))
+```
+
+Alle Beispielfunktionen (z. B. für Center of Gravity, das Newsvendor-Modell oder die Add-/Drop-Heuristik) sind zusätzlich in `R/scm_functions.R` gebündelt und werden im Buch an den passenden Stellen referenziert.
+
+## Literaturempfehlungen
+
+Als Hauptlehrbuch dient:
+
+> Chopra, S., & Meindl, P. *Supply Chain Management: Strategy, Planning, and Operation*. Pearson.
+
+Ergänzend werden im Text u. a. herangezogen: Eßig, Hofmann & Stölzle, Günther & Tempelmeier, Werner sowie Christopher (vollständige Angaben siehe [Literaturverzeichnis](references.qmd)).

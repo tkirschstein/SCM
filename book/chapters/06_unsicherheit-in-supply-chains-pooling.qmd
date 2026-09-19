@@ -1,0 +1,770 @@
+# Unsicherheit in Supply Chains und Pooling {#sec-unsicherheit-pooling}
+
+::: {.lernziele}
+**Lernziele**
+
+- Sie können Quellen und Auswirkungen von Unsicherheit in Supply Chains **erläutern** und zwischen Nachfrageunsicherheit, Liefervariabilität und implizierter Unsicherheit **unterscheiden**.
+- Sie können den Zusammenhang zwischen Sicherheitsbestand, Servicegrad und Nachfrageverteilung **herleiten** und für gegebene Daten **berechnen**.
+- Sie können das Konzept des **Pooling** (Risikoausgleich) auf Kapazitäten und auf Lagerbestände **anwenden** und seinen Nutzen **quantifizieren**.
+- Sie können das **Quadratwurzelgesetz des Pooling** algebraisch **herleiten**, in R **implementieren** und seine Voraussetzungen **kritisch einordnen**.
+- Sie können Zufallszahlen in R **erzeugen**, mit `set.seed()` **reproduzierbar** machen, einfache **Monte-Carlo-Simulationen** durchführen und empirische Verteilungen mit `ecdf()` **auswerten**.
+:::
+
+```{r}
+#| label: ch6-setup
+#| message: false
+#| warning: false
+
+# Pakete für dieses Kapitel: Datenmanipulation, Visualisierung, Tabellen
+library(tidyverse)   # dplyr, tidyr, ggplot2, purrr, ...
+library(kableExtra)  # formatierte Tabellen für HTML/PDF
+
+# Die im Buch wiederverwendeten SCM-Funktionen (u.a. pooling_safety_stock(),
+# simuliere_tS(), tS.lager()) liegen gebündelt in R/scm_functions.R
+source("../R/scm_functions.R")
+```
+
+Kapitel 4 und 5 haben gezeigt, wie Standorte und Netzwerke **unter der Annahme bekannter, fixer Nachfragen** geplant werden. In der Realität ist diese Annahme fast nie erfüllt: Nachfrage schwankt von Periode zu Periode, Lieferzeiten variieren, und Kapazitäten müssen lange im Voraus festgelegt werden, bevor überhaupt bekannt ist, wie viel tatsächlich benötigt wird. Dieses Kapitel behandelt, wie Supply Chains mit dieser **Unsicherheit** umgehen — durch geeignete Quantifizierung, durch Sicherheitsbestände und, als zentrales Gestaltungsprinzip, durch **Pooling**: die Bündelung von Kapazitäten oder Lagerbeständen, um Nachfrageschwankungen gegenseitig auszugleichen.
+
+Der rote Faden dieses Kapitels lässt sich in drei Schritten zusammenfassen. Zunächst wird geklärt, **woher** Unsicherheit kommt und wie sie sich systematisch einordnen lässt (implizierte Unsicherheit). Anschließend wird gezeigt, wie sich Unsicherheit **quantitativ bepuffern** lässt — über Sicherheitsbestände, die an einen gewünschten Servicegrad gekoppelt sind. Und schließlich wird das eigentliche Kernthema entfaltet: Wie lässt sich der dafür nötige Puffer **verringern**, ohne den Servicegrad zu senken? Die Antwort — Pooling — wird dabei an zwei strukturell verwandten, aber ökonomisch unterschiedlichen Beispielen durchgespielt: an **Produktionskapazitäten** (mehrere Werke, die flexibel füreinander einspringen) und an **Lagerbeständen** (mehrere Standorte, die zu einem Zentrallager zusammengelegt werden). Beide Anwendungen laufen am Ende auf dieselbe mathematische Struktur hinaus, die im **Quadratwurzelgesetz des Pooling** kulminiert.
+
+## Die Natur der Unsicherheit in Supply Chains
+
+### Nachfrageunsicherheit und implizierte Unsicherheit
+
+Jede Supply Chain muss zwei Dinge gleichzeitig leisten: Sie muss **effizient** sein (niedrige Kosten) und **reaktionsfähig** (schnelle, zuverlässige Verfügbarkeit). Wie stark eine Supply Chain auf Reaktionsfähigkeit statt auf Kosteneffizienz ausgelegt sein sollte, hängt von der **implizierten Unsicherheit** (*implied uncertainty*) ab, die sie zu bewältigen hat [@chopra2025supply, Kap. 2]. Implizierte Unsicherheit ist dabei nicht einfach gleichbedeutend mit "die Nachfrage ist schwer vorherzusagen" — sie ergibt sich aus dem **Zusammenspiel zweier Quellen**:
+
+1. **Nachfrageunsicherheit**: Wie stark schwankt die tatsächliche Nachfrage um ihren Erwartungswert? Salz oder Grundnahrungsmittel haben eine sehr stabile, gut prognostizierbare Nachfrage; Modeartikel oder Unterhaltungselektronik mit kurzen Lebenszyklen dagegen kaum.
+2. **Liefervariabilität**: Wie zuverlässig sind Beschaffungsmengen und -zeiten? Beton oder Kohle lassen sich praktisch beliebig und pünktlich liefern; Halbleiter oder Fangerträge in der Fischerei unterliegen dagegen erheblichen Schwankungen.
+
+Produkte mit niedriger Nachfrage- und Liefervariabilität werden als **funktional** bezeichnet — sie lassen sich in **effizienten** (kosteno­ptimierten) Supply Chains mit geringen Puffern verwalten. Produkte mit hoher Variabilität gelten als **innovativ** und benötigen **reaktionsfähige** Supply Chains mit Kapazitäts- und Bestandspuffern, um Fehlmengen zu vermeiden. Dazwischen liegen **hybride** Güter. Diese Einteilung ist als *Implied Uncertainty Spectrum* bekannt: An einem Ende stehen Güter wie Salz oder Grundnahrungsmittel, am anderen Ende Fashion-Artikel oder neueste Telefonchips. Für eine Supply-Chain-Managerin oder einen -Manager ist die zentrale Konsequenz: **Die Wahl der Lagerhaltungsstrategie, der Kapazitätsauslegung und der Sicherheitsbestände muss zur implizierten Unsicherheit des jeweiligen Produkts passen** — ein Standardprodukt und ein Modeartikel erfordern grundsätzlich unterschiedliche Antworten auf Unsicherheit, selbst wenn beide über dieselbe Supply Chain laufen.
+
+### Das Grunddilemma: fixe Kapazität, variable Nachfrage
+
+Der Kern des Problems liegt in einer zeitlichen Asymmetrie: Kapazitäten — Fabrikhallen, Lagerflächen, Personal, Maschinen — müssen **ex ante**, also lange bevor die tatsächliche Nachfrage bekannt ist, festgelegt werden. Die Nachfrage selbst realisiert sich dagegen **ex post**. Aus dieser Asymmetrie folgt ein **struktureller Mismatch**, der sich nicht durch bessere Planung allein beseitigen lässt: Ist die realisierte Nachfrage $d$ höher als die verfügbare Kapazität $C$, entstehen entgangene Umsätze (*Lost Sales*); ist $d$ niedriger als $C$, entstehen Leerkosten durch ungenutzte Kapazität. Nur im Grenzfall $d \approx C$ — der bei zufälliger Nachfrage so gut wie nie exakt eintritt — wären beide Effekte gleichzeitig vermieden.
+
+Um diesen Mechanismus zu veranschaulichen, ist es hilfreich, Nachfrage nicht als einzelne Zahl, sondern als **Zufallsvariable** zu behandeln. R bietet dafür ein durchgängiges Konzept für Wahrscheinlichkeitsverteilungen, das im Folgenden eingeführt wird.
+
+::: {.r-exkurs}
+**R-Exkurs: Wahrscheinlichkeitsverteilungen in R — `rnorm()`, `dnorm()`, `pnorm()`, `qnorm()`**
+
+Für jede in R implementierte Wahrscheinlichkeitsverteilung — hier die **Normalverteilung** $\mathcal{N}(\mu, \sigma^2)$ — existiert eine Familie von vier Funktionen mit demselben Namensstamm (`norm`), die sich nur im Anfangsbuchstaben unterscheiden. Diese vier Buchstaben stehen für vier grundsätzlich verschiedene Fragestellungen:
+
+| Funktion | Frage, die sie beantwortet | Rückgabewert |
+|---|---|---|
+| `rnorm(n, mean, sd)` | "Gib mir `n` **zufällige** Realisierungen" | Zufallszahlen |
+| `dnorm(x, mean, sd)` | "Wie **dicht/wahrscheinlich** ist der Wert `x`?" | Dichte $f(x)$ |
+| `pnorm(q, mean, sd)` | "Mit welcher Wahrscheinlichkeit ist der Wert $\leq$ `q`?" | Verteilungsfunktion $F(q)$ |
+| `qnorm(p, mean, sd)` | "Welcher Wert wird mit Wahrscheinlichkeit `p` **nicht überschritten**?" | Quantil $F^{-1}(p)$ |
+
+`pnorm()` und `qnorm()` sind zueinander invers: `pnorm()` geht von einem Wert zu einer Wahrscheinlichkeit, `qnorm()` von einer Wahrscheinlichkeit zurück zu einem Wert. Genau dieses Quantil $F^{-1}(\alpha)$ wird später bei der Berechnung von Sicherheitsbeständen zentral sein.
+
+```{r}
+#| label: ch6-rnorm-demo
+#| message: false
+
+# Angenommene monatliche Nachfrage sei N(mu = 88, sigma = 14) verteilt
+mu_d    <- 88
+sigma_d <- 14
+
+# r*: 5 zufällige Nachfragerealisierungen ziehen
+rnorm(5, mean = mu_d, sd = sigma_d)
+
+# d*: Wie wahrscheinlich (dicht) ist eine Nachfrage von genau 88 (dem Mittelwert)?
+dnorm(88, mean = mu_d, sd = sigma_d)
+
+# p*: Mit welcher Wahrscheinlichkeit liegt die Nachfrage bei höchstens 90 Einheiten?
+pnorm(90, mean = mu_d, sd = sigma_d)
+
+# q*: Welche Nachfragemenge wird mit 95 % Wahrscheinlichkeit nicht überschritten?
+qnorm(0.95, mean = mu_d, sd = sigma_d)
+```
+
+Die letzte Zeile liefert bereits die Denkfigur, die später den Sicherheitsbestand definiert: **Ein Lagerbestand in Höhe dieses Quantils deckt die Nachfrage mit der gewünschten Wahrscheinlichkeit ab.**
+:::
+
+Zufallszahlen, die einmal gezogen wurden, sind bei jedem erneuten Aufruf von `rnorm()` anders — das ist für Sensitivitätsanalysen erwünscht, macht aber Ergebnisse schwer nachvollziehbar und nicht reproduzierbar. Für Lehrbeispiele, Übungen und auch für die Fehlersuche in eigenem Code ist es deshalb wichtig, den Zufallszahlengenerator kontrollieren zu können.
+
+::: {.r-exkurs}
+**R-Exkurs: Reproduzierbare Zufallszahlen mit `set.seed()`**
+
+R erzeugt "Zufallszahlen" technisch gesehen deterministisch über einen **Pseudozufallszahlengenerator**: Ausgehend von einem internen Zustand (dem *seed*) wird eine Folge von Zahlen berechnet, die statistisch wie echte Zufallszahlen aussieht. Wird der seed mit `set.seed(n)` auf einen festen Wert `n` gesetzt, liefert jeder nachfolgende Aufruf von `rnorm()`, `rpois()`, `sample()` etc. **exakt dieselbe Folge** — unabhängig davon, wer den Code wann ausführt.
+
+```{r}
+#| label: ch6-setseed-demo
+
+# Ohne set.seed(): zwei Aufrufe liefern (praktisch sicher) unterschiedliche Werte
+rnorm(3)
+rnorm(3)
+
+# Mit identischem seed vor jedem Aufruf: exakt reproduzierbare Ergebnisse
+set.seed(2026)
+rnorm(3)
+
+set.seed(2026)
+rnorm(3)   # identisch zur vorherigen Zeile
+```
+
+Für alle folgenden Simulationen in diesem Kapitel wird `set.seed()` konsequent verwendet, damit die berichteten Zahlen und Abbildungen exakt nachvollziehbar bleiben.
+:::
+
+Mit diesem Werkzeug lässt sich der eingangs beschriebene Mismatch zwischen Kapazität und Nachfrage direkt simulieren. Angenommen, ein Werk hat eine feste Kapazität von $C = 90$ Einheiten pro Periode, während die tatsächliche Nachfrage normalverteilt mit $\mu = 88$ und $\sigma = 14$ um diese Kapazität schwankt:
+
+```{r}
+#| label: ch6-mismatch-sim
+#| fig-cap: "Mismatch zwischen fixer Kapazität und stochastischer Nachfrage"
+
+set.seed(12)             # reproduzierbare Simulation
+n_perioden <- 24
+C <- 90                  # fixe Kapazität
+
+demand_mismatch <- tibble(
+  periode        = 1:n_perioden,
+  # Nachfrage ziehen, auf ganze Zahlen runden, negative Werte ausschließen
+  nachfrage      = pmax(40, round(rnorm(n_perioden, mu_d, sigma_d))),
+  produktion     = pmin(nachfrage, C),        # tatsächlich Verkauftes
+  fehlmenge      = pmax(0, nachfrage - C),    # Lost Sales
+  leerkapazitaet = pmax(0, C - nachfrage)     # ungenutzte Kapazität
+)
+
+ggplot(demand_mismatch, aes(x = periode)) +
+  # Balken: Produktion (dunkel) + Leerkapazität (hell) bis zur Kapazitätsgrenze
+  geom_col(aes(y = produktion), fill = "#2D6A4F") +
+  geom_col(aes(y = leerkapazitaet, group = 1), fill = "#E9C46A", alpha = 0.6,
+           position = position_nudge(y = 0)) +
+  geom_hline(yintercept = C, linetype = "dashed", color = "grey40") +
+  geom_line(aes(y = nachfrage), color = "#1D4ED8", linewidth = 0.8) +
+  geom_point(aes(y = nachfrage), color = "#1D4ED8") +
+  labs(x = "Periode", y = "Einheiten",
+       title = "Nachfrage (Linie) vs. fixe Kapazität C = 90 (gestrichelt)") +
+  theme_minimal()
+
+# Anteil der Perioden mit Fehlmenge bzw. mit Leerkapazität
+mean(demand_mismatch$fehlmenge > 0)
+mean(demand_mismatch$leerkapazitaet > 0)
+```
+
+Obwohl die Kapazität im Mittel über der erwarteten Nachfrage liegt, treten in einem relevanten Anteil der Perioden **gleichzeitig sowohl Fehlmengen als auch Leerkapazität** auf — je nachdem, ob die zufällige Realisierung über oder unter der Kapazitätsgrenze liegt. Das ist keine Folge schlechter Planung, sondern eine unvermeidliche Konsequenz der Kombination aus fixer Kapazität und stochastischer Nachfrage. In der Praxis begegnet uns dieser Mismatch überall: Automobilwerke sind über Jahre exklusiv auf ein Modell festgelegt, während die Nachfrage nach genau diesem Modell schwankt; der Einzelhandel bestellt Weihnachtsware Monate im Voraus und muss Restbestände abschreiben; Krankenhäuser halten OP-Kapazitäten konstant, obwohl das Notfallaufkommen tageweise stark variiert.
+
+Die zentrale gestalterische Frage dieses Kapitels lautet daher: **Wie lässt sich dieser Mismatch — ohne zusätzliche physische Kapazität — verringern?** Eine der wirkungsvollsten Antworten ist Pooling.
+
+## Kapazitätspooling: Risikoausgleich bei Produktionskapazitäten
+
+### Formen des Pooling im Überblick
+
+Der Begriff **Pooling** (auch *Risikoausgleich* oder *risk pooling*) bezeichnet allgemein die Bündelung von Ressourcen, Beständen oder Nachfragen, um zufällige Schwankungen gegenseitig auszugleichen. In der Literatur werden dabei typischerweise mehrere Ausprägungen unterschieden [vgl. @silver2017inventory, Kap. 6; @simchilevi2010operations]:
+
+- **Standort-/Bestandspooling**: mehrere regionale Läger werden zu einem Zentrallager zusammengelegt (Fokus dieses Kapitels, siehe Abschnitt zum Lagerbestandspooling).
+- **Kapazitätspooling**: mehrere Produktionsanlagen werden so flexibilisiert, dass sie füreinander einspringen können (Fokus des folgenden Abschnitts).
+- **Produktpooling**: mehrere Produktvarianten werden möglichst lange als ein gemeinsames, undifferenziertes Zwischenprodukt geführt und erst spät im Wertschöpfungsprozess final konfiguriert (*Postponement*).
+- **Kapazitäts-/Komponentenpooling durch Standardisierung**: gemeinsame Bauteile oder Module werden über mehrere Endprodukte hinweg genutzt, wodurch sich deren Bedarfe in der Beschaffung poolen.
+
+Alle diese Varianten folgen demselben statistischen Grundprinzip, das im weiteren Verlauf dieses Kapitels am Beispiel von Kapazitäten und anschließend von Lagerbeständen formal hergeleitet wird. Wir beginnen mit dem historisch prominentesten Beispiel: dem Kapazitätspooling in der Automobilindustrie.
+
+### Ausgangssituation: zwei Werke, zwei Modelle, keine Flexibilität
+
+Ein klassisches Beispiel [vgl. @cachon2024matching, Kap. 17] beschreibt einen Automobilhersteller mit zwei Werken für zwei unterschiedliche Fahrzeugmodelle (etwa einer Limousine "A" und einem SUV "B"). Jedes Werk ist ausschließlich einem Modell zugeordnet — es gibt **keine technologische Flexibilität**. Beide Werke haben dieselbe Kapazität $C^1 = C^2 = 90$ Einheiten pro Monat. Über zwölf Monate wurden folgende Nachfragen beobachtet:
+
+```{r}
+#| label: ch6-pooling-data
+
+C1 <- C2 <- 90   # Kapazität je Werk (Einheiten pro Monat)
+
+cp_data <- tibble(
+  Monat = 1:12,
+  dA    = c(78, 79, 92, 76, 95, 104, 87, 92, 91, 85, 96, 93),  # Nachfrage Markt A
+  dB    = c(102, 92, 93, 87, 80, 97, 90, 76, 89, 86, 89, 93)   # Nachfrage Markt B
+)
+
+# Ohne Pooling: jedes Werk bedient ausschließlich seinen eigenen Markt,
+# Absatz ist durch die Kapazität nach oben gedeckelt
+cp_data <- cp_data |>
+  mutate(xA = pmin(dA, C1),
+         xB = pmin(dB, C2))
+
+# Mittlere Nachfrage, mittlerer Absatz und Auslastung je Werk
+cp_data |>
+  summarise(E_dA = mean(dA), E_dB = mean(dB),
+            E_xA = mean(xA), E_xB = mean(xB),
+            Auslastung_1 = mean(xA) / C1, Auslastung_2 = mean(xB) / C2)
+```
+
+Beide Werke sind mit rund 96–97 % gut ausgelastet, und der Lieferservicegrad (Anteil der Nachfrage, der tatsächlich beliefert wird) liegt bereits über 97 %. Dennoch entstehen **in Summe über das Jahr** sowohl Fehlmengen (wenn die Nachfrage über 90 liegt) als auch Leerkapazität (wenn sie darunterliegt) — ein direktes Beispiel für den im vorigen Abschnitt beschriebenen strukturellen Mismatch, diesmal auf zwei parallele Produktionslinien angewendet.
+
+### Einseitiges und zweiseitiges Kapazitätspooling
+
+Die entscheidende Frage lautet: Kann eines der Werke aushelfen, wenn der jeweils andere Markt überlastet ist? Angenommen, Werk 1 wird technisch so aufgerüstet, dass es **zusätzlich** zu Modell A auch Modell B produzieren kann (**einseitiges Pooling**). Sobald in einem Monat die Nachfrage nach B die Kapazität von Werk 2 übersteigt ($d^B_t > C^2$) und Werk 1 noch freie Kapazität hat ($d^A_t < C^1$), springt Werk 1 ein:
+
+$$
+x_t^{1} = d_t^A + \min\bigl(C^1 - d_t^A;\; d_t^B - C^2\bigr), \qquad x_t^{2B} = C^2
+$$
+
+```{r}
+#| label: ch6-pooling-onesided
+
+cp_pool_1 <- cp_data |>
+  mutate(
+    # Werk 1 deckt zunächst Markt A, produziert bei freier Kapazität zusätzlich für B
+    x1A = pmin(dA, C1),
+    x1B = ifelse(dB > C2 & dA < C1, pmin(C1 - dA, dB - C2), 0),
+    x1  = x1A + x1B,
+    x2B = pmin(C2, dB),
+    xB  = x2B + x1B                 # gesamter Absatz in Markt B
+  )
+
+cp_pool_1 |>
+  summarise(Auslastung_Werk1 = mean(x1) / C1,
+            Servicegrad_B    = mean(xB) / mean(dB))
+```
+
+Der Lieferservicegrad in Markt B steigt bereits durch dieses **einseitige** Aushelfen spürbar. Lässt man zusätzlich auch Werk 2 bei Bedarf für Markt A einspringen (**zweiseitiges Pooling**), wird die Trennung zwischen Werken und Märkten faktisch aufgehoben:
+
+```{r}
+#| label: ch6-pooling-twosided
+
+cp_pool <- cp_data |>
+  mutate(
+    x1A = pmin(dA, C1),
+    x1B = ifelse(dB > C2 & dA < C1, pmin(C1 - dA, dB - C2), 0),
+    x1  = x1A + x1B,
+    x2B = pmin(C2, dB),
+    x2A = ifelse(dA > C1 & dB < C2, pmin(C2 - dB, dA - C1), 0),
+    x2  = x2A + x2B,
+    xA  = x1A + x2A,
+    xB  = x1B + x2B
+  )
+
+cp_pool |>
+  summarise(Auslastung_1 = mean(x1) / C1, Auslastung_2 = mean(x2) / C2,
+            Servicegrad_A = mean(xA) / mean(dA),
+            Servicegrad_B = mean(xB) / mean(dB))
+```
+
+```{r}
+#| label: ch6-kpi-table
+#| tbl-cap: "Kennzahlenvergleich: kein Pooling vs. ein- vs. zweiseitiges Pooling"
+
+# Absolute Lost Sales über alle 12 Monate, je Szenario
+kpi_df <- tibble(
+  Kennzahl = c("Auslastung Werk 1 (%)", "Auslastung Werk 2 (%)",
+               "Verkaufsquote Markt A (%)", "Verkaufsquote Markt B (%)",
+               "Lost Sales gesamt (Einh.)"),
+  Dezentral = c(round(mean(cp_data$xA) / C1 * 100, 1),
+                round(mean(cp_data$xB) / C2 * 100, 1),
+                round(sum(cp_data$xA) / sum(cp_data$dA) * 100, 1),
+                round(sum(cp_data$xB) / sum(cp_data$dB) * 100, 1),
+                sum(cp_data$dA - cp_data$xA) + sum(cp_data$dB - cp_data$xB)),
+  Pooling_einseitig = c(round(mean(cp_pool_1$x1) / C1 * 100, 1),
+                round(mean(cp_pool_1$x2B) / C2 * 100, 1),
+                round(sum(cp_pool_1$x1A) / sum(cp_data$dA) * 100, 1),
+                round(sum(cp_pool_1$xB) / sum(cp_data$dB) * 100, 1),
+                sum(cp_data$dA - cp_pool_1$x1A) + sum(cp_data$dB - cp_pool_1$xB)),
+  Pooling_zweiseitig = c(round(mean(cp_pool$x1) / C1 * 100, 1),
+                round(mean(cp_pool$x2) / C2 * 100, 1),
+                round(sum(cp_pool$xA) / sum(cp_data$dA) * 100, 1),
+                round(sum(cp_pool$xB) / sum(cp_data$dB) * 100, 1),
+                sum(cp_data$dA - cp_pool$xA) + sum(cp_data$dB - cp_pool$xB))
+)
+
+kbl(kpi_df,
+    col.names = c("Kennzahl", "Dezentral", "Pooling (einseitig)", "Pooling (zweiseitig)"),
+    align = c("l", "r", "r", "r")) |>
+  kable_styling(bootstrap_options = c("condensed", "striped"), full_width = TRUE)
+```
+
+Das Muster ist eindeutig: **Kapazitätspooling verbessert alle Servicekennzahlen gleichzeitig** — höhere Auslastung, höhere Verkaufsquote, weniger Lost Sales — und das, **ohne dass eine einzige zusätzliche Produktionseinheit an Kapazität geschaffen wurde**. Der Effekt entsteht allein dadurch, dass sich positive und negative Abweichungen der beiden Märkte von ihrer jeweiligen Kapazität teilweise gegenseitig ausgleichen: Ist Markt A schwach und Markt B stark ausgelastet, kann die freie Kapazität von Werk 1 dorthin fließen, wo sie gebraucht wird. Dieser **Risikoausgleichseffekt** (engl. *risk pooling*) ist das verbindende Prinzip, das in diesem Kapitel für Kapazitäten, für Lagerbestände und schließlich formal über das Quadratwurzelgesetz behandelt wird.
+
+Pooling ist allerdings nicht kostenlos: Es setzt **technologische Flexibilität** (Werke müssen mehrere Modelle produzieren können) und zusätzliche **logistische Koordination** voraus. Je mehr Märkte und Produkte eingebunden werden sollen, desto komplexer und teurer wird diese Flexibilität — was zur Frage führt, wie Pooling bei vielen Standorten sinnvoll organisiert werden kann, ohne dass jedes Werk buchstäblich jedes Produkt produzieren kann.
+
+### Chaining: Pooling-Nutzen ohne vollständige Flexibilität
+
+Bei $n$ Werken und $n$ Märkten wäre **vollständiges Pooling** gleichbedeutend damit, dass jedes Werk jeden Markt beliefern kann — bei vier Werken und vier Märkten also $n \times n = 16$ mögliche Werk-Markt-Verbindungen. Das ist in der Praxis meist unwirtschaftlich, weil jedes Werk in jede zusätzliche Produkttechnologie investieren müsste. Die überraschende Erkenntnis der Pooling-Theorie [vgl. @cachon2024matching, Kap. 17] lautet jedoch: **Man muss nicht vollständig poolen, um fast den vollen Nutzen zu erzielen.** Es genügt, die Werke und Märkte zu einer **Kette** (*chain*) zu verbinden, in der jedes Werk genau zwei Märkte und jeder Markt genau zwei Werke bedienen kann:
+
+```{r}
+#| label: ch6-chaining-diagram
+#| fig-cap: "Drei Chaining-Strategien im Vergleich: vollständiges, kurzes und langes Chaining"
+#| fig-width: 9
+#| fig-height: 3.2
+
+plants  <- tibble(id = paste0("Werk ", 1:4), lbl = as.character(1:4), x = 0, y = c(4, 3, 2, 1))
+markets <- tibble(id = LETTERS[1:4], lbl = LETTERS[1:4], x = 1, y = c(4, 3, 2, 1))
+
+# Vollstaendiges Chaining: jedes Werk mit jedem Markt verbunden (n x n Kanten)
+edges_full <- expand_grid(from = plants$id, to = markets$id) |>
+  mutate(chaining = "Vollständiges Chaining (16 Kanten)")
+
+# Kurzes Chaining: jedes Werk bedient seinen "eigenen" Markt plus den direkten
+# Nachbarn im Ring (2 Kanten je Werk, 2n Kanten insgesamt)
+edges_short <- tibble(
+  from     = rep(plants$id, 2),
+  to       = c(markets$id, markets$id[c(2, 3, 4, 1)]),
+  chaining = "Kurzes Chaining (8 Kanten)"
+)
+
+# Langes Chaining: wie kurzes Chaining, aber der zweite Markt ist zwei Positionen
+# weiter im Ring entfernt -> mehr Marktabdeckung je Werk bei gleicher Kantenzahl
+edges_long <- tibble(
+  from     = rep(plants$id, 2),
+  to       = c(markets$id, markets$id[c(3, 4, 1, 2)]),
+  chaining = "Langes Chaining (8 Kanten)"
+)
+
+edges_all <- bind_rows(edges_full, edges_short, edges_long) |>
+  left_join(plants  |> rename(x0 = x, y0 = y), by = c("from" = "id")) |>
+  left_join(markets |> rename(x1 = x, y1 = y), by = c("to"   = "id")) |>
+  mutate(chaining = factor(chaining, levels = c("Vollständiges Chaining (16 Kanten)",
+                                                 "Kurzes Chaining (8 Kanten)",
+                                                 "Langes Chaining (8 Kanten)")))
+
+ggplot(edges_all) +
+  geom_segment(aes(x = x0, y = y0, xend = x1, yend = y1),
+               color = "grey40", alpha = 0.55,
+               arrow = arrow(length = unit(0.12, "cm"))) +
+  geom_point(data = plants,  aes(x = x, y = y), size = 7, shape = 21, fill = "#BFDBF7") +
+  geom_point(data = markets, aes(x = x, y = y), size = 7, shape = 21, fill = "#2D9E8E") +
+  geom_text(data = plants,  aes(x = x, y = y, label = lbl), size = 3) +
+  geom_text(data = markets, aes(x = x, y = y, label = lbl), size = 3, color = "white") +
+  facet_wrap(~chaining) +
+  theme_void() +
+  theme(strip.text = element_text(face = "bold", size = 9))
+```
+
+Beim **kurzen Chaining** bedient jedes Werk seinen eigenen Markt sowie den direkten Nachbarmarkt im Ring; beim **langen Chaining** liegt der zweite bediente Markt zwei Positionen weiter entfernt. Beide Varianten benötigen nur $2n$ statt $n^2$ Verbindungen — bei vier Werken also 8 statt 16 —, erreichen aber empirisch einen großen Teil des Pooling-Nutzens von vollständiger Flexibilität, weil ein lokaler Nachfrageüberschuss über die Kette an das nächste Werk mit freier Kapazität weitergereicht werden kann. Dieses Prinzip — als **Chaining** bekannt geworden durch die Praxis der General-Motors-Werksallokation — ist ein Beispiel dafür, dass der Grenznutzen von zusätzlicher Flexibilität **stark abnimmt**: Die ersten paar zusätzlichen Verbindungen bringen den größten Teil des Pooling-Effekts, vollständige Flexibilität bringt nur noch einen kleinen zusätzlichen Zugewinn bei stark steigenden Kosten.
+
+Die praktische Bedeutung von Chaining reicht weit über die Automobilindustrie hinaus. In der Bekleidungsindustrie etwa können Nähereien, die auf mehrere, aber nicht alle Produktlinien umgerüstet werden können, denselben Effekt erzielen; in Krankenhausverbünden lässt sich Personal so schulen, dass es zwischen benachbarten, aber nicht allen Fachabteilungen wechseln kann. Der gemeinsame Nenner ist immer derselbe: **Begrenzte, aber gezielt platzierte Flexibilität schlägt vollständige Spezialisierung, kostet aber deutlich weniger als vollständige Flexibilität.** Für die Entscheidung, *wie viel* Flexibilität sinnvoll ist, muss der (abnehmende) Grenznutzen zusätzlicher Verbindungen den (meist linear oder sogar progressiv steigenden) Grenzkosten zusätzlicher Umrüstfähigkeit gegenübergestellt werden — eine klassische Kosten-Nutzen-Abwägung, wie sie bereits aus der Diskussion der Zielkonflikte in Kapitel 3 bekannt ist.
+
+## Sicherheitsbestände: Bestellpunktverfahren und Servicegrad
+
+Pooling wirkt nicht nur zwischen parallelen Standorten, sondern auch **über die Zeit**: Sicherheitsbestände gleichen Nachfrageschwankungen innerhalb einer Wiederbeschaffungszeit aus. Bevor der Pooling-Effekt bei Lagerbeständen behandelt wird, muss zunächst geklärt werden, wie ein Sicherheitsbestand überhaupt bemessen wird.
+
+### Das Bestellpunktverfahren (t, S)-Politik
+
+Ein verbreitetes Verfahren zur Bestandssteuerung ist die **periodische Bestellpunktpolitik** — auch $(t, S)$-Politik genannt: In festen Zeitabständen $t$ (z. B. jede zweite Woche) wird der aktuelle **disponible Bestand** (physischer Bestand plus bereits offene, aber noch nicht eingetroffene Bestellungen, minus Fehlmengen) auf ein fixes **Zielniveau** $S$ (*order-up-to level*) aufgefüllt. Zwischen Bestellung und Wareneingang vergeht dabei stets die **Wiederbeschaffungszeit** $wbz$. Der **Sicherheitsbestand** $sb$ ergibt sich als Differenz zwischen diesem Zielniveau und dem erwarteten Bedarf während der *Risikoperiode* (Bestellintervall plus Wiederbeschaffungszeit):
+
+$$
+sb = S - \mu \cdot (t + wbz)
+$$
+
+wobei $\mu$ die erwartete Nachfrage pro Periode ist. Je höher $S$ über diesem erwarteten Bedarf liegt, desto größer der Puffer gegen positive Nachfrageausschläge — aber desto höher auch die Kapitalbindung. Tritt innerhalb der Risikoperiode tatsächlich mehr Nachfrage auf, als der verfügbare Bestand deckt, entsteht eine **Fehlmenge**: Je nachdem, wie das Unternehmen damit umgeht, wird zwischen **Backorders** (die Nachfrage wird verzögert, aber vollständig nachgeliefert, sobald wieder Bestand verfügbar ist) und **Lost Sales** (nicht gedeckte Nachfrage geht unwiederbringlich verloren) unterschieden. Beide Fälle unterscheiden sich in der Fortschreibung des Nettobestands: Bei Backordering darf der Nettobestand vorübergehend negativ werden, bei Lost Sales bleibt er nach unten bei Null begrenzt.
+
+Die Simulationsfunktionen `simuliere_tS()` und `tS.lager()` in `R/scm_functions.R` bilden genau diese Logik nach: Sie schreiben periodenweise Bedarf, Bestellungen, Lieferungen und resultierenden Bestand fort und unterscheiden dabei explizit zwischen physischem Bestand, Nettobestand und disponiblem Bestand (physischer Bestand zuzüglich bereits offener, aber noch nicht eingetroffener Bestellungen). Wie diese Fortschreibung im Detail funktioniert, muss hier nicht nachgebaut werden — wichtig ist, das **Ergebnis** interpretieren zu können:
+
+```{r}
+#| label: ch6-ts-lager-sim
+#| fig-cap: "Simulierter Lagerbestandsverlauf unter (t, S)-Politik mit Sicherheitsbestand"
+
+set.seed(42)                      # reproduzierbare Nachfrageziehung
+n     <- 24                       # Simulationshorizont (Perioden)
+lam   <- 20                       # mittlere Periodennachfrage (Poisson-verteilt)
+t     <- 4                        # Bestellintervall
+S     <- 135                      # Order-up-to-Level
+wbz   <- 2                        # Wiederbeschaffungszeit (Perioden)
+l.ini <- 120                      # Anfangslagerbestand
+
+sb <- S - (t + wbz) * lam         # Sicherheitsbestand nach obiger Formel
+sb
+
+# Periodenbedarfe ziehen (Poisson passt gut zu diskreten Stückzahlen)
+nachfrage <- rpois(n, lambda = lam)
+
+# Fertige Simulationsfunktion aus scm_functions.R anwenden
+res <- tS.lager(d = nachfrage, t = t, S = S, l.ini = l.ini, wbz = wbz) |>
+  as_tibble() |>
+  mutate(Periode = row_number())
+
+ggplot(res, aes(x = Periode, y = Lagerbestand)) +
+  geom_step(color = "#2D6A4F", linewidth = 0.9) +
+  geom_hline(yintercept = sb, linetype = "dashed", color = "#E76F51") +
+  geom_hline(yintercept = 0, linetype = "dotted", color = "grey50") +
+  annotate("text", x = 2, y = sb + 8, label = "Sicherheitsbestand", color = "#E76F51",
+           hjust = 0, size = 3.2) +
+  labs(x = "Periode", y = "Lagerbestand") +
+  theme_minimal()
+
+# Minimaler Bestand über den Simulationshorizont
+min(res$Lagerbestand)
+```
+
+In dieser Simulation fällt der Lagerbestand in Periode 13 kurzzeitig unter Null — es kommt trotz eines rechnerischen Sicherheitsbestands von 15 Einheiten zu einer **Fehlmenge**, weil die tatsächlich gezogene Nachfrage in mehreren aufeinanderfolgenden Perioden über dem Mittelwert lag. Das illustriert bereits den zentralen Punkt: Ein Sicherheitsbestand, der auf dem *Erwartungswert* basiert, schützt **nicht garantiert**, sondern nur **mit einer bestimmten Wahrscheinlichkeit** vor Fehlmengen. Diese Wahrscheinlichkeit muss explizit gewählt werden — das führt zum Konzept des Servicegrads.
+
+### Der $\alpha$-Servicegrad und die empirische Verteilungsfunktion
+
+Der **$\alpha$-Servicegrad** (auch *Lieferbereitschaftsgrad*) ist definiert als die Wahrscheinlichkeit, während der Risikoperiode **keine** Fehlmenge zu erleiden:
+
+$$
+\alpha = P(D \leq S)
+$$
+
+Dabei ist $D$ die (zufällige) Nachfrage während der Risikoperiode und $S$ der verfügbare Bestand zu deren Beginn. Der $\alpha$-Servicegrad ist eine **Ereigniswahrscheinlichkeit**: Er beantwortet die Frage "Wie oft, über viele Risikoperioden hinweg, tritt überhaupt keine Fehlmenge auf?" — unabhängig davon, wie groß eine Fehlmenge im Fehlerfall ausfällt. Daneben wird in der Praxis häufig auch der **$\beta$-Servicegrad** (*Versorgungsgrad*) verwendet, der stattdessen den **mengenmäßigen** Anteil der Nachfrage misst, der direkt aus dem Bestand bedient werden kann: $\beta = 1 - E[\text{Fehlmenge}]/E[\text{Nachfrage}]$. Ein hoher $\alpha$-Servicegrad schließt seltene, aber dafür große Fehlmengen nicht aus — für die meisten operativen Zwecke ist $\alpha$ dennoch die gebräuchlichere und leichter zu kommunizierende Kennzahl, weshalb sie im Folgenden im Mittelpunkt steht. Ist die Verteilung von $D$ unbekannt, lässt sich $\alpha$ direkt aus historischen Beobachtungen schätzen — über die **empirische Verteilungsfunktion**.
+
+::: {.r-exkurs}
+**R-Exkurs: Die empirische Verteilungsfunktion mit `ecdf()`**
+
+Für eine Stichprobe $x_1, \dots, x_n$ gibt die empirische Verteilungsfunktion (*empirical cumulative distribution function*, ECDF) an, welcher **Anteil** der Beobachtungen kleiner oder gleich einem Wert $x$ ist:
+
+$$
+\hat{F}(x) = \frac{1}{n}\sum_{i=1}^{n} \mathbb{1}(x_i \leq x)
+$$
+
+In R liefert `ecdf(x)` diese Funktion nicht als Tabelle, sondern als **aufrufbares R-Objekt** — man kann sie also wie eine Funktion an beliebigen Stellen auswerten:
+
+```{r}
+#| label: ch6-ecdf-demo
+#| fig-cap: "Empirische Verteilungsfunktion der Nachfrage in Markt A"
+
+F_A <- ecdf(cp_data$dA)      # ECDF-Objekt aus den 12 Monatswerten von Markt A
+
+# F_A ist aufrufbar wie jede andere Funktion:
+F_A(90)                      # Anteil der Monate mit Nachfrage <= 90
+
+ggplot(cp_data, aes(x = dA)) +
+  stat_ecdf(geom = "step", color = "#2D6A4F", linewidth = 0.9) +
+  geom_vline(xintercept = mean(cp_data$dA), linetype = "dotted") +
+  labs(x = "Nachfrage Markt A", y = expression(hat(F)(d))) +
+  theme_minimal()
+```
+
+Die Umkehrung — "welcher Wert wird mit Wahrscheinlichkeit $\alpha$ nicht überschritten?" — liefert `quantile(x, probs = alpha)`. Damit lässt sich der zu einem gewünschten Servicegrad passende Bestand **direkt aus den Daten** ablesen, ganz ohne Verteilungsannahme.
+:::
+
+Formal gilt: Gesucht ist der kleinste Bestand $S$, für den $\hat{F}(S) \geq \alpha$ — also das empirische $\alpha$-Quantil $S = \hat{F}^{-1}(\alpha)$. Für die Nachfragedaten aus Markt A ergibt sich:
+
+```{r}
+#| label: ch6-alpha-quantile
+
+alpha_niveaus <- c(0.75, 0.90, 0.95)
+
+sb_tabelle <- tibble(
+  alpha = alpha_niveaus,
+  # empirisches Quantil je Servicegrad-Niveau (Typ 1: "nächstgrößere Beobachtung")
+  S     = map_dbl(alpha_niveaus, ~ quantile(cp_data$dA, probs = .x, type = 1))
+) |>
+  mutate(sb = S - mean(cp_data$dA))   # Sicherheitsbestand = Quantil minus Mittelwert
+
+sb_tabelle
+```
+
+Ein Servicegrad von 75 % erfordert also nur 4 Einheiten Sicherheitsbestand, während ein Servicegrad von 95 % bereits 15 Einheiten verlangt. Dieser stark **überproportionale** Zusammenhang — die letzten Prozentpunkte Servicegrad sind überproportional teuer — ist eine direkte Folge der Form der Nachfrageverteilung und wird uns in ähnlicher Form beim Newsvendor-Modell in @sec-newsvendor wiederbegegnen.
+
+## Lagerbestandspooling: Risikoausgleich über Standorte hinweg
+
+### Dezentrale vs. zentrale Lagerhaltung
+
+Die entscheidende Frage lautet nun: Was passiert mit dem benötigten Sicherheitsbestand, wenn die beiden Märkte A und B **nicht** von getrennten Lägern, sondern von einem **gemeinsamen Zentrallager** aus beliefert werden? Im dezentralen Fall muss jeder Standort seinen eigenen Sicherheitsbestand vorhalten — in Summe also $sb_A + sb_B$. Im zentralen Fall genügt ein Sicherheitsbestand für die **aggregierte** Nachfrage $D_0 = D_A + D_B$:
+
+```{r}
+#| label: ch6-pooling-ecdf-vergleich
+
+alpha <- 0.95
+
+# Dezentral: Sicherheitsbestand je Markt, dann aufsummiert
+S_A <- quantile(cp_data$dA, alpha, type = 1);  sb_A <- S_A - mean(cp_data$dA)
+S_B <- quantile(cp_data$dB, alpha, type = 1);  sb_B <- S_B - mean(cp_data$dB)
+sb_dezentral <- sb_A + sb_B
+
+# Zentral: ein Sicherheitsbestand fuer die Summennachfrage A + B
+dTotal <- cp_data$dA + cp_data$dB
+S_T    <- quantile(dTotal, alpha, type = 1)
+sb_zentral <- S_T - mean(dTotal)
+
+tibble(Konfiguration = c("Dezentral (A + B getrennt)", "Zentral (gepoolt)"),
+       Sicherheitsbestand = c(sb_dezentral, sb_zentral),
+       Einsparung_Prozent = c(0, round((1 - sb_zentral / sb_dezentral) * 100, 1)))
+```
+
+Allein durch die Zusammenlegung der beiden Läger sinkt der benötigte Sicherheitsbestand um rund 18 % — bei **identischer** Ausfallwahrscheinlichkeit von 5 %. Dieser Effekt beruht nicht auf zusätzlicher Information oder besserer Prognose, sondern rein auf einem statistischen Prinzip: Zufällige Abweichungen einzelner Standorte von ihrem Mittelwert gleichen sich in der **Summe** teilweise aus, solange die Nachfragen nicht perfekt positiv korreliert sind.
+
+### Formale Herleitung bei normalverteilter Nachfrage
+
+Um diesen Effekt algebraisch zu fassen, seien die Nachfragen zweier Standorte normalverteilt: $D_1 \sim \mathcal{N}(\mu_1, \sigma_1^2)$ und $D_2 \sim \mathcal{N}(\mu_2, \sigma_2^2)$, mit Korrelation $\rho = \text{Cor}(D_1, D_2)$. Der Sicherheitsbestand am dezentralen Standort $i$ beträgt bei Servicegrad $\alpha$ jeweils $sb_i = z_\alpha \cdot \sigma_i$ (mit $z_\alpha = \Phi^{-1}(\alpha) =$ `qnorm(alpha)`), in Summe also:
+
+$$
+sb_{dez} = z_\alpha \cdot (\sigma_1 + \sigma_2)
+$$
+
+Für die Summe zweier (gemeinsam) normalverteilter Zufallsvariablen gilt ein Satz aus der Wahrscheinlichkeitsrechnung: Die Summe ist wieder normalverteilt, mit einer Varianz, die auch die Kovarianz zwischen $D_1$ und $D_2$ berücksichtigt:
+
+$$
+D_0 = D_1 + D_2 \sim \mathcal{N}\!\left(\mu_1 + \mu_2,\; \sigma_1^2 + \sigma_2^2 + 2\rho\,\sigma_1\sigma_2\right)
+$$
+
+Der zentrale Sicherheitsbestand ergibt sich damit als:
+
+$$
+sb_{zen} = z_\alpha \cdot \sqrt{\sigma_1^2 + \sigma_2^2 + 2\rho\,\sigma_1\sigma_2}
+$$
+
+Der entscheidende Vergleich ist $sb_{zen}$ gegen $sb_{dez}$ in Abhängigkeit von $\rho$. Drei Grenzfälle verdeutlichen die Bandbreite:
+
+| Korrelation | Zentraler Sicherheitsbestand |
+|:---:|:---|
+| $\rho = -1$ (perfekt gegenläufig) | $z_\alpha \cdot \lvert \sigma_1 - \sigma_2 \rvert$ |
+| $\rho = 0$ (unkorreliert) | $z_\alpha \cdot \sqrt{\sigma_1^2 + \sigma_2^2}$ |
+| $\rho = +1$ (perfekt gleichläufig) | $z_\alpha \cdot (\sigma_1 + \sigma_2) = sb_{dez}$ |
+
+Da für nichtnegative $\sigma_1, \sigma_2$ stets $\lvert \sigma_1 - \sigma_2\rvert \leq \sqrt{\sigma_1^2+\sigma_2^2} \leq \sigma_1+\sigma_2$ gilt, folgt: **Pooling lohnt sich immer, solange $\rho < 1$ ist — und der Nutzen ist umso größer, je negativer die Korrelation.** Nur wenn beide Standorte exakt gleichläufig schwanken ($\rho = +1$), bringt Pooling keinerlei Vorteil, weil sich dann kein Ausgleich einstellen kann.
+
+Um diese Beziehung anschaulich zu machen, ist es hilfreich, korrelierte Nachfrageverläufe **selbst zu simulieren** — mit einer einfachen Monte-Carlo-Simulation.
+
+::: {.r-exkurs}
+**R-Exkurs: Einfache Monte-Carlo-Simulation mit `replicate()`**
+
+Eine **Monte-Carlo-Simulation** beantwortet eine analytisch mühsame oder unbekannte Frage, indem sie das zugrunde liegende Zufallsexperiment **sehr oft wiederholt** und die interessierende Kennzahl über alle Wiederholungen mittelt. In R übernimmt `replicate(n, ausdruck)` dabei die Wiederholungsschleife: Es wertet `ausdruck` `n`-mal aus und sammelt die Ergebnisse — eine kompaktere Alternative zu einer expliziten `for`-Schleife mit manueller Ergebnisspeicherung.
+
+Zunächst wird eine Hilfsfunktion gebraucht, die zwei **korrelierte** normalverteilte Nachfragen erzeugt. Der Standardtrick dazu: Aus zwei *unabhängigen* Standardnormalvariablen $z_1, z_2$ lässt sich eine mit $z_1$ korrelierte Variable $z_1' = \rho\, z_1 + \sqrt{1-\rho^2}\, z_2$ konstruieren — deren Korrelation mit $z_1$ ist exakt $\rho$.
+
+```{r}
+#| label: ch6-monte-carlo-korrelation
+
+# Erzeugt n Perioden mit korrelierter Nachfrage an zwei Standorten
+simuliere_pooled_demand <- function(n, mu1, mu2, sigma1, sigma2, rho) {
+  z1 <- rnorm(n)                             # unabhaengige Standardnormalvariable
+  z2 <- rho * z1 + sqrt(1 - rho^2) * rnorm(n)  # mit z1 korrelierte Variable (Korrelation = rho)
+  tibble(
+    d1 = mu1 + sigma1 * z1,
+    d2 = mu2 + sigma2 * z2,
+    d0 = d1 + d2                             # gepoolte (zentrale) Nachfrage
+  )
+}
+
+set.seed(2026)
+
+# Monte-Carlo-Simulation: 1000-mal je 30 Perioden simulieren, jeweils den
+# empirischen Sicherheitsbestand der GEPOOLTEN Nachfrage bei alpha = 95% bestimmen
+sb_mc <- replicate(1000, {
+  sim <- simuliere_pooled_demand(n = 30, mu1 = 100, mu2 = 100,
+                                  sigma1 = 20, sigma2 = 20, rho = -0.6)
+  quantile(sim$d0, 0.95) - mean(sim$d0)
+})
+
+mean(sb_mc)                                          # Monte-Carlo-Schaetzer
+qnorm(0.95) * sqrt(20^2 + 20^2 + 2 * (-0.6) * 20 * 20) # analytischer Wert zum Vergleich
+```
+
+Der über 1000 Wiederholungen gemittelte simulierte Sicherheitsbestand liegt nahe am analytisch berechneten Wert — die Monte-Carlo-Simulation **bestätigt** die Formel, ohne dass die Normalverteilungsannahme explizit in eine geschlossene Lösung eingesetzt werden muss. Dieses Vorgehen ist besonders wertvoll, wenn (wie im letzten Abschnitt dieses Kapitels) die tatsächliche Verteilung von der Normalverteilung abweicht und keine geschlossene Formel mehr existiert.
+:::
+
+Die folgende Abbildung zeigt drei simulierte Nachfrageverläufe mit identischen Randverteilungen ($\mu_1=\mu_2=100$, $\sigma_1=\sigma_2=20$), aber unterschiedlicher Korrelation:
+
+```{r}
+#| label: ch6-korrelation-zeitreihen
+#| fig-cap: "Gepoolte Nachfrage D0 = D1 + D2 bei unterschiedlicher Korrelation"
+#| fig-width: 9
+#| fig-height: 3.4
+
+set.seed(43)
+rho_werte <- c(-0.8, 0, 0.8)
+
+sim_rho <- map_dfr(rho_werte, function(rho) {
+  simuliere_pooled_demand(12, 100, 100, 20, 20, rho) |>
+    mutate(periode = row_number(), rho_label = paste0("rho = ", rho))
+})
+
+sim_rho_long <- sim_rho |>
+  pivot_longer(cols = c(d1, d2, d0), names_to = "reihe", values_to = "wert") |>
+  mutate(reihe = recode(reihe, d1 = "D1", d2 = "D2", d0 = "D0 = D1 + D2"))
+
+ggplot(sim_rho_long, aes(x = periode, y = wert, color = reihe, linetype = reihe)) +
+  geom_line(linewidth = 0.8) +
+  geom_point(size = 1.6) +
+  facet_wrap(~rho_label) +
+  scale_color_manual(values = c("D1" = "#E76F51", "D2" = "#1D4ED8", "D0 = D1 + D2" = "#2D6A4F")) +
+  labs(x = "Periode", y = "Nachfrage", color = NULL, linetype = NULL) +
+  theme_minimal() +
+  theme(legend.position = "bottom")
+```
+
+Bei **negativer** Korrelation ($\rho = -0{,}8$) verläuft die Summenkurve $D_0$ auffällig glatter als jede der beiden Einzelreihen — Ausschläge nach oben bei $D_1$ fallen tendenziell mit Ausschlägen nach unten bei $D_2$ zusammen und heben sich auf. Bei **positiver** Korrelation ($\rho = +0{,}8$) verstärken sich die Schwankungen dagegen gegenseitig, und $D_0$ schwankt sichtbar stärker. Genau dieser Unterschied in der *Glattheit* der Summenreihe ist die anschauliche Entsprechung der oben hergeleiteten Formel.
+
+## Das Quadratwurzelgesetz des Pooling
+
+Die bisherige Herleitung galt für zwei Standorte mit potenziell unterschiedlicher Streuung und Korrelation. Ein besonders häufiger und lehrreicher Spezialfall liegt vor, wenn $n$ **identische, unabhängige** Standorte gepoolt werden — jeder mit derselben Streuung $\sigma$ und $\rho = 0$ untereinander. Dieser Fall führt auf das berühmte **Quadratwurzelgesetz des Pooling** [vgl. @simchilevi2010operations; @silver2017inventory, Kap. 6].
+
+### Herleitung
+
+Bei $n$ unabhängigen, identisch verteilten Standorten mit Streuung $\sigma$ beträgt der **dezentrale** Gesamtsicherheitsbestand schlicht die Summe der $n$ Einzelbestände:
+
+$$
+sb_{dez} = n \cdot z_\alpha \cdot \sigma
+$$
+
+Für die **zentrale** Variante addieren sich unter Unabhängigkeit ($\rho = 0$) die Varianzen der $n$ Standorte zur Gesamtvarianz $n \cdot \sigma^2$. Die Standardabweichung der gepoolten Nachfrage ist folglich **nicht** $n\sigma$, sondern nur:
+
+$$
+\sigma_{zen} = \sqrt{n \cdot \sigma^2} = \sqrt{n}\cdot \sigma
+$$
+
+und damit
+
+$$
+sb_{zen} = z_\alpha \cdot \sqrt{n}\cdot \sigma
+$$
+
+Das Verhältnis der beiden Sicherheitsbestände ist bemerkenswert einfach:
+
+$$
+\frac{sb_{zen}}{sb_{dez}} = \frac{z_\alpha \sqrt{n}\,\sigma}{n\, z_\alpha\, \sigma} = \frac{1}{\sqrt{n}}
+$$
+
+Der zentrale Sicherheitsbestand wächst also nur mit der **Quadratwurzel** der Standortanzahl, während der dezentrale Bestand **linear** mit $n$ wächst. Je mehr Standorte gepoolt werden, desto größer die relative Einsparung — der **Pooling-Faktor** $\sqrt{n}$ beschreibt genau diesen Effekt.
+
+Warum addieren sich unter Unabhängigkeit gerade die **Varianzen** und nicht etwa die Standardabweichungen? Das folgt aus einem Grundsatz der Wahrscheinlichkeitsrechnung: Für unabhängige Zufallsvariablen $X_1, \dots, X_n$ gilt stets $\text{Var}(X_1 + \dots + X_n) = \text{Var}(X_1) + \dots + \text{Var}(X_n)$, während die Standardabweichung als Quadratwurzel der Varianz gerade **nicht** additiv ist. Genau dieser Unterschied zwischen additiven Varianzen und subadditiven Standardabweichungen ist der mathematische Kern des gesamten Pooling-Effekts — nicht nur im Spezialfall $\rho=0$, sondern, wie im vorigen Abschnitt gezeigt, auch allgemein über den Kovarianzterm $2\rho\sigma_1\sigma_2$. In der praktischen Anwendung ist allerdings Vorsicht geboten: Die Annahme identischer, unabhängiger Standorte ist eine Idealisierung. Sind reale Standorte unterschiedlich groß (unterschiedliches $\sigma_i$) oder saisonal korreliert (z. B. weil alle Standorte einer Region gleichzeitig von einem Wetterereignis betroffen sind), fällt die tatsächliche Einsparung geringer aus als die reine $\sqrt{n}$-Formel suggeriert — die allgemeinere Formel mit individuellen $\sigma_i$ und Korrelationen aus dem vorigen Abschnitt ist dann die korrekte Grundlage.
+
+### Eigene Implementierung des Quadratwurzelgesetzes
+
+Weil die Herleitung so kompakt ist, lohnt es sich, die Formel **selbst als R-Funktion nachzubauen**, bevor die fertige Version aus `scm_functions.R` verwendet wird:
+
+```{r}
+#| label: ch6-sqrt-law-eigenbau
+
+# Eigene Implementierung des Quadratwurzelgesetzes
+mein_pooling_sb <- function(n, sigma, z) {
+  ss_individual        <- z * sigma            # Sicherheitsbestand je Standort
+  ss_total_dezentral    <- n * ss_individual    # Summe ueber alle n Standorte
+  sigma_zentral         <- sqrt(n) * sigma      # gepoolte Standardabweichung
+  ss_zentral            <- z * sigma_zentral    # zentraler Sicherheitsbestand
+  einsparung_prozent    <- (1 - ss_zentral / ss_total_dezentral) * 100
+
+  list(ss_total_dezentral = ss_total_dezentral,
+       ss_zentral         = ss_zentral,
+       einsparung_prozent = round(einsparung_prozent, 1),
+       pooling_faktor     = sqrt(n))
+}
+
+# Beispiel: 4 Regionallager mit sigma = 20 werden zu einem Zentrallager gepoolt
+mein_pooling_sb(n = 4, sigma = 20, z = qnorm(0.95))
+
+# Vergleich mit der fertigen Funktion aus R/scm_functions.R
+pooling_safety_stock(n = 4, sigma = 20, z = qnorm(0.95))
+```
+
+Beide Implementierungen liefern identische Ergebnisse: Bei vier gepoolten Standorten mit $\sigma = 20$ und $\alpha = 95\,\%$ halbiert sich der benötigte Sicherheitsbestand ($\sqrt{4} = 2$, also Faktor $1/2$). Mit wachsendem $n$ nimmt die relative Einsparung weiter zu, allerdings mit **abnehmender Grenzrate** — der Sprung von $n=1$ auf $n=4$ bringt mehr zusätzliche Einsparung als der Sprung von $n=16$ auf $n=20$:
+
+```{r}
+#| label: ch6-sqrt-law-plot
+#| fig-cap: "Relative Einsparung an Sicherheitsbestand als Funktion der Standortanzahl n"
+
+n_seq <- 1:20
+
+einsparung_df <- tibble(n = n_seq) |>
+  mutate(einsparung = map_dbl(n, ~ pooling_safety_stock(.x, sigma = 20, z = qnorm(0.95))$savings_pct))
+
+ggplot(einsparung_df, aes(x = n, y = einsparung)) +
+  geom_line(color = "#2D6A4F", linewidth = 1) +
+  geom_point(color = "#2D6A4F") +
+  labs(x = "Anzahl gepoolter Standorte n", y = "Einsparung Sicherheitsbestand (%)") +
+  theme_minimal()
+```
+
+Dieser abnehmende Grenznutzen ist der ökonomische Grund, warum Unternehmen in der Praxis selten alle Lagerstandorte vollständig zentralisieren: Die ersten wenigen zusammengelegten Standorte bringen den größten Effekt, während weitere Zentralisierung nur noch kleine zusätzliche Einsparungen bei gleichzeitig steigenden Transport- und Koordinationskosten bringt (analog zum Chaining-Argument aus @sec-unsicherheit-pooling weiter oben). Zudem gilt das Quadratwurzelgesetz in dieser einfachen Form nur unter der Annahme **unabhängiger** Nachfrage ($\rho=0$) — bei positiv korrelierten Standorten fällt die Einsparung, wie im vorigen Abschnitt gezeigt, entsprechend geringer aus.
+
+## Reales Fallbeispiel: Pooling bei Nachfrage nach Zubehörartikeln
+
+Die bisherigen Beispiele beruhten auf überschaubaren, "sauberen" Datensätzen. Reale Verkaufsdaten sind selten so gutmütig. Als Abschluss dieses Kapitels wird der Pooling-Effekt an echten wöchentlichen Verkaufsdaten zweier Zubehörartikel-SKUs (mobile Powerbanks) aus einem öffentlich zugänglichen Einzelhandels-Datensatz [@demandpredictionretail] überprüft. Die Daten umfassen 100 Wochen und sind hier — ohne Internetzugriff beim Rendern des Buches nötig zu haben — direkt als Vektoren eingebettet:
+
+```{r}
+#| label: ch6-real-data
+#| message: false
+
+# Woechentliche Absatzmengen zweier SKUs (Powerbanks) aus dem oeffentlichen
+# "Demand Prediction in Retail"-Datensatz [@demandpredictionretail], 100 Wochen.
+# Fest eingebettet, damit der Code auch ohne Internetzugriff reproduzierbar ist
+# (der Originaldatensatz kann alternativ mit readr::read_csv() aus dem Repository
+# des Datensatzes nachgeladen werden).
+sku_27 <- c(12, 21, 23, 18, 38, 22, 34, 24, 37, 38, 31, 33, 29, 49, 29, 32, 29,
+            39, 31, 30, 40, 42, 44, 63, 47, 53, 321, 389, 180, 227, 187, 233,
+            221, 151, 156, 254, 182, 132, 87, 124, 91, 76, 85, 58, 27, 54, 98,
+            68, 12, 65, 22, 41, 43, 31, 41, 25, 50, 60, 57, 46, 33, 48, 30, 27,
+            41, 37, 33, 38, 41, 24, 38, 38, 38, 41, 22, 25, 43, 45, 51, 47, 50,
+            55, 64, 142, 199, 159, 87, 202, 217, 109, 18, 14, 55, 40, 67, 56,
+            53, 93, 67, 3342)
+
+sku_34 <- c(92, 61, 17, 84, 36, 60, 11, 7, 37, 126, 4, 106, 109, 106, 76, 101,
+            108, 84, 67, 67, 34, 98, 41, 79, 49, 47, 33, 49, 58, 64, 76, 55, 98,
+            61, 102, 151, 94, 198, 170, 136, 132, 204, 208, 193, 138, 225, 280,
+            1522, 1035, 90, 85, 100, 89, 108, 112, 137, 149, 86, 112, 142, 124,
+            128, 128, 142, 120, 138, 123, 95, 124, 118, 132, 145, 155, 163, 90,
+            113, 109, 140, 146, 133, 161, 200, 192, 107, 135, 120, 149, 115,
+            111, 128, 134, 168, 117, 138, 145, 321, 64, 200, 196, 90)
+
+real_df <- tibble(woche = seq_along(sku_27), SKU27 = sku_27, SKU34 = sku_34,
+                   Pool = sku_27 + sku_34)
+
+# Kennzahlen je Reihe
+real_df |>
+  summarise(mu_27 = mean(SKU27), sig_27 = sd(SKU27),
+            mu_34 = mean(SKU34), sig_34 = sd(SKU34),
+            rho   = cor(SKU27, SKU34))
+```
+
+Auffällig sind die vereinzelten **extremen Spitzen** (z. B. SKU 27 in Woche 27/28 oder SKU 34 in Woche 48/49) — typische Folgen von Werbeaktionen oder Sonderplatzierungen im Einzelhandel. Diese Ausreißer treiben die Standardabweichung beider Reihen weit über das Niveau der "normalen" Wochen hinaus und werfen die Frage auf, ob die Normalverteilungsannahme aus dem vorigen Abschnitt hier überhaupt zulässig ist:
+
+```{r}
+#| label: ch6-real-ecdf-vs-normal
+#| fig-cap: "ECDF vs. angepasste Normalverteilung: SKU 27 (Ausreißer-Wochen dominieren die Anpassung)"
+
+mu_27 <- mean(sku_27); sig_27 <- sd(sku_27)
+
+ggplot(real_df, aes(x = SKU27)) +
+  stat_ecdf(geom = "step", color = "#2D6A4F", linewidth = 0.9) +
+  stat_function(fun = pnorm, args = list(mean = mu_27, sd = sig_27),
+                color = "#E76F51", linetype = "dashed", linewidth = 0.9) +
+  labs(x = "Wöchentlicher Absatz SKU 27", y = "F(x)",
+       subtitle = "Durchgezogen: empirische Verteilung | Gestrichelt: angepasste Normalverteilung") +
+  theme_minimal()
+
+# Formaler Test auf Normalverteilung (Kolmogorov-Smirnov)
+ks.test(sku_27, "pnorm", mu_27, sig_27)$p.value
+```
+
+Der extrem kleine p-Wert des Kolmogorov-Smirnov-Tests bestätigt den optischen Eindruck: Die tatsächliche Verteilung ist **weit von einer Normalverteilung entfernt** — sie ist rechtsschief mit einer langen "Spitzen-Nachfrage"-Flanke. Dennoch lässt sich der Pooling-Effekt **empirisch**, also ganz ohne Normalverteilungsannahme, direkt über `ecdf()` bzw. `quantile()` auswerten — die Rechnung selbst bleibt identisch zur Vorgehensweise aus dem GM-Beispiel:
+
+```{r}
+#| label: ch6-real-pooling-vergleich
+#| tbl-cap: "Empirischer vs. parametrischer Sicherheitsbestand bei realen SKU-Daten"
+
+alpha_r <- 0.95
+z_r <- qnorm(alpha_r)
+
+# Empirisch: Quantile direkt aus den beobachteten Daten
+sb_27_emp  <- quantile(sku_27, alpha_r, type = 1) - mu_27
+sb_34_emp  <- quantile(sku_34, alpha_r, type = 1) - mean(sku_34)
+sb_dez_emp <- sb_27_emp + sb_34_emp
+sb_zen_emp <- quantile(real_df$Pool, alpha_r, type = 1) - mean(real_df$Pool)
+
+# Parametrisch: Normalverteilungsannahme trotz schlechten Fits anwenden
+sig_34 <- sd(sku_34); rho_r <- cor(sku_27, sku_34)
+sb_dez_par <- z_r * (sig_27 + sig_34)
+sb_zen_par <- z_r * sqrt(sig_27^2 + sig_34^2 + 2 * rho_r * sig_27 * sig_34)
+
+tibble(
+  Methode = c("Empirisch (ECDF)", "Parametrisch (Normalverteilung)"),
+  SB_dezentral = round(c(sb_dez_emp, sb_dez_par), 1),
+  SB_zentral   = round(c(sb_zen_emp, sb_zen_par), 1),
+  Einsparung_Prozent = round(c((1 - sb_zen_emp / sb_dez_emp) * 100,
+                                (1 - sb_zen_par / sb_dez_par) * 100), 1)
+)
+```
+
+Zwei Beobachtungen sind hier lehrreich. Erstens: Trotz der nahezu fehlenden Korrelation zwischen den beiden SKUs ($\hat\rho \approx -0{,}04$, praktisch unkorreliert) bringt Pooling auch hier eine spürbare Einsparung von rund 27–30 % — der Risikoausgleichseffekt tritt also auch dann auf, wenn die Standorte (hier: Produkte) nicht durch negative Korrelation *gezielt* gegenläufig schwanken, sondern schlicht **unabhängig** sind. Zweitens: **Empirischer und parametrischer Sicherheitsbestand fallen hier weit auseinander** — die parametrische Rechnung liefert wegen der Ausreißer-getriebenen Standardabweichung deutlich höhere absolute Werte. Das ist eine wichtige praktische Lehre: Wo die Normalverteilungsannahme schlecht zur tatsächlichen Datenlage passt (was sich leicht mit ECDF-Plot und `ks.test()` prüfen lässt), sollte der Sicherheitsbestand **empirisch** und nicht **parametrisch** bestimmt werden — ansonsten führen einzelne extreme Wochen zu einer massiven, ökonomisch schwer zu rechtfertigenden Überdimensionierung des Bestands.
+
+## Zusammenfassung
+
+Dieses Kapitel hat gezeigt, dass Unsicherheit in Supply Chains kein vermeidbares Planungsversagen ist, sondern eine **strukturelle Konsequenz** der zeitlichen Trennung zwischen Kapazitätsentscheidung (ex ante) und Nachfragerealisierung (ex post). Die implizierte Unsicherheit eines Produkts — bestimmt durch Nachfrageunsicherheit und Liefervariabilität — legt fest, wie reaktionsfähig die zugehörige Supply Chain ausgelegt sein sollte. Sicherheitsbestände dämpfen diesen Mismatch über die Zeit; ihre Höhe folgt direkt aus dem gewünschten $\alpha$-Servicegrad und der (empirischen oder parametrischen) Nachfrageverteilung.
+
+Das verbindende Prinzip des Kapitels war **Pooling**: Ob bei Produktionskapazitäten (GM-Beispiel, Chaining) oder bei Lagerbeständen (dezentral vs. zentral) — die Bündelung von Ressourcen über mehrere Standorte, Produkte oder Perioden hinweg erlaubt einen **Risikoausgleich**, der Servicegrad und Auslastung gleichzeitig verbessert, ohne zusätzliche physische Kapazität zu schaffen. Formal wird dieser Effekt durch das **Quadratwurzelgesetz** gefasst: Der Sicherheitsbestand wächst bei unabhängigen, identischen Standorten nur mit $\sqrt{n}$ statt linear mit $n$ — mit abnehmendem Grenznutzen bei wachsender Standortzahl, was erklärt, warum vollständige Zentralisierung in der Praxis selten die kosteneffizienteste Lösung ist. Der Nutzen des Poolings hängt zudem entscheidend von der **Korrelation** zwischen den gepoolten Nachfragen ab: Er ist am größten bei negativer Korrelation und verschwindet bei perfekter positiver Korrelation vollständig.
+
+Auf der R-Seite wurden in diesem Kapitel die Werkzeuge zur **Modellierung von Unsicherheit** eingeführt: die Funktionsfamilie `rnorm()`/`dnorm()`/`pnorm()`/`qnorm()` für die Normalverteilung, `set.seed()` zur Reproduzierbarkeit von Zufallsexperimenten, `replicate()` für einfache Monte-Carlo-Simulationen sowie `ecdf()` und `quantile()` für die datengetriebene, verteilungsfreie Auswertung empirischer Beobachtungen. Diese Werkzeuge sind nicht auf Pooling beschränkt — sie bilden die Grundlage für das **Newsvendor-Modell** in @sec-newsvendor, wo die Bestimmung einer optimalen Bestellmenge unter Unsicherheit im Mittelpunkt steht.
+
+::: {.kontrollfragen}
+**Kontrollfragen**
+
+1. Was unterscheidet die *implizierte Unsicherheit* eines Produkts von seiner reinen Nachfrageunsicherheit? Nennen Sie ein Beispiel für ein Produkt mit hoher implizierter Unsicherheit und eines mit niedriger.
+2. Warum kann bei fixer Kapazität und stochastischer Nachfrage in derselben Periode gleichzeitig Über- und Unterauslastung an verschiedenen Standorten auftreten?
+3. Erläutern Sie den Unterschied zwischen einseitigem und zweiseitigem Kapazitätspooling am Beispiel zweier Automobilwerke. Warum verbessert Pooling alle Servicekennzahlen gleichzeitig, ohne zusätzliche Kapazität zu schaffen?
+4. Was versteht man unter *Chaining*, und warum erreicht bereits eine Kettenstruktur mit $2n$ statt $n^2$ Verbindungen einen Großteil des vollständigen Pooling-Nutzens?
+5. Definieren Sie den $\alpha$-Servicegrad formal. Wie lässt sich der zugehörige Sicherheitsbestand aus historischen Daten bestimmen, ohne eine Verteilungsannahme zu treffen?
+6. Leiten Sie die Formel für den zentralen Sicherheitsbestand zweier gepoolter, normalverteilter Standorte her. Für welchen Wert der Korrelation $\rho$ verschwindet der Pooling-Nutzen vollständig, und warum?
+7. Formulieren und begründen Sie das Quadratwurzelgesetz des Pooling für $n$ identische, unabhängige Standorte. Warum nimmt die relative Einsparung mit wachsendem $n$ nur noch langsam zu?
+8. In welchen Situationen sollte der Sicherheitsbestand empirisch statt parametrisch (über die Normalverteilung) bestimmt werden? Nutzen Sie in Ihrer Antwort die Ergebnisse des realen SKU-Fallbeispiels.
+:::
