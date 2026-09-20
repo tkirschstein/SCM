@@ -6,8 +6,8 @@
 #| warning: false
 #| message: false
 
-# Funktionen aus scm_functions.R einbinden (u.a. vogels_approximation(),
-# add_heuristic_wlp(), drop_heuristic_wlp())
+# Funktionen aus scm_functions.R einbinden (u.a. haversine(),
+# vogels_approximation(), add_heuristic_wlp(), drop_heuristic_wlp())
 source("../R/scm_functions.R")
 
 library(tidyverse)
@@ -25,7 +25,8 @@ Nach der Bearbeitung dieses Kapitels können Sie …
 - das Warehouse Location Problem (WLP) als gemischt-ganzzahliges Optimierungsmodell aufstellen und seine Entscheidungsvariablen, Zielfunktion und Nebenbedingungen interpretieren,
 - ein WLP mit dem R-Paket `ompr` exakt lösen und das Ergebnis ökonomisch einordnen,
 - die Grundideen konstruktiver Add- und Drop-Heuristiken nachvollziehen, in R anwenden und ihre Lösungsgüte beurteilen,
-- Listen, `purrr::map()` und Matrizen als R-Werkzeuge zur Strukturierung und Auswertung von Netzwerkplanungsdaten einsetzen.
+- Listen, `purrr::map()` und Matrizen als R-Werkzeuge zur Strukturierung und Auswertung von Netzwerkplanungsdaten einsetzen,
+- qualitative Vorauswahlverfahren (Kapitel 4) und quantitative Kostenoptimierung als **einander ergänzende** Bausteine einer Standortentscheidung einordnen.
 
 **Literatur zur Vertiefung**
 
@@ -36,7 +37,9 @@ Nach der Bearbeitung dieses Kapitels können Sie …
 
 ## Von der kontinuierlichen zur diskreten Standortplanung
 
-Im vorangegangenen Kapitel haben Sie gelernt, wie man mit dem Center-of-Gravity-Ansatz und dem Weiszfeld-Algorithmus einen *beliebigen* Punkt in der Ebene bestimmt, der die gewichteten Entfernungen zu einer Menge von Nachfragepunkten minimiert. Dieser kontinuierliche Blick auf die Standortwahl ist analytisch elegant, in der unternehmerischen Praxis aber nur bedingt hilfreich: Ein Logistikdienstleister kann sein neues Lager nicht exakt bei den berechneten Koordinaten $x^\*=52{,}31,\ y^\*=9{,}74$ errichten, sondern muss unter den tatsächlich verfügbaren Grundstücken, Gewerbeflächen, Hallen oder Distributionszentren auswählen. Genehmigungsrecht, Grundstückspreise, vorhandene Infrastruktur und – wie im folgenden Fallbeispiel – regulatorische Anforderungen an die Gefahrgutlagerung schränken die Menge realistisch nutzbarer Standorte auf eine **endliche, vorab bekannte Menge von Alternativen** ein. Genau dies ist der Ausgangspunkt der **diskreten Standortplanung**: Anstelle eines Optimierungsproblems über die gesamte Ebene $\mathbb{R}^2$ steht eine **Auswahlentscheidung** aus einer festen Liste potenzieller Standorte im Mittelpunkt.
+Im vorangegangenen Kapitel haben Sie gelernt, wie man mit dem Center-of-Gravity-Ansatz und dem Weiszfeld-Algorithmus einen *beliebigen* Punkt in der Ebene bestimmt, der die gewichteten Entfernungen zu einer Menge von Nachfragepunkten minimiert. Am Beispiel der **SushiFresh GmbH** – einem regionalen Hersteller frischer Sushi-Boxen im Rhein-Main-Gebiet, der täglich sechs Supermarkt-Filialen beliefert – lag der so berechnete Optimalpunkt irgendwo mitten im Rhein-Main-Gebiet, ungefähr auf Höhe von Raunheim. Dieser kontinuierliche Blick auf die Standortwahl ist analytisch elegant, in der unternehmerischen Praxis aber nur bedingt hilfreich: SushiFresh kann sein neues Produktions- und Distributionszentrum nicht exakt an den berechneten Koordinaten errichten, sondern muss unter den tatsächlich verfügbaren Gewerbegrundstücken, Hallen oder Bestandsimmobilien auswählen. Genehmigungsrecht, Grundstückspreise, Verkehrsanbindung und Lebensmittelhygiene-Auflagen schränken die Menge realistisch nutzbarer Standorte auf eine **endliche, vorab bekannte Menge von Alternativen** ein. Genau dies ist der Ausgangspunkt der **diskreten Standortplanung**: Anstelle eines Optimierungsproblems über die gesamte Ebene $\mathbb{R}^2$ steht eine **Auswahlentscheidung** aus einer festen Liste potenzieller Standorte im Mittelpunkt.
+
+In Kapitel 4 wurde die Standortfrage für SushiFresh bereits zweimal aufgegriffen: Zunächst wurde mittels **AHP** (*Analytic Hierarchy Process*) eine erste, qualitative Vorauswahl unter mehreren Kandidatenstandorten getroffen – mit dem Ergebnis, dass **Raunheim** knapp vorne lag. Anschließend lieferte der **Center-of-Gravity-/Weiszfeld-Ansatz** einen kontinuierlichen Optimalpunkt, der geografisch in dieselbe Richtung wies. Dieses Kapitel stellt die Standortfrage ein drittes Mal – nun aber auf Basis harter, belastbarer **Kostenzahlen**: Fixkosten für den Betrieb eines Standorts und variable Transportkosten zu den belieferten Filialen. Wie sich zeigen wird, kann eine rein kostenbasierte, diskrete Analyse durchaus zu einem anderen Ergebnis kommen als die qualitative Vorauswahl – und genau diese Spannung zwischen beiden Verfahren wird am Ende des Kapitels explizit diskutiert.
 
 ::: {.definition}
 **Definition: Diskrete Standortplanung**
@@ -44,62 +47,81 @@ Im vorangegangenen Kapitel haben Sie gelernt, wie man mit dem Center-of-Gravity-
 Bei der diskreten Standortplanung wird aus einer endlichen Menge vorab definierter, potenzieller Standorte diejenige Teilmenge ausgewählt, die eine gegebene Zielgröße (in der Regel die Summe aus fixen Standort- und variablen Transportkosten) minimiert. Im Gegensatz zur kontinuierlichen Standortplanung ist der Lösungsraum nicht mehr stetig, sondern **kombinatorisch**: Jede mögliche Teilmenge von Standorten stellt eine zulässige Lösung dar.
 :::
 
-Diskrete Standortentscheidungen sind stets eingebettet in ein größeres **Supply-Chain-Netzwerk**, das sich grob in die Stufen Beschaffung, Produktion, Distribution und Absatz gliedern lässt. Auf jeder dieser Stufen können Knoten (Lieferantenwerke, Produktionsstätten, Lagerhäuser, Cross-Docking-Punkte) geöffnet, geschlossen oder miteinander verbunden werden; man spricht in diesem Zusammenhang auch von **Netzwerkdesign**. Dieses Kapitel konzentriert sich exemplarisch auf die Distributionsstufe: Es geht um die Frage, welche Lagerstandorte in einem Distributionsnetzwerk betrieben werden sollen und welcher Kunde von welchem Lager beliefert wird. Die vorgestellten Modelle und Verfahren lassen sich jedoch unmittelbar auf andere Netzwerkstufen (z. B. die Wahl von Werksstandorten oder Cross-Docking-Hubs) übertragen.
+Diskrete Standortentscheidungen sind stets eingebettet in ein größeres **Supply-Chain-Netzwerk**, das sich grob in die Stufen Beschaffung, Produktion, Distribution und Absatz gliedern lässt. Auf jeder dieser Stufen können Knoten (Lieferantenwerke, Produktionsstätten, Lagerhäuser, Cross-Docking-Punkte) geöffnet, geschlossen oder miteinander verbunden werden; man spricht in diesem Zusammenhang auch von **Netzwerkdesign**. Dieses Kapitel konzentriert sich exemplarisch auf die Frage, welcher Produktions-/Distributionsstandort für SushiFresh betrieben werden soll und welche Filiale von welchem Standort beliefert wird. Die vorgestellten Modelle und Verfahren lassen sich jedoch unmittelbar auf andere Netzwerkstufen (z. B. die Wahl von Werksstandorten oder Cross-Docking-Hubs) übertragen.
 
-Wir nähern uns der diskreten Standortplanung in zwei Schritten. Zunächst betrachten wir den **Spezialfall**, dass die Standorte bereits feststehen und nur noch die Liefermengen optimal auf die Kunden verteilt werden müssen – das klassische **Transportproblem**. Anschließend erweitern wir das Modell um die eigentliche Standortentscheidung: das **Warehouse Location Problem (WLP)**, bei dem sowohl die Frage „wo?" als auch die Frage „wie viel wohin?" simultan zu beantworten ist.
+Wir nähern uns der diskreten Standortplanung in zwei Schritten. Zunächst betrachten wir den **Spezialfall**, dass die Standorte bereits feststehen und nur noch die Liefermengen optimal auf die Filialen verteilt werden müssen – das klassische **Transportproblem**. Anschließend erweitern wir das Modell um die eigentliche Standortentscheidung: das **Warehouse Location Problem (WLP)**, bei dem sowohl die Frage „wo?" als auch die Frage „wie viel wohin?" simultan zu beantworten ist.
 
-## Fallbeispiel: Batterielogistik für Automobilwerke
+## Fallbeispiel: SushiFresh GmbH
 
-Die folgenden Abschnitte begleiten ein durchgängiges Fallbeispiel aus der Automobil- und Batterielogistik. Zur Versorgung mehrerer Automobilwerke in Norddeutschland und den Benelux-Ländern mit Antriebsbatterien soll eine neue Distributionskette aufgebaut werden. Ein Logistikdienstleister (3PL), der bereits in der Automobilbranche tätig ist, bietet an, die Versorgung zu übernehmen. Da Batterien als Gefahrgut gelten, müssen an den genutzten Lagerstandorten Investitionen in Sicherheitstechnik, Brandschutz und Lagerausstattung getätigt werden – es entstehen **jährliche Rüst- bzw. Eröffnungskosten** pro genutztem Lager. Hinzu kommen **Transportkosten**, die von der Distanz zwischen Lager und Werk sowie der transportierten Menge abhängen.
+Die folgenden Abschnitte begleiten ein durchgängiges Fallbeispiel: SushiFresh beliefert täglich sechs Supermarkt-Filialen im Rhein-Main-Gebiet mit frisch produzierten Sushi-Boxen. Für die Produktion und Distribution stehen drei realistische Kandidatenstandorte zur Diskussion, die im Zuge der Standortsuche aus Kapitel 4 als Gewerbeflächen identifiziert wurden – darunter auch Raunheim, der Favorit der AHP-Analyse.
 
-Der 3PL kennt sechs mögliche Lagerstandorte mit den zugehörigen jährlichen Rüstkosten:
+Die sechs Filialen mit ihrer mittleren täglichen Nachfrage $\mu$ (in Sushi-Boxen) und der zugehörigen Nachfragestreuung $\sigma$ (die uns erst in späteren Kapiteln wieder begegnet):
 
 ```{r}
-#| label: ch5-lager-tabelle
+#| label: ch5-filialen-tabelle
 #| echo: false
 
-lager_fall <- data.frame(
-  ID       = c("L1", "L2", "L3", "L4", "L5", "L6"),
-  Standort = c("Gütersloh", "Düren", "Dorsten/Marl",
-               "Harsewinkel", "Langenhagen", "Hannover"),
-  Kosten   = c(450, 480, 520, 470, 510, 460)
+filialen_fall <- data.frame(
+  ID    = c("Wiesbaden", "Mainz", "Frankfurt", "Ruesselsheim",
+            "Darmstadt", "Offenbach"),
+  lat   = c(50.0782, 50.0000, 50.1109, 49.9904, 49.8728, 50.0956),
+  lon   = c(8.2398, 8.2711, 8.6821, 8.4116, 8.6512, 8.7761),
+  mu    = c(120, 150, 280, 90, 110, 95),
+  sigma = c(25, 30, 55, 20, 24, 22)
 )
 
-kbl(lager_fall,
-    col.names = c("ID", "Standort", "Rüstkosten/Jahr (T€)"),
-    align = c("c", "l", "r")) |>
+kbl(filialen_fall,
+    col.names = c("Filiale", "Breitengrad", "Längengrad",
+                  "$\\mu$ (Boxen/Tag)", "$\\sigma$"),
+    align = c("l", "r", "r", "r", "r"), escape = FALSE) |>
   kable_styling(bootstrap_options = c("striped", "hover", "condensed"),
                 full_width = FALSE)
 ```
 
-Und elf Automobilwerke mit ihrem jährlichen Batteriebedarf (in MWh):
+Die sechs Filialen fragen zusammen `r sum(filialen_fall$mu)` Sushi-Boxen pro Tag nach. Für diese Nachfrage kommen drei Kandidatenstandorte in Frage, jeweils mit unterschiedlichen jährlichen Fixkosten für Miete, Kühltechnik und Produktionsausstattung:
 
 ```{r}
-#| label: ch5-werke-tabelle
+#| label: ch5-standorte-tabelle
 #| echo: false
 
-werke_fall <- data.frame(
-  ID     = paste0("C", 1:11),
-  Ort    = c("Wolfsburg", "Hannover", "Emden", "Osnabrück",
-             "Bremen", "Köln", "Rüsselsheim", "Gent (Cars)",
-             "Gent (Trucks)", "Zaventem", "Born (NL)"),
-  Bedarf = c(45000, 15000, 18000, 12000, 35000, 30000,
-             25000, 19000, 17000, 40000, 15000)
+standorte_fall <- data.frame(
+  ID        = c("Wiesbaden-Erbenheim", "Mainz-Hechtsheim", "Raunheim"),
+  lat       = c(50.0632, 49.9698, 50.0000),
+  lon       = c(8.2999, 8.2831, 8.4650),
+  Fixkosten = c(180000, 210000, 260000)
 )
 
-kbl(werke_fall,
-    col.names = c("ID", "Werksstandort", "Batteriebedarf (MWh/Jahr)"),
-    align = c("c", "l", "r"),
-    format.args = list(big.mark = " ")) |>
+kbl(standorte_fall,
+    col.names = c("Standort", "Breitengrad", "Längengrad",
+                  "Fixkosten (€/Jahr)"),
+    align = c("l", "r", "r", "r"),
+    format.args = list(big.mark = " ")) |>
   kable_styling(bootstrap_options = c("striped", "hover", "condensed"),
                 full_width = FALSE)
 ```
 
-Die vollständige Aufgabenstellung – sechs Lagerkandidaten, elf Werke, eine $6\times 11$-Distanzmatrix – ist für eine manuelle Nachvollziehbarkeit zu groß. Wir nutzen sie daher als **Rahmengeschichte** und arbeiten in den folgenden Abschnitten mit kompakteren, aber strukturell identischen Teilproblemen: zunächst mit einem reduzierten Transportproblem (Abschnitt 3), danach mit einem vollständigen, aber überschaubaren WLP mit fünf Lagern und sechs Kunden (Abschnitt 4 ff.), das exakt und heuristisch gelöst wird. Die eingeführten Methoden lassen sich unmittelbar auf die vollständige Fallstudie mit sechs Lagern und elf Werken übertragen – lediglich der Rechenaufwand steigt.
+Auffällig ist bereits hier: Raunheim – der Favorit der qualitativen AHP-Bewertung aus Kapitel 4 – ist zugleich der Standort mit den **höchsten** Fixkosten. Ob sich das durch niedrigere Transportkosten (Raunheim liegt geografisch recht zentral) wieder ausgleicht, ist genau die Frage, der wir in diesem Kapitel nachgehen.
 
 ## Das klassische Transportproblem
 
-Nehmen wir zunächst an, der 3PL hätte in einer ersten Ausbaustufe bereits drei Lager in Betrieb genommen – etwa L1 (Gütersloh), L5 (Langenhagen) und L6 (Hannover) – und müsste "nur" noch entscheiden, welche Mengen von welchem Lager zu welchem Kunden transportiert werden. Fasst man die elf Werke zu vier regionalen Bedarfsgruppen zusammen (z. B. nach Postleitregion), erhält man ein Problem mit drei **Quellen** (Angebot) und vier **Senken** (Nachfrage) – das klassische **Transportproblem**.
+Nehmen wir zunächst an, SushiFresh betreibe – hypothetisch, als Ausgangsszenario *vor* der eigentlichen Standortentscheidung – bereits **alle drei** Standorte gleichzeitig und müsse "nur" noch festlegen, welche Filiale von welchem Standort mit welcher Menge beliefert wird. Die drei Standorte haben dabei folgende Tages-Produktionskapazitäten, die in Summe genau der Gesamtnachfrage aller sechs Filialen entsprechen:
+
+```{r}
+#| label: ch5-angebot-tabelle
+#| echo: false
+
+angebot_fall <- data.frame(
+  Standort = c("Wiesbaden-Erbenheim", "Mainz-Hechtsheim", "Raunheim"),
+  Angebot  = c(350, 300, 195)
+)
+
+kbl(angebot_fall,
+    col.names = c("Standort", "Angebot (Boxen/Tag)")) |>
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed"),
+                full_width = FALSE)
+```
+
+Drei **Quellen** (Angebot der Standorte) und sechs **Senken** (Nachfrage der Filialen) – das klassische **Transportproblem**.
 
 ::: {.definition}
 **Definition: Transportproblem**
@@ -144,36 +166,54 @@ VAM liefert in der Praxis Lösungen, die meist innerhalb von 0–5 % des Optimum
 
 Bislang haben Sie tabellarische Daten vor allem als `data.frame`/`tibble` kennengelernt, bei denen jede Spalte einen benannten, typisch unterschiedlich interpretierbaren Merkmalsvektor darstellt (z. B. Ort, Längengrad, Bedarf). Ein Kosten- oder Transporttableau ist dagegen eine **homogene, rein numerische Tabelle**, bei der es nicht auf Spaltennamen im inhaltlichen Sinn ankommt, sondern auf die *Position* (Zeile $i$, Spalte $j$). Dafür ist der R-Datentyp **Matrix** (`matrix()`) die natürliche Wahl.
 
-Eine Matrix wird aus einem Vektor von Werten sowie der gewünschten Zeilen-/Spaltenzahl aufgebaut. Mit `dimnames` lassen sich – rein zur besseren Lesbarkeit – Zeilen- und Spaltennamen vergeben; intern bleibt es bei einer numerischen Matrix, auf die sich Matrixoperationen (Zeilen-/Spaltensummen, Matrixmultiplikation etc.) direkt anwenden lassen.
+Wir nutzen die Gelegenheit, die Distanzmatrix zwischen unseren drei Standorten und den sechs Filialen direkt aus den Koordinaten zu berechnen – mit derselben `haversine()`-Funktion, die Sie bereits aus Kapitel 4 kennen. `mapply()` wendet `haversine()` elementweise auf zwei Vektorpaare an; mit `matrix()` und `dimnames` formen wir das Ergebnis anschließend zu einem übersichtlichen $3\times 6$-Tableau:
+
+```{r}
+#| label: ch5-matrix-distanz
+
+# Distanzmatrix (km): Standorte (Zeilen) x Filialen (Spalten), via haversine()
+dist_mat <- matrix(
+  mapply(haversine,
+         lat1 = rep(standorte_fall$lat, times = nrow(filialen_fall)),
+         lon1 = rep(standorte_fall$lon, times = nrow(filialen_fall)),
+         lat2 = rep(filialen_fall$lat, each  = nrow(standorte_fall)),
+         lon2 = rep(filialen_fall$lon, each  = nrow(standorte_fall))),
+  nrow = nrow(standorte_fall),
+  dimnames = list(standorte_fall$ID, filialen_fall$ID)
+)
+round(dist_mat, 1)
+```
+
+Mit einem Transportkostensatz von 0,02 €/(Box·km) ergibt sich daraus die Kostenmatrix $c_{ij}$ (Matrixmultiplikation mit einem Skalar wirkt elementweise):
 
 ```{r}
 #| label: ch5-matrix-transport
 
-# Kostenmatrix: 3 bereits eröffnete Lager (Zeilen) x 4 Kundenregionen (Spalten)
-# byrow = TRUE liest die Werte zeilenweise ein (so wie ein Tableau auf
-# Papier aussehen würde)
-kosten_mat <- matrix(
-  c(4, 6, 8, 5,
-    5, 4, 6, 7,
-    7, 5, 4, 6),
-  nrow = 3, byrow = TRUE,
-  dimnames = list(c("L1", "L5", "L6"),        # Zeilennamen = Quellen
-                   c("K1", "K2", "K3", "K4"))  # Spaltennamen = Senken
-)
+transportkostensatz <- 0.02  # EUR je Box und Kilometer
+
+# Exakte (ungerundete) Tageskosten je Box - wichtig für Abschnitt 4, wo wir
+# diese Sätze mit der Jahresnachfrage (x365) multiplizieren; jede Rundung
+# an dieser Stelle würde sich sonst auf hohe fünfstellige Jahresbeträge
+# hochrechnen.
+kosten_mat_exakt <- dist_mat * transportkostensatz
+
+# Für die übersichtliche Darstellung des Transporttableaus in diesem
+# Abschnitt runden wir auf drei Nachkommastellen:
+kosten_mat <- round(kosten_mat_exakt, 3)
 kosten_mat
 
-# Angebots- und Nachfragevektoren (in MWh/Jahr, aggregiert je Region)
-angebot   <- c(L1 = 250, L5 = 300, L6 = 200)
-nachfrage <- c(K1 = 180, K2 = 220, K3 = 240, K4 = 110)
+# Angebots- und Nachfragevektoren (Boxen/Tag)
+angebot   <- c(`Wiesbaden-Erbenheim` = 350, `Mainz-Hechtsheim` = 300, Raunheim = 195)
+nachfrage <- setNames(filialen_fall$mu, filialen_fall$ID)
 
 # Balanciertheit prüfen: stimmen Gesamtangebot und Gesamtnachfrage überein?
 sum(angebot) == sum(nachfrage)
 ```
 
-Das Problem ist mit jeweils 750 MWh auf beiden Seiten balanciert. Nach der Lösung (siehe unten) lässt sich mit `rowSums()` und `colSums()` sehr einfach prüfen, ob eine berechnete Allokationsmatrix zulässig ist: Die Zeilensummen müssen dem Angebot, die Spaltensummen der Nachfrage entsprechen.
+Das Problem ist mit jeweils `r sum(angebot)` Boxen auf beiden Seiten balanciert. Nach der Lösung (siehe unten) lässt sich mit `rowSums()` und `colSums()` sehr einfach prüfen, ob eine berechnete Allokationsmatrix zulässig ist: Die Zeilensummen müssen dem Angebot, die Spaltensummen der Nachfrage entsprechen.
 :::
 
-Die Funktion `vogels_approximation()` aus `R/scm_functions.R` implementiert das oben skizzierte Verfahren vollständig, inklusive automatischer Balancierung über ein Dummy-Lager bzw. einen Dummy-Kunden, falls Angebot und Nachfrage nicht übereinstimmen. Wir wenden sie auf unser Beispiel an:
+Die Funktion `vogels_approximation()` aus `R/scm_functions.R` implementiert das oben skizzierte Verfahren vollständig, inklusive automatischer Balancierung über ein Dummy-Standort bzw. eine Dummy-Filiale, falls Angebot und Nachfrage nicht übereinstimmen. Wir wenden sie auf unser Beispiel an:
 
 ```{r}
 #| label: ch5-vogel-example
@@ -198,21 +238,21 @@ zeilen_summe  <- rowSums(vam_ergebnis$allocation)
 spalten_summe <- colSums(vam_ergebnis$allocation)
 ```
 
-Die Allokationsmatrix zeigt beispielsweise, dass Lager L1 mit 140 MWh die Kundenregion K1 und mit 110 MWh die Region K4 beliefert, während L5 auf drei Regionen (K1, K2, K3) verteilt liefert. Die Kontrollrechnung `rowSums(vam_ergebnis$allocation)` liefert exakt den Angebotsvektor (`r paste(zeilen_summe, collapse=", ")`), `colSums(vam_ergebnis$allocation)` exakt den Nachfragevektor (`r paste(spalten_summe, collapse=", ")`) – die Lösung ist also zulässig. Die Gesamtkosten belaufen sich auf `r vam_ergebnis$total_cost` Geldeinheiten. Da VAM eine **Eröffnungsheuristik** ist, muss dieses Ergebnis nicht zwingend die exakte Optimallösung sein; für viele praktische Zwecke – und insbesondere als Startlösung für exaktere Verfahren – ist die Qualität aber ausreichend.
+Die Allokationsmatrix zeigt ein ökonomisch plausibles Bild: Wiesbaden-Erbenheim bedient nicht nur die naheliegende Filiale Wiesbaden vollständig, sondern übernimmt mit 230 Boxen auch den Großteil der Belieferung von Frankfurt – schlicht, weil Mainz-Hechtsheim für die übrige Nachfrage bereits ausgelastet ist. Raunheim wiederum beliefert trotz mitunter größerer Distanzen zu einzelnen Filialen konsequent die ihm am nächsten gelegenen Filialen Rüsselsheim, (den Rest von) Darmstadt und Offenbach – die Kostenmatrix sorgt hier ganz automatisch für eine sinnvolle Aufteilung entlang der Geografie. Die Kontrollrechnung `rowSums(vam_ergebnis$allocation)` liefert exakt den Angebotsvektor (`r paste(zeilen_summe, collapse=", ")`), `colSums(vam_ergebnis$allocation)` exakt den Nachfragevektor (`r paste(spalten_summe, collapse=", ")`) – die Lösung ist also zulässig. Die Gesamtkosten belaufen sich auf `r round(vam_ergebnis$total_cost, 2)` €/Tag. Da VAM eine **Eröffnungsheuristik** ist, muss dieses Ergebnis nicht zwingend die exakte Optimallösung sein; für viele praktische Zwecke – und insbesondere als Startlösung für exaktere Verfahren – ist die Qualität aber ausreichend.
 
 Das Transportproblem unterstellt, dass die Menge der belieferenden Standorte bereits feststeht. Genau diese Annahme wird im nächsten Abschnitt aufgehoben.
 
 ## Das Warehouse Location Problem
 
-In der Praxis ist meist nicht nur zu klären, *wie* Kunden beliefert werden, sondern auch, *von welchen* Standorten aus überhaupt geliefert werden soll. Im Fallbeispiel muss der 3PL entscheiden, welche der sechs Lagerkandidaten tatsächlich für die Gefahrgutlagerung umgerüstet werden – jede Eröffnung ist mit einer fixen jährlichen Kostenbelastung verbunden, unabhängig davon, wie viel später tatsächlich über dieses Lager transportiert wird. Dieses Entscheidungsproblem heißt **Warehouse Location Problem (WLP)** oder auch **Uncapacitated Facility Location Problem**, wenn – wie hier – keine Kapazitätsobergrenzen je Lager unterstellt werden.
+In der Praxis ist meist nicht nur zu klären, *wie* Filialen beliefert werden, sondern auch, *von welchen* Standorten aus überhaupt geliefert werden soll. Für SushiFresh ist das die eigentliche strategische Frage: Lohnt es sich wirklich, alle drei Standorte gleichzeitig zu betreiben (wie im vorigen Abschnitt hypothetisch unterstellt), oder ist eine **Konsolidierung** auf einen oder zwei Standorte günstiger? Jede Standorteröffnung ist mit einer fixen jährlichen Kostenbelastung verbunden, unabhängig davon, wie viel später tatsächlich über diesen Standort transportiert wird. Dieses Entscheidungsproblem heißt **Warehouse Location Problem (WLP)** oder auch **Uncapacitated Facility Location Problem**, wenn – wie hier – keine Kapazitätsobergrenzen je Standort unterstellt werden.
 
 ::: {.definition}
 **Definition: Warehouse Location Problem**
 
-Gegeben seien eine Menge potenzieller Lagerstandorte $i \in I$ mit jährlichen Eröffnungskosten $f_i$ sowie eine Menge von Kundenstandorten $j \in J$ mit Nachfragemengen $a_j$. Für jede mögliche Transportverbindung $(i,j) \in E \subseteq I \times J$ entstehen Transportkosten $c_{ij}$ pro belieferter Einheit. Gesucht ist die Teilmenge der zu eröffnenden Lager sowie die zugehörige Zuordnung von Kunden zu Lagern, welche die Summe aus Eröffnungs- und Transportkosten minimiert.
+Gegeben seien eine Menge potenzieller Standorte $i \in I$ mit jährlichen Eröffnungskosten $f_i$ sowie eine Menge von Kundenstandorten $j \in J$ mit Nachfragemengen $a_j$. Für jede mögliche Transportverbindung $(i,j) \in E \subseteq I \times J$ entstehen Transportkosten $c_{ij}$ pro belieferter Einheit. Gesucht ist die Teilmenge der zu eröffnenden Standorte sowie die zugehörige Zuordnung von Kunden zu Standorten, welche die Summe aus Eröffnungs- und Transportkosten minimiert.
 :::
 
-Im Unterschied zum Transportproblem enthält das WLP nun **zwei Arten von Entscheidungsvariablen**: eine binäre Standortentscheidung $y_i \in \{0,1\}$ (Lager $i$ wird eröffnet oder nicht) und weiterhin die kontinuierlichen Transportmengen $x_{ij} \geq 0$. Das vollständige Modell lautet:
+Im Unterschied zum Transportproblem enthält das WLP nun **zwei Arten von Entscheidungsvariablen**: eine binäre Standortentscheidung $y_i \in \{0,1\}$ (Standort $i$ wird eröffnet oder nicht) und weiterhin die kontinuierlichen Transportmengen $x_{ij} \geq 0$. Das vollständige Modell lautet:
 
 $$
 \min \rightarrow \sum_{i \in I} y_i \cdot f_i + \sum_{(i,j) \in E} x_{ij} \cdot c_{ij}
@@ -229,114 +269,127 @@ $$
 \end{align}
 $$
 
-Die zweite Nebenbedingung ist der entscheidende Unterschied zum reinen Transportproblem: Solange $y_i = 0$ ist (Lager $i$ nicht eröffnet), zwingt sie *alle* zugehörigen Transportmengen $x_{ij}$ auf null – ein geschlossenes Lager kann keine Kunden beliefern. Erst wenn $y_i = 1$ gesetzt wird, ist $x_{ij}$ bis maximal zur vollen Nachfrage $a_j$ zulässig. Weil sowohl kontinuierliche als auch binäre Variablen im selben Modell auftreten, handelt es sich um ein **gemischt-ganzzahliges lineares Optimierungsmodell** (*Mixed-Integer Linear Program*, MILP) – eine deutlich schwierigere Problemklasse als das reine LP des Transportproblems.
+Die zweite Nebenbedingung ist der entscheidende Unterschied zum reinen Transportproblem: Solange $y_i = 0$ ist (Standort $i$ nicht eröffnet), zwingt sie *alle* zugehörigen Transportmengen $x_{ij}$ auf null – ein geschlossener Standort kann keine Filiale beliefern. Erst wenn $y_i = 1$ gesetzt wird, ist $x_{ij}$ bis maximal zur vollen Nachfrage $a_j$ zulässig. Weil sowohl kontinuierliche als auch binäre Variablen im selben Modell auftreten, handelt es sich um ein **gemischt-ganzzahliges lineares Optimierungsmodell** (*Mixed-Integer Linear Program*, MILP) – eine deutlich schwierigere Problemklasse als das reine LP des Transportproblems.
 
-Für das nun folgende Zahlenbeispiel reduzieren wir die Fallstudie auf fünf Lagerkandidaten und sechs Kunden. Die Daten fassen wir zunächst nicht als einzelne Vektoren, sondern in einer strukturierten Liste zusammen – ein guter Anlass, dieses zentrale R-Konzept einzuführen.
+Anders als im Transportproblem des vorigen Abschnitts rechnen wir das WLP auf **Jahresbasis**: Die Fixkosten $f_i$ aus der Standorttabelle sind bereits Jahreswerte, und auch die Nachfrage muss dafür von der Tages- auf die Jahresebene hochgerechnet werden (365 Tage/Jahr). Bevor wir die Daten dafür zusammenstellen, lohnt sich ein Blick auf ein weiteres zentrales R-Konzept: die **Liste**.
 
 ::: {.r-exkurs}
 **R-Exkurs: Listen als flexible Datenstruktur**
 
-Ein Vektor in R kann nur Elemente **eines** Datentyps aufnehmen, und ein `data.frame`/`tibble` verlangt, dass alle Spalten dieselbe Länge haben. Häufig möchte man aber unterschiedlich strukturierte, unterschiedlich lange oder unterschiedlich typisierte Objekte gemeinsam verwalten – etwa den Namen eines Lagers (Text), seine Koordinaten (ein Vektor der Länge 2), seine Fixkosten (eine Zahl) und einen Status (logisch). Genau dafür ist die **Liste** (`list()`) gedacht: ein Container, dessen Elemente beliebige – auch verschiedenartige – R-Objekte sein dürfen.
+Ein Vektor in R kann nur Elemente **eines** Datentyps aufnehmen, und ein `data.frame`/`tibble` verlangt, dass alle Spalten dieselbe Länge haben. Häufig möchte man aber unterschiedlich strukturierte, unterschiedlich lange oder unterschiedlich typisierte Objekte gemeinsam verwalten – etwa den Namen eines Standorts (Text), seine Koordinaten (ein Vektor der Länge 2), seine Fixkosten (eine Zahl) und einen Status (logisch). Genau dafür ist die **Liste** (`list()`) gedacht: ein Container, dessen Elemente beliebige – auch verschiedenartige – R-Objekte sein dürfen.
 
 Der Zugriff auf ein benanntes Element erfolgt entweder mit dem Dollarzeichen `$name` oder mit doppelten eckigen Klammern `[["name"]]` bzw. `[[position]]`. Der Unterschied zu einfachen eckigen Klammern `[ ]` ist wichtig: `liste[1]` liefert eine *Teilliste* mit einem Element, `liste[[1]]` liefert den *Inhalt* dieses Elements selbst.
 
 ```{r}
 #| label: ch5-liste-basics
 
-# Eine einzelne Lagerinformation als Liste
-lager_info <- list(
-  name        = "Gütersloh",
-  koordinaten = c(lon = 8.4143, lat = 51.8950),  # Vektor als Element
-  fixkosten   = 450,
+# Eine einzelne Standortinformation als Liste
+standort_info <- list(
+  name        = "Wiesbaden-Erbenheim",
+  koordinaten = c(lon = 8.2999, lat = 50.0632),  # Vektor als Element
+  fixkosten   = 180000,
   aktiv       = TRUE
 )
 
-lager_info$name           # Zugriff via $
-lager_info[["fixkosten"]] # Zugriff via [[ ]] mit Namen
-lager_info[["koordinaten"]]["lat"]  # verschachtelter Zugriff
+standort_info$name           # Zugriff via $
+standort_info[["fixkosten"]] # Zugriff via [[ ]] mit Namen
+standort_info[["koordinaten"]]["lat"]  # verschachtelter Zugriff
 ```
 
 Listen sind nicht nur zur *Eingabe* nützlich – auch die **Rückgabewerte** vieler R-Funktionen sind Listen, sobald mehr als ein Ergebnis zurückgegeben werden soll. Das haben wir im vorigen Abschnitt bereits genutzt, ohne es zu benennen: `vogels_approximation()` liefert kein einzelnes Ergebnisobjekt, sondern eine Liste mit den Feldern `allocation` (Matrix), `total_cost` (Zahl) und `balanced` (logisch). Ebenso liefern `add_heuristic_wlp()` und `drop_heuristic_wlp()`, die wir weiter unten einsetzen, ihr Ergebnis als Liste mit den Feldern `open_warehouses`, `fixed_cost`, `transport_cost`, `total_cost` und `assignment`. Der Zugriff erfolgt stets gleich: `ergebnis$total_cost`, `ergebnis[["open_warehouses"]]` usw.
 
-Für unser WLP-Beispiel bündeln wir die Eröffnungskosten der fünf Lager ebenfalls in einer (benannten) Liste:
+Die Fixkosten unserer drei Kandidatenstandorte bündeln wir ebenfalls in einer (benannten) Liste:
 
 ```{r}
 #| label: ch5-wlp-daten-liste
 
-fixkosten_liste <- list(W1 = 110, W2 = 95, W3 = 140, W4 = 80, W5 = 125)
-fixkosten_liste$W3       # Eröffnungskosten von Lager 3
+fixkosten_liste <- list(`Wiesbaden-Erbenheim` = 180000,
+                         `Mainz-Hechtsheim`    = 210000,
+                         Raunheim              = 260000)
+fixkosten_liste$Raunheim       # Fixkosten von Raunheim
 ```
 :::
 
-Neben den Fixkosten benötigen wir die Kundennachfragen sowie die vollständige Transportkostenmatrix. Wir legen sie – konsistent zum vorigen Abschnitt – als Matrix an, mit Lagern in den Zeilen und Kunden in den Spalten:
+Für die eigentliche Rechnung benötigen wir die Fixkosten und die Jahresnachfrage als **benannte Vektoren** sowie die zuvor berechnete (ungerundete!) Kostenmatrix `kosten_mat_exakt`:
 
 ```{r}
 #| label: ch5-wlp-daten
 
-wlp_lager  <- data.frame(ID = c("W1", "W2", "W3", "W4", "W5"),
-                          fi = c(110, 95, 140, 80, 125))
-wlp_kunden <- data.frame(ID = c("C1", "C2", "C3", "C4", "C5", "C6"),
-                          aj = c(40, 25, 60, 30, 50, 35))
-
-# Transportkosten c_ij (T€ je Einheit und Jahr): Lager (Zeilen) x Kunden (Spalten)
-wlp_cij <- matrix(
-  c(1.8, 3.2, 2.5, 4.1, 1.2, 3.7,
-    3.4, 1.1, 3.8, 1.6, 2.9, 2.2,
-    2.6, 4.0, 1.3, 3.5, 3.1, 1.9,
-    4.2, 1.8, 2.9, 1.0, 3.6, 2.7,
-    1.5, 3.6, 3.3, 4.4, 2.0, 1.4),
-  nrow = 5, byrow = TRUE,
-  dimnames = list(wlp_lager$ID, wlp_kunden$ID)
-)
-
-# Benannte Vektoren für den Aufruf der WLP-Heuristiken
-fixkosten_vec <- setNames(wlp_lager$fi, wlp_lager$ID)
-nachfrage_vec <- setNames(wlp_kunden$aj, wlp_kunden$ID)
+fixkosten_vec <- setNames(standorte_fall$Fixkosten, standorte_fall$ID)
+nachfrage_jahr <- setNames(filialen_fall$mu, filialen_fall$ID) * 365   # Boxen/Jahr
 ```
 
 ```{r}
 #| label: ch5-wlp-kosten-tabelle
 #| echo: false
 
-kbl(as.data.frame(wlp_cij),
-    caption = "Transportkosten $c_{ij}$ (T€/Einheit und Jahr)") |>
+kbl(as.data.frame(round(kosten_mat_exakt, 3)),
+    caption = "Transportkosten $c_{ij}$ (€/Box, gerundet auf drei Nachkommastellen zur Anzeige)") |>
   kable_styling(bootstrap_options = c("striped", "hover", "condensed"),
                 full_width = FALSE)
 ```
 
-Fünf Lager bedeuten $2^5 = 32$ mögliche Teilmengen (inklusive der leeren Menge) an Standortkonfigurationen – klein genug, um sie im nächsten R-Exkurs sogar **vollständig durchzurechnen**, aber bereits groß genug, um zu illustrieren, warum das bei realistischen Instanzen mit Dutzenden oder Hunderten Standorten nicht mehr praktikabel ist.
+Drei Standorte bedeuten $2^3 = 8$ mögliche Teilmengen (inklusive der leeren Menge) an Standortkonfigurationen – klein genug, um sie im nächsten R-Exkurs vollständig durchzurechnen.
 
 ::: {.r-exkurs}
 **R-Exkurs: `purrr::map()` – eine Funktion auf jedes Element anwenden**
 
 Häufig möchte man dieselbe Berechnung auf jedes Element einer Liste oder eines Vektors anwenden – zum Beispiel: "berechne für jede mögliche Standortkombination die Gesamtkosten". Statt dafür eine `for`-Schleife (Kapitel 4) zu schreiben, bietet das `tidyverse`-Paket `purrr` dafür die Funktionenfamilie `map()`. `map(x, f)` wendet die Funktion `f` auf jedes Element von `x` an und gibt eine Liste zurück; `map_dbl(x, f)` tut dasselbe, verlangt aber, dass `f` je Element eine einzelne Zahl (`double`) liefert, und vereinfacht das Ergebnis dann automatisch zu einem numerischen Vektor. Das ist der direkte Verwandte von `sapply()` aus Kapitel 4, mit dem Vorteil, dass der Rückgabetyp klar feststeht und Fehler dadurch früher auffallen.
 
-Wir erzeugen zunächst alle nichtleeren Teilmengen der fünf Lager mit der Basis-R-Funktion `combn()` und werten sie anschließend mit `map_dbl()` und der internen Hilfsfunktion `.wlp_cost()` aus `scm_functions.R` aus, die für eine gegebene Menge offener Lager die optimale Kundenzuordnung (jeder Kunde zum günstigsten offenen Lager) sowie die resultierenden Gesamtkosten berechnet:
+Wir erzeugen zunächst alle nichtleeren Teilmengen der drei Standorte mit der Basis-R-Funktion `combn()` und werten sie anschließend mit `map_dbl()` und der internen Hilfsfunktion `.wlp_cost()` aus `scm_functions.R` aus, die für eine gegebene Menge offener Standorte die optimale Filialzuordnung (jede Filiale zum günstigsten offenen Standort) sowie die resultierenden Gesamtkosten berechnet:
 
 ```{r}
 #| label: ch5-purrr-map
 
-# Alle nichtleeren Teilmengen von {1, ..., 5} erzeugen (als Liste von
-# Integer-Vektoren): combn(5, k) liefert alle Kombinationen der Größe k
+# Alle nichtleeren Teilmengen von {1, 2, 3} erzeugen (als Liste von
+# Integer-Vektoren): combn(3, k) liefert alle Kombinationen der Größe k
 alle_teilmengen <- unlist(
-  lapply(1:5, function(k) combn(5, k, simplify = FALSE)),
+  lapply(1:3, function(k) combn(3, k, simplify = FALSE)),
   recursive = FALSE
 )
-length(alle_teilmengen)  # 2^5 - 1 = 31 nichtleere Teilmengen
+length(alle_teilmengen)  # 2^3 - 1 = 7 nichtleere Teilmengen
 
 # Für jede Teilmenge die Gesamtkosten berechnen: map_dbl() wendet die
 # anonyme Funktion auf jedes Element von alle_teilmengen an
 kosten_je_teilmenge <- map_dbl(alle_teilmengen, function(S) {
-  .wlp_cost(S, fixkosten_vec, wlp_cij, nachfrage_vec)$total
+  .wlp_cost(S, fixkosten_vec, kosten_mat_exakt, nachfrage_jahr)$total
 })
 
 # Beste Teilmenge und zugehörige Kosten
 beste_teilmenge <- alle_teilmengen[[which.min(kosten_je_teilmenge)]]
-wlp_lager$ID[beste_teilmenge]
-min(kosten_je_teilmenge)
+standorte_fall$ID[beste_teilmenge]
+round(min(kosten_je_teilmenge), 1)
 ```
 
-Die vollständige Enumeration bestätigt, dass die Kombination aus Lager W1 und W2 mit Gesamtkosten von 639,5 T€/Jahr die **global optimale** Lösung dieses Beispiels darstellt. Diese Brute-Force-Suche funktioniert nur, weil $|I|=5$ klein ist. Bei $|I|=20$ Lagern gäbe es bereits über eine Million, bei $|I|=50$ mehr als $10^{15}$ Teilmengen – eine vollständige Suche ist dann selbst auf leistungsfähigen Rechnern aussichtslos. Für realistische Instanzen braucht es daher entweder **effiziente exakte Verfahren** (Abschnitt 5) oder **Heuristiken** (Abschnitt 6).
+Die vollständige Enumeration bestätigt, dass **nur Wiesbaden-Erbenheim** zu öffnen mit Gesamtkosten von rund 306.379 €/Jahr die **global optimale** Lösung dieses Beispiels darstellt – trotz der insgesamt niedrigsten Fixkosten aller drei Kandidaten ist das durchaus kein triviales Ergebnis, wie die vollständige Rangliste aller sieben Kombinationen zeigt:
+
+```{r}
+#| label: ch5-brute-force-tabelle
+#| echo: false
+
+brute_force_df <- do.call(rbind, lapply(alle_teilmengen, function(S) {
+  res <- .wlp_cost(S, fixkosten_vec, kosten_mat_exakt, nachfrage_jahr)
+  data.frame(
+    Standorte = paste(standorte_fall$ID[S], collapse = " + "),
+    Fixkosten = res$fixed,
+    Transportkosten = round(res$transport, 1),
+    Gesamtkosten = round(res$total, 1)
+  )
+})) |> dplyr::arrange(Gesamtkosten)
+
+kbl(brute_force_df,
+    col.names = c("Offene Standorte", "Fixkosten (€)", "Transportkosten (€)",
+                  "Gesamtkosten (€/Jahr)"),
+    align = c("l", "r", "r", "r"),
+    format.args = list(big.mark = " ")) |>
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed"),
+                full_width = FALSE) |>
+  row_spec(1, bold = TRUE, background = "#E8F4F1")
+```
+
+Bemerkenswert: **Raunheim allein** betrieben hätte mit rund 106.963 €/Jahr die *niedrigsten* Transportkosten aller drei Einzelstandorte – geografisch macht sich die zentrale Lage bezahlt. Die um 80.000 €/Jahr höheren Fixkosten kehren den Gesamtvergleich jedoch um: **Wiesbaden-Erbenheim** gewinnt trotz höherer Transportkosten, weil der Fixkostenvorteil (180.000 € statt 260.000 €/Jahr) die Transportkostendifferenz von knapp 19.400 €/Jahr deutlich übersteigt. Wir kommen auf diesen Punkt im Diskussionsabschnitt am Ende des Kapitels zurück.
+
+Diese Brute-Force-Suche funktioniert nur, weil $|I|=3$ sehr klein ist. Bei $|I|=20$ Standorten gäbe es bereits über eine Million, bei $|I|=50$ mehr als $10^{15}$ Teilmengen – eine vollständige Suche ist dann selbst auf leistungsfähigen Rechnern aussichtslos. Für realistische Instanzen braucht es daher entweder **effiziente exakte Verfahren** (Abschnitt 5) oder **Heuristiken** (Abschnitt 6).
 :::
 
 ## Exakte Lösung mit ompr
@@ -365,16 +418,16 @@ library(ompr)
 library(ompr.roi)
 library(ROI.plugin.glpk)
 
-n_I <- nrow(wlp_lager)   # Anzahl Lagerkandidaten (5)
-n_J <- nrow(wlp_kunden)  # Anzahl Kunden (6)
-f    <- wlp_lager$fi     # Eröffnungskosten f_i
-a    <- wlp_kunden$aj    # Nachfrage a_j
-c_ij <- wlp_cij           # Transportkostenmatrix
+n_I <- nrow(standorte_fall)   # Anzahl Kandidatenstandorte (3)
+n_J <- nrow(filialen_fall)    # Anzahl Filialen (6)
+f    <- fixkosten_vec          # Eröffnungskosten f_i (€/Jahr)
+a    <- nachfrage_jahr         # Nachfrage a_j (Boxen/Jahr)
+c_ij <- kosten_mat_exakt       # Transportkostenmatrix (€/Box, ungerundet)
 
 modell <- MIPModel() |>
-  # Entscheidungsvariable y_i: Lager i eröffnen (1) oder nicht (0)
+  # Entscheidungsvariable y_i: Standort i eröffnen (1) oder nicht (0)
   add_variable(y[i], i = 1:n_I, type = "binary") |>
-  # Entscheidungsvariable x_ij: Transportmenge von Lager i zu Kunde j
+  # Entscheidungsvariable x_ij: Transportmenge von Standort i zu Filiale j
   add_variable(x[i, j], i = 1:n_I, j = 1:n_J,
                type = "continuous", lb = 0) |>
   # Zielfunktion: Eröffnungskosten + Transportkosten minimieren
@@ -382,10 +435,10 @@ modell <- MIPModel() |>
     sum_expr(f[i] * y[i], i = 1:n_I) +
       sum_expr(c_ij[i, j] * x[i, j], i = 1:n_I, j = 1:n_J),
     sense = "min") |>
-  # NB1: Nachfrage jedes Kunden j vollständig befriedigen
+  # NB1: Nachfrage jeder Filiale j vollständig befriedigen
   add_constraint(
     sum_expr(x[i, j], i = 1:n_I) == a[j], j = 1:n_J) |>
-  # NB2: Transport nur von eröffneten Lagern (x_ij <= y_i * a_j)
+  # NB2: Transport nur von eröffneten Standorten (x_ij <= y_i * a_j)
   add_constraint(
     x[i, j] <= y[i] * a[j], i = 1:n_I, j = 1:n_J)
 
@@ -401,12 +454,12 @@ Nach dem Lösen extrahieren wir mit `get_solution()` die optimalen Werte der Var
 y_sol <- get_solution(ergebnis_milp, y[i])
 x_sol <- get_solution(ergebnis_milp, x[i, j])
 
-# Welche Lager werden eröffnet (y_i > 0.5, wegen Rundungstoleranz)?
-offene_lager <- wlp_lager$ID[y_sol$i[y_sol$value > 0.5]]
-offene_lager
+# Welcher Standort wird eröffnet (y_i > 0.5, wegen Rundungstoleranz)?
+offene_standorte <- standorte_fall$ID[y_sol$i[y_sol$value > 0.5]]
+offene_standorte
 
 # Optimaler Zielfunktionswert Z*
-objective_value(ergebnis_milp)
+round(objective_value(ergebnis_milp), 1)
 ```
 
 ```{r}
@@ -415,31 +468,32 @@ objective_value(ergebnis_milp)
 
 zuordnung_milp <- x_sol |>
   dplyr::filter(value > 0.001) |>
-  dplyr::mutate(Lager = wlp_lager$ID[i], Kunde = wlp_kunden$ID[j],
+  dplyr::mutate(Standort = standorte_fall$ID[i], Filiale = filialen_fall$ID[j],
                 Menge = value) |>
-  dplyr::select(Lager, Kunde, Menge)
+  dplyr::select(Standort, Filiale, Menge)
 
-kbl(zuordnung_milp, col.names = c("Lager", "Kunde", "Menge $x_{ij}$"),
-    align = c("c", "c", "r"), escape = FALSE) |>
+kbl(zuordnung_milp, col.names = c("Standort", "Filiale", "Menge $x_{ij}$ (Boxen/Jahr)"),
+    align = c("c", "c", "r"), escape = FALSE,
+    format.args = list(big.mark = " ")) |>
   kable_styling(bootstrap_options = c("striped", "hover", "condensed"),
                 full_width = FALSE)
 ```
 
-Der Solver bestätigt exakt das Ergebnis der vollständigen Enumeration aus dem vorigen R-Exkurs: Es werden die Lager W1 und W2 eröffnet, alle sechs Kunden werden vollständig und jeweils vom günstigeren der beiden offenen Lager beliefert, und die minimalen Gesamtkosten betragen 639,5 T€/Jahr. Der entscheidende Unterschied ist der **Rechenweg**: `ompr`/`glpk` musste nicht alle 31 Teilmengen einzeln auswerten, sondern nutzt intern effiziente Branch-and-Bound- bzw. Schnittebenenverfahren, mit denen auch WLP-Instanzen mit hunderten Standorten und Kunden in vertretbarer Zeit exakt gelöst werden können.
+Der Solver bestätigt exakt das Ergebnis der vollständigen Enumeration aus dem vorigen R-Exkurs: Es wird ausschließlich **Wiesbaden-Erbenheim** eröffnet, alle sechs Filialen werden vollständig von diesem einen Standort beliefert, und die minimalen Gesamtkosten betragen rund 306.379 €/Jahr. Der entscheidende Unterschied ist der **Rechenweg**: `ompr`/`glpk` musste nicht alle sieben Teilmengen einzeln auswerten, sondern nutzt intern effiziente Branch-and-Bound- bzw. Schnittebenenverfahren, mit denen auch WLP-Instanzen mit hunderten Standorten und Kunden in vertretbarer Zeit exakt gelöst werden können.
 
 ## Heuristische Lösungsverfahren: Add- und Drop-Heuristik
 
-Trotz der Leistungsfähigkeit moderner MILP-Solver bleibt das WLP ein **NP-schweres** Problem: Im ungünstigsten Fall wächst die zur exakten Lösung benötigte Rechenzeit exponentiell mit der Anzahl der Standorte und Kunden. Für sehr große Praxisinstanzen – man denke an europaweite Distributionsnetzwerke mit hunderten Kandidatenstandorten und tausenden Kunden, gegebenenfalls noch kombiniert mit weiteren Nebenbedingungen (Kapazitäten, Mehrfachbelieferung, mehrstufige Netzwerke) – kann selbst ein guter Solver an Zeit- oder Speichergrenzen stoßen. In solchen Fällen sind **konstruktive Heuristiken** häufig der einzig praktikable Weg zu einer brauchbaren, wenn auch nicht notwendigerweise optimalen Lösung.
+Trotz der Leistungsfähigkeit moderner MILP-Solver bleibt das WLP ein **NP-schweres** Problem: Im ungünstigsten Fall wächst die zur exakten Lösung benötigte Rechenzeit exponentiell mit der Anzahl der Standorte und Kunden. Für sehr große Praxisinstanzen – man denke an ein deutschlandweites Filialnetz mit hunderten Kandidatenstandorten und tausenden Filialen, gegebenenfalls noch kombiniert mit weiteren Nebenbedingungen (Kapazitäten, Mehrfachbelieferung, mehrstufige Netzwerke) – kann selbst ein guter Solver an Zeit- oder Speichergrenzen stoßen. In solchen Fällen sind **konstruktive Heuristiken** häufig der einzig praktikable Weg zu einer brauchbaren, wenn auch nicht notwendigerweise optimalen Lösung.
 
-Die Grundidee beider im Folgenden vorgestellten Heuristiken ist **greedy** (gierig): Ausgehend von einer zulässigen Startkonfiguration wird in jedem Schritt genau diejenige Änderung vorgenommen, die die Gesamtkosten am stärksten reduziert; das Verfahren stoppt, sobald keine weitere Verbesserung mehr möglich ist. Kunden werden dabei stets dem *günstigsten offenen* Lager zugeordnet, sodass sich die Gesamtkosten einer Standortmenge $S$ stets eindeutig berechnen lassen als
+Die Grundidee beider im Folgenden vorgestellten Heuristiken ist **greedy** (gierig): Ausgehend von einer zulässigen Startkonfiguration wird in jedem Schritt genau diejenige Änderung vorgenommen, die die Gesamtkosten am stärksten reduziert; das Verfahren stoppt, sobald keine weitere Verbesserung mehr möglich ist. Filialen werden dabei stets dem *günstigsten offenen* Standort zugeordnet, sodass sich die Gesamtkosten einer Standortmenge $S$ stets eindeutig berechnen lassen als
 
 $$Z(S) = \underbrace{\sum_{i \in S} f_i}_{\text{Eröffnung}} + \underbrace{\sum_{j \in J} \min_{i \in S} c_{ij} \cdot a_j}_{\text{Transport}}.$$
 
 Die beiden Heuristiken unterscheiden sich lediglich in der **Richtung**, in der sie sich durch den Lösungsraum bewegen.
 
-Die **Add-Heuristik** startet mit der leeren Menge $S = \emptyset$ (kein Lager offen) und fügt in jedem Schritt dasjenige Lager $i^\*$ hinzu, dessen Öffnung die Gesamtkosten am stärksten senkt: $i^\* = \arg\max_{i \notin S} \big(Z(S) - Z(S \cup \{i\})\big)$. Solange die Einsparung bei Transportkosten größer ist als die zusätzlichen Eröffnungskosten, lohnt sich das Hinzufügen eines weiteren Lagers; sobald kein Kandidat mehr eine positive Kostenreduktion verspricht, bricht das Verfahren ab.
+Die **Add-Heuristik** startet mit der leeren Menge $S = \emptyset$ (kein Standort offen) und fügt in jedem Schritt denjenigen Standort $i^\*$ hinzu, dessen Öffnung die Gesamtkosten am stärksten senkt: $i^\* = \arg\max_{i \notin S} \big(Z(S) - Z(S \cup \{i\})\big)$. Solange die Einsparung bei Transportkosten größer ist als die zusätzlichen Eröffnungskosten, lohnt sich das Hinzufügen eines weiteren Standorts; sobald kein Kandidat mehr eine positive Kostenreduktion verspricht, bricht das Verfahren ab.
 
-Die **Drop-Heuristik** geht den umgekehrten Weg: Sie startet mit *allen* Lagern geöffnet ($S = I$) und schließt in jedem Schritt dasjenige Lager, dessen Schließung die Gesamtkosten am stärksten senkt (bzw. am wenigsten erhöht), bis auch hier keine weitere Verbesserung mehr möglich ist.
+Die **Drop-Heuristik** geht den umgekehrten Weg: Sie startet mit *allen* Standorten geöffnet ($S = I$) und schließt in jedem Schritt denjenigen Standort, dessen Schließung die Gesamtkosten am stärksten senkt (bzw. am wenigsten erhöht), bis auch hier keine weitere Verbesserung mehr möglich ist.
 
 Beide Varianten sind in `R/scm_functions.R` als `add_heuristic_wlp()` bzw. `drop_heuristic_wlp()` bereits vollständig implementiert (inklusive der internen Kostenberechnung über `.wlp_cost()`), sodass wir uns hier auf die **Anwendung und Interpretation** konzentrieren können, statt die Schleifenlogik erneut nachzuprogrammieren.
 
@@ -448,32 +502,32 @@ Beide Varianten sind in `R/scm_functions.R` als `add_heuristic_wlp()` bzw. `drop
 
 add_ergebnis <- add_heuristic_wlp(
   fixed_costs        = fixkosten_vec,
-  transport_cost_mat = wlp_cij,
-  demand             = nachfrage_vec,
+  transport_cost_mat = kosten_mat_exakt,
+  demand             = nachfrage_jahr,
   verbose            = TRUE
 )
 
 add_ergebnis$open_names
-add_ergebnis$total_cost
+round(add_ergebnis$total_cost, 1)
 ```
 
-Die Add-Heuristik öffnet in ihrem ersten Schritt Lager W1 (Gesamtkosten sinken von $\infty$ auf 724,5 T€), im zweiten Schritt kommt Lager W2 hinzu (Gesamtkosten sinken weiter auf 639,5 T€). Ein dritter Schritt würde die Kosten nicht mehr senken, das Verfahren bricht ab. Bemerkenswert: In diesem Beispiel findet die Add-Heuristik – ein einfaches, greedy-basiertes Verfahren – **zufällig genau die global optimale Lösung**, die wir zuvor sowohl durch vollständige Enumeration als auch mit `ompr` bestätigt hatten. Das ist keineswegs garantiert (Greedy-Verfahren können sich in ungünstigen Instanzen "verrennen"), zeigt aber, dass die Heuristik bei gutmütiger Kostenstruktur sehr gute Ergebnisse liefern kann.
+Die Add-Heuristik öffnet bereits im ersten Schritt Wiesbaden-Erbenheim (Gesamtkosten sinken von $\infty$ auf rund 306.379 €/Jahr) – kein weiterer Standort kann die Kosten danach noch senken, das Verfahren bricht sofort ab.
 
 ```{r}
 #| label: ch5-drop-heuristik
 
 drop_ergebnis <- drop_heuristic_wlp(
   fixed_costs        = fixkosten_vec,
-  transport_cost_mat = wlp_cij,
-  demand             = nachfrage_vec,
+  transport_cost_mat = kosten_mat_exakt,
+  demand             = nachfrage_jahr,
   verbose            = TRUE
 )
 
 drop_ergebnis$open_names
-drop_ergebnis$total_cost
+round(drop_ergebnis$total_cost, 1)
 ```
 
-Die Drop-Heuristik startet mit allen fünf offenen Lagern (Gesamtkosten 854,5 T€) und schließt nacheinander W5, W2 und W3, bis mit $\{W1, W4\}$ eine Konfiguration mit Gesamtkosten von 641,5 T€ erreicht ist; ein weiteres Schließen würde die Kosten wieder erhöhen. Anders als die Add-Heuristik verfehlt die Drop-Heuristik hier das Optimum knapp – sie bleibt bei einer **anderen** Standortkombination ($\{W1, W4\}$ statt $\{W1, W2\}$) hängen, weil ihr Ausgangspunkt (alle Lager offen) sie in einen anderen Bereich des Lösungsraums lenkt.
+Die Drop-Heuristik startet mit allen drei offenen Standorten (Gesamtkosten rund 733.598 €/Jahr), schließt im ersten Schritt Raunheim (den mit Abstand teuersten Standort in der Fixkostenkomponente; verbleibende Kosten rund 507.391 €/Jahr) und im zweiten Schritt Mainz-Hechtsheim, bis auch hier nur noch Wiesbaden-Erbenheim übrig bleibt (rund 306.379 €/Jahr). Ein Bemerkenswertes Ergebnis: **Add- und Drop-Heuristik konvergieren hier unabhängig voneinander auf dieselbe, nachweislich optimale Lösung** – dasselbe Ergebnis, das wir bereits durch vollständige Enumeration und mit `ompr` bestätigt hatten. Das ist keineswegs selbstverständlich (die beiden Heuristiken können bei anderen Kostenstrukturen durchaus zu unterschiedlichen, suboptimalen lokalen Lösungen führen), zeigt hier aber, wie eindeutig der Kostenvorteil von Wiesbaden-Erbenheim in diesem Fallbeispiel ausfällt.
 
 ```{r}
 #| label: ch5-vergleich-tabelle
@@ -481,17 +535,18 @@ Die Drop-Heuristik startet mit allen fünf offenen Lagern (Gesamtkosten 854,5 T�
 
 vergleich <- tibble(
   Verfahren       = c("Optimum (MILP)", "Add-Heuristik", "Drop-Heuristik"),
-  `Offene Lager`  = c(paste(offene_lager, collapse = ", "),
-                       paste(add_ergebnis$open_names, collapse = ", "),
-                       paste(drop_ergebnis$open_names, collapse = ", ")),
-  `Gesamtkosten (T€)` = c(round(objective_value(ergebnis_milp), 1),
-                           round(add_ergebnis$total_cost, 1),
-                           round(drop_ergebnis$total_cost, 1))
+  `Offene Standorte` = c(paste(offene_standorte, collapse = ", "),
+                          paste(add_ergebnis$open_names, collapse = ", "),
+                          paste(drop_ergebnis$open_names, collapse = ", ")),
+  `Gesamtkosten (€/Jahr)` = c(round(objective_value(ergebnis_milp), 1),
+                               round(add_ergebnis$total_cost, 1),
+                               round(drop_ergebnis$total_cost, 1))
 ) |>
   mutate(`Gap zum Optimum (%)` = round(
-    (`Gesamtkosten (T€)` / `Gesamtkosten (T€)`[1] - 1) * 100, 2))
+    (`Gesamtkosten (€/Jahr)` / `Gesamtkosten (€/Jahr)`[1] - 1) * 100, 2))
 
-kbl(vergleich, align = c("l", "l", "r", "r")) |>
+kbl(vergleich, align = c("l", "l", "r", "r"),
+    format.args = list(big.mark = " ")) |>
   kable_styling(bootstrap_options = c("striped", "hover", "condensed"),
                 full_width = FALSE) |>
   row_spec(1, bold = TRUE)
@@ -515,20 +570,56 @@ kosten_zerlegt <- tibble(
 
 ggplot(kosten_zerlegt, aes(x = Verfahren, y = Kosten, fill = Kostenart)) +
   geom_col() +
-  labs(y = "Kosten (T€/Jahr)", x = NULL, fill = NULL) +
+  labs(y = "Kosten (€/Jahr)", x = NULL, fill = NULL) +
   scale_fill_manual(values = c("Eröffnungskosten" = "#2F3E46",
                                 "Transportkosten"  = "#2D9E8E")) +
+  scale_y_continuous(labels = scales::label_number(big.mark = " ")) +
   theme_minimal(base_size = 12) +
   theme(legend.position = "bottom")
 ```
 
-Die Gegenüberstellung macht ein typisches Muster heuristischer Verfahren sichtbar: Die Add-Heuristik tendiert dazu, **wenige** Lager zu öffnen (sie startet leer und öffnet nur, wenn sich das unmittelbar lohnt), während die Drop-Heuristik tendenziell **mehr** Lager offen lässt (sie schließt nur, wenn eine Einsparung eindeutig ist, und ist damit vorsichtiger beim Reduzieren der Netzwerkdichte). Für die Praxis bedeutet dies: Beide Heuristiken sollten – wenn möglich – parallel gerechnet und mit dem Ergebnis eines exakten Verfahrens (oder zumindest einer bekannten unteren Schranke) verglichen werden, bevor eine Standortentscheidung mit jahrzehntelanger Bindungswirkung getroffen wird. Gerade bei der Wahl von Distributionsstandorten, die – anders als etwa Bestellmengen – nur mit hohem Aufwand revidierbar sind, ist ein belastbares Optimalitäts- oder zumindest Gütemaß (der *Gap* zum Optimum) unverzichtbar [@chopra2025supply].
+Auch wenn in diesem Fallbeispiel alle drei Verfahren dasselbe Ergebnis liefern, gilt für die Praxis: Add- und Drop-Heuristik sollten – wenn möglich – parallel gerechnet und mit dem Ergebnis eines exakten Verfahrens (oder zumindest einer bekannten unteren Schranke) verglichen werden, bevor eine Standortentscheidung mit jahrzehntelanger Bindungswirkung getroffen wird. Gerade bei der Wahl von Distributionsstandorten, die – anders als etwa Bestellmengen – nur mit hohem Aufwand revidierbar sind, ist ein belastbares Optimalitäts- oder zumindest Gütemaß (der *Gap* zum Optimum) unverzichtbar [@chopra2025supply].
+
+## Qualitative vs. quantitative Standortbewertung
+
+An dieser Stelle lohnt sich ein Blick zurück auf Kapitel 4: Dort hatte die **AHP-Analyse** unter den drei Kandidatenstandorten knapp **Raunheim** favorisiert – ein Ergebnis, das auf einer strukturierten, aber notwendigerweise subjektiven Gewichtung schwer quantifizierbarer Kriterien (z. B. Erweiterungsfähigkeit, Verkehrsanbindung, Genehmigungsrisiko) beruhte. Die in diesem Kapitel durchgeführte **quantitative Kostenoptimierung** kommt zu einem anderen Schluss: **Wiesbaden-Erbenheim** minimiert die Gesamtkosten aus Fixkosten und Transport.
+
+Der Grund für die Diskrepanz ist im direkten Zahlenvergleich schnell erklärt:
+
+```{r}
+#| label: ch5-ahp-vs-milp
+#| echo: false
+
+vergleich_ahp <- data.frame(
+  Standort  = c("Raunheim", "Wiesbaden-Erbenheim"),
+  Fixkosten = c(260000, 180000),
+  Transportkosten = round(c(
+    .wlp_cost(which(standorte_fall$ID == "Raunheim"), fixkosten_vec, kosten_mat_exakt, nachfrage_jahr)$transport,
+    .wlp_cost(which(standorte_fall$ID == "Wiesbaden-Erbenheim"), fixkosten_vec, kosten_mat_exakt, nachfrage_jahr)$transport
+  ), 1)
+) |>
+  mutate(Gesamtkosten = round(Fixkosten + Transportkosten, 1))
+
+kbl(vergleich_ahp,
+    col.names = c("Standort (Einzelbetrieb)", "Fixkosten (€)",
+                  "Transportkosten (€/Jahr)", "Gesamtkosten (€/Jahr)"),
+    align = c("l", "r", "r", "r"),
+    format.args = list(big.mark = " ")) |>
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed"),
+                full_width = FALSE)
+```
+
+Raunheim ist geografisch tatsächlich der zentralere Standort und erzielt für sich genommen die niedrigsten Transportkosten aller drei Kandidaten (rund 106.963 €/Jahr gegenüber rund 126.379 €/Jahr für Wiesbaden-Erbenheim) – dieser Vorteil von knapp 19.400 €/Jahr ist genau das, was die AHP-Kriterien wie "zentrale Lage" oder "Erreichbarkeit" implizit honorieren. Die um 80.000 €/Jahr höheren Fixkosten von Raunheim übersteigen diesen Transportkostenvorteil jedoch deutlich und kehren den Gesamtvergleich um.
+
+Diese Beobachtung ist kein Widerspruch, sondern verdeutlicht die **unterschiedliche Funktion** beider Verfahren im Entscheidungsprozess: Die AHP-Analyse aus Kapitel 4 eignet sich hervorragend für eine erste **Vorauswahl** unter schwer quantifizierbaren, teils weichen Kriterien und für die Einbindung unterschiedlicher Stakeholder-Perspektiven. Sie ersetzt aber keine anschließende, belastbare **Kostenoptimierung** auf Basis harter Zahlen, sobald diese verfügbar sind – und genau umgekehrt greift eine reine Kostenoptimierung häufig zu kurz, wenn schwer monetarisierbare Aspekte (Reputationsrisiko, Mitarbeiterverfügbarkeit, langfristige Flexibilität) ignoriert werden. In der Praxis ergänzen sich beide Verfahren: qualitative Verfahren zur Reduktion des Suchraums auf eine überschaubare Anzahl valider Kandidaten, quantitative Optimierungsmodelle zur finalen, kostenbasierten Entscheidung zwischen ihnen.
+
+Für SushiFresh bedeutet dies: Das Unternehmen entscheidet sich auf Basis der in diesem Kapitel durchgeführten Analyse für eine **Konsolidierung des Produktionsstandorts auf Wiesbaden-Erbenheim**. Diese Standortentscheidung begleitet die Fallstudie auch in den folgenden Kapiteln weiter – etwa bei der Frage nach Bestandspooling (Kapitel 6) oder bei der Analyse des Bullwhip-Effekts entlang der Distributionskette (Kapitel 8).
 
 ## Zusammenfassung
 
 Dieses Kapitel hat den Übergang von der kontinuierlichen zur **diskreten Standortplanung** vollzogen: Statt eines beliebigen Punktes in der Ebene wird eine Teilmenge aus einer endlichen Liste vorab definierter Standortkandidaten gesucht. Als methodischen Ausgangspunkt haben wir das **klassische Transportproblem** kennengelernt, bei dem die belieferten Standorte bereits feststehen und nur die Transportflüsse kostenminimal zu bestimmen sind; die **Vogel'sche Approximationsmethode** liefert dafür in wenigen Iterationen eine gute Startlösung, indem sie in jedem Schritt die Zeile oder Spalte mit der größten Strafkosten-Differenz vorrangig beliefert.
 
-Das **Warehouse Location Problem** erweitert dieses Modell um die eigentliche Standortentscheidung: Eine binäre Variable $y_i$ pro Lager entscheidet über Eröffnung oder Nichteröffnung, gekoppelt an die Transportmengen $x_{ij}$ über die Nebenbedingung $x_{ij} \leq y_i \cdot a_j$. Weil sowohl binäre als auch kontinuierliche Variablen auftreten, handelt es sich um ein gemischt-ganzzahliges lineares Optimierungsmodell (MILP), das sich mit dem R-Paket `ompr` in wenigen, an die mathematische Formulierung angelehnten Codezeilen exakt lösen lässt. Da das WLP NP-schwer ist, sind für große Instanzen konstruktive **Add-** und **Drop-Heuristiken** ein praktikabler Ausweg – mit dem Preis, dass ihre Lösungsgüte instanzabhängig ist und stets gegen eine exakte oder zumindest untere Schranke abgeglichen werden sollte.
+Das **Warehouse Location Problem** erweitert dieses Modell um die eigentliche Standortentscheidung: Eine binäre Variable $y_i$ pro Standort entscheidet über Eröffnung oder Nichteröffnung, gekoppelt an die Transportmengen $x_{ij}$ über die Nebenbedingung $x_{ij} \leq y_i \cdot a_j$. Weil sowohl binäre als auch kontinuierliche Variablen auftreten, handelt es sich um ein gemischt-ganzzahliges lineares Optimierungsmodell (MILP), das sich mit dem R-Paket `ompr` in wenigen, an die mathematische Formulierung angelehnten Codezeilen exakt lösen lässt. Am Beispiel von SushiFresh zeigte sich: Obwohl Raunheim geografisch am zentralsten liegt und die niedrigsten Transportkosten aufweist, ist die Konsolidierung auf den fixkostengünstigeren Standort Wiesbaden-Erbenheim in der Gesamtbetrachtung optimal – ein Ergebnis, das im Widerspruch zur qualitativen AHP-Empfehlung aus Kapitel 4 steht und die Notwendigkeit beider Verfahren im Entscheidungsprozess unterstreicht. Da das WLP NP-schwer ist, sind für große Instanzen konstruktive **Add-** und **Drop-Heuristiken** ein praktikabler Ausweg – im Fallbeispiel fanden beide unabhängig voneinander das globale Optimum, was allerdings keine allgemeingültige Eigenschaft dieser Verfahren ist und stets gegen eine exakte oder zumindest untere Schranke abgeglichen werden sollte.
 
 Auf der R-Seite haben Sie mit diesem Kapitel vier neue Bausteine kennengelernt, die weit über die Standortplanung hinaus nützlich sind: **Listen** als flexibler Container für heterogene, auch verschachtelte Daten und Funktionsergebnisse; **`purrr::map()`/`map_dbl()`** zur kompakten Anwendung einer Funktion auf jedes Element einer Liste oder eines Vektors; **Matrizen** als natürliche Repräsentation homogener, positionsbasierter Tableaus mit `rowSums()`/`colSums()` zur schnellen Konsistenzprüfung; und die **algebraische Optimierungsmodellierung** mit `ompr` als Alternative zu maßgeschneiderten Algorithmen, wenn ein Standardsolver zur Verfügung steht.
 
@@ -540,7 +631,8 @@ Auf der R-Seite haben Sie mit diesem Kapitel vier neue Bausteine kennengelernt, 
 3. Erläutern Sie die Grundidee der Vogel'schen Approximationsmethode. Warum liefert sie in der Regel bessere Startlösungen als die Nordwestecken-Methode?
 4. Welche zusätzliche Entscheidungsvariable enthält das Warehouse Location Problem im Vergleich zum Transportproblem, und welche Rolle spielt die Nebenbedingung $x_{ij} \leq y_i \cdot a_j$?
 5. Warum handelt es sich beim WLP um ein gemischt-ganzzahliges (statt eines rein linearen) Optimierungsmodell? Welche Konsequenz hat das für die Lösbarkeit großer Instanzen?
-6. Beschreiben Sie die Vorgehensweise von Add- und Drop-Heuristik in eigenen Worten. Warum können beide Verfahren zu unterschiedlichen Lösungen für dieselbe Instanz führen?
+6. Beschreiben Sie die Vorgehensweise von Add- und Drop-Heuristik in eigenen Worten. Warum können beide Verfahren im Allgemeinen zu unterschiedlichen Lösungen für dieselbe Instanz führen, obwohl sie im SushiFresh-Beispiel übereinstimmen?
 7. Was versteht man unter dem "Gap zum Optimum", und warum ist er bei heuristischen Standortentscheidungen eine wichtige Kennzahl?
 8. Erklären Sie den Unterschied zwischen einer Liste (`list()`) und einem `data.frame`/`tibble`. Nennen Sie ein Beispiel aus diesem Kapitel, bei dem eine R-Funktion ihr Ergebnis sinnvollerweise als Liste zurückgibt.
+9. Im SushiFresh-Beispiel favorisiert die qualitative AHP-Analyse (Kapitel 4) Raunheim, während die quantitative WLP-Analyse (dieses Kapitel) Wiesbaden-Erbenheim favorisiert. Erklären Sie diese Diskrepanz anhand der Fix- und Transportkosten und diskutieren Sie, wie beide Verfahren in der Praxis sinnvoll kombiniert werden können.
 :::

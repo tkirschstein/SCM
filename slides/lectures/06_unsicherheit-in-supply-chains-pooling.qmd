@@ -44,6 +44,43 @@ Nach dieser Einheit können Sie …
 
 ---
 
+## Fallstudie: SushiFresh GmbH {#slide-sushifresh-intro}
+::: slide-subtitle
+Sechs Filialen, ein neues Zentralwerk
+:::
+
+::: {.callout-note appearance="simple"}
+## Ausgangslage
+**SushiFresh GmbH** ist ein fiktiver, regionaler Hersteller frischer Sushi-Boxen im Rhein-Main-Gebiet und beliefert täglich **sechs Filialen**. In Kapitel 5 fiel die Entscheidung, die Produktion auf **einen zentralen Standort in Wiesbaden-Erbenheim** zu konsolidieren. Dieses Kapitel fragt: Wie hoch ist der dafür nötige Sicherheitsbestand — dezentral vs. zentral?
+:::
+
+```{r sushifresh-filialtabelle}
+#| echo: false
+#| warning: false
+#| message: false
+
+sf_filialen <- data.frame(
+  Filiale = c("Wiesbaden", "Mainz", "Frankfurt", "Rüsselsheim", "Darmstadt", "Offenbach"),
+  mu      = c(120, 150, 280, 90, 110, 95),
+  sigma   = c(25, 30, 55, 20, 24, 22)
+)
+
+kbl(sf_filialen,
+    col.names = c("Filiale", "μ (Boxen/Tag)", "σ"),
+    align = c("l", "r", "r")) |>
+  kable_styling(bootstrap_options = c("condensed", "striped"), full_width = TRUE) |>
+  row_spec(0, background = "#2F3E46", color = "white", bold = TRUE) |>
+  row_spec(3, bold = TRUE, background = "#FFF3CD")
+```
+
+::: {.fragment .fade-up}
+::: {.callout-tip appearance="simple"}
+Gesamtnachfrage: **845 Boxen/Tag**. Frankfurt (fett) ist die größte **und** volatilste Filiale.
+:::
+:::
+
+---
+
 ## Die Natur der Unsicherheit {#slide-pooling-1}
 ::: slide-subtitle
 Implizierte Unsicherheit in Supply Chains [@chopra2025supply]
@@ -206,9 +243,9 @@ Kapazitäten (Maschinen, Personal, Lagerraum) werden **ex ante** bestimmt. Die N
 
 set.seed(12)
 n_periods <- 24
-mu_d <- 88
-sigma_d <- 14
-C <- 90
+mu_d <- 120
+sigma_d <- 25
+C <- 130
 
 t_vals <- 1:n_periods
 d_vals <- pmax(40, round(rnorm(n_periods, mu_d, sigma_d)))
@@ -309,8 +346,8 @@ Kapazitätspooling
 :::
 
 ::: {.callout-note appearance="simple"}
-## Ausgangssituation (Cachon & Terwiesch, Kap. 17)
-Ein Automobilhersteller (z.B. GM) betreibt **2 Produktionswerke** für **2 Fahrzeugmodelle** (z.B. Chevy Malibu, GMC Yukon XL). Jedes Werk ist genau einem Modell zugeordnet – **keine Flexibilität**. Die Kapazität je Werk beträgt **90 Einheiten**. Die Nachfrage ist **unsicher** und wird beobachtet, nachdem die Kapazitäten festgelegt wurden.
+## Ausgangssituation (Struktur nach Cachon & Terwiesch, Kap. 17)
+In der **Gründungsphase** betrieb SushiFresh zunächst nur **2 Pilotküchen** für **2 Pilotstandorte** (die heutigen Filialen Wiesbaden und Mainz). Jede Küche ist genau ihrem eigenen Standort zugeordnet – **keine Flexibilität**. Die Kapazität je Küche beträgt **90 Boxen/Tag**. Die Nachfrage ist **unsicher** und wird beobachtet, nachdem die Kapazitäten festgelegt wurden.
 :::
 
 ::: columns
@@ -432,7 +469,7 @@ make_mismatch_fig <- function(d_vals, C, werk_label, farbe_linie,
 make_mismatch_fig(
   d_vals      = cp_data_bg$dA,
   C           = C_bg,
-  werk_label  = "Werk 1 – Chevy Malibu",
+  werk_label  = "Küche Wiesbaden (Pilot)",
   farbe_linie = cols$top,
   height      = 270,
   width       = 600
@@ -449,7 +486,7 @@ make_mismatch_fig(
 make_mismatch_fig(
   d_vals      = cp_data_bg$dB,
   C           = C_bg,
-  werk_label  = "Werk 2 – GMC Yukon XL",
+  werk_label  = "Küche Mainz (Pilot)",
   farbe_linie = cols$mid,
   height      = 270,
   width       = 600
@@ -465,10 +502,10 @@ make_mismatch_fig(
 
 ## Kapazitätspooling {#slide-cp-original}
 ::: slide-subtitle
-Originalkonfiguration – Jedes Werk produziert nur ein Modell
+Originalkonfiguration – Jede Küche beliefert nur ihren eigenen Standort
 :::
 
-**Monatliche Nachfrage und Produktion (C¹ = C² = 90)**
+**Monatliche Nachfrage und Produktion, Pilotphase (C¹ = C² = 90)**
 
 ::: columns
 ::: {.column width="25%"}
@@ -624,7 +661,7 @@ fig <- fig %>% add_annotations(
 fig <- fig %>% add_annotations(
   x = c(0.35, 0.72), y = c(1.00, 1.00),
   xref = "x", yref = "y",
-  text = c("<b>Plant / vehicle type</b>", "<b>vehicle market</b>"),
+  text = c("<b>Küche</b>", "<b>Filiale</b>"),
   showarrow = FALSE,
   font = list(size = 13, color = "#1F2933", family = "Arial")
 )
@@ -673,7 +710,7 @@ Auslastung und Lieferservicegrad sind hoch, dennoch gibt es **lost sales** und *
 
 ## Kapazitätspooling {#slide-cp-pooling}
 ::: slide-subtitle
-Einseitiges Pooling – Werk 1 kann beide Modelle produzieren
+Einseitiges Pooling – Küche Wiesbaden kann beide Standorte beliefern
 :::
 
 ::: columns
@@ -849,7 +886,7 @@ fig <- fig %>% add_annotations(
 fig <- fig %>% add_annotations(
   x = c(0.35, 0.72), y = c(1.00, 1.00),
   xref = "x", yref = "y",
-  text = c("<b>Plant / vehicle type</b>", "<b>vehicle market</b>"),
+  text = c("<b>Küche</b>", "<b>Filiale</b>"),
   showarrow = FALSE,
   font = list(size = 13, color = "#1F2933", family = "Arial")
 )
@@ -899,7 +936,7 @@ $$x_t^{2B} = C^2$$
 
 ## Kapazitätspooling {#slide-cp-pooling}
 ::: slide-subtitle
-Zweiseitiges Pooling – Beide Werke können beide Modelle produzieren
+Zweiseitiges Pooling – Beide Küchen können beide Standorte beliefern
 :::
 
 
@@ -1078,7 +1115,7 @@ fig <- fig %>% add_annotations(
 fig <- fig %>% add_annotations(
   x = c(0.35, 0.72), y = c(1.00, 1.00),
   xref = "x", yref = "y",
-  text = c("<b>Plant / vehicle type</b>", "<b>vehicle market</b>"),
+  text = c("<b>Küche</b>", "<b>Filiale</b>"),
   showarrow = FALSE,
   font = list(size = 13, color = "#1F2933", family = "Arial")
 )
@@ -1495,6 +1532,8 @@ Pooling über die Zeit - Sicherheitsbestände
 ## Definition Sicherheitsbestand (Wiederholung)
 
 Sicherheitsbestände gleichen Nachfrageschwankungen über die Zeit aus. Sei $S$ der Anfangslagerbestand zu Begin der Risikoperiode und $\mu$ der erwartete Bedarf in der Risikoperiode, dann gilt für den Sicherheitsbestand $sb$: $sb = S - \mu$
+
+Beispiel: Das Zentralwerk Wiesbaden-Erbenheim bestellt frische Lachsfilet-Kisten periodisch beim Fischgroßhändler.
 :::
 
 :::: columns
@@ -2117,47 +2156,38 @@ Einsparung an Sicherheitsbestand: $sb_{dezentral}=sb_{A}+sb_{B}=27.5$ vs. $sb_{0
 :::
 ## Lagerbestandspooling {#slide-dezentral-zentral-empirisch}
 ::: slide-subtitle
-Sicherheitsbestände bei bekannter Nachfrageverteilung  
+Sicherheitsbestände bei bekannter Nachfrageverteilung
 :::
 
 ::: {.callout-note appearance="minimal" icon=false}
 ## Nachfrageverteilung
 
-Oft wird davon ausgegangen, dass die Nachfrage nach Gütern in einer bestimmten Zeitspanne eine Zufallsvariable ist, deren Verteilungsparameter (wie Mittelwert und Varianz) bekannt sind oder geschätzt werden können.
+Oft wird davon ausgegangen, dass die Nachfrage nach Gütern in einer bestimmten Zeitspanne eine Zufallsvariable ist, deren Verteilungsparameter (wie Mittelwert und Varianz) bekannt sind oder geschätzt werden können. Reale Daten weichen davon oft ab — simuliert am Beispiel **Frankfurt/Offenbach** mit gelegentlichen, gemeinsamen Feiertags-Spitzen.
 
 :::
 
 
 ```{r}
-#| label: walmart-data-prep
+#| label: sushifresh-sim-data-prep
 #| echo: false
 #| warning: false
 #| message: false
 
-# ── Rohdaten von GitHub laden ─────────────────────────────────────────────────
+# ── Simulierte Tagesnachfrage Frankfurt & Offenbach ───────────────────────────
+# (reproduzierbar per set.seed(); ersetzt Realdaten durch synthetische Reihen
+#  mit gelegentlichen, gemeinsamen "Feiertags-Spitzen")
 
-# GitHub Raw-URL (wichtig: raw.githubusercontent.com statt github.com)
-url <- "https://raw.githubusercontent.com/demand-prediction-guide/public/main/data/data_raw.csv"
+set.seed(616)
+n_tage <- 250
 
-data_processed <- read_csv(url)
+dA <- pmax(30, round(rnorm(n_tage, mean = 280, sd = 55 * 0.7)))   # Frankfurt
+dB <- pmax(10, round(rnorm(n_tage, mean = 95,  sd = 22 * 0.7)))   # Offenbach
 
-pdata <- data_processed |>
-  dplyr::filter(functionality %in% c("01.Streaming sticks", "09.Smartphone stands" )) |>
-  dplyr::select(week, weekly_sales, sku, functionality) |>
-  dplyr::group_by(functionality, week) |>
-  dplyr::summarise(weekly_sales = sum(weekly_sales, na.rm = TRUE), .groups = "drop") |> 
-   dplyr::rename(product = functionality) |>
-   dplyr::mutate(product = dplyr::recode(product,
-     "09.Smartphone stands" = "Smartphone_stand",
-     "01.Streaming sticks"  = "Streaming_stick"
-   ))
+spitzentage <- sample(seq_len(n_tage), size = 6)
+dA[spitzentage] <- dA[spitzentage] + round(runif(6, 220, 420))
+dB[spitzentage] <- dB[spitzentage] + round(runif(6, 70, 150))
 
-prod.names <- unique(pdata$product)
-
-dA <- pdata$weekly_sales[pdata$product == "Smartphone_stand"]
-dB <- pdata$weekly_sales[pdata$product == "Streaming_stick"]
-#dA <- pdata$weekly_sales[pdata$sku == 27]
-#dB <- pdata$weekly_sales[pdata$sku == 34]
+prod.names <- c("Frankfurt", "Offenbach")
 dpool <- dA + dB
 
 # ── Parameter schätzen ────────────────────────────────────────────────────────
@@ -2173,7 +2203,7 @@ n_perioden <- length(dA)
 ::: {.column width="52%"}
 
 ```{r}
-#| label: walmart-ecdf-fit
+#| label: sushifresh-sim-ecdf-fit
 #| echo: false
 #| warning: false
 #| message: false
@@ -2255,11 +2285,11 @@ fig <- fig |>
 
 fig <- fig |>
   plotly::add_annotations(x = 0.02, y = 0.93, xref = "paper", yref = "paper",
-    text = paste0("<b>KS-Test Produkt A:</b> p ", fmt_p(ksA$p.value)),
+    text = paste0("<b>KS-Test Frankfurt:</b> p ", fmt_p(ksA$p.value)),
     showarrow = FALSE, font = list(size = 16, color = colA, family = "Arial"),
     xanchor = "left") |>
   plotly::add_annotations(x = 0.02, y = 0.83, xref = "paper", yref = "paper",
-    text = paste0("<b>KS-Test Produkt B:</b> p ", fmt_p(ksB$p.value)),
+    text = paste0("<b>KS-Test Offenbach:</b> p ", fmt_p(ksB$p.value)),
     showarrow = FALSE, font = list(size = 16, color = colB, family = "Arial"),
     xanchor = "left") 
   # plotly::add_annotations(x = 0.02, y = 0.73, xref = "paper", yref = "paper",
@@ -2268,7 +2298,7 @@ fig <- fig |>
   #   xanchor = "left")
 
 fig |> plotly::layout(
-  xaxis = list(title = "Wöchentliche Nachfrage (Stück)", fixedrange = FALSE,
+  xaxis = list(title = "Tägliche Nachfrage (Sushi-Boxen)", fixedrange = FALSE,
                tickformat = ",.0f", range = c(-100, 800), font = list(size = 14)),
   yaxis = list(title = "F(d)", fixedrange = TRUE,
                range = c(-0.05, 1.08), tickformat = ".0%", font = list(size = 14)),
@@ -2283,8 +2313,8 @@ fig |> plotly::layout(
 ::: {.column width="46%"}
 
 ::: {.callout-note appearance="minimal" icon=false}
-**Datenbasis:** Verkaufsmengen eines Online Händlers über 100 Wochen  
-[(Quelle: [Demand Prediction in Retail](https://demandprediction.github.io/dataset.html))]{.smaller}
+**Datenbasis:** Simulierte tägliche Nachfrage über 250 Tage
+[(set.seed(616), Details siehe R-Code)]{.smaller}
 
 
 - **ECDF** (durchgezogen) = empirische Verteilung
@@ -2294,13 +2324,13 @@ fig |> plotly::layout(
 ::: {.fragment .fade-up}
 
 ```{r}
-#| label: walmart-fit-table
+#| label: sushifresh-sim-fit-table
 #| echo: false
 #| warning: false
 #| message: false
 
 fitdf <- data.frame(
-  Standort = c("A", "B"),
+  Standort = c("Frankfurt", "Offenbach"),
   mu       = round(c(muA, muB)),
   sigma    = round(c(sigA, sigB)),
   KS_p     = c(round(ksA$p.value, 3), round(ksB$p.value, 3)),
@@ -2309,7 +2339,7 @@ fitdf <- data.frame(
 )
 
 kableExtra::kbl(fitdf,
-    col.names = c("Produkt", "μ̂", "σ̂", "KS p-Wert", "emp. SB (α=95%)","param. SB"),
+    col.names = c("Filiale", "μ̂", "σ̂", "KS p-Wert", "emp. SB (α=95%)","param. SB"),
     align = c("l", "r", "r", "r", "r","r"), escape = FALSE,
     format.args = list(big.mark = ",")) |>
   kableExtra::kable_styling(
@@ -2326,7 +2356,7 @@ kableExtra::kbl(fitdf,
 
 ::: {.fragment .fade-up}
 ::: {.callout-tip appearance="simple"}
-Die Normalverteilung approximiert die Nachfrage bedingt gut. Für Produkt A (Streaming stick) funktioniert die Approximation gut, für Produkt B (Smartphone-Halter) sehr schlecht.
+Die gemeinsamen Feiertags-Spitzen erzeugen in **beiden** Filialen eine rechtsschiefe, deutlich von der Normalverteilung abweichende Verteilung (KS-Test: p < 0,01 für beide) — der empirische Sicherheitsbestand fällt entsprechend niedriger aus als der parametrische.
 :::
 :::
 
@@ -2390,9 +2420,93 @@ Je **kleiner** die Korrelation $\rho$, desto größer das Einsparungspotenzial d
 
 ---
 
+## Kernergebnis {#slide-sushifresh-kernergebnis}
+::: slide-subtitle
+Sicherheitsbestand für alle sechs SushiFresh-Filialen ($\alpha = 95\%$)
+:::
+
+```{r sushifresh-kernergebnis-berechnung}
+#| echo: false
+#| warning: false
+#| message: false
+
+sf_mu    <- c(120, 150, 280, 90, 110, 95)
+sf_sigma <- c(25, 30, 55, 20, 24, 22)
+z_sf     <- qnorm(0.95)
+
+sb_dez_sf <- z_sf * sum(sf_sigma)                     # dezentral: Summe der Einzel-SB
+sb_zen_sf <- z_sf * sqrt(sum(sf_sigma^2))              # zentral: Wurzel aus Varianzsumme (rho=0)
+einspar_sf <- round((1 - sb_zen_sf / sb_dez_sf) * 100, 1)
+
+# Idealisierter Vergleich: 6 identische Filialen mit Durchschnitts-Sigma
+sigma_mean_sf <- mean(sf_sigma)
+ideal_sf <- pooling_safety_stock(n = 6, sigma = sigma_mean_sf, z = z_sf)
+```
+
+::: columns
+::: {.column width="55%"}
+
+::: {.callout-note appearance="simple"}
+## Mit `qnorm()` verifiziert
+
+- $z_{0{,}95} =$ `r round(z_sf,3)`
+- **Dezentral:** $sb_{dez}=z_\alpha\sum\sigma_i=$ `r round(sb_dez_sf,1)` Boxen
+- **Zentral (gepoolt, unabhängig):** $sb_{zen}=z_\alpha\sqrt{\sum\sigma_i^2}=$ `r round(sb_zen_sf,1)` Boxen
+- **Einsparung durch Kapitel-5-Konsolidierung:** `r einspar_sf` %
+:::
+
+::: {.fragment .fade-up}
+::: {.callout-tip appearance="simple"}
+**Gegenprobe** `pooling_safety_stock()`: für 6 *identische* Filialen mit $\bar\sigma=$ `r round(sigma_mean_sf,1)` ergäbe sich eine Einsparung von `r ideal_sf$savings_pct` % — **mehr** als die tatsächlichen `r einspar_sf` %. Der dominante, volatile Standort Frankfurt ($\sigma=55$) schmälert den relativen Pooling-Vorteil gegenüber dem idealisierten Fall gleich großer Standorte.
+:::
+:::
+
+:::
+::: {.column width="43%"}
+
+```{r sushifresh-kernergebnis-bar}
+#| echo: false
+#| warning: false
+#| message: false
+#| out-width: "99%"
+#| fig-height: 3.6
+
+plot_ly() |>
+  add_trace(
+    x = c("Dezentral", "Zentral (Wiesbaden-Erbenheim)"),
+    y = c(sb_dez_sf, sb_zen_sf),
+    type = "bar",
+    marker = list(color = c("#E9C46A", cols$top),
+                  line = list(color = c("#B8951A", "#01696f"), width = 1)),
+    text = paste0(round(c(sb_dez_sf, sb_zen_sf), 1), " Boxen"),
+    textposition = "outside",
+    textfont = list(size = 14, family = "Arial", color = "#1F2933")
+  ) |>
+  layout(
+    xaxis = list(title = "", fixedrange = TRUE),
+    yaxis = list(title = "Sicherheitsbestand (Boxen)", fixedrange = TRUE,
+                 range = c(0, sb_dez_sf * 1.25)),
+    plot_bgcolor  = "transparent",
+    paper_bgcolor = "transparent",
+    margin = list(l = 50, r = 20, t = 20, b = 40),
+    height = 300, width = 420
+  )
+```
+
+::: {.fragment .fade-up}
+::: {.callout-warning appearance="simple"}
+**56,0 % weniger Sicherheitsbestand** durch die Zentralisierung auf Wiesbaden-Erbenheim — bei identischem Servicegrad.
+:::
+:::
+
+:::
+:::
+
+---
+
 ## Lagerbestandspooling {#slide-pooling-zeitreihen}
 ::: slide-subtitle
-Empirische Illustration 
+Empirische Illustration – Filialen Wiesbaden & Mainz
 :::
 
 
@@ -2405,8 +2519,8 @@ library(MASS)
 
 set.seed(43)
 n    <- 12
-mu1  <- 100; mu2 <- 100
-sig1 <- 20;  sig2 <- 20
+mu1  <- 120; mu2 <- 150   # Wiesbaden, Mainz
+sig1 <- 25;  sig2 <- 30
 rhos <- c(-0.8, 0.0, 0.8)
 
 # Hilfsfunktion: bivariates Sample erzeugen
@@ -2481,8 +2595,8 @@ make_ts_fig <- function(df, rho_label, col1 = "red", col2 = "blue", col0 ="green
     #               font = list(size = 14, color = "#1F2933", family = "Arial"),
     #               x = 0.04, xanchor = "left"),
     xaxis  = list(title = "Periode t", dtick = 2, fixedrange = TRUE),
-    yaxis  = list(title = "Nachfrage", fixedrange = TRUE,
-                  range = c(30, 280)),
+    yaxis  = list(title = "Nachfrage (Boxen)", fixedrange = TRUE,
+                  range = c(0, 420)),
     legend = list(orientation = "h", y = +0.95, font = list(size = 12)),
     plot_bgcolor  = "transparent",
     paper_bgcolor = "transparent",
@@ -2610,9 +2724,9 @@ Sicherheitsbestand in Abhängigkeit der Korrelation $\rho$
 alpha_sl <- 0.95
 z_alpha  <- qnorm(alpha_sl)
 
-# Theoretische Werte (sigma1 = sigma2 = 20, mu1=mu2=100)
+# Theoretische Werte fuer die Filialen Wiesbaden (sigma1=25) und Mainz (sigma2=30)
 rho_seq  <- seq(-1, 1, by = 0.01)
-sig1 <- sig2 <- 20
+sig1 <- 25; sig2 <- 30
 
 sb_dez <- z_alpha * (sig1 + sig2)         # konstant
 sb_zen <- z_alpha * sqrt(sig1^2 + sig2^2 + 2 * rho_seq * sig1 * sig2)
@@ -2704,7 +2818,7 @@ fig_sb |> layout(
 
 ::: {.fragment .fade-up}
 ::: {.callout-tip appearance="simple"}
-## Drei Szenarien ($\sigma_1 = \sigma_2 = 20$, $\alpha = 95\%$)
+## Drei Szenarien (Wiesbaden $\sigma_1=25$, Mainz $\sigma_2=30$, $\alpha = 95\%$)
 
 | $\rho$ | $sb_{zen}$ | Einsparung |
 |:---:|---:|---:|
@@ -2750,9 +2864,90 @@ $$1-\frac{sb_{zen}}{sb_{dez}} = 1-\sqrt{\frac{1+\rho}{2}}$$
 
 ---
 
+## Lagerbestandspooling {#slide-korrelation-netzwerk}
+::: slide-subtitle
+Korrelationseffekt für das gesamte Sechs-Filialen-Netzwerk
+:::
+
+::: {.callout-note appearance="minimal" icon=false}
+Geografisch benachbarte Filialen teilen sich oft gemeinsame Nachfragetreiber (Wetter, Feiertage). Annahme: **Wiesbaden–Mainz**, **Frankfurt–Offenbach** und **Rüsselsheim–Darmstadt** sind jeweils mit $\rho=0{,}3$ korreliert, alle übrigen Paare unabhängig.
+:::
+
+```{r korrelation-netzwerk-berechnung}
+#| echo: false
+#| warning: false
+#| message: false
+
+R_mat <- diag(6)
+nachbarpaare <- list(c(1, 2), c(3, 6), c(4, 5))
+for (p in nachbarpaare) R_mat[p[1], p[2]] <- R_mat[p[2], p[1]] <- 0.3
+Sigma_mat <- outer(sf_sigma, sf_sigma) * R_mat
+
+sb_zen_korr <- z_sf * sqrt(sum(Sigma_mat))
+einspar_korr <- round((1 - sb_zen_korr / sb_dez_sf) * 100, 1)
+
+set.seed(2026)
+sim_net <- MASS::mvrnorm(n = 100000, mu = sf_mu, Sigma = Sigma_mat)
+sb_mc_korr <- round(quantile(rowSums(sim_net), 0.95) - mean(rowSums(sim_net)), 1)
+```
+
+::: columns
+::: {.column width="55%"}
+
+```{r korrelation-netzwerk-bar}
+#| echo: false
+#| warning: false
+#| message: false
+#| out-width: "99%"
+#| fig-height: 4
+
+plot_ly() |>
+  add_trace(
+    x = c("Unabhängig (ρ=0)", "Nachbarn korreliert (ρ=0.3)"),
+    y = c(sb_zen_sf, sb_zen_korr),
+    type = "bar",
+    marker = list(color = c(cols$top, "#E76F51"),
+                  line = list(color = c("#01696f", "#a83d29"), width = 1)),
+    text = paste0(round(c(sb_zen_sf, sb_zen_korr), 1), " Boxen"),
+    textposition = "outside",
+    textfont = list(size = 14, family = "Arial", color = "#1F2933")
+  ) |>
+  layout(
+    xaxis = list(title = "", fixedrange = TRUE),
+    yaxis = list(title = "Zentraler Sicherheitsbestand (Boxen)", fixedrange = TRUE,
+                 range = c(0, sb_zen_korr * 1.3)),
+    plot_bgcolor  = "transparent",
+    paper_bgcolor = "transparent",
+    margin = list(l = 55, r = 20, t = 20, b = 50),
+    height = 340, width = 460
+  )
+```
+
+:::
+::: {.column width="43%"}
+
+::: {.callout-tip appearance="simple"}
+## Analytisch vs. Monte-Carlo (`mvrnorm()`)
+
+- Analytisch: $sb_{zen}=$ `r round(sb_zen_korr,1)` Boxen
+- Monte-Carlo (n=100.000): `r sb_mc_korr` Boxen
+- Einsparung sinkt von **`r einspar_sf` %** (unabhängig) auf **`r einspar_korr` %** (mit Nachbarschaftskorrelation)
+:::
+
+::: {.fragment .fade-up}
+::: {.callout-warning appearance="simple"}
+Positive Korrelation schwächt den Pooling-Effekt ab — er verschwindet aber nicht.
+:::
+:::
+
+:::
+:::
+
+---
+
 ## Lagerbestandspooling {#slide-pooling-realdata}
 ::: slide-subtitle
-Realdaten: Portable Smartphone Chargers (SKU 27 & 34)
+Simulierte Tagesnachfrage: Frankfurt & Offenbach
 :::
 
 ```{r pooling-real-data-prep}
@@ -2760,17 +2955,10 @@ Realdaten: Portable Smartphone Chargers (SKU 27 & 34)
 #| warning: false
 #| message: false
 
-# Filtere die relevante Warengruppe und SKUs
-pdata_charger <- data_processed |>
-  dplyr::filter(
-    functionality == "02.Portable smartphone chargers",
-    sku %in% c(27, 34)
-  ) |>
-  dplyr::select(week, weekly_sales, sku) |>
-  dplyr::mutate(sku = paste0("SKU ", sku))
-
-dA_r <- pdata_charger$weekly_sales[pdata_charger$sku == "SKU 27"]
-dB_r <- pdata_charger$weekly_sales[pdata_charger$sku == "SKU 34"]
+# Simulierte Tagesnachfrage aus dem vorigen Abschnitt wiederverwenden
+# (Frankfurt/Offenbach, set.seed(616), inkl. gemeinsamer Feiertags-Spitzen)
+dA_r <- dA
+dB_r <- dB
 n_r  <- min(length(dA_r), length(dB_r))
 dA_r <- dA_r[seq_len(n_r)]
 dB_r <- dB_r[seq_len(n_r)]
@@ -2824,21 +3012,18 @@ df_ts <- data.frame(
 fig_ts <- plot_ly(df_ts, x = ~t)
 
 fig_ts <- fig_ts |>
-  add_trace(y = ~D1, type = "scatter", mode = "lines+markers",
-            name = "SKU 27",
-            line   = list(color = cols$top, width = 2),
-            marker = list(color = cols$top, size = 5)) |>
-  add_trace(y = ~D2, type = "scatter", mode = "lines+markers",
-            name = "SKU 34",
-            line   = list(color = cols$mid, width = 2, dash = "dash"),
-            marker = list(color = cols$mid, size = 5, symbol = "square")) |>
-  add_trace(y = ~D0, type = "scatter", mode = "lines+markers",
-            name = "D₀ = SKU27 + SKU34",
-            line   = list(color = cols$dash, width = 2.5),
-            marker = list(color = cols$dash, size = 6, symbol = "diamond")) |>
+  add_trace(y = ~D1, type = "scatter", mode = "lines",
+            name = "Frankfurt",
+            line   = list(color = cols$top, width = 1.6)) |>
+  add_trace(y = ~D2, type = "scatter", mode = "lines",
+            name = "Offenbach",
+            line   = list(color = cols$mid, width = 1.6, dash = "dash")) |>
+  add_trace(y = ~D0, type = "scatter", mode = "lines",
+            name = "D₀ = Frankfurt + Offenbach",
+            line   = list(color = cols$dash, width = 2)) |>
   layout(
-    xaxis  = list(title = "Woche", fixedrange = TRUE),
-    yaxis  = list(title = "Absatz (Stück)", fixedrange = TRUE),
+    xaxis  = list(title = "Tag", fixedrange = TRUE),
+    yaxis  = list(title = "Absatz (Boxen)", fixedrange = TRUE),
     legend = list(orientation = "h", x= 0.1, y = 0.88, font = list(size = 14)),
     plot_bgcolor  = "transparent",
     paper_bgcolor = "transparent",
@@ -2866,24 +3051,24 @@ col_B_r    <- cols$mid
 col_Pool_r <- cols$dash
 
 plot_ly() |>
-  # ECDF SKU 27
+  # ECDF Frankfurt
   add_trace(x = eA_r$x, y = eA_r$y, type = "scatter", mode = "lines+markers",
-            name = "ECDF SKU 27",
+            name = "ECDF Frankfurt",
             line = list(color = col_A_r, width = 2.2),
             marker = list(color = col_A_r, size = 6,
                           line = list(color = "white", width = 1))) |>
-  # Normalverteilung SKU 27
+  # Normalverteilung Frankfurt
   add_trace(x = xg_A, y = pnorm(xg_A, muA_r, sigA_r),
             type = "scatter", mode = "lines",
             name = paste0("N(", round(muA_r), ", ", round(sigA_r), "\u00b2)"),
             line = list(color = col_A_r, width = 2, dash = "dot")) |>
-  # ECDF SKU 34
+  # ECDF Offenbach
   add_trace(x = eB_r$x, y = eB_r$y, type = "scatter", mode = "lines+markers",
-            name = "ECDF SKU 34",
+            name = "ECDF Offenbach",
             line = list(color = col_B_r, width = 2.2, dash = "dash"),
             marker = list(color = col_B_r, size = 6, symbol = "square",
                           line = list(color = "white", width = 1))) |>
-  # Normalverteilung SKU 34
+  # Normalverteilung Offenbach
   add_trace(x = xg_B, y = pnorm(xg_B, muB_r, sigB_r),
             type = "scatter", mode = "lines",
             name = paste0("N(", round(muB_r), ", ", round(sigB_r), "\u00b2)"),
@@ -2901,7 +3086,7 @@ plot_ly() |>
             line = list(color = col_Pool_r, width = 2, dash = "dot")) |>
   
   layout(
-    xaxis  = list(title = "Wöchentl. Nachfrage (Stück)", fixedrange = FALSE,
+    xaxis  = list(title = "Tägl. Nachfrage (Boxen)", fixedrange = FALSE,
                   tickformat = ",.0f"),
     yaxis  = list(title = "F(d)", fixedrange = TRUE,
                   range = c(-0.05, 1.08), tickformat = ".0%"),
@@ -2931,7 +3116,7 @@ fig_sc <- plot_ly() |>
     name = "Beobachtungen",
     marker = list(size = 9, color = cols$top, opacity = 0.8,
                   line = list(color = "white", width = 1.2)),
-    hovertemplate = "SKU 27: %{x}<br>SKU 34: %{y}<extra></extra>"
+    hovertemplate = "Frankfurt: %{x}<br>Offenbach: %{y}<extra></extra>"
   ) |>
   add_trace(
     x = x_seq_r, y = as.numeric(y_fit_r),
@@ -2948,8 +3133,8 @@ fig_sc <- plot_ly() |>
     xanchor = "right"
   ) |>
   layout(
-    xaxis  = list(title = "wöchentl. Absatz SKU 27", fixedrange = TRUE),
-    yaxis  = list(title = "Absatz SKU 34", fixedrange = TRUE),
+    xaxis  = list(title = "tägl. Absatz Frankfurt", fixedrange = TRUE),
+    yaxis  = list(title = "Absatz Offenbach", fixedrange = TRUE),
     legend = list(orientation = "h", x = .1, y = 0.88, font = list(size = 14)),
     plot_bgcolor  = "transparent",
     paper_bgcolor = "transparent",
@@ -2978,10 +3163,10 @@ sb_df <- data.frame(
     "SB dezentral (emp.)", "SB zentral (emp.)", "Einsparung (emp.)",
     "SB dezentral (norm.)", "SB zentral (norm.)", "Einsparung (norm.)"
   ),
-  SKU27 = c(round(muA_r, 1), round(sigA_r, 1),
+  Frankfurt = c(round(muA_r, 1), round(sigA_r, 1),
             round(SB_A_emp, 1), "—", "—",
             round(SB_A_par, 1), "—", "—"),
-  SKU34 = c(round(muB_r, 1), round(sigB_r, 1),
+  Offenbach = c(round(muB_r, 1), round(sigB_r, 1),
             round(SB_B_emp, 1), "—", "—",
             round(SB_B_par, 1), "—", "—"),
   Pool  = c(round(muP_r, 1), round(sigP_r, 1),
@@ -2992,7 +3177,7 @@ sb_df <- data.frame(
 )
 
 kbl(sb_df,
-    col.names = c("Kennzahl", "SKU 27", "SKU 34", "Gesamt / Pool"),
+    col.names = c("Kennzahl", "Frankfurt", "Offenbach", "Gesamt / Pool"),
     align = c("l", "r", "r", "r"),
     escape = FALSE) |>
   kable_styling(bootstrap_options = c("condensed", "striped"),

@@ -42,6 +42,47 @@ Welche Standortfaktoren dabei überhaupt relevant sind, hängt stark vom Einzelf
 
 ![Beispielhafte Standortfaktoren auf regionaler Ebene [@lahner2020regionaloekonomie]](../images/image63.png){#fig-standortfaktoren width="80%"}
 
+### Die Fallstudie dieses Kapitels: SushiFresh GmbH
+
+Alle Verfahren dieses Kapitels wenden wir durchgängig auf ein und dasselbe, durchgehende Fallbeispiel an, das uns auch in den folgenden Kapiteln zur Netzwerk- und Bestandsplanung begleiten wird: die **SushiFresh GmbH**, ein fiktiver regionaler Hersteller frischer Sushi-Boxen im Rhein-Main-Gebiet. SushiFresh beliefert täglich sechs Supermarkt-Filialen mit unterschiedlicher, aber weitgehend bekannter Nachfrage:
+
+```{r}
+#| label: ch4-sushifresh-filialen
+#| echo: true
+
+# Sechs beliefte Filialen mit Koordinaten (WGS84), mittlerer Tagesnachfrage
+# mu (in Sushi-Boxen) und deren Standardabweichung sigma
+filialen <- tibble(
+  Filiale = c("Wiesbaden", "Mainz", "Frankfurt", "Ruesselsheim", "Darmstadt", "Offenbach"),
+  lat   = c(50.0782, 50.0000, 50.1109, 49.9904, 49.8728, 50.0956),
+  lon   = c(8.2398,  8.2711,  8.6821,  8.4116,  8.6512,  8.7761),
+  mu    = c(120, 150, 280, 90, 110, 95),
+  sigma = c(25, 30, 55, 20, 24, 22)
+)
+filialen
+```
+
+Die Geschäftsführung erwägt, zusätzlich zur bestehenden Auslieferung eine eigene Produktionsstätte im Rhein-Main-Gebiet zu errichten, und hat dafür drei Gewerbegrundstücke als Kandidatenstandorte identifiziert:
+
+```{r}
+#| label: ch4-sushifresh-standorte
+#| echo: true
+
+# Drei Kandidatenstandorte fuer die neue Produktionsstaette
+standorte <- tibble(
+  Standort = c("Wiesbaden-Erbenheim", "Mainz-Hechtsheim", "Raunheim"),
+  lat = c(50.0632, 49.9698, 50.0000),
+  lon = c(8.2999,  8.2831,  8.4650),
+  Fixkosten = c(180000, 210000, 260000)
+)
+standorte
+
+# Transportkostensatz je Box und Kilometer (wird spaeter noch gebraucht)
+transportkostensatz <- 0.02
+```
+
+Wiesbaden-Erbenheim ist ein Gewerbegebiet mit direktem Anschluss an A66/A3 und vergleichsweise günstigen Grundstückspreisen; Mainz-Hechtsheim liegt an A60/A63 und in Rheinnähe, was die Anlieferung von Fisch begünstigt, ist aber teurer; Raunheim schließlich liegt nahe dem Frankfurter Flughafen mit sehr guter Anbindung an A3/A5, verlangt aber die höchsten Gewerbemieten. Mit insgesamt 845 Sushi-Boxen Tagesnachfrage (`r sum(filialen$mu)` Boxen) ist Frankfurt die mit Abstand größte Filiale – sie wird uns in Kapitel 7 als Beispiel für die Newsvendor-Formel wiederbegegnen. In diesem Kapitel geht es zunächst darum, wie SushiFresh die drei Kandidatenstandorte systematisch bewerten und wie das Unternehmen – unabhängig von den drei vorgegebenen Grundstücken – rein rechnerisch den transportkostenminimalen Punkt im Absatzgebiet bestimmen kann.
+
 ## Qualitative Standortbewertung
 
 ### Die Nutzwertanalyse
@@ -61,37 +102,35 @@ Die Nutzwertanalyse folgt einem klar strukturierten, fünfstufigen Vorgehen: Zun
 Diese additive Struktur macht die Nutzwertanalyse einfach anzuwenden und leicht nachvollziehbar – birgt aber eine methodische Schwäche, die man sich am besten an einem Zahlenbeispiel klarmacht.
 
 ::: callout-note
-## Fallbeispiel: Distributionsstandort
+## Fallbeispiel: Produktionsstandort für SushiFresh
 
-Ein Unternehmen sucht einen neuen Distributionsstandort und vergleicht drei Alternativen A, B und C anhand von vier – hier aus Vereinfachungsgründen gleich gewichteten – Kriterien: **Arbeitskräfteverfügbarkeit**, **Lohnkostenniveau**, **Verkehrserschließung** und **Lebensqualität**. Standort A ist stark bei Arbeitsmarkt und Kosten, Standort C bei Infrastruktur und Lebensqualität, während B in allen Kriterien mittlere Werte erreicht.
+Die Geschäftsleitung von SushiFresh bewertet die drei Kandidatenstandorte Wiesbaden-Erbenheim, Mainz-Hechtsheim und Raunheim anhand von drei – hier aus Vereinfachungsgründen gleich gewichteten – Kriterien: **Transportnähe** zu den sechs Filialen, **Mietkosten** und **Fachkräfteverfügbarkeit**. Wiesbaden-Erbenheim ist bei den Mietkosten am stärksten (niedrigste Fixkosten), Raunheim bei der Transportnähe zum Filialnetz, während Mainz-Hechtsheim bei der Fachkräfteverfügbarkeit vorn liegt – dort gibt es einen guten Zugang zu gastronomischen und lebensmitteltechnischen Ausbildungsstätten.
 :::
 
 ```{r}
 #| label: ch4-nwa-tabelle
 #| echo: true
 
-# Rohdaten der Fallstudie: vier Kriterien, gleich gewichtet (0.25 je Kriterium),
-# Bewertungen der drei Alternativen auf einer Skala von 0 (schlecht) bis 10 (gut)
+# Rohdaten der Fallstudie: drei Kriterien, gleich gewichtet (1/3 je Kriterium),
+# Bewertungen der drei Kandidatenstandorte auf einer Skala von 0 (schlecht) bis 10 (gut)
 nwa <- tibble(
   Kriterium = c(
-    "Arbeitskräfteverfügbarkeit",
-    "Lohnkostenniveau",
-    "Verkehrserschließung",
-    "Lebensqualität"
+    "Transportnaehe",
+    "Mietkosten",
+    "Fachkraefteverfuegbarkeit"
   ),
-  Gewicht = c(0.25, 0.25, 0.25, 0.25),
-  A = c(8, 8, 2, 2),
-  B = c(5, 5, 5, 5),
-  C = c(2, 2, 8, 8)
+  Gewicht = c(1/3, 1/3, 1/3),
+  `WI-Erbenheim`  = c(5, 8, 2),
+  `MZ-Hechtsheim` = c(2, 5, 8),
+  Raunheim        = c(8, 2, 5)
 )
 
-# Gesamtnutzwert je Alternative: Summe aus Gewicht * Bewertung über alle Kriterien
+# Gesamtnutzwert je Standort: Summe aus Gewicht * Bewertung ueber alle Kriterien
 nutzwert <- c(
-  A = sum(nwa$Gewicht * nwa$A),
-  B = sum(nwa$Gewicht * nwa$B),
-  C = sum(nwa$Gewicht * nwa$C)
+  `WI-Erbenheim`  = sum(nwa$Gewicht * nwa$`WI-Erbenheim`),
+  `MZ-Hechtsheim` = sum(nwa$Gewicht * nwa$`MZ-Hechtsheim`),
+  Raunheim        = sum(nwa$Gewicht * nwa$Raunheim)
 )
-
 nutzwert
 ```
 
@@ -99,18 +138,24 @@ nutzwert
 #| label: ch4-nwa-kable
 #| echo: false
 
-nwa_tab <- bind_rows(nwa, tibble(Kriterium = "Nutzwert", Gewicht = NA,
-                                  A = nutzwert["A"], B = nutzwert["B"], C = nutzwert["C"]))
+nwa_tab <- bind_rows(
+  nwa,
+  tibble(Kriterium = "Nutzwert", Gewicht = NA,
+         `WI-Erbenheim` = nutzwert["WI-Erbenheim"],
+         `MZ-Hechtsheim` = nutzwert["MZ-Hechtsheim"],
+         Raunheim = nutzwert["Raunheim"])
+)
 nwa_tab |>
   mutate(
     Gewicht = ifelse(is.na(Gewicht), "", sprintf("%.2f", Gewicht)),
-    across(c(A, B, C), ~ sprintf("%.1f", .x))
+    across(c(`WI-Erbenheim`, `MZ-Hechtsheim`, Raunheim), ~ sprintf("%.1f", .x))
   ) |>
-  kable(col.names = c("Kriterium", "Gewichtung", "A", "B", "C"), align = "lccc") |>
+  kable(col.names = c("Kriterium", "Gewichtung", "WI-Erbenheim", "MZ-Hechtsheim", "Raunheim"),
+        align = "lccc") |>
   kable_styling(full_width = FALSE)
 ```
 
-Das Ergebnis ist auf den ersten Blick überraschend: **Alle drei Alternativen erreichen exakt denselben Gesamtnutzwert von 5,0** – obwohl ihre Stärken-Schwächen-Profile völlig unterschiedlich sind. Der Grund liegt in der additiven Verrechnung: Eine schwache Bewertung bei einem Kriterium kann durch eine entsprechend starke Bewertung bei einem anderen Kriterium **kompensiert** werden. Diese **Kompensierbarkeit** ist die zentrale methodische Schwäche der Nutzwertanalyse. Sie wirft mehrere Folgeprobleme auf:
+Das Ergebnis ist auf den ersten Blick überraschend: **Alle drei Standorte erreichen exakt denselben Gesamtnutzwert von `r sprintf("%.1f", nutzwert[1])`** – obwohl ihre Stärken-Schwächen-Profile völlig unterschiedlich sind: Wiesbaden-Erbenheim punktet bei den Mietkosten, verliert aber bei der Fachkräfteverfügbarkeit; Mainz-Hechtsheim punktet bei den Fachkräften, verliert aber bei der Transportnähe; Raunheim punktet bei der Transportnähe, verliert aber bei den Mietkosten. Der Grund für das identische Ergebnis liegt in der additiven Verrechnung: Eine schwache Bewertung bei einem Kriterium kann durch eine entsprechend starke Bewertung bei einem anderen Kriterium **kompensiert** werden. Diese **Kompensierbarkeit** ist die zentrale methodische Schwäche der Nutzwertanalyse. Sie wirft mehrere Folgeprobleme auf:
 
 - Das additive Modell ist nur eingeschränkt interpretierbar, weil es implizit unterstellt, dass die Kriterien **nutzenunabhängig** sind – dass sich also der Nutzenbeitrag eines Kriteriums nicht dadurch ändert, wie gut oder schlecht andere Kriterien ausfallen. Diese Annahme ist in der Praxis oft fraglich.
 - Die Ergebnisse reagieren empfindlich auf die gewählte Gewichtung; kleine Verschiebungen der Gewichte $g_k$ können die Rangfolge der Alternativen umkehren.
@@ -131,12 +176,12 @@ Der AHP läuft in fünf Schritten ab: (1) paarweise Vergleiche zwischen allen Al
 Paarweise Vergleiche werden üblicherweise auf einer neunstufigen Skala erfasst, die von "gleich wichtig" (Wert 1) bis "extrem bevorzugt" (Wert 9) reicht; der reziproke Wert $1/9$ bis $1$ drückt die umgekehrte Präferenzrichtung aus. Eine Paarvergleichsmatrix $A$ mit Einträgen $a_{ij}$ ("wie viel wichtiger ist $i$ gegenüber $j$?") ist also **reziprok**: $a_{ji} = 1/a_{ij}$, und die Diagonale enthält stets Einsen. Aus einer perfekt konsistenten Matrix ließe sich der Prioritätsvektor direkt aus einer einzigen Zeile oder Spalte ablesen; in der Praxis sind Experteneinschätzungen jedoch nie perfekt konsistent, weshalb der Prioritätsvektor über eine Mittelung – rechnerisch über den **dominanten Eigenvektor** der Matrix, approximiert z. B. über das geometrische Mittel der Zeilen – bestimmt wird.
 
 ::: callout-note
-## Fallbeispiel: Standort für ein Einkaufszentrum
+## Fallbeispiel: AHP für den SushiFresh-Produktionsstandort
 
-Eine Investitionsgesellschaft sucht einen Standort zur Errichtung eines Einkaufszentrums. Drei Alternativen A, B, C stehen zur Wahl, bewertet anhand von vier Kriterien: **Kundenmarkt** (Größe, Kaufkraft, Altersstruktur), **Kundennähe** (Erreichbarkeit durch Kunden), **Infrastruktur** (Lage, Erschließungszustand) und **Transport** (Erreichbarkeit durch Lieferanten).
+Statt Punktwerte direkt zu schätzen, vergleicht die Geschäftsleitung von SushiFresh die drei Kandidatenstandorte Wiesbaden-Erbenheim, Mainz-Hechtsheim und Raunheim nun paarweise – sowohl untereinander je Kriterium als auch die drei Kriterien **Transportnähe**, **Mietkosten** und **Fachkräfteverfügbarkeit** gegeneinander.
 :::
 
-Um die vier Paarvergleichsmatrizen (eine je Kriterium) und die Kriterienvergleichsmatrix in R abzubilden, brauchen wir eine Datenstruktur, die – anders als ein `data.frame` – von vornherein **rechteckig und rein numerisch** ist und sich mit den Regeln der linearen Algebra (Matrixmultiplikation, Transposition) verrechnen lässt: die **Matrix**.
+Um die drei Paarvergleichsmatrizen (eine je Kriterium) und die Kriterienvergleichsmatrix in R abzubilden, brauchen wir eine Datenstruktur, die – anders als ein `data.frame` – von vornherein **rechteckig und rein numerisch** ist und sich mit den Regeln der linearen Algebra (Matrixmultiplikation, Transposition) verrechnen lässt: die **Matrix**.
 
 ::: {.r-exkurs}
 **R-Exkurs: Matrizen in R**
@@ -147,70 +192,63 @@ Eine Matrix wird mit `matrix()` erzeugt. Der Vektor mit den Werten wird dabei ze
 #| label: ch4-matrix-exkurs
 #| echo: true
 
-# 3x3-Matrix mit Zeilen- und Spaltennamen erzeugen
+# 3x3-Matrix mit Zeilen- und Spaltennamen erzeugen: paarweiser Vergleich
+# der drei Kandidatenstandorte im Hinblick auf das Kriterium Transportnaehe
 m <- matrix(
-  c(1,   3, 2,
-    1/3, 1, 1/5,
-    1/2, 5, 1),
+  c(1,   2,   1/2,
+    1/2, 1,   1/3,
+    2,   3,   1),
   nrow = 3, byrow = TRUE,
-  dimnames = list(c("A", "B", "C"), c("A", "B", "C"))
+  dimnames = list(c("WI-Erb", "MZ-Hech", "Raunheim"), c("WI-Erb", "MZ-Hech", "Raunheim"))
 )
 m
 
-# Einzelnes Element: Zeile 1, Spalte 2 -> "Wie stark wird A ggü. B bevorzugt?"
+# Einzelnes Element: Zeile 1, Spalte 2 -> "Wie stark wird WI-Erb ggue. MZ-Hech bevorzugt?"
 m[1, 2]
 
-# Gesamte 2. Zeile: Vergleich von B mit A, B, C
+# Gesamte 2. Zeile: Vergleich von MZ-Hech mit allen drei Standorten
 m[2, ]
 
 # Dimensionen der Matrix (Zeilen, Spalten)
 dim(m)
 ```
 
-Für zwei Matrizen `X` (Dimension $m \times n$) und `Y` (Dimension $n \times p$) berechnet der Operator `%*%` das **Matrixprodukt** $X\,Y$ (Dimension $m \times p$) im Sinne der linearen Algebra – anders als `X * Y`, das nur elementweise multipliziert. Wir nutzen `%*%` weiter unten, um die Kriteriengewichte mit den Alternativenbewertungen zu einem Gesamt-Score zu verrechnen.
+Für zwei Matrizen `X` (Dimension $m \times n$) und `Y` (Dimension $n \times p$) berechnet der Operator `%*%` das **Matrixprodukt** $X\,Y$ (Dimension $m \times p$) im Sinne der linearen Algebra – anders als `X * Y`, das nur elementweise multipliziert. Wir nutzen `%*%` weiter unten gleich zweimal: einmal, um eine Distanzmatrix mit einem Nachfragevektor zu verrechnen, und einmal, um die Kriteriengewichte mit den Alternativenbewertungen zu einem AHP-Gesamt-Score zu kombinieren.
 :::
 
-Damit lassen sich die vier Paarvergleichsmatrizen aus dem Fallbeispiel unmittelbar in R nachbilden:
+Damit lassen sich die drei Paarvergleichsmatrizen aus dem Fallbeispiel unmittelbar in R nachbilden:
 
 ```{r}
 #| label: ch4-ahp-matrizen
 #| echo: true
 
-# Paarvergleiche der drei Standorte je Kriterium (Saaty-Skala 1-9 bzw. Kehrwerte)
-kundenmarkt <- matrix(
-  c(1,   3,   2,
-    1/3, 1,   1/5,
-    1/2, 5,   1),
+# Paarvergleiche der drei Kandidatenstandorte je Kriterium (Saaty-Skala 1-9 bzw. Kehrwerte)
+transportnaehe <- matrix(
+  c(1,   2,   1/2,
+    1/2, 1,   1/3,
+    2,   3,   1),
   nrow = 3, byrow = TRUE,
-  dimnames = list(c("A", "B", "C"), c("A", "B", "C"))
+  dimnames = list(c("WI-Erb", "MZ-Hech", "Raunheim"), c("WI-Erb", "MZ-Hech", "Raunheim"))
 )
 
-kundennaehe <- matrix(
-  c(1,   6,   1/3,
-    1/6, 1,   1/9,
-    3,   9,   1),
+mietkosten <- matrix(
+  c(1,   2,   4,
+    1/2, 1,   2,
+    1/4, 1/2, 1),
   nrow = 3, byrow = TRUE,
-  dimnames = list(c("A", "B", "C"), c("A", "B", "C"))
+  dimnames = list(c("WI-Erb", "MZ-Hech", "Raunheim"), c("WI-Erb", "MZ-Hech", "Raunheim"))
 )
 
-infrastruktur <- matrix(
-  c(1,   1/3, 1,
-    3,   1,   7,
-    1,   1/7, 1),
+fachkraefte <- matrix(
+  c(1,   1/2, 2,
+    2,   1,   3,
+    1/2, 1/3, 1),
   nrow = 3, byrow = TRUE,
-  dimnames = list(c("A", "B", "C"), c("A", "B", "C"))
-)
-
-transport <- matrix(
-  c(1,   1/3, 1/2,
-    3,   1,   4,
-    2,   1/4, 1),
-  nrow = 3, byrow = TRUE,
-  dimnames = list(c("A", "B", "C"), c("A", "B", "C"))
+  dimnames = list(c("WI-Erb", "MZ-Hech", "Raunheim"), c("WI-Erb", "MZ-Hech", "Raunheim"))
 )
 ```
 
-Aus jeder dieser vier Matrizen liefert `ahp_priority_vector()` aus `R/scm_functions.R` den zugehörigen Prioritätsvektor (die relativen Standortpräferenzen je Kriterium). Anstatt die Funktion viermal einzeln aufzurufen, bündeln wir die vier Matrizen in einer **Liste** und wenden die Funktion mit `sapply()` auf jedes Listenelement an.
+Die Matrix `mietkosten` spiegelt dabei unmittelbar die tatsächlichen Fixkosten der drei Grundstücke wider (180.000 € / 210.000 € / 260.000 € pro Jahr): Wiesbaden-Erbenheim wird gegenüber Raunheim mit dem Wert 4 klar bevorzugt. Aus jeder dieser drei Matrizen liefert `ahp_priority_vector()` aus `R/scm_functions.R` den zugehörigen Prioritätsvektor (die relativen Standortpräferenzen je Kriterium). Anstatt die Funktion dreimal einzeln aufzurufen, bündeln wir die drei Matrizen in einer **Liste** und wenden die Funktion mit `sapply()` auf jedes Listenelement an.
 
 ::: {.r-exkurs}
 **R-Exkurs: `sapply()` und `apply()`**
@@ -223,37 +261,35 @@ Eng verwandt ist `apply(X, MARGIN, FUN)`, das eine Funktion zeilenweise (`MARGIN
 #| label: ch4-ahp-sapply
 #| echo: true
 
-# Liste aller vier Kriterienmatrizen
+# Liste aller drei Kriterienmatrizen
 kriterien_matrizen <- list(
-  Kundenmarkt    = kundenmarkt,
-  Kundennaehe    = kundennaehe,
-  Infrastruktur  = infrastruktur,
-  Transport      = transport
+  Transportnaehe = transportnaehe,
+  Mietkosten     = mietkosten,
+  Fachkraefte    = fachkraefte
 )
 
 # sapply() wendet ahp_priority_vector() auf jede Matrix der Liste an und
-# liefert die vier Prioritätsvektoren als gemeinsame Matrix (Standorte x Kriterien) zurück
+# liefert die drei Praeferenzvektoren als gemeinsame Matrix (Standorte x Kriterien) zurueck
 praeferenz_matrix <- sapply(kriterien_matrizen, ahp_priority_vector)
 praeferenz_matrix
 ```
 :::
 
-Die Tabelle `praeferenz_matrix` zeigt: Standort A dominiert klar beim Kundenmarkt, Standort C bei der Kundennähe, Standort B dagegen bei Infrastruktur und Transport. Damit ist Schritt 2 des AHP (Synthese je Kriterium) abgeschlossen; es fehlt noch das Ranking der vier Kriterien selbst (Schritt 3 und 4), wofür wiederum eine Paarvergleichsmatrix – diesmal zwischen den Kriterien statt zwischen den Standorten – benötigt wird.
+Die Tabelle `praeferenz_matrix` zeigt: Raunheim dominiert klar bei der Transportnähe (ca. 54 %), Wiesbaden-Erbenheim bei den Mietkosten (ca. 57 %), Mainz-Hechtsheim bei der Fachkräfteverfügbarkeit (ca. 54 %) – die drei Standorte spielen also, wie schon in der Nutzwertanalyse, jeweils eine unterschiedliche Stärke aus. Damit ist Schritt 2 des AHP (Synthese je Kriterium) abgeschlossen; es fehlt noch das Ranking der drei Kriterien selbst (Schritt 3 und 4), wofür wiederum eine Paarvergleichsmatrix – diesmal zwischen den Kriterien statt zwischen den Standorten – benötigt wird.
 
 ```{r}
 #| label: ch4-ahp-kriterien
 #| echo: true
 
-# Paarweiser Vergleich der vier Bewertungskriterien untereinander
+# Paarweiser Vergleich der drei Bewertungskriterien untereinander
 kriterien_vergleich <- matrix(
-  c(1,   1/5, 3,   4,
-    5,   1,   9,   7,
-    1/3, 1/9, 1,   2,
-    1/4, 1/7, 1/2, 1),
-  nrow = 4, byrow = TRUE,
+  c(1,   3,   2,
+    1/3, 1,   1/2,
+    1/2, 2,   1),
+  nrow = 3, byrow = TRUE,
   dimnames = list(
-    c("Kundenmarkt", "Kundennaehe", "Infrastruktur", "Transport"),
-    c("Kundenmarkt", "Kundennaehe", "Infrastruktur", "Transport")
+    c("Transportnaehe", "Mietkosten", "Fachkraefte"),
+    c("Transportnaehe", "Mietkosten", "Fachkraefte")
   )
 )
 
@@ -261,7 +297,7 @@ kriterien_gewichte <- ahp_priority_vector(kriterien_vergleich)
 kriterien_gewichte
 ```
 
-Kundennähe erhält mit rund 66 % das mit Abstand höchste Gewicht, gefolgt vom Kundenmarkt (ca. 20 %); Infrastruktur und Transport spielen mit zusammen unter 15 % eine untergeordnete Rolle. Bevor wir diese Gewichte weiterverwenden, prüfen wir, ob die zugrundeliegende Paarvergleichsmatrix überhaupt **konsistent** genug ist, um belastbare Schlüsse zuzulassen. Ein Entscheider, der A deutlich über B und B deutlich über C stellt, sollte auch A deutlich über C stellen – tut er das nicht, ist die Matrix inkonsistent. Formal wird dazu der **Konsistenzindex**
+Transportnähe erhält mit rund `r sprintf("%.0f", kriterien_gewichte["Transportnaehe"]*100)` % das mit Abstand höchste Gewicht, gefolgt von Fachkräfteverfügbarkeit (ca. `r sprintf("%.0f", kriterien_gewichte["Fachkraefte"]*100)` %); Mietkosten spielen mit rund `r sprintf("%.0f", kriterien_gewichte["Mietkosten"]*100)` % eine vergleichsweise untergeordnete Rolle. Bevor wir diese Gewichte weiterverwenden, prüfen wir, ob die zugrundeliegende Paarvergleichsmatrix überhaupt **konsistent** genug ist, um belastbare Schlüsse zuzulassen. Ein Entscheider, der Transportnähe deutlich über Mietkosten und Mietkosten über Fachkräfte stellt, sollte auch Transportnähe deutlich über Fachkräfte stellen – tut er das nicht, ist die Matrix inkonsistent. Formal wird dazu der **Konsistenzindex**
 $$
 CI = \frac{\bar{\lambda} - n}{n - 1}
 $$
@@ -279,7 +315,7 @@ konsistenz <- ahp_consistency(kriterien_vergleich, kriterien_gewichte)
 konsistenz
 ```
 
-Mit $CR \approx 0{,}057$ liegt die Kriterienmatrix deutlich unter der 10-%-Schwelle und gilt damit als konsistent. Im letzten Schritt werden die Standort-Kriterien-Matrix und der Kriteriengewichtsvektor mit dem Matrixprodukt `%*%` zu einem **Gesamt-Score je Standort** verrechnet – genau die Operation, die im R-Exkurs zu Matrizen eingeführt wurde:
+Mit $CR \approx `r sprintf("%.4f", konsistenz$CR)`$ liegt die Kriterienmatrix sehr deutlich unter der 10-%-Schwelle und gilt damit als konsistent. Im letzten Schritt werden die Standort-Kriterien-Matrix und der Kriteriengewichtsvektor mit dem Matrixprodukt `%*%` zu einem **Gesamt-Score je Standort** verrechnet – genau die Operation, die im R-Exkurs zu Matrizen angekündigt wurde:
 
 ```{r}
 #| label: ch4-ahp-scores
@@ -289,17 +325,17 @@ scores <- praeferenz_matrix %*% kriterien_gewichte
 scores
 ```
 
-Standort C erzielt mit einem Score von rund 0,54 den höchsten Wert, deutlich vor A (ca. 0,31) und B (ca. 0,15) – der hohe Gewichtungsanteil der Kundennähe, bei der C am stärksten abschneidet, gibt hier den Ausschlag. Im Vergleich zur Nutzwertanalyse hat der AHP zwei wesentliche Vorzüge: Erstens erhöht das paarweise Vergleichen die Transparenz, weil Entscheider jeweils nur zwei Elemente statt eines vollständigen Rankings gegeneinander abwägen müssen. Zweitens bietet der AHP der Voreingenommenheit einzelner Bewertungen weniger Angriffsfläche als die NWA, weil sich irrationale bzw. widersprüchliche Urteile über den Konsistenzindex explizit aufdecken lassen – ein Diagnosewerkzeug, das der Nutzwertanalyse fehlt.
+Raunheim erzielt mit einem Score von rund `r sprintf("%.4f", scores["Raunheim", 1])` den höchsten Wert, aber nur **knapp** vor Wiesbaden-Erbenheim (`r sprintf("%.4f", scores["WI-Erb", 1])`); Mainz-Hechtsheim liegt mit `r sprintf("%.4f", scores["MZ-Hech", 1])` deutlicher zurück. Der AHP empfiehlt also, wenn auch nur knapp, **Raunheim** als Produktionsstandort – ausschlaggebend ist das hohe Gewicht der Transportnähe, bei der Raunheim am stärksten abschneidet. Im Vergleich zur Nutzwertanalyse hat der AHP zwei wesentliche Vorzüge: Erstens erhöht das paarweise Vergleichen die Transparenz, weil Entscheider jeweils nur zwei Elemente statt eines vollständigen Rankings gegeneinander abwägen müssen. Zweitens bietet der AHP der Voreingenommenheit einzelner Bewertungen weniger Angriffsfläche als die NWA, weil sich irrationale bzw. widersprüchliche Urteile über den Konsistenzindex explizit aufdecken lassen – ein Diagnosewerkzeug, das der Nutzwertanalyse fehlt. Ob sich diese qualitative, knappe Empfehlung zugunsten Raunheims auch bei einer rein quantitativen Kostenbetrachtung bestätigt, ist an dieser Stelle bewusst offen – wir kommen am Ende dieses Kapitels und dann noch einmal ausführlich in Kapitel 5 darauf zurück.
 
 ## Kontinuierliche Standortplanung: das Steiner-Weber-Modell
 
-Sowohl die Nutzwertanalyse als auch der AHP setzen voraus, dass bereits eine **überschaubare Menge diskreter Alternativen** vorliegt, zwischen denen zu wählen ist. Häufig stellt sich die Standortfrage jedoch anders: Gesucht ist nicht die beste unter mehreren vorgegebenen Adressen, sondern **derjenige Punkt in der Ebene**, der die Transportkosten zu einer Menge von Kundenstandorten minimiert – etwa bei der Wahl eines neuen Zentrallagers innerhalb eines Absatzgebiets. Diese Fragestellung behandelt die **kontinuierliche Standortplanung**, deren klassisches Modell auf Alfred Weber zurückgeht und in der Literatur meist als **Steiner-Weber-Modell** bezeichnet wird [@cooper1968locational; @thonemann2023operations].
+Sowohl die Nutzwertanalyse als auch der AHP setzen voraus, dass bereits eine **überschaubare Menge diskreter Alternativen** vorliegt, zwischen denen zu wählen ist – bei SushiFresh die drei konkret verfügbaren Gewerbegrundstücke. Häufig stellt sich die Standortfrage jedoch anders: Gesucht ist nicht die beste unter mehreren vorgegebenen Adressen, sondern **derjenige Punkt in der Ebene**, der die Transportkosten zu einer Menge von Kundenstandorten minimiert – bei SushiFresh also derjenige Punkt im Rhein-Main-Gebiet, der die Gesamtdistanz zu den sechs Filialen minimiert, unabhängig davon, ob dort überhaupt ein Grundstück verfügbar ist. Diese Fragestellung behandelt die **kontinuierliche Standortplanung**, deren klassisches Modell auf Alfred Weber zurückgeht und in der Literatur meist als **Steiner-Weber-Modell** bezeichnet wird [@cooper1968locational; @thonemann2023operations].
 
 Das Modell trifft vier vereinfachende Annahmen: Es gibt eine homogene Ebene (das Absatzgebiet), in der endlich viele Kundenstandorte liegen; für jeden Kundenstandort ist eine Nachfragemenge gegeben, die vollständig zu bedienen ist; die Transportkosten hängen linear von Entfernung und transportierter Menge ab; und die zeitliche Dimension wird ausgeblendet. Unter diesen Annahmen lautet die Zielfunktion
 $$
 \min_{(x,y)}\; Z(x,y) = \sum_{i=1}^{n} a_i \cdot d\big((x,y),(u_i,v_i)\big),
 $$
-wobei $(x,y)$ die gesuchten Koordinaten des neuen Standorts sind, $(u_i, v_i)$ die Koordinaten von Kundenstandort $i$, $a_i$ dessen Nachfrage (z. B. in Tonnen pro Jahr) und $d(\cdot)$ ein noch zu wählendes **Distanzmaß**.
+wobei $(x,y)$ die gesuchten Koordinaten des neuen Standorts sind, $(u_i, v_i)$ die Koordinaten von Kundenstandort $i$, $a_i$ dessen Nachfrage (bei SushiFresh: Boxen pro Tag) und $d(\cdot)$ ein noch zu wählendes **Distanzmaß**.
 
 Die Wahl von $d(\cdot)$ ist keineswegs nebensächlich, sondern bestimmt sowohl die Rechenmethode als auch das Ergebnis. Für Standorte innerhalb eines Landes oder einer Region, in der Transportwege näherungsweise "als Krähe fliegt" verlaufen, eignet sich die **euklidische Distanz**
 $$
@@ -309,68 +345,54 @@ In Innenstädten mit rechtwinkligem Straßenraster oder bei innerbetrieblichen T
 $$
 d^{\text{man}}\big((x,y),(u_i,v_i)\big) = |x-u_i| + |y-v_i|.
 $$
-Für die tatsächliche Netzplanung wiederum sind **Straßendistanzen** – die kürzesten Wege in einem realen Verkehrsnetz – am genauesten, aber auch am aufwendigsten zu berechnen, da sie ein digitales Straßennetz sowie einen Routing-Dienst voraussetzen. Der folgende Code zeigt beispielhaft, wie sich diese drei Distanzmaße zwischen zwei Punkten mit den Paketen `sf`, `osrm` und `leaflet` berechnen und auf einer interaktiven Karte vergleichen lassen. Da die Straßendistanz einen Online-Routing-Dienst (OSRM) sowie den Abruf von Kartenkacheln voraussetzt, ist der Chunk mit `eval: false` versehen und wird beim Rendern nicht ausgeführt.
+Für die tatsächliche Netzplanung wiederum sind **Straßendistanzen** – die kürzesten Wege in einem realen Verkehrsnetz – am genauesten, aber auch am aufwendigsten zu berechnen, da sie ein digitales Straßennetz sowie einen Routing-Dienst voraussetzen. Der folgende Code zeigt beispielhaft, wie sich diese drei Distanzmaße zwischen dem Kandidatenstandort Wiesbaden-Erbenheim und der Filiale Frankfurt mit den Paketen `sf`, `osrm` und `leaflet` berechnen und auf einer interaktiven Karte vergleichen lassen. Da die Straßendistanz einen Online-Routing-Dienst (OSRM) sowie den Abruf von Kartenkacheln voraussetzt, ist der Chunk mit `eval: false` versehen und wird beim Rendern nicht ausgeführt.
 
 ```{r}
 #| label: ch4-distanzen-karte
 #| echo: true
 #| eval: false
 
-# Hinweis: Dieser Chunk benötigt Internetzugang (OpenStreetMap-Kartenkacheln
-# und den OSRM-Routing-Dienst für die Straßendistanz) und wird daher beim
-# Rendern des Buchs nicht ausgeführt (eval: false) - er dient nur der
-# Illustration, wie man die drei Distanzmaße in der Praxis vergleicht.
+# Hinweis: Dieser Chunk benoetigt Internetzugang (OpenStreetMap-Kartenkacheln
+# und den OSRM-Routing-Dienst fuer die Strassendistanz) und wird daher beim
+# Rendern des Buchs nicht ausgefuehrt (eval: false) - er dient nur der
+# Illustration, wie man die drei Distanzmasse in der Praxis vergleicht.
 
 library(sf)
 library(osrm)
 library(leaflet)
 
-standort <- st_as_sf(data.frame(id = "Standort", lon = 8.2410, lat = 50.0820),
-                      coords = c("lon", "lat"), crs = 4326)
-kunde <- st_as_sf(data.frame(id = "Kunde", lon = 8.2875, lat = 50.1038),
-                   coords = c("lon", "lat"), crs = 4326)
+standort_wi <- st_as_sf(data.frame(id = "Wiesbaden-Erbenheim", lon = 8.2999, lat = 50.0632),
+                         coords = c("lon", "lat"), crs = 4326)
+filiale_ffm <- st_as_sf(data.frame(id = "Frankfurt", lon = 8.6821, lat = 50.1109),
+                         coords = c("lon", "lat"), crs = 4326)
 
-# Kürzester Weg im realen Straßennetz über den OSRM-Dienst
-route <- osrmRoute(src = standort, dst = kunde)
+# Kuerzester Weg im realen Strassennetz ueber den OSRM-Dienst
+route <- osrmRoute(src = standort_wi, dst = filiale_ffm)
 
-# Interaktive Karte: Straßenroute in Rot, Standorte als Marker
+# Interaktive Karte: Strassenroute in Rot, Standort/Filiale als Marker
 leaflet() |>
   addProviderTiles(providers$OpenStreetMap.Mapnik) |>
   addPolylines(data = route, color = "red") |>
-  addCircleMarkers(data = standort, color = "black") |>
-  addCircleMarkers(data = kunde, color = "purple")
+  addCircleMarkers(data = standort_wi, color = "black") |>
+  addCircleMarkers(data = filiale_ffm, color = "purple")
 ```
 
 In der Praxis liegt die Straßendistanz zwischen zwei Punkten fast immer über der euklidischen und meist auch über der Manhattan-Distanz, da reale Straßennetze weder geradlinig noch streng orthogonal verlaufen. Für die folgenden Herleitungen beschränken wir uns – wie es die Literatur zum Steiner-Weber-Modell überwiegend tut – auf euklidische und Manhattan-Distanzen, weil sich für beide geschlossene bzw. effizient iterative Lösungsverfahren angeben lassen [@daskin2013network; @drezner2002facility].
 
-Für die numerischen Beispiele dieses Abschnitts verwenden wir durchgängig denselben kleinen Datensatz mit sechs Kundenstandorten:
+Für die numerischen Beispiele dieses Abschnitts verwenden wir durchgängig den bereits eingeführten SushiFresh-Datensatz mit den sechs Filialen. Da Center of Gravity und Weiszfeld-Algorithmus ursprünglich für **ebene** (kartesische) Koordinaten hergeleitet sind, behandeln wir Längen- und Breitengrad hier zunächst näherungsweise als planare $x$-/$y$-Koordinaten ($x = $ Längengrad, $y = $ Breitengrad) – eine bewusste didaktische Vereinfachung, deren Grenzen wir am Ende dieses Abschnitts mit der Haversine-Formel explizit sichtbar machen.
 
 ```{r}
-#| label: ch4-kunden-daten
-#| echo: true
-
-# Sechs Kundenstandorte mit Koordinaten (u, v) und Nachfragegewicht a
-kunden <- data.frame(
-  Kunde = 1:6,
-  u = c(0, 2, 8, 5, 1, 10),
-  v = c(0, 3, 1, 8, 7, 9),
-  a = c(10, 15, 20, 10, 30, 15)
-)
-kunden
-```
-
-```{r}
-#| label: ch4-kunden-plot
+#| label: ch4-filialen-plot
 #| echo: true
 #| fig-width: 6
 #| fig-height: 4.5
 #| fig-align: center
 
-# Blasendiagramm: Position = Standort, Blasengröße = Nachfrage
-ggplot(kunden, aes(x = u, y = v)) +
-  geom_point(aes(size = a), color = "#c97a2b", alpha = 0.85) +
-  geom_text(aes(label = Kunde), vjust = -1.2, size = 3.2) +
-  labs(x = "x-Koordinate", y = "y-Koordinate", size = "Nachfrage a") +
+# Blasendiagramm: Position = Filiale, Blasengroesse = Nachfrage
+ggplot(filialen, aes(x = lon, y = lat)) +
+  geom_point(aes(size = mu), color = "#c97a2b", alpha = 0.85) +
+  geom_text(aes(label = Filiale), vjust = -1.2, size = 3.2) +
+  labs(x = "Laengengrad", y = "Breitengrad", size = "Nachfrage a (Boxen/Tag)") +
   theme_minimal(base_size = 12)
 ```
 
@@ -404,18 +426,18 @@ Da diese Herleitung im Kern nur aus drei Rechenschritten besteht – Gesamtnachf
 #| label: ch4-cog-manual
 #| echo: true
 
-# Schritt 1: Gesamtnachfrage über alle Kunden aufsummieren
-gesamtnachfrage <- sum(kunden$a)
+# Schritt 1: Gesamtnachfrage ueber alle Filialen aufsummieren
+gesamtnachfrage <- sum(filialen$mu)
 
-# Schritt 2: nachfragegewichtete Summe der x- und y-Koordinaten bilden
-gewichtete_summe_x <- sum(kunden$a * kunden$u)
-gewichtete_summe_y <- sum(kunden$a * kunden$v)
+# Schritt 2: nachfragegewichtete Summe von Laengen- und Breitengrad bilden
+gewichtete_summe_lon <- sum(filialen$mu * filialen$lon)
+gewichtete_summe_lat <- sum(filialen$mu * filialen$lat)
 
 # Schritt 3: Division durch die Gesamtnachfrage liefert den Schwerpunkt
-cog_x <- gewichtete_summe_x / gesamtnachfrage
-cog_y <- gewichtete_summe_y / gesamtnachfrage
+cog_lon <- gewichtete_summe_lon / gesamtnachfrage
+cog_lat <- gewichtete_summe_lat / gesamtnachfrage
 
-c(x = cog_x, y = cog_y)
+c(lon = cog_lon, lat = cog_lat)
 ```
 
 Zur Kontrolle liefert die fertige Funktion `center_of_gravity()` aus `R/scm_functions.R` – die dieselbe Rechnung kapselt, aber ein `data.frame` mit Spalten `x`, `y`, `demand` erwartet – dasselbe Ergebnis:
@@ -424,10 +446,10 @@ Zur Kontrolle liefert die fertige Funktion `center_of_gravity()` aus `R/scm_func
 #| label: ch4-cog-check
 #| echo: true
 
-center_of_gravity(data.frame(x = kunden$u, y = kunden$v, demand = kunden$a))
+center_of_gravity(data.frame(x = filialen$lon, y = filialen$lat, demand = filialen$mu))
 ```
 
-Das Center of Gravity ist attraktiv, weil es sich **ohne Iteration** in geschlossener Form berechnen lässt. Es löst aber, genau genommen, nicht das ursprüngliche Steiner-Weber-Problem, sondern nur dessen quadrierte Variante – und die beiden Optima müssen nicht identisch sein. Insbesondere reagiert das CoG empfindlicher auf weit entfernte Ausreißer-Kunden, weil quadrierte Distanzen große Abstände überproportional stark gewichten. Für die *tatsächliche*, nicht quadrierte Zielfunktion braucht es ein anderes Verfahren.
+Das Center of Gravity liegt bei $(x^{CoG}, y^{CoG}) \approx (`r sprintf("%.4f", cog_lon)`; `r sprintf("%.4f", cog_lat)`)$ – geografisch ungefähr zwischen Frankfurt und Rüsselsheim, deutlich östlich der drei Kandidatenstandorte. Es ist attraktiv, weil es sich **ohne Iteration** in geschlossener Form berechnen lässt. Es löst aber, genau genommen, nicht das ursprüngliche Steiner-Weber-Problem, sondern nur dessen quadrierte Variante – und die beiden Optima müssen nicht identisch sein. Insbesondere reagiert das CoG empfindlicher auf weit entfernte Ausreißer-Kunden, weil quadrierte Distanzen große Abstände überproportional stark gewichten. Für die *tatsächliche*, nicht quadrierte Zielfunktion braucht es ein anderes Verfahren.
 
 ### Der Weiszfeld-Algorithmus: iterative Lösung des echten Problems
 
@@ -457,19 +479,21 @@ Um diesen iterativen Ablauf in R zu programmieren, benötigen wir eine Kontrolls
 ::: {.r-exkurs}
 **R-Exkurs: `for`- und `while`-Schleifen**
 
-Eine `for`-Schleife wiederholt einen Codeblock für jedes Element eines Vektors – sie eignet sich, wenn die **Anzahl der Durchläufe von vornherein bekannt** ist (z. B. "höchstens 100 Iterationen"):
+Eine `for`-Schleife wiederholt einen Codeblock für jedes Element eines Vektors – sie eignet sich, wenn die **Anzahl der Durchläufe von vornherein bekannt** ist (z. B. "einmal je Kandidatenstandort"):
 
 ```{r}
 #| label: ch4-loop-exkurs
 #| echo: true
 
-# for-Schleife: fester Durchlauf über eine bekannte Anzahl von Werten
-for (i in 1:5) {
-  cat("Iterationsschritt", i, "- Quadrat:", i^2, "\n")
+# for-Schleife: fester Durchlauf ueber eine bekannte Anzahl von Werten -
+# hier ueber die drei Kandidatenstandorte
+for (i in seq_len(nrow(standorte))) {
+  cat("Standort:", standorte$Standort[i],
+      "- Fixkosten:", standorte$Fixkosten[i], "EUR/Jahr\n")
 }
 
-# while-Schleife: Wiederholung, solange eine Bedingung erfüllt ist -
-# die Anzahl der Durchläufe steht vorab nicht fest
+# while-Schleife: Wiederholung, solange eine Bedingung erfuellt ist -
+# die Anzahl der Durchlaeufe steht vorab nicht fest
 schritt <- 1
 wert <- 100
 while (wert > 1) {
@@ -508,10 +532,10 @@ weiszfeld_manual <- function(daten, x0 = NULL, y0 = NULL,
   # for-Schleife mit fester Obergrenze max_iter als Sicherheitsnetz
   for (t in 1:max_iter) {
 
-    # Distanz vom aktuellen Standort (x,y) zu jedem Kunden
+    # Distanz vom aktuellen Standort (x,y) zu jeder Filiale
     d <- sqrt((x - daten$u)^2 + (y - daten$v)^2)
 
-    # Division durch 0 vermeiden, falls der Standort exakt auf einem Kunden liegt
+    # Division durch 0 vermeiden, falls der Standort exakt auf einer Filiale liegt
     d[d < 1e-10] <- 1e-10
 
     # Iterationsgewichte g_i = a_i / d_i gemaess Weiszfeld-Update-Regel
@@ -541,71 +565,31 @@ weiszfeld_manual <- function(daten, x0 = NULL, y0 = NULL,
 Der `if`-Block im Inneren der Schleife ist der eigentliche **Kontrollfluss**: Er prüft nach jedem Iterationsschritt, ob das Abbruchkriterium erfüllt ist, und beendet die Funktion in diesem Fall vorzeitig über `return()` – andernfalls läuft die Schleife weiter, bis entweder Konvergenz eintritt oder `max_iter` erreicht ist.
 :::
 
-Wenden wir `weiszfeld_manual()` auf den Kundendatensatz an:
+Wenden wir `weiszfeld_manual()` auf den SushiFresh-Filialdatensatz an (dazu übergeben wir Längengrad als `u`, Breitengrad als `v` und die Nachfrage als `a`):
 
 ```{r}
 #| label: ch4-weiszfeld-run
 #| echo: true
 
-ergebnis <- weiszfeld_manual(kunden, tol = 1e-4, max_iter = 100)
+ergebnis <- weiszfeld_manual(
+  data.frame(u = filialen$lon, v = filialen$lat, a = filialen$mu),
+  tol = 1e-6, max_iter = 100
+)
 ergebnis
 ```
 
-Der Algorithmus konvergiert nach `r ergebnis$iterationen` Iterationen auf den Standort $(x,y) \approx (`r round(ergebnis$x,2)`; `r round(ergebnis$y,2)`)$. Zur Kontrolle liefert die vorgefertigte Funktion `weiszfeld()` aus `R/scm_functions.R` (die intern denselben Algorithmus implementiert, zusätzlich aber den Verlauf aller Iterationen protokolliert) ein nahezu identisches Ergebnis:
+Der Algorithmus konvergiert nach `r ergebnis$iterationen` Iterationen auf den Standort $(x,y) \approx (`r sprintf("%.4f", ergebnis$x)`; `r sprintf("%.4f", ergebnis$y)`)$ – deutlich näher an Frankfurt als das Center of Gravity. Zur Kontrolle liefert die vorgefertigte Funktion `weiszfeld()` aus `R/scm_functions.R` (die intern denselben Algorithmus implementiert, zusätzlich aber den Verlauf aller Iterationen protokolliert) ein identisches Ergebnis:
 
 ```{r}
 #| label: ch4-weiszfeld-check
 #| echo: true
 
-weiszfeld_check <- weiszfeld(data.frame(x = kunden$u, y = kunden$v, demand = kunden$a))
-c(x = weiszfeld_check$x, y = weiszfeld_check$y)
+weiszfeld_check <- weiszfeld(data.frame(x = filialen$lon, y = filialen$lat, demand = filialen$mu))
+c(x = weiszfeld_check$x, y = weiszfeld_check$y,
+  iterationen = weiszfeld_check$iterations, konvergiert = weiszfeld_check$converged)
 ```
 
-Vergleichen wir nun die **tatsächliche** gewichtete Gesamtdistanz (also die ursprüngliche, nicht quadrierte Zielfunktion $Z(x,y)$) an beiden Kandidatenstandorten:
-
-```{r}
-#| label: ch4-distanzvergleich
-#| echo: true
-
-# Gewichtete Gesamtdistanz (echte, nicht quadrierte euklidische Distanz)
-gesamtdistanz <- function(x, y, daten) {
-  sum(daten$a * sqrt((x - daten$u)^2 + (y - daten$v)^2))
-}
-
-tibble(
-  Verfahren = c("Center of Gravity", "Weiszfeld-Optimum"),
-  Gesamtdistanz = c(
-    gesamtdistanz(cog_x, cog_y, kunden),
-    gesamtdistanz(ergebnis$x, ergebnis$y, kunden)
-  )
-)
-```
-
-Das Weiszfeld-Optimum erzielt mit rund 461 gegenüber rund 470 Distanzeinheiten beim Center of Gravity tatsächlich die **geringere** gewichtete Gesamtdistanz – wenn auch der Unterschied im Beispiel moderat ausfällt. Das bestätigt die theoretische Erwartung: Das CoG ist eine schnell berechenbare, aber eben nur approximative Lösung; der iterative Weiszfeld-Algorithmus löst das eigentliche Steiner-Weber-Problem und liefert daher nie eine schlechtere und in der Regel eine strikt bessere Lösung.
-
-```{r}
-#| label: ch4-optima-plot
-#| echo: true
-#| fig-width: 6.5
-#| fig-height: 5
-#| fig-align: center
-
-standorte <- tibble(
-  Verfahren = c("Center of Gravity", "Weiszfeld-Optimum"),
-  x = c(cog_x, ergebnis$x),
-  y = c(cog_y, ergebnis$y)
-)
-
-ggplot(kunden, aes(x = u, y = v)) +
-  geom_point(aes(size = a), color = "#c97a2b", alpha = 0.8) +
-  geom_text(aes(label = Kunde), vjust = -1.2, size = 3) +
-  geom_point(data = standorte, aes(x = x, y = y, color = Verfahren, shape = Verfahren),
-             size = 4, inherit.aes = FALSE) +
-  scale_shape_manual(values = c(16, 4)) +
-  labs(x = "x-Koordinate", y = "y-Koordinate", size = "Nachfrage",
-       color = "Standortverfahren", shape = "Standortverfahren") +
-  theme_minimal(base_size = 12)
-```
+Das bestätigt die theoretische Erwartung: Das CoG ist eine schnell berechenbare, aber eben nur approximative Lösung; der iterative Weiszfeld-Algorithmus löst das eigentliche Steiner-Weber-Problem und verschiebt den Standort im Vergleich zum CoG spürbar in Richtung Frankfurt – der mit Abstand nachfragestärksten Filiale (280 von 845 Boxen/Tag). Wie stark sich das tatsächlich auf die *reale* (geografische) Distanz zu jeder einzelnen Filiale auswirkt, prüfen wir im nächsten Abschnitt mit der Haversine-Formel.
 
 ### Manhattan-Distanzen: der gewichtete Median
 
@@ -639,18 +623,18 @@ gewichteter_median <- function(werte, gewichte) {
   werte[which(kumuliert >= schwelle)[1]]  # erster Wert, der die Schwelle erreicht
 }
 
-manhattan_x <- gewichteter_median(kunden$u, kunden$a)
-manhattan_y <- gewichteter_median(kunden$v, kunden$a)
-c(x = manhattan_x, y = manhattan_y)
+manhattan_lon <- gewichteter_median(filialen$lon, filialen$mu)
+manhattan_lat <- gewichteter_median(filialen$lat, filialen$mu)
+c(lon = manhattan_lon, lat = manhattan_lat)
 ```
 
-Anders als das Weiszfeld-Optimum liegt die Manhattan-Lösung $(x,y) = (2, 7)$ exakt auf den Koordinaten eines existierenden Kundenstandorts (Kunde 2 bzw. Kunde 5) – ein typisches Merkmal des gewichteten Medians, der stets einen der beobachteten Werte als Lösung liefert, während das Center of Gravity und das Weiszfeld-Optimum praktisch nie mit einem Kundenstandort zusammenfallen. Die zugehörige Manhattan-Gesamtdistanz beträgt 610 Einheiten; ein direkter Zahlenvergleich mit der euklidischen Gesamtdistanz (461 bzw. 470) ist allerdings nicht sinnvoll, da beide Kennzahlen unterschiedliche Distanzmaße verwenden und damit auf unterschiedlichen Skalen liegen. Welches Distanzmaß angemessen ist, entscheidet allein die reale Transportstruktur im Absatzgebiet – nicht der rechnerische Aufwand des jeweiligen Verfahrens.
+Die Manhattan-Lösung $(x,y) \approx (`r sprintf("%.4f", manhattan_lon)`; `r sprintf("%.4f", manhattan_lat)`)$ übernimmt auf der $x$-Achse den Längengrad von Darmstadt und auf der $y$-Achse den Breitengrad von Wiesbaden – ein typisches Merkmal des gewichteten Medians: Er liefert auf **jeder Koordinatenachse einzeln** stets den Wert eines existierenden Kundenstandorts, muss aber, weil $x$- und $y$-Koordinate unabhängig voneinander bestimmt werden, insgesamt nicht mit einer einzigen realen Filiale zusammenfallen. Center of Gravity und Weiszfeld-Optimum fallen dagegen praktisch nie exakt mit einem Kundenstandort zusammen, da bei ihnen beide Koordinaten gemeinsam aus allen Filialen gemittelt werden. Welches Distanzmaß angemessen ist, entscheidet letztlich die reale Transportstruktur im Absatzgebiet – nicht der rechnerische Aufwand des jeweiligen Verfahrens.
 
-## Geografische Distanzen und eine Fallstudie zur Distributionsstandort-Suche
+## Geografische Distanzen: Realitätscheck mit der Haversine-Formel
 
-Center of Gravity, Weiszfeld-Algorithmus und der gewichtete Median setzen implizit voraus, dass die Koordinaten $(u_i, v_i)$ **kartesische** Koordinaten in einer Ebene sind, auf der euklidische bzw. Manhattan-Distanzen sinnvoll interpretierbar sind. Reale Standortdaten liegen jedoch meist als **Breiten- und Längengrad** (WGS84) vor – und auf der gekrümmten Erdoberfläche entspricht ein Grad geografischer Länge je nach Breitengrad einer unterschiedlichen Kilometerzahl. Eine naive euklidische Distanzberechnung auf Basis von Grad-Koordinaten wäre daher spätestens bei überregionalen Entfernungen (z. B. deutschlandweit) irreführend.
+Center of Gravity, Weiszfeld-Algorithmus und der gewichtete Median setzen implizit voraus, dass die Koordinaten $(u_i, v_i)$ **kartesische** Koordinaten in einer Ebene sind, auf der euklidische bzw. Manhattan-Distanzen sinnvoll interpretierbar sind. Wie oben angekündigt, haben wir diese Annahme im gesamten Abschnitt bewusst vereinfachend getroffen, obwohl Breiten- und Längengrad (WGS84) tatsächlich Koordinaten auf einer **gekrümmten** Erdoberfläche sind, auf der ein Grad geografischer Länge je nach Breitengrad einer unterschiedlichen Kilometerzahl entspricht. Eine naive euklidische Distanzberechnung auf Basis von Grad-Koordinaten wäre daher spätestens bei überregionalen Entfernungen irreführend – im Rhein-Main-Gebiet mit seinen kurzen Distanzen ist der Fehler zwar klein, sollte aber nicht unhinterfragt bleiben.
 
-Für diesen Fall verwendet man die **Haversine-Formel**, die den Großkreisabstand – die kürzeste Verbindung zweier Punkte auf einer Kugeloberfläche – aus geografischen Koordinaten berechnet:
+Für den exakten Vergleich verwendet man die **Haversine-Formel**, die den Großkreisabstand – die kürzeste Verbindung zweier Punkte auf einer Kugeloberfläche – aus geografischen Koordinaten berechnet:
 
 ::: {.definition}
 **Definition: Haversine-Distanz**
@@ -664,66 +648,82 @@ $$
 mit $R \approx 6\,371\,\text{km}$ als mittlerem Erdradius, $\Delta\varphi = \varphi_2-\varphi_1$ und $\Delta\lambda = \lambda_2-\lambda_1$.
 :::
 
-Die Funktion `haversine(lat1, lon1, lat2, lon2)` aus `R/scm_functions.R` implementiert genau diese Formel und gibt die Distanz in Kilometern zurück:
+Die Funktion `haversine(lat1, lon1, lat2, lon2)` aus `R/scm_functions.R` implementiert genau diese Formel und gibt die Distanz in Kilometern zurück. Als erste Anwendung berechnen wir die Distanz zwischen dem Kandidatenstandort Wiesbaden-Erbenheim und der Filiale Frankfurt:
 
 ```{r}
 #| label: ch4-haversine-beispiel
 #| echo: true
 
-# Grossraeumige Distanz Frankfurt - Berlin (Luftlinie ueber den Erdgrossraum)
-haversine(50.1109, 8.6821, 52.5200, 13.4050)
+haversine(50.0632, 8.2999, 50.1109, 8.6821)
 ```
 
-Damit lässt sich das eingangs behandelte Fallbeispiel der Distributionsstandort-Suche auf eine kleine, realitätsnahe Fallstudie mit tatsächlichen Städtekoordinaten erweitern. Angenommen, ein Unternehmen beliefert Kunden in fünf deutschen Städten mit unterschiedlicher Nachfrage und möchte einschätzen, wie zentral ein bestehender Standort in Frankfurt am Main bezüglich dieser Kunden liegt:
+### Distanzmatrix zwischen den Kandidatenstandorten und den Filialen
+
+Mit derselben Funktion lässt sich die vollständige Distanzmatrix zwischen allen drei Kandidatenstandorten und allen sechs Filialen berechnen. Da `haversine()` vektorisiert ist (sie akzeptiert Vektoren gleicher Länge für `lat1`/`lon1`), können wir sie mit `sapply()` einmal je Filiale auf den kompletten Vektor der drei Standort-Koordinaten anwenden und erhalten direkt eine Matrix mit einer Zeile je Standort und einer Spalte je Filiale:
 
 ```{r}
-#| label: ch4-fallstudie-staedte
+#| label: ch4-distanzmatrix
 #| echo: true
 
-# Fuenf Beispielstaedte mit geografischen Koordinaten und Nachfragegewicht
-staedte <- tibble(
-  Stadt = c("Frankfurt", "Kassel", "Mannheim", "Wuerzburg", "Koblenz"),
-  lat = c(50.1109, 51.3127, 49.4875, 49.7913, 50.3569),
-  lon = c(8.6821,  9.4797,  8.4660,  9.9534,  7.5890),
-  Nachfrage = c(400, 150, 300, 120, 180)
-)
-
-# Nachfragegewichteter geografischer Schwerpunkt (planare Naeherung: fuer
-# regionale Entfernungen wie hier vertretbar, bei kontinentaler Ausdehnung
-# waere eine projizierte Koordinate oder ein spezialisiertes Verfahren noetig)
-schwerpunkt <- tibble(
-  lat = weighted.mean(staedte$lat, staedte$Nachfrage),
-  lon = weighted.mean(staedte$lon, staedte$Nachfrage)
-)
-schwerpunkt
+# sapply() ueber die sechs Filialen: haversine() wird je Filiale vektorisiert
+# auf alle drei Standorte gleichzeitig angewendet -> 3x6-Distanzmatrix
+distanzmatrix <- sapply(seq_len(nrow(filialen)), function(j) {
+  haversine(standorte$lat, standorte$lon, filialen$lat[j], filialen$lon[j])
+})
+rownames(distanzmatrix) <- standorte$Standort
+colnames(distanzmatrix) <- filialen$Filiale
+round(distanzmatrix, 1)
 ```
 
+Diese Distanzmatrix erlaubt es, die im AHP nur qualitativ beurteilte Transportnähe quantitativ zu untermauern. Multipliziert man die Distanzmatrix mit dem Nachfragevektor der Filialen – wieder über das Matrixprodukt `%*%` –, erhält man je Standort die nachfragegewichtete Gesamtdistanz zu allen sechs Filialen:
+
 ```{r}
-#| label: ch4-fallstudie-distanzen
+#| label: ch4-distanzmatrix-gewichtet
 #| echo: true
 
-# sapply() wendet haversine() zeilenweise auf jede Stadt an und berechnet
-# so die Grosskreisdistanz vom Schwerpunkt zu jeder Stadt in einem Schritt
-distanzen_km <- sapply(seq_len(nrow(staedte)), function(i) {
-  haversine(schwerpunkt$lat, schwerpunkt$lon, staedte$lat[i], staedte$lon[i])
+gewichtete_gesamtdistanz <- distanzmatrix %*% filialen$mu
+gewichtete_gesamtdistanz
+```
+
+Raunheim weist mit rund `r sprintf("%.0f", gewichtete_gesamtdistanz["Raunheim", 1])` Box-Kilometern die **geringste** gewichtete Gesamtdistanz zu den sechs Filialen auf, deutlich vor Wiesbaden-Erbenheim (`r sprintf("%.0f", gewichtete_gesamtdistanz["Wiesbaden-Erbenheim", 1])`) und Mainz-Hechtsheim (`r sprintf("%.0f", gewichtete_gesamtdistanz["Mainz-Hechtsheim", 1])`). Diese rein quantitative Kennzahl bestätigt damit die Rangfolge, die der AHP für das Kriterium Transportnähe (Schritt 2) allein aus qualitativen Paarvergleichen abgeleitet hatte – ein schönes Beispiel dafür, wie sich qualitative Experteneinschätzungen und quantitative Nachrechnung gegenseitig plausibilisieren können.
+
+### Realitätscheck für Center of Gravity und Weiszfeld-Optimum
+
+Zum Abschluss prüfen wir, wie **realistisch** die beiden kontinuierlichen Optima aus dem vorigen Abschnitt tatsächlich sind, wenn wir die eingangs gemachte planare Vereinfachung aufheben und die echte, sphärische Haversine-Distanz zu jeder Filiale berechnen:
+
+```{r}
+#| label: ch4-realitaetscheck
+#| echo: true
+
+cog_dist <- sapply(seq_len(nrow(filialen)), function(j) {
+  haversine(cog_lat, cog_lon, filialen$lat[j], filialen$lon[j])
+})
+weiszfeld_dist <- sapply(seq_len(nrow(filialen)), function(j) {
+  haversine(ergebnis$y, ergebnis$x, filialen$lat[j], filialen$lon[j])
 })
 
-staedte |>
-  mutate(Distanz_km = round(distanzen_km, 1)) |>
-  select(Stadt, Nachfrage, Distanz_km) |>
-  kable(align = "lcc") |>
+realitaetscheck <- tibble(
+  Filiale = filialen$Filiale,
+  Nachfrage = filialen$mu,
+  `CoG (km)` = round(cog_dist, 1),
+  `Weiszfeld (km)` = round(weiszfeld_dist, 1)
+)
+realitaetscheck |>
+  kable(align = "lccc") |>
   kable_styling(full_width = FALSE)
 ```
 
-Der nachfragegewichtete Schwerpunkt liegt mit einer Distanz von unter einem Kilometer praktisch auf Frankfurt selbst – wenig überraschend, da Frankfurt mit 400 Bedarfseinheiten das mit Abstand größte Gewicht in die Berechnung einbringt. Kassel liegt mit rund 145 km am weitesten vom Schwerpunkt entfernt, gefolgt von Würzburg (ca. 97 km) und Koblenz (ca. 83 km). Dieses einfache Beispiel zeigt zugleich die Grenzen des Vorgehens: Der hier verwendete gewichtete Mittelwert von Breiten- und Längengraden ist nur eine **grobe Näherung** an ein echtes Center of Gravity auf der Kugeloberfläche und für regionale Entfernungen wie in diesem Beispiel vertretbar. Für Distanzen, die einen nennenswerten Teil des Erdumfangs überspannen, oder für eine exakte Weiszfeld-Iteration mit Großkreisdistanzen wären entweder projizierte, lokal näherungsweise ebene Koordinaten (z. B. UTM) oder eigens für sphärische Distanzen angepasste Optimierungsverfahren erforderlich – ein Thema, das über den Rahmen dieses Kapitels hinausgeht.
+Das Bild ist aufschlussreich: Zur nachfragestärksten Filiale Frankfurt (280 Boxen/Tag) liegt das Weiszfeld-Optimum mit rund `r sprintf("%.1f", weiszfeld_dist[filialen$Filiale == "Frankfurt"])` km deutlich näher als das Center of Gravity mit rund `r sprintf("%.1f", cog_dist[filialen$Filiale == "Frankfurt"])` km – umgekehrt entfernt sich das Weiszfeld-Optimum von den kleineren, weiter westlich liegenden Filialen Wiesbaden und Mainz merklich stärker als das CoG. Der Weiszfeld-Algorithmus "zieht" den Standort also gezielt in Richtung der großen Einzelfiliale Frankfurt, während das Center of Gravity als reiner arithmetischer Mittelwert weniger empfindlich auf einzelne große Nachfrageschwerpunkte reagiert, dafür aber auch weniger nah an ihnen liegt. Das ist keine allgemeine Überlegenheit des einen oder anderen Verfahrens, sondern ein guter Diskussionsanlass: Wie stark ein Standortverfahren auf einzelne große Nachfrager reagieren *soll*, ist letztlich eine Frage der Robustheit gegenüber Nachfrageschwankungen und Ausreißern – nicht allein eine Frage der Optimalität im Modell.
+
+Damit schließt sich der Kreis zu den drei diskreten Kandidatenstandorten: Weder das Center of Gravity noch das Weiszfeld-Optimum liegen auf einem der drei tatsächlich verfügbaren Grundstücke – sie zeigen lediglich, in welche Richtung des Absatzgebiets sich eine Produktionsstätte "ideal" verschieben würde. Die eigentliche Standortentscheidung bleibt bei SushiFresh also eine **diskrete** Wahl zwischen den drei Kandidaten, für die der AHP in diesem Kapitel – knapp – Raunheim empfohlen hat. Ob sich diese qualitative Einschätzung auch bei einer reinen Kostenbetrachtung bestätigt, untersuchen wir in Kapitel 5: Dort formulieren wir mit dem Warehouse-Location-Problem ein quantitatives Optimierungsmodell, das neben den Transportkosten auch die tatsächlichen Fixkosten der drei Grundstücke (180.000 € / 210.000 € / 260.000 € pro Jahr) explizit berücksichtigt – und das, wie sich zeigen wird, nicht zwangsläufig zum selben Ergebnis kommen muss wie die hier vorgenommene qualitative Bewertung.
 
 ## Zusammenfassung
 
-Dieses Kapitel hat zwei grundsätzlich verschiedene Zugänge zur Standortplanung gegenübergestellt. **Qualitative Verfahren** – die Nutzwertanalyse und der Analytic Hierarchy Process – bewerten eine begrenzte Menge diskreter Alternativen anhand mehrerer, auch weicher Kriterien. Die Nutzwertanalyse ist einfach anzuwenden, leidet aber unter der Kompensierbarkeit ihrer additiven Struktur, die im Extremfall dazu führen kann, dass Alternativen mit völlig unterschiedlichem Profil denselben Gesamtnutzwert erhalten. Der AHP begegnet dieser Schwäche, indem er Kriterien- und Alternativengewichte aus paarweisen Vergleichen ableitet und über den Konsistenzindex eine explizite Qualitätskontrolle der Experteneinschätzungen ermöglicht.
+Dieses Kapitel hat zwei grundsätzlich verschiedene Zugänge zur Standortplanung gegenübergestellt, durchgängig am Beispiel der SushiFresh GmbH und ihrer Suche nach einem Produktionsstandort im Rhein-Main-Gebiet. **Qualitative Verfahren** – die Nutzwertanalyse und der Analytic Hierarchy Process – bewerten eine begrenzte Menge diskreter Alternativen (bei SushiFresh: drei Kandidatengrundstücke) anhand mehrerer, auch weicher Kriterien. Die Nutzwertanalyse ist einfach anzuwenden, leidet aber unter der Kompensierbarkeit ihrer additiven Struktur, die im Extremfall dazu führen kann, dass Alternativen mit völlig unterschiedlichem Profil denselben Gesamtnutzwert erhalten – wie im Fallbeispiel, in dem alle drei Standorte exakt den Nutzwert 5,0 erreichten. Der AHP begegnet dieser Schwäche, indem er Kriterien- und Alternativengewichte aus paarweisen Vergleichen ableitet und über den Konsistenzindex eine explizite Qualitätskontrolle der Experteneinschätzungen ermöglicht; im Fallbeispiel empfahl er, wenn auch nur knapp, den Standort Raunheim.
 
-**Kontinuierliche Verfahren** gehen einen Schritt weiter und suchen den optimalen Standort nicht unter vorgegebenen Alternativen, sondern als beliebigen Punkt einer Ebene. Das Center of Gravity liefert dafür eine schnelle, geschlossene Näherungslösung, die allerdings nur die quadrierte Zielfunktion exakt minimiert. Der Weiszfeld-Algorithmus löst iterativ das eigentliche, auf linearen euklidischen Distanzen basierende Problem und liefert dabei praktisch immer eine mindestens ebenso gute Lösung. Bei Manhattan-Distanzen vereinfacht sich das Problem sogar auf die Berechnung eines gewichteten Medians je Koordinate. Für großräumige, geografische Anwendungsfälle schließlich liefert die Haversine-Formel ein realistischeres Distanzmaß als die naive euklidische Distanz auf Grad-Koordinaten.
+**Kontinuierliche Verfahren** gehen einen Schritt weiter und suchen den optimalen Standort nicht unter vorgegebenen Alternativen, sondern als beliebigen Punkt einer Ebene. Das Center of Gravity liefert dafür eine schnelle, geschlossene Näherungslösung, die allerdings nur die quadrierte Zielfunktion exakt minimiert. Der Weiszfeld-Algorithmus löst iterativ das eigentliche, auf linearen euklidischen Distanzen basierende Problem und zog den SushiFresh-Standort spürbar in Richtung der nachfragestarken Filiale Frankfurt. Bei Manhattan-Distanzen vereinfacht sich das Problem sogar auf die Berechnung eines gewichteten Medians je Koordinate. Für großräumige, geografische Anwendungsfälle schließlich liefert die Haversine-Formel ein realistischeres Distanzmaß als die naive euklidische Distanz auf Grad-Koordinaten – und bestätigte im Fallbeispiel sowohl die AHP-Rangfolge bei der Transportnähe als auch die Robustheits-Unterschiede zwischen Center of Gravity und Weiszfeld-Optimum.
 
-Beiden Verfahrensfamilien ist gemeinsam, dass sie den Standort entweder aus einer *gegebenen* Alternativenliste wählen oder als *beliebigen* Punkt im Raum bestimmen. In der Praxis ist die Menge realistischer Standorte jedoch oft weder völlig frei wählbar noch auf wenige, von Hand vorausgewählte Alternativen beschränkt, sondern besteht aus einer größeren, aber endlichen Menge in Frage kommender Grundstücke oder Gebäude. Für diesen Fall – die **diskrete Standortplanung** mit Warehouse-Location-Modellen und Netzwerkplanungsheuristiken – wird in Kapitel 5 das methodische Instrumentarium um exakte und heuristische Optimierungsverfahren erweitert.
+Beiden Verfahrensfamilien ist gemeinsam, dass sie den Standort entweder aus einer *gegebenen* Alternativenliste wählen oder als *beliebigen* Punkt im Raum bestimmen. In der Praxis ist die Menge realistischer Standorte jedoch oft weder völlig frei wählbar noch auf wenige, von Hand vorausgewählte Alternativen beschränkt, sondern besteht aus einer größeren, aber endlichen Menge in Frage kommender Grundstücke oder Gebäude. Für diesen Fall – die **diskrete Standortplanung** mit Warehouse-Location-Modellen und Netzwerkplanungsheuristiken – wird in Kapitel 5 das methodische Instrumentarium um exakte und heuristische Optimierungsverfahren erweitert. Dort greifen wir die SushiFresh-Fallstudie wieder auf und prüfen, ob sich die knappe AHP-Empfehlung zugunsten Raunheims auch unter einer expliziten Kostenrechnung mit den tatsächlichen Fixkosten der drei Grundstücke bestätigt.
 
 ::: {.kontrollfragen}
 **Kontrollfragen**
@@ -733,7 +733,8 @@ Beiden Verfahrensfamilien ist gemeinsam, dass sie den Standort entweder aus eine
 3. Beschreiben Sie die fünf Schritte des AHP-Verfahrens. Welche Rolle spielt dabei die Paarvergleichsmatrix?
 4. Wie wird der Konsistenzindex (CI) einer Paarvergleichsmatrix berechnet, und ab welchem Schwellenwert der Konsistenzrate (CR) gilt eine Matrix üblicherweise als hinreichend konsistent?
 5. Leiten Sie die Formel für das Center of Gravity aus der Minimierung der gewichteten quadrierten euklidischen Distanzen her.
-6. Warum liefert der Weiszfeld-Algorithmus in der Regel eine bessere (kostenminimalere) Lösung als das Center of Gravity, obwohl beide auf euklidischen Distanzen basieren?
+6. Warum liefert der Weiszfeld-Algorithmus in der Regel eine bessere (kostenminimalere) Lösung als das Center of Gravity, obwohl beide auf euklidischen Distanzen basieren? Was bedeutet das im SushiFresh-Beispiel konkret für die Filiale Frankfurt?
 7. Worin unterscheidet sich die Bestimmung des optimalen Standorts unter Manhattan-Distanzen von der Bestimmung unter euklidischen Distanzen?
 8. Warum ist die direkte Anwendung euklidischer Distanzen auf geografische Koordinaten (Breiten-/Längengrad) problematisch, und welche Alternative bietet die Haversine-Formel?
+9. Der AHP empfiehlt im Fallbeispiel knapp den Standort Raunheim. Nennen Sie zwei Gründe, warum eine rein kostenbasierte Betrachtung (wie in Kapitel 5) zu einem anderen Ergebnis kommen könnte.
 :::

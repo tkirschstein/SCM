@@ -165,7 +165,7 @@ digraph network {
   { rank = same; '2A'; '2B'; '2C'; '2D' }
   { rank = same; '1A'; '1B'; '1C'; '1D'; '1E' }
 
-  
+
   '7A' -> '6A'
   '7B' -> '6A'
   '7B' -> '6B'
@@ -309,6 +309,47 @@ Merkmale von Optimierungsmodellen [@kik2022standortplanung] ![](../images/image6
 ::::
 :::::::
 
+## Strategische Netzwerkplanung {#slide-sushifresh-intro}
+
+::: slide-subtitle
+Fallstudie: SushiFresh GmbH
+:::
+
+::::::: columns
+:::: {.column width="45%"}
+::: small-text
+**SushiFresh GmbH** ist ein fiktiver regionaler Hersteller frischer Sushi-Boxen im Rhein-Main-Gebiet, der täglich sechs Supermarkt-Filialen beliefert. Diese Fallstudie begleitet uns durch dieses und die folgenden Kapitel.
+
+SushiFresh prüft, ob sich zusätzlich zur Auslieferung eine **eigene Produktionsstätte** lohnt, und hat drei Kandidatengrundstücke identifiziert.
+:::
+::::
+
+:::: {.column width="55%"}
+```{r}
+#| echo: true
+
+# Sechs Filialen: Koordinaten, Tagesnachfrage mu und Standardabweichung sigma
+filialen <- tibble(
+  Filiale = c("Wiesbaden", "Mainz", "Frankfurt", "Ruesselsheim", "Darmstadt", "Offenbach"),
+  lat   = c(50.0782, 50.0000, 50.1109, 49.9904, 49.8728, 50.0956),
+  lon   = c(8.2398,  8.2711,  8.6821,  8.4116,  8.6512,  8.7761),
+  mu    = c(120, 150, 280, 90, 110, 95),
+  sigma = c(25, 30, 55, 20, 24, 22)
+)
+
+# Drei Kandidatenstandorte fuer die Produktionsstaette
+standorte <- tibble(
+  Standort = c("Wiesbaden-Erbenheim", "Mainz-Hechtsheim", "Raunheim"),
+  lat = c(50.0632, 49.9698, 50.0000),
+  lon = c(8.2999,  8.2831,  8.4650),
+  Fixkosten = c(180000, 210000, 260000)
+)
+
+sum(filialen$mu)  # Gesamtnachfrage: 845 Boxen/Tag
+```
+::::
+:::::::
+
 ## Qualitative Standortplanung {#slide-76}
 
 ::: slide-subtitle
@@ -340,9 +381,9 @@ Nutzwertanalyse
 ::: callout-note
 ## Fallbeispiel
 
-Ein Unternehmen sucht einen neuen Distributionsstandort und vergleicht drei Alternativen A, B und C. Bewertet werden die Kriterien **Arbeitskräfteverfügbarkeit**, **Lohnkostenniveau**, **Verkehrserschließung** und **Lebensqualität**, die hier aus Vereinfachungsgründen gleich gewichtet werden.
+SushiFresh bewertet die drei Kandidatenstandorte **Wiesbaden-Erbenheim**, **Mainz-Hechtsheim** und **Raunheim** für die neue Produktionsstätte anhand der Kriterien **Transportnähe**, **Mietkosten** und **Fachkräfteverfügbarkeit**, die hier aus Vereinfachungsgründen gleich gewichtet werden.
 
-Die Konstellation ist bewusst so gewählt, dass sich sehr unterschiedliche Standortprofile ergeben: Standort **A** ist stark bei Arbeitsmarkt und Kosten, Standort **C** bei Infrastruktur und Lebensqualität, während **B** in allen Kriterien mittlere Werte erreicht.
+Die Konstellation ist bewusst so gewählt, dass sich sehr unterschiedliche Standortprofile ergeben: Wiesbaden-Erbenheim ist stark bei den Mietkosten, Raunheim bei der Transportnähe, während Mainz-Hechtsheim bei den Fachkräften vorn liegt.
 
 Gerade dieses Beispiel zeigt die Schwäche der additiven Nutzwertanalyse: Trotz klar unterschiedlicher Stärken- und Schwächenprofile können alle Alternativen denselben Gesamtnutzwert erreichen.
 :::
@@ -367,43 +408,42 @@ Nutzwertanalyse in R: Code und Ergebnistabelle
 library(dplyr)
 library(knitr)
 
-# Tabelle mit Rohdaten der Fallstudie
+# Tabelle mit Rohdaten der Fallstudie (drei Kriterien, gleich gewichtet)
 nwa <- tibble(
   Kriterium = c(
-    "Arbeitskräfteverfügbarkeit",
-    "Lohnkostenniveau",
-    "Verkehrserschließung",
-    "Lebensqualität"
+    "Transportnaehe",
+    "Mietkosten",
+    "Fachkraefteverfuegbarkeit"
   ),
-  Gewicht = c(0.25, 0.25, 0.25, 0.25),
-  A = c(8, 8, 2, 2),
-  B = c(5, 5, 5, 5),
-  C = c(2, 2, 8, 8)
+  Gewicht = c(1/3, 1/3, 1/3),
+  `WI-Erb`  = c(5, 8, 2),
+  `MZ-Hech` = c(2, 5, 8),
+  Raunheim  = c(8, 2, 5)
 )
 
-# Berechne Nutzwerte der Alternativen
+# Berechne Nutzwerte der Standorte
 nutzwert <- c(
-    A = sum(nwa$Gewicht * nwa$A),
-    B = sum(nwa$Gewicht * nwa$B),
-    C = sum(nwa$Gewicht * nwa$C)
+    `WI-Erb`  = sum(nwa$Gewicht * nwa$`WI-Erb`),
+    `MZ-Hech` = sum(nwa$Gewicht * nwa$`MZ-Hech`),
+    Raunheim  = sum(nwa$Gewicht * nwa$Raunheim)
   )
 
 # Verbinde Rohdaten und Nutzwerte in einer Tabelle
-nwa <- bind_rows(nwa, nutzwert) 
+nwa <- bind_rows(nwa, nutzwert)
 
-# Setze Namen Nutzwert in Zeile 5 und Spalte Kriterium
-nwa$Kriterium[5] <- "Nutzwert"
+# Setze Namen Nutzwert in Zeile 4 und Spalte Kriterium
+nwa$Kriterium[4] <- "Nutzwert"
 
 # Gib Tabelle aus
-nwa |> 
+nwa |>
   mutate(
     Gewicht = ifelse(is.na(Gewicht), "", sprintf("%.2f", Gewicht)), # Stelle 2 Nachkommastellen dar
-    A = sprintf("%.0f", A), # Schneide Nachkommastellen ab
-    B = sprintf("%.0f", B), # Schneide Nachkommastellen ab
-    C = sprintf("%.0f", C) # Schneide Nachkommastellen ab
+    `WI-Erb` = sprintf("%.1f", `WI-Erb`),
+    `MZ-Hech` = sprintf("%.1f", `MZ-Hech`),
+    Raunheim = sprintf("%.1f", Raunheim)
   ) |>
   kable(
-    col.names = c("Kriterium", "Gewichtung", "A", "B", "C"),
+    col.names = c("Kriterium", "Gewichtung", "WI-Erb", "MZ-Hech", "Raunheim"),
     format = "html",
     align = c("l", "c", "c", "c", "c")
   )
@@ -439,12 +479,11 @@ Analytical Hierarchy Process (AHP Methode) - Beispiel
 ::: callout-note
 ## Fallbeispiel
 
-Eine Investitionsgesellschaft sucht einen Standort zur Errichtung eines Einkaufszentrums. Es stehen drei alternative Standorte A, B, C zur Verfügung. Folgende Bewertungskriterien werden herangezogen.
+SushiFresh vergleicht die drei Kandidatenstandorte Wiesbaden-Erbenheim, Mainz-Hechtsheim und Raunheim nun **paarweise** statt über direkt geschätzte Punktwerte. Folgende Bewertungskriterien werden herangezogen.
 
-1.  Kundenmarkt: Größe, Kaufkraft, Altersstruktur
-2.  Kundennähe: Erreichbarkeit durch Kunden
-3.  Infrastruktur: Lage, Erschließungszustand
-4.  Transport: Erreichbarkeit durch Lieferanten
+1.  Transportnähe: Distanz zu den sechs Filialen
+2.  Mietkosten: jährliche Fixkosten des Grundstücks
+3.  Fachkräfteverfügbarkeit: Zugang zu Gastronomie-/Lebensmittelfachkräften
 :::
 ::::
 
@@ -484,44 +523,34 @@ Analytical Hierarchy Process (AHP Methode) - Beispiel
 :::
 
 ::::::: {.columns .v-center}
-::: {.column width="25%"}
-Kundenmarkt
+::: {.column width="33%"}
+Transportnähe
 
-| site |  A  |  B  |  C  |
-|:-----|:---:|:---:|:---:|
-| A    |  1  |  3  |  2  |
-| B    | 1/3 |  1  | 1/5 |
-| C    | 1/2 |  5  |  1  |
+| site    |  WI-Erb  |  MZ-Hech  |  Raunheim  |
+|:--------|:--------:|:---------:|:----------:|
+| WI-Erb  |    1     |     2     |    1/2     |
+| MZ-Hech |   1/2    |     1     |    1/3     |
+| Raunheim|    2     |     3     |     1      |
 :::
 
-::: {.column width="25%"}
-Kundennähe
+::: {.column width="33%"}
+Mietkosten
 
-| site |  A  |  B  |  C  |
-|:-----|:---:|:---:|:---:|
-| A    |  1  |  6  | 1/3 |
-| B    | 1/6 |  1  | 1/9 |
-| C    |  3  |  9  |  1  |
+| site    |  WI-Erb  |  MZ-Hech  |  Raunheim  |
+|:--------|:--------:|:---------:|:----------:|
+| WI-Erb  |    1     |     2     |     4      |
+| MZ-Hech |   1/2    |     1     |     2      |
+| Raunheim|   1/4    |    1/2    |     1      |
 :::
 
-::: {.column width="25%"}
-Infrastruktur
+::: {.column width="33%"}
+Fachkräfte
 
-| site |  A  |  B  |  C  |
-|:-----|:---:|:---:|:---:|
-| A    |  1  | 1/3 |  1  |
-| B    |  3  |  1  |  7  |
-| C    |  1  | 1/7 |  1  |
-:::
-
-::: {.column width="25%"}
-Transport
-
-| site |  A  |  B  |  C  |
-|:-----|:---:|:---:|:---:|
-| A    |  1  | 1/3 | 1/2 |
-| B    |  3  |  1  |  4  |
-| C    |  2  | 1/4 |  1  |
+| site    |  WI-Erb  |  MZ-Hech  |  Raunheim  |
+|:--------|:--------:|:---------:|:----------:|
+| WI-Erb  |    1     |    1/2    |     2      |
+| MZ-Hech |    2     |     1     |     3      |
+| Raunheim|   1/2    |    1/3    |     1      |
 :::
 :::::::
 
@@ -542,40 +571,39 @@ Analytical Hierarchy Process (AHP Methode) - Beispiel
 :::
 
 ::::::: small-text
-**Kundenmarkt**
+**Transportnähe** — Synthese über das geometrische Mittel der Zeilen (stabile Näherung an den Eigenvektor)
 
 :::::: {.columns .v-center}
 ::: {.column width="30%"}
-Spaltensummen
+Zeilenprodukte
 
-| site   |  A   |  B  |  C   |
-|:-------|:----:|:---:|:----:|
-| A      |  1   |  3  |  2   |
-| B      | 1/3  |  1  | 1/5  |
-| C      | 1/2  |  5  |  1   |
-| $\sum$ | 11/6 |  9  | 16/5 |
+| Site     |  Produkt  |
+|:---------|:---------:|
+| WI-Erb   |     1     |
+| MZ-Hech  |    1/6    |
+| Raunheim |     6     |
 :::
 
 ::: {.column width="30%"}
-spaltenweise Normierung
+3. Wurzel je Zeile
 
-| Site   |  A   |  B  |  C   |
-|:-------|:----:|:---:|:----:|
-| A      | 6/11 | 3/9 | 5/8  |
-| B      | 2/11 | 1/9 | 1/16 |
-| C      | 3/11 | 5/9 | 5/16 |
-| $\sum$ | 1.0  | 1.0 | 1.0  |
+| Site     |  $\sqrt[3]{\cdot}$  |
+|:---------|:-------------------:|
+| WI-Erb   |        1.0000       |
+| MZ-Hech  |        0.5503       |
+| Raunheim |        1.8171       |
+| $\sum$   |        3.3674       |
 :::
 
 ::: {.column width="40%"}
-Durchschnittsbildung
+Normierung (÷ Summe)
 
-| Site   |   A    |   B    |   C    | Avg .  |
-|:-------|:------:|:------:|:------:|:------:|
-| A      | 0.5455 | 0.3333 | 0.6250 | 0.5012 |
-| B      | 0.1818 | 0.1111 | 0.0625 | 0.1185 |
-| C      | 0.2727 | 0.5556 | 0.3125 | 0.3803 |
-| $\sum$ | 1.0000 | 1.0000 | 1.0000 | 1.0000 |
+| Site     |   Gewicht   |
+|:---------|:-----------:|
+| WI-Erb   |   0.2970    |
+| MZ-Hech  |   0.1634    |
+| Raunheim |   0.5396    |
+| $\sum$   |   1.0000    |
 :::
 ::::::
 :::::::
@@ -596,13 +624,13 @@ Analytical Hierarchy Process (AHP Methode) - Beispiel
 5.  Berechne den Scoring-Wert für die Alternativen.
 :::
 
-Präferenzvektoren aller Alternativen für alle Kriterien
+Präferenzvektoren aller Standorte für alle Kriterien
 
-| site | Kundenmarkt | Kundennähe | Infrastruktur | Transport |
-|:-----|:-----------:|:----------:|:-------------:|:---------:|
-| A    |   0.5012    |   0.2819   |    0.1790     |  0.1561   |
-| B    |   0.1185    |   0.0598   |    0.6850     |  0.6196   |
-| C    |   0.3803    |   0.6583   |    0.1360     |  0.2243   |
+| site     | Transportnähe | Mietkosten | Fachkräfte |
+|:---------|:-------------:|:----------:|:----------:|
+| WI-Erb   |    0.2970     |   0.5714   |   0.2970   |
+| MZ-Hech  |    0.1634     |   0.2857   |   0.5396   |
+| Raunheim |    0.5396     |   0.1429   |   0.1634   |
 
 ## Qualitative Standortplanung {#slide-82}
 
@@ -620,13 +648,12 @@ Analytical Hierarchy Process (AHP Methode) - Beispiel
 5.  Berechne den Scoring-Wert für die Alternativen.
 :::
 
-| Kriterium     | Kundenmarkt | Kundennähe | Infrastruktur | Transport |
-|:--------------|:-----------:|:----------:|:-------------:|:---------:|
-| Kundenmarkt   |      1      |    1/5     |       3       |     4     |
-| Kundennähe    |      5      |     1      |       9       |     7     |
-| Infrastruktur |     1/3     |    1/9     |       1       |     2     |
-| Transport     |     1/4     |    1/7     |      1/2      |     1     |
-| $\sum$        |    79/12    |  458/315   |     27/2      |    14     |
+| Kriterium      | Transportnähe | Mietkosten | Fachkräfte |
+|:---------------|:-------------:|:----------:|:----------:|
+| Transportnähe  |       1       |     3      |     2      |
+| Mietkosten     |      1/3      |     1      |    1/2     |
+| Fachkräfte     |      1/2      |     2      |     1      |
+| $\sum$         |     11/6      |     6      |    7/2     |
 
 ## Qualitative Standortplanung
 
@@ -644,13 +671,14 @@ Analytical Hierarchy Process (AHP Methode) - Beispiel
 5.  Berechne den Scoring-Wert für die Alternativen.
 :::
 
-| Kriterium     | Kundenmarkt | Kundennähe | Infrastruktur | Transport | Aver.  |
-|:--------------|:------------|:-----------|:--------------|:----------|--------|
-| Kundenmarkt   | 0.1519      | 0.1375     | 0.2222        | 0.2857    | 0.1993 |
-| Kundennähe    | 0.7595      | 0.6878     | 0.6667        | 0.5000    | 0.6535 |
-| Infrastruktur | 0.0506      | 0.0764     | 0.0741        | 0.1429    | 0.0860 |
-| Transport     | 0.0380      | 0.0983     | 0.0370        | 0.0714    | 0.0612 |
-| $\sum$        |             |            |               |           | 1.0000 |
+Nach demselben Verfahren (geometrisches Mittel der Zeilen, dann normieren) wie auf der vorherigen Folie für die Standorte ergibt sich für die drei Kriterien:
+
+| Kriterium     | Zeilenprodukt | 3. Wurzel | Gewicht |
+|:--------------|:-------------:|:---------:|:-------:|
+| Transportnähe |       6       |  1.8171   | 0.5396  |
+| Mietkosten    |      1/6      |  0.5503   | 0.1634  |
+| Fachkräfte    |       1       |  1.0000   | 0.2970  |
+| $\sum$        |               |  3.3674   | 1.0000  |
 
 ## Qualitative Standortplanung {#slide-83}
 
@@ -670,36 +698,35 @@ Analytical Hierarchy Process (AHP Methode) - Beispiel
 
 ::: smaller-text
 $\left(
-\begin{array}{cccc}
-0.5012 & 0.2819 & 0.1790 & 0.1561 \\
-0.1185 & 0.0598 & 0.6850 & 0.6196 \\
-0.3803 & 0.6583 & 0.1360 & 0.2243
+\begin{array}{ccc}
+0.2970 & 0.5714 & 0.2970 \\
+0.1634 & 0.2857 & 0.5396 \\
+0.5396 & 0.1429 & 0.1634
 \end{array}
 \right)
 \times
 \left(
 \begin{array}{c}
-0.1993\\
-0.6535\\
-0.0860\\
-0.0612
+0.5396\\
+0.1634\\
+0.2970
 \end{array}
 \right)
 =
 \left(
 \begin{array}{c}
-0.3091\\
-0.1595\\
-0.5314
+0.3418\\
+0.2951\\
+0.3631
 \end{array}
 \right)
 \begin{array}{c}
-\text{= Score A}\\
-\text{= Score B}\\
-\text{= Score C}
+\text{= Score WI-Erb}\\
+\text{= Score MZ-Hech}\\
+\text{= Score Raunheim}
 \end{array}$
 
-**Ergebnis:** Beste Alternative ist Standort C !
+**Ergebnis:** Beste Alternative ist Raunheim — allerdings nur **knapp** vor Wiesbaden-Erbenheim!
 
 ::: {.fragment .fade-up}
 **Vorteile AHP**
@@ -720,31 +747,27 @@ Analytical Hierarchy Process (AHP Methode) - Konsistenzindex
 :::: {.column width="70%"}
 
 ::: smaller-text
-1.  Produkt aus nicht-normalisierter Präferenzmatrix und Präferenzvektor (Kriterienvergleich): $$\left(\begin{array}{cccc}
-     1 & 1\!/\!5 & 3 & 4 \\
-     5 & 1 & 9 & 7 \\
-     1\!/\!3 & 1\!/\!9 & 1 & 2 \\
-     1\!/\!4 & 1\!/\!7 & 1\!/\!2 & 1 \\ 
+1.  Produkt aus nicht-normalisierter Präferenzmatrix und Präferenzvektor (Kriterienvergleich): $$\left(\begin{array}{ccc}
+     1 & 3 & 2 \\
+     1\!/\!3 & 1 & 1\!/\!2 \\
+     1\!/\!2 & 2 & 1 \\
      \end{array}
      \right)\times\left(\begin{array}{c}
-     0.1993\\
-     0.6535\\
-     0.0860\\
-     0.0612\\
+     0.5396\\
+     0.1634\\
+     0.2970\\
      \end{array}\right)=\left(\begin{array}{c}
-     0.8328 \\
-     2.8524\\
-     0.3474\\
-     0.2473\\
+     1.6238 \\
+     0.4918\\
+     0.8936\\
      \end{array}\right)$$
 2.  Dividiere den Vektor komponentenweise durch die Präferenzwerte: $$\begin{align*}
-    0.8328 / 0.1993 &=  4.1773\\
-    2.8524 / 0.6535 &=  4.3649\\
-    0.3474 / 0.0860 &=  4.0397\\
-    0.2473 / 0.0612 &=  4.0436\\
-    \text{average }\bar{P} &= 4.15464
+    1.6238 / 0.5396 &=  3.0092\\
+    0.4918 / 0.1634 &=  3.0092\\
+    0.8936 / 0.2970 &=  3.0092\\
+    \text{average }\bar{P} &= 3.0092
     \end{align*}$$
-3.  Berechne den Konsistenzwert mit $n=4$ durch $$ KI =\frac{\bar{P}- n}{n-1} = 0.0521. $$
+3.  Berechne den Konsistenzwert mit $n=3$ durch $$ KI =\frac{\bar{P}- n}{n-1} = 0.0046. $$
 :::
 ::::
 
@@ -753,7 +776,7 @@ Analytical Hierarchy Process (AHP Methode) - Konsistenzindex
 ::: callout-note
 ## Interpretation
 
-Je näher $KI$ an 0 liegt, desto konsistenter ist die Präferenzmatrix. Wenn $KI=0$ ist sie perfekt konsistent. $\bar{P}$ ist der größte Eigenwert der Präferenzmatrix.
+Je näher $KI$ an 0 liegt, desto konsistenter ist die Präferenzmatrix. Wenn $KI=0$ ist sie perfekt konsistent. $\bar{P}$ ist der größte Eigenwert der Präferenzmatrix. Mit $CR \approx 0{,}0079$ (Random Index $RI = 0{,}58$ bei $n=3$) liegt die Matrix sehr deutlich unter der 10-%-Schwelle und gilt damit als konsistent.
 :::
 :::
 ::::
@@ -792,7 +815,7 @@ Neoklassische Standorttheorie -- Steiner-Weber-Modell
 ::: {.fragment .fade-up}
 **Ziel**
 
-Gesucht ist der **transportkostenminimale Standort** für eine Produktions-, Lager- oder Umschlagsstelle im Absatzgebiet.
+Gesucht ist der **transportkostenminimale Standort** für eine Produktions-, Lager- oder Umschlagsstelle im Absatzgebiet — bei SushiFresh: der ideale Punkt im Rhein-Main-Gebiet für die neue Produktionsstätte, unabhängig von den drei konkret verfügbaren Grundstücken.
 :::
 
 ---
@@ -822,7 +845,7 @@ $$
 **Parameter**
 
 - $(u_i,v_i)$: Koordinaten von Kundenstandort $i$.
-- $a_i$: Nachfrage von Kundenstandort $i$, z. B. in Tonnen pro Jahr.
+- $a_i$: Nachfrage von Kundenstandort $i$, bei SushiFresh: Boxen pro Tag.
 - $d(\cdot)$: verwendetes Distanzmaß.
 
 :::
@@ -844,15 +867,15 @@ $$
 
 
 start <- data.frame(
-  id = "Standort",
-  lon = 8.2410,
-  lat = 50.0820
+  id = "Wiesbaden-Erbenheim",
+  lon = 8.2999,
+  lat = 50.0632
 )
 
 goal <- data.frame(
-  id = "Kunde",
-  lon = 8.2875,
-  lat = 50.1038
+  id = "Frankfurt",
+  lon = 8.6821,
+  lat = 50.1109
 )
 
 start_sf <- st_as_sf(start, coords = c("lon", "lat"), crs = 4326)
@@ -982,7 +1005,7 @@ leaflet(width = "100%", height = 420) |>
     color = "#0f172a",
     fillColor = "#0f172a",
     fillOpacity = 1,
-    label = "Standort"
+    label = "Wiesbaden-Erbenheim"
   ) |>
   addCircleMarkers(
     data = goal_sf,
@@ -990,7 +1013,7 @@ leaflet(width = "100%", height = 420) |>
     color = "#7c3aed",
     fillColor = "#7c3aed",
     fillOpacity = 1,
-    label = "Kunde"
+    label = "Frankfurt"
   ) |>
   addLegend(
     "bottomright",
@@ -1042,7 +1065,7 @@ $$
 
 1. Wähle eine Startlösung $(x_0,y_0)$, z. B. den gewichteten Schwerpunkt.
 2. Berechne mit der Update-Regel einen neuen Standort.
-3. Wiederhole den Schritt bis die Änderung kleiner als eine Toleranz ist. 
+3. Wiederhole den Schritt bis die Änderung kleiner als eine Toleranz ist.
 
 
 :::
@@ -1149,24 +1172,26 @@ Steiner-Weber-Modell bei euklidischer Distanz - Beispiel
 ```{r}
 #| include: true
 
+# SushiFresh-Filialen als Steiner-Weber-Kunden: u = Laengengrad, v = Breitengrad
 kunden <- data.frame(
-  i = 1:6,
-  u = c(0, 2, 8, 5, 1, 10),
-  v = c(0, 3, 1, 8, 7, 9),
-  a = c(10, 15, 20, 10, 30, 15)
+  i = c("Wiesbaden", "Mainz", "Frankfurt", "Ruesselsheim", "Darmstadt", "Offenbach"),
+  u = c(8.2398, 8.2711, 8.6821, 8.4116, 8.6512, 8.7761),
+  v = c(50.0782, 50.0000, 50.1109, 49.9904, 49.8728, 50.0956),
+  a = c(120, 150, 280, 90, 110, 95)
 )
 
-res <- steiner_weber_euclid(kunden, x0 = 6, y0 = 2, tol = 1e-4, max_iter = 100)
-iter_tbl <- res$history |> 
+# bewusst entfernter Startpunkt (nicht der Schwerpunkt), um den Weg zu zeigen
+res <- steiner_weber_euclid(kunden, x0 = 8.75, y0 = 49.85, tol = 1e-4, max_iter = 100)
+iter_tbl <- res$history |>
   mutate(
-    Standort = paste0("(", format(round(x, 3), nsmall = 3), "; ", format(round(y, 3), nsmall = 3), ")"),
-    Abweichung = ifelse(is.na(delta), "---", format(round(delta, 3), nsmall = 3))
-  ) |> 
+    Standort = paste0("(", format(round(x, 4), nsmall = 4), "; ", format(round(y, 4), nsmall = 4), ")"),
+    Abweichung = ifelse(is.na(delta), "---", format(round(delta, 4), nsmall = 4))
+  ) |>
   transmute(`Iteration t` = iter, `Standort (x,y)` = Standort, Abweichung)
 
 input_tbl <- kunden |>
-  transmute(`Kunde i` = i,
-            `Standort (u_i,v_i)` = paste0("(", u, ";", v, ")"),
+  transmute(`Filiale` = i,
+            `Standort (u_i,v_i)` = paste0("(", sprintf("%.4f", u), "; ", sprintf("%.4f", v), ")"),
             `Nachfrage a_i` = a)
 
 anim_df <- res$history |>
@@ -1188,12 +1213,12 @@ fig <- plot_ly(height = "100%", width = 650) |>
               x = ~u, y = ~v,
               size = ~a^2, sizes = c(10, 400),
               color = I("#5ba3d0"), opacity = 0.85,
-              text = ~paste("Kunde", i), hoverinfo = "text",
+              text = ~i, hoverinfo = "text",
               showlegend = FALSE) |>
   add_text(data = kunden,
-           x = ~u, y = ~v + 0.35,
+           x = ~u, y = ~v + 0.02,
            text = ~i, showlegend = FALSE,
-           textfont = list(color = "#7a5b3a", size = 15)) |>
+           textfont = list(color = "#7a5b3a", size = 12)) |>
   add_lines(data = anim_df,
             x = ~x, y = ~y,
             frame = ~frame,
@@ -1201,15 +1226,15 @@ fig <- plot_ly(height = "100%", width = 650) |>
             showlegend = FALSE,
             hoverinfo = "none") |>
   add_markers(data = anim_df,
-              x = ~x, y = ~y, 
+              x = ~x, y = ~y,
               frame = ~frame,
               marker = list(color = "#e31a1c", symbol = "x", size = 11),
               text = ~label, hoverinfo = "text",
               showlegend = FALSE) |>
   layout(
     margin = list(l = 40, r = 10, t = 10, b = 35),
-    xaxis = list(title = "X Axis", range = c(-0.5, 11), dtick = 2, zeroline = FALSE, gridcolor = "#e5e5e5"),
-    yaxis = list(title = "Y Axis", range = c(-0.5, 11), dtick = 2, zeroline = FALSE, gridcolor = "#e5e5e5"),
+    xaxis = list(title = "Laengengrad", range = c(8.1, 8.9), dtick = 0.2, zeroline = FALSE, gridcolor = "#e5e5e5"),
+    yaxis = list(title = "Breitengrad", range = c(49.75, 50.25), dtick = 0.1, zeroline = FALSE, gridcolor = "#e5e5e5"),
     paper_bgcolor = "white",
     plot_bgcolor = "white"
   ) |>
@@ -1256,11 +1281,11 @@ euklidisches Steiner-Weber-Modell — Short cut
 ```{r}
 #| include: false
 
-# Euklidisches Optimum aus der vorhandenen Weiszfeld-Funktion
+# Euklidisches Optimum aus der vorhandenen Weiszfeld-Funktion (Start = CoG)
 res_euclid <- steiner_weber_euclid(
   data = kunden,
-  x0 = 5,
-  y0 = 5,
+  x0 = NULL,
+  y0 = NULL,
   tol = 1e-6,
   max_iter = 1000
 )
@@ -1276,27 +1301,29 @@ cog <- data.frame(
   y = weighted.mean(kunden$v, kunden$a)
 )
 
-# Vergleich der gewichteten euklidischen Distanzen
+# Vergleich der nachfragegewichteten Gesamtdistanzen - diesmal mit der
+# tatsaechlichen (sphaerischen) Haversine-Distanz statt naiver Grad-Differenzen,
+# da u/v hier Laengen-/Breitengrad sind
 vergleich <- kunden |>
   mutate(
     `Opt. Standort (x, y)` =
-      sqrt((u - euclid_opt$x)^2 + (v - euclid_opt$y)^2) * a,
+      haversine(euclid_opt$y, euclid_opt$x, v, u) * a,
     `Center of gravity (x, y)` =
-      sqrt((u - cog$x)^2 + (v - cog$y)^2) * a
+      haversine(cog$y, cog$x, v, u) * a
   ) |>
   transmute(
-    Kunde = i,
+    Filiale = i,
     `Opt. Standort` =
       sprintf(
-        "%.2f · %d = %.2f",
-        sqrt((u - euclid_opt$x)^2 + (v - euclid_opt$y)^2),
+        "%.1f km * %d = %.0f",
+        haversine(euclid_opt$y, euclid_opt$x, v, u),
         a,
         `Opt. Standort (x, y)`
       ),
     `Center of gravity` =
       sprintf(
-        "%.2f · %d = %.2f",
-        sqrt((u - cog$x)^2 + (v - cog$y)^2),
+        "%.1f km * %d = %.0f",
+        haversine(cog$y, cog$x, v, u),
         a,
         `Center of gravity (x, y)`
       )
@@ -1305,33 +1332,27 @@ vergleich <- kunden |>
 vergleich <- bind_rows(
   vergleich,
   data.frame(
-    "Kunde" = NA,
+    "Filiale" = NA,
     "Opt. Standort" = sprintf(
-      "%.2f",
-      sum(
-        sqrt((kunden$u - euclid_opt$x)^2 +
-             (kunden$v - euclid_opt$y)^2) * kunden$a
-      )
+      "%.0f",
+      sum(haversine(euclid_opt$y, euclid_opt$x, kunden$v, kunden$u) * kunden$a)
     ),
     "Center of gravity" = sprintf(
-      "%.2f",
-      sum(
-        sqrt((kunden$u - cog$x)^2 +
-             (kunden$v - cog$y)^2) * kunden$a
-      )
+      "%.0f",
+      sum(haversine(cog$y, cog$x, kunden$v, kunden$u) * kunden$a)
     )
   )
 )
 
-# Für die Darstellung im Diagramm
+# Fuer die Darstellung im Diagramm
 kunden_plot <- kunden |>
   mutate(
-    kunden_label = as.character(i),
+    kunden_label = i,
     nachfrage_label = paste0("Nachfrage: ", a)
   )
 
-rmse.eucl <- sum(sqrt((kunden$u - euclid_opt$x)^2 + (kunden$v - euclid_opt$y)^2) * kunden$a )
-rmse.cog <- sum(sqrt((kunden$u - cog$x)^2 + (kunden$v - cog$y)^2) * kunden$a )
+rmse.eucl <- sum(haversine(euclid_opt$y, euclid_opt$x, kunden$v, kunden$u) * kunden$a)
+rmse.cog  <- sum(haversine(cog$y, cog$x, kunden$v, kunden$u) * kunden$a)
 
 ```
 
@@ -1342,18 +1363,18 @@ rmse.cog <- sum(sqrt((kunden$u - cog$x)^2 + (kunden$v - cog$y)^2) * kunden$a )
 ::: {.callout-tip appearance="simple"}
 ## Center of gravity
 
-Das Center of Gravity ist eine Schwerpunkt-Approximation des euklidischen Steiner-Weber-Problems:
+Das Center of Gravity ist eine Schwerpunkt-Approximation des euklidischen Steiner-Weber-Problems (hier: Laengen-/Breitengrad naeherungsweise als planare Koordinaten behandelt):
 
 $$
 x^{CoG} = \frac{\sum_{i=1}^{n} a_i u_i}{\sum_{i=1}^{n} a_i},
 \qquad
 y^{CoG} = \frac{\sum_{i=1}^{n} a_i v_i}{\sum_{i=1}^{n} a_i}.
 $$
-Für das Zahlenbeispiel gilt:
+Für das SushiFresh-Beispiel gilt:
 
 $$
 (x^{CoG}, y^{CoG}) =
-(`r sprintf("%.1f", cog$x)`; `r sprintf("%.1f", cog$y)`).
+(`r sprintf("%.4f", cog$x)`; `r sprintf("%.4f", cog$y)`).
 $$
 
 :::
@@ -1362,7 +1383,7 @@ $$
 ::: {.callout-note appearance="simple"}
 Das Center of Gravity ist schnell berechenbar, aber nur eine Approximation:
 Der iterative Steiner-Weber-Standort weist im Beispiel eine geringere
-gewichtete Gesamtdistanz auf (`r round(rmse.eucl,0)` vs. `r round(rmse.cog,0)`)   .
+nachfragegewichtete Gesamt-**Haversine-Distanz** auf (`r round(rmse.eucl,0)` vs. `r round(rmse.cog,0)` Box-km).
 :::
 
 
@@ -1387,7 +1408,7 @@ ggplot(kunden_plot, aes(x = u, y = v)) +
   geom_text(
     aes(label = kunden_label),
     vjust = -1.0,
-    size = 3.2,
+    size = 3.0,
     color = "#6b5a4a"
   ) +
   geom_point(
@@ -1409,30 +1430,30 @@ ggplot(kunden_plot, aes(x = u, y = v)) +
   ) +
   annotate(
     "text",
-    x = euclid_opt$x + 0.8,
-    y = euclid_opt$y + 0.2,
-    label = "Optimum",
+    x = euclid_opt$x + 0.03,
+    y = euclid_opt$y + 0.02,
+    label = "Weiszfeld-Optimum",
     color = "#e31a1c",
     size = 3.1
   ) +
   annotate(
     "text",
-    x = cog$x + 0.9,
-    y = cog$y,
+    x = cog$x + 0.03,
+    y = cog$y - 0.02,
     label = "Center of gravity",
     color = "#2563eb",
     size = 3.1
   ) +
   scale_size_area(max_size = 12, guide = "none") +
   scale_x_continuous(
-    limits = c(-0.5, 11),
-    breaks = seq(0, 10, 2)
+    limits = c(8.1, 8.9),
+    breaks = seq(8.2, 8.8, 0.2)
   ) +
   scale_y_continuous(
-    limits = c(-0.5, 11),
-    breaks = seq(0, 8, 2)
+    limits = c(49.75, 50.25),
+    breaks = seq(49.8, 50.2, 0.1)
   ) +
-  labs(x = "X Axis", y = "Y Axis") +
+  labs(x = "Laengengrad", y = "Breitengrad") +
   theme_minimal(base_size = 12) +
   theme(
     panel.grid.major = element_line(color = "#e5e5e5", linewidth = 0.4),
@@ -1498,9 +1519,9 @@ $$
 **Algorithmus für den optimalen Standort**
 
 Bestimme für jede Dimension den **gewichteten Median** — hier beispielhaft
-für die $x$-Koordinate:
+für die $x$-Koordinate (Längengrad):
 
-1. Sortiere die Kunden nach aufsteigenden $u_i$-Koordinaten.
+1. Sortiere die Filialen nach aufsteigenden $u_i$-Koordinaten.
 2. Bestimme die kumulierte Nachfrage $A_j = \sum_{i=1}^{j} a_i$.
 3. Wähle den ersten Kunden mit $A_j \geq \frac{1}{2}\sum_{i=1}^{n} a_i$.
 4. Seine $u_i$-Koordinate ist die optimale $x$-Koordinate.
@@ -1528,7 +1549,7 @@ ggplot(kunden_plot, aes(x = u, y = v)) +
   geom_text(
     aes(label = kunden_label),
     vjust = -1.0,
-    size = 3.2,
+    size = 3.0,
     color = "#6b5a4a"
   ) +
   geom_point(
@@ -1542,22 +1563,22 @@ ggplot(kunden_plot, aes(x = u, y = v)) +
   ) +
   annotate(
     "text",
-    x = manhattan_opt$x + 0.8,
-    y = manhattan_opt$y + 0.2,
+    x = manhattan_opt$x + 0.03,
+    y = manhattan_opt$y + 0.02,
     label = "Optimum",
     color = "#15803d",
     size = 3.2
   ) +
   scale_size_area(max_size = 12, guide = "none") +
   scale_x_continuous(
-    limits = c(-0.5, 11),
-    breaks = seq(0, 10, 2)
+    limits = c(8.1, 8.9),
+    breaks = seq(8.2, 8.8, 0.2)
   ) +
   scale_y_continuous(
-    limits = c(-0.5, 11),
-    breaks = seq(0, 8, 2)
+    limits = c(49.75, 50.25),
+    breaks = seq(49.8, 50.2, 0.1)
   ) +
-  labs(x = "X Axis", y = "Y Axis") +
+  labs(x = "Laengengrad", y = "Breitengrad") +
   theme_minimal(base_size = 12) +
   theme(
     panel.grid.major = element_line(color = "#d5d5d5", linewidth = 0.45),
@@ -1570,9 +1591,9 @@ ggplot(kunden_plot, aes(x = u, y = v)) +
 
 ::: {.small-text}
 ::: {.callout-note appearance="simple"}
-Für das Zahlenbeispiel ergibt sich:
+Für das SushiFresh-Beispiel ergibt sich:
 $$
-(x^*, y^*) = (`r manhattan_opt$x`; `r manhattan_opt$y`)
+(x^*, y^*) = (`r sprintf("%.4f", manhattan_opt$x)`; `r sprintf("%.4f", manhattan_opt$y)`)
 $$
 :::
 :::

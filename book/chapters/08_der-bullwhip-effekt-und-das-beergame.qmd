@@ -39,18 +39,16 @@ In der Realität ist aber praktisch jede Stufe einer Supply Chain gleichzeitig K
 
 Wir nähern uns dem Thema wie gewohnt über ein durchgehendes Fallbeispiel, leiten daraus eine formale Definition und ein Messkonzept ab, ordnen die Ursachen und Folgen des Effekts ein und lernen mit dem **Beergame** ein klassisches Lehrspiel kennen, das wir anschließend selbst in R nachbauen. Am Ende steht ein Überblick über Gegenmaßnahmen, die in der Praxis eingesetzt werden, um die Peitsche zu "entschärfen".
 
-## Fallbeispiel: die Lachsfilet-Supply-Chain
+## Fallbeispiel: die SushiFresh-Supply-Chain
 
-Wir greifen erneut den Sushi-Box-Produzenten aus den vorigen Kapiteln auf. Er bezieht Lachsfilet über einen Zwischenhändler, der wiederum bei einer Lachsfarm bestellt:
+Wir greifen erneut die **SushiFresh GmbH** aus den vorigen Kapiteln auf: den regionalen Hersteller frischer Sushi-Boxen mit Zentralproduktion in **Wiesbaden-Erbenheim** (vgl. die Standortentscheidung in Kapitel 5), der sechs Supermarkt-Filialen im Rhein-Main-Gebiet beliefert – darunter die bereits aus den Kapiteln 6 und 7 bekannte, besonders nachfragestarke Filiale **Frankfurt** ($\mu=280$, $\sigma=55$ Sushi-Boxen pro Tag). Für die Produktion bezieht SushiFresh frischen Fisch, Nori und Reis über den Fischgroßhändler **Nordsee-Fisch KG**:
 
 $$
-\text{Endkunden/Supermarkt}
+\text{Supermarkt-Filialen}
 \;\longleftrightarrow\;
-\text{Sushi-Produzent}
+\text{SushiFresh GmbH}
 \;\longleftrightarrow\;
-\text{Lachshändler}
-\;\longleftrightarrow\;
-\text{Lachsfarm}
+\text{Nordsee-Fisch KG}
 $$
 
 Jede Stufe beobachtet nur die Bestellungen der ihr unmittelbar nachgelagerten Stufe und muss daraus – ohne Einblick in die tatsächliche Endkundennachfrage – ihre eigene Bestellentscheidung ableiten. Damit wir diese Entscheidung formal fassen können, benötigen wir drei Bestandsgrößen, die in jeder Periode $t$ fortgeschrieben werden:
@@ -69,33 +67,35 @@ $$ S = \mu \cdot (l+1) + z_\alpha \cdot \sigma \cdot \sqrt{l+1} $$
 
 Hierbei sind $\mu$ und $\sigma$ die erwartete Nachfrage pro Periode und ihre Standardabweichung, die in der Praxis aus vergangenen Bedarfen **geschätzt** werden müssen, und $z_\alpha$ das Quantil der Standardnormalverteilung zum gewünschten Servicegrad $\alpha$.
 
-Genau an dieser Schätzung setzt der Bullwhip-Effekt an. Simulieren wir den Sushi-Produzenten für zwölf Tage mit einer moderat schwankenden Lachsfilet-Nachfrage, einer Wiederbeschaffungszeit von zwei Tagen und einem – zunächst fest vorgegebenen – Ziellagerbestand von $S=35$, können wir die Funktion `simuliere_tS()` aus `R/scm_functions.R` nutzen, die diese Fortschreibung von physischem, Netto- und disponiblem Bestand automatisiert:
+Genau an dieser Schätzung setzt der Bullwhip-Effekt an. Simulieren wir SushiFresh GmbH für zwölf Tage mit der moderat schwankenden Sushi-Boxen-Nachfrage der Filiale Frankfurt ($\mu=280$, $\sigma=55$), einer Wiederbeschaffungszeit von zwei Tagen (ein Tag Vorlauf für die Fischanlieferung durch Nordsee-Fisch KG, ein weiterer Tag für Produktion und Auslieferung an die Filiale) und einem – zunächst fest vorgegebenen – Ziellagerbestand von $S=990$, können wir die Funktion `simuliere_tS()` aus `R/scm_functions.R` nutzen, die diese Fortschreibung von physischem, Netto- und disponiblem Bestand automatisiert:
 
-```{r ch8-lachs-sim}
-# Beobachtete Lachsfilet-Nachfrage des Sushi-Produzenten (Stück je Tag)
-nachfrage <- c(8, 9, 13, 16, 10, 12, 7, 9, 10, 8, 9, 10)
+```{r ch8-sushi-sim}
+# Beobachtete Sushi-Boxen-Nachfrage der Filiale Frankfurt (Stueck je Tag,
+# mu = 280, sigma = 55 - vgl. Newsvendor- und Pooling-Kapitel)
+nachfrage <- c(234, 256, 344, 410, 278, 322, 212, 256, 278, 234, 256, 278)
 
-# Simulation einer (t,S)-Bestandspolitik: taegliche Bestellentscheidung (t=1),
-# fester Ziellagerbestand S = 35, Anfangsbestand 35, Wiederbeschaffungszeit 2 Tage
-lachs_sim <- simuliere_tS(
+# Simulation einer (t,S)-Bestandspolitik bei SushiFresh GmbH: taegliche
+# Bestellentscheidung (t=1), fester Ziellagerbestand S = 990,
+# Anfangsbestand 990, Wiederbeschaffungszeit 2 Tage
+sushi_sim <- simuliere_tS(
   bedarf         = nachfrage,
   t              = 1,
-  S              = 35,
-  anfangsbestand = 35,
+  S              = 990,
+  anfangsbestand = 990,
   wbz            = 2
 )
 
-lachs_sim |>
+sushi_sim |>
   select(Periode, Bedarf, Nettobestand, Disponibler_Bestand_vor_Bestellung, Bestellmenge) |>
   kable(digits = 1, align = "r",
-        caption = "Simulierte Bestands- und Bestellentwicklung des Sushi-Produzenten")
+        caption = "Simulierte Bestands- und Bestellentwicklung von SushiFresh GmbH (Filiale Frankfurt)")
 ```
 
-Obwohl der Ziellagerbestand $S=35$ über alle zwölf Tage konstant bleibt, schwankt die Bestellmenge deutlich stärker als die Nachfrage: Weil zwischen Bestellung und Lieferung zwei Tage liegen, wirkt sich jede Bedarfsabweichung erst mit Verzögerung – dafür aber vollständig – auf den disponiblen Bestand und damit auf die nächste Bestellung aus. Diesen Zusammenhang können wir direkt an den Standardabweichungen ablesen:
+Obwohl der Ziellagerbestand $S=990$ über alle zwölf Tage konstant bleibt, folgt die Bestellmenge exakt dem Verlauf der Nachfrage, nur um die Wiederbeschaffungszeit versetzt: Weil zwischen Bestellung und Lieferung zwei Tage liegen, wirkt sich jede Bedarfsabweichung erst mit Verzögerung – dafür aber vollständig – auf den disponiblen Bestand und damit auf die nächste Bestellung aus. Diesen Zusammenhang können wir direkt an den Standardabweichungen ablesen:
 
-```{r ch8-lachs-vergleich}
-sd_nachfrage  <- sd(lachs_sim$Bedarf)
-sd_bestellung <- sd(lachs_sim$Bestellmenge)
+```{r ch8-sushi-vergleich}
+sd_nachfrage  <- sd(sushi_sim$Bedarf)
+sd_bestellung <- sd(sushi_sim$Bestellmenge)
 
 tibble(
   Größe             = c("Nachfrage d[t]", "Bestellmenge q[t]"),
@@ -129,7 +129,7 @@ und für eine vorgelagerte Stufe ist nicht erkennbar, ob eine höhere Bestellmen
 ::: {.r-exkurs}
 **R-Exkurs: Zeitreihen und `diff()`**
 
-Eine **Zeitreihe** ist in R zunächst nichts Besonderes: ein einfacher numerischer Vektor, dessen Reihenfolge der zeitlichen Abfolge der Beobachtungen entspricht. Der Vektor `nachfrage` aus dem Lachsfilet-Beispiel enthält zwölf Werte für zwölf Tage – mehr braucht R zunächst nicht, um mit einer Zeitreihe zu arbeiten.
+Eine **Zeitreihe** ist in R zunächst nichts Besonderes: ein einfacher numerischer Vektor, dessen Reihenfolge der zeitlichen Abfolge der Beobachtungen entspricht. Der Vektor `nachfrage` aus dem Sushi-Boxen-Beispiel enthält zwölf Werte für zwölf Tage – mehr braucht R zunächst nicht, um mit einer Zeitreihe zu arbeiten.
 
 Eine sehr häufige Frage bei Zeitreihen lautet: *Wie stark verändert sich die Größe von einer Periode zur nächsten?* Dafür bietet R die Funktion `diff()`, die für einen Vektor `x` der Länge $n$ einen neuen Vektor der Länge $n-1$ zurückgibt, dessen $t$-tes Element $x_{t+1} - x_t$ ist:
 
@@ -145,13 +145,13 @@ length(nachfrage)
 length(veraenderung_nachfrage)
 
 # mittlere absolute Veraenderung als einfaches Volatilitaetsmass:
-# vergleicht man dies fuer Nachfrage und Bestellmenge, zeigt sich
-# bereits ohne Varianzberechnung, wer staerker schwankt
+# vergleicht man dies fuer Nachfrage und Bestellmenge im ersten,
+# einfachen Fallbeispiel mit konstantem S
 mean(abs(diff(nachfrage)))
-mean(abs(diff(lachs_sim$Bestellmenge)))
+mean(abs(diff(sushi_sim$Bestellmenge)))
 ```
 
-Die mittlere absolute Periodenveränderung der Bestellmenge fällt deutlich höher aus als jene der Nachfrage – ein erster, sehr einfacher Hinweis auf den Bullwhip-Effekt, den wir weiter unten mit dem Varianzverhältnis formal fassen. `diff()` lässt sich zudem mit dem Argument `lag` auf größere Zeitabstände (`diff(x, lag = 2)`) oder mit `differences` auf mehrfache Differenzenbildung erweitern – darauf gehen wir hier aber nicht weiter ein.
+Die mittlere absolute Periodenveränderung von Bestellmenge und Nachfrage ist in diesem ersten, einfachen Fallbeispiel **identisch** – kein Zufall, sondern eine direkte Folge der Bestellregel: Bei täglicher Überprüfung ($t=1$) und **konstantem** Ziellagerbestand $S$ gilt exakt $q_t = d_t$ (nur um die Wiederbeschaffungszeit zeitversetzt geliefert), denn jede Bestellung füllt die Bestandsposition wieder genau auf das in der Vorperiode verbrauchte Niveau auf. Eine Verstärkung entsteht erst, sobald der Ziellagerbestand selbst – wie in der Praxis üblich – aus rollierend geschätzten Nachfrageparametern neu berechnet wird; genau das bilden wir weiter unten in der mehrstufigen Simulation nach. `diff()` lässt sich zudem mit dem Argument `lag` auf größere Zeitabstände (`diff(x, lag = 2)`) oder mit `differences` auf mehrfache Differenzenbildung erweitern – darauf gehen wir hier aber nicht weiter ein.
 :::
 
 ## Messung des Bullwhip-Effekts: das Varianzverhältnis
@@ -166,14 +166,14 @@ $$
 
 Gilt $B>1$, verstärkt eine Stufe die Varianz der an sie herangetragenen Nachfrage; $B=1$ bedeutet, dass die Bestellvarianz genau der Nachfragevarianz entspricht (kein Bullwhip-Effekt); $B<1$ würde sogar eine Glättung anzeigen. In der ursprünglichen Definition wird statt der reinen Varianz oft der **Variationskoeffizient** ($\text{VK}=\sigma/\mu$) verwendet, um Größenordnungseffekte zwischen den Stufen auszugleichen; für die praktische Anwendung – insbesondere wenn $\mu$ zwischen den Stufen ähnlich bleibt – ist das einfache Varianzverhältnis jedoch die gebräuchlichere und leichter zu berechnende Kennzahl.
 
-Für unser Lachsfilet-Beispiel lässt sich $B$ mit einer Zeile R-Code berechnen:
+Für unser Sushi-Boxen-Beispiel lässt sich $B$ mit einer Zeile R-Code berechnen:
 
-```{r ch8-lachs-bullwhip-mass}
-bullwhip_mass_lachs <- var(lachs_sim$Bestellmenge) / var(lachs_sim$Bedarf)
-round(bullwhip_mass_lachs, 2)
+```{r ch8-sushi-bullwhip-mass}
+bullwhip_mass_sushi <- var(sushi_sim$Bestellmenge) / var(sushi_sim$Bedarf)
+round(bullwhip_mass_sushi, 2)
 ```
 
-Der Sushi-Produzent verstärkt also die Schwankung der Lachsfilet-Nachfrage deutlich, bevor er sie in Form seiner eigenen Bestellungen an den Lachshändler weitergibt – **obwohl** er sich strikt an eine einfache, rationale Order-up-to-Regel hält. Der Bullwhip-Effekt ist damit kein Zeichen für irrationales Verhalten Einzelner, sondern eine strukturelle Eigenschaft der Interaktion von Bestandspolitik und Wiederbeschaffungszeit.
+In diesem ersten, bewusst einfach gehaltenen Fallbeispiel ergibt sich $B=1{,}00$ – SushiFresh GmbH verstärkt die Nachfrageschwankung der Filiale Frankfurt hier noch **nicht**. Das ist kein Fehler, sondern folgt zwingend aus der Bestellregel: Solange der Ziellagerbestand $S$ **konstant** bleibt und täglich überprüft wird, entspricht die Bestellmenge exakt der (zeitversetzten) Nachfrage – die Order-up-to-Regel reicht die Nachfrage lediglich unverändert weiter. Der Bullwhip-Effekt entsteht erst, wenn $S$ selbst über rollierend **geschätzte** Nachfrageparameter $\hat\mu$ und $\hat\sigma$ periodisch neu berechnet wird, wie es in der Praxis – und im nachfolgenden Abschnitt zur mehrstufigen Simulation – der Fall ist: Dort wird die Bestellmenge einer Stufe zur (verzerrten) "Nachfrage" der nächsten Stufe, und mit jeder erneuten Schätzung von $\hat\mu$ und $\hat\sigma$ wächst die Bestellvarianz weiter an, **obwohl** jede Stufe sich strikt an dieselbe einfache, rationale Order-up-to-Regel hält. Der Bullwhip-Effekt ist damit kein Zeichen für irrationales Verhalten Einzelner, sondern eine strukturelle Eigenschaft der Interaktion von rollierender Prognose, Bestandspolitik und Wiederbeschaffungszeit.
 
 ## R-Exkurs: Zeitversatz mit `dplyr::lag()`
 
@@ -183,13 +183,13 @@ Der Sushi-Produzent verstärkt also die Schwankung der Lachsfilet-Nachfrage deut
 Weil zwischen Bestellung und Lieferung eine Wiederbeschaffungszeit liegt, möchte man Zeitreihen häufig **um eine oder mehrere Perioden verschoben** miteinander vergleichen – zum Beispiel die heutige Bestellmenge mit der Nachfrage der Vorperiode. Dafür stellt das `tidyverse`-Paket `dplyr` die Funktion `lag()` bereit: `dplyr::lag(x, n = 1)` gibt einen Vektor derselben Länge wie `x` zurück, dessen Werte um `n` Positionen "nach hinten" verschoben sind; die ersten `n` Werte werden dabei mit `NA` aufgefüllt.
 
 ```{r ch8-lag-demo}
-lachs_sim_lag <- lachs_sim |>
+sushi_sim_lag <- sushi_sim |>
   mutate(
     # Nachfrage der Vorperiode neben die heutige Bestellmenge stellen
     Bedarf_Vorperiode = dplyr::lag(Bedarf, n = 1)
   )
 
-lachs_sim_lag |>
+sushi_sim_lag |>
   select(Periode, Bedarf, Bedarf_Vorperiode, Bestellmenge) |>
   head(6) |>
   kable(align = "r")
@@ -217,12 +217,14 @@ Wir können den Kern des Beergames – eine mehrstufige Kette, in der jede Stufe
 ::: {.r-exkurs}
 **R-Exkurs: Simulation einer mehrstufigen Lieferkette**
 
-Bislang haben wir mit `simuliere_tS()` immer nur *eine* Stufe simuliert. Das Prinzip des Beergames – mehrere Stufen, von denen jede die Bestellungen der nachgelagerten Stufe als "ihre" Nachfrage interpretiert – lässt sich aber ohne großen Mehraufwand als **verschachtelte Schleife** programmieren: eine äußere Schleife über die Stufen, eine innere Schleife über die Perioden. Jede Stufe verwendet dieselbe einfache Order-up-to-Regel wie der Sushi-Produzent oben, schätzt ihren Erwartungswert und ihre Standardabweichung aber **rollierend** aus den zuletzt beobachteten Bestellungen der nachgelagerten Stufe – sie kennt ja nur diese, nicht die tatsächliche Endkundennachfrage.
+Bislang haben wir mit `simuliere_tS()` immer nur *eine* Stufe simuliert. Das Prinzip des Beergames – mehrere Stufen, von denen jede die Bestellungen der nachgelagerten Stufe als "ihre" Nachfrage interpretiert – lässt sich aber ohne großen Mehraufwand als **verschachtelte Schleife** programmieren: eine äußere Schleife über die Stufen, eine innere Schleife über die Perioden. Jede Stufe verwendet dieselbe einfache Order-up-to-Regel wie SushiFresh GmbH oben, schätzt ihren Erwartungswert und ihre Standardabweichung aber **rollierend** aus den zuletzt beobachteten Bestellungen der nachgelagerten Stufe – sie kennt ja nur diese, nicht die tatsächliche Endkundennachfrage.
 
 ```{r ch8-mehrstufig-sim}
-# Anzahl Perioden und Stufen der Modellkette (wie im Beergame)
+# Anzahl Perioden und Stufen der Modellkette (wie im Beergame):
+# Filiale Frankfurt bestellt bei SushiFresh GmbH, SushiFresh GmbH
+# bestellt bei Nordsee-Fisch KG
 n_perioden <- 30
-stufen     <- c("Einzelhandel", "Großhandel", "Hersteller")
+stufen     <- c("Filiale Frankfurt", "SushiFresh GmbH", "Nordsee-Fisch KG")
 n_stufen   <- length(stufen)
 
 # Steuerungsparameter (hier fuer alle Stufen identisch angenommen)
@@ -230,11 +232,11 @@ wbz         <- 2            # Wiederbeschaffungszeit in Perioden
 fenster     <- 4            # Fenster der rollierenden Nachfrageschaetzung
 servicegrad <- 0.95
 z_alpha     <- qnorm(servicegrad)
-anfangsbestand <- 20
+anfangsbestand <- 660
 
-# Endkundennachfrage: zunaechst konstant, danach ein moderater Sprung
-# (z.B. eine Werbeaktion des Einzelhandels)
-kundennachfrage <- c(rep(4, 6), rep(8, n_perioden - 6))
+# Endkundennachfrage der Filiale Frankfurt: zunaechst konstant,
+# danach ein moderater Sprung (z.B. eine Werbeaktion)
+kundennachfrage <- c(rep(220, 6), rep(280, n_perioden - 6))
 
 # Matrizen zur Speicherung je Periode (Zeile) und Stufe (Spalte)
 beobachtete_nachfrage <- matrix(0, n_perioden, n_stufen, dimnames = list(NULL, stufen))
@@ -361,7 +363,7 @@ ggplot(sim_daten, aes(x = Periode, y = Menge, color = `Größe`)) +
   theme_minimal()
 ```
 
-In der Grafik ist gut zu erkennen, wie der anfängliche Nachfragesprung beim Einzelhandel noch moderat, beim Hersteller dagegen bereits stark überzeichnet ankommt – die Bestellmenge "überschwingt" mit jeder Stufe stärker, bevor sie sich wieder auf ein neues Niveau einpendelt. Genau dieses Muster – nicht die absolute Höhe der Bestellungen – ist die charakteristische "Peitschenform", die dem Bullwhip-Effekt seinen Namen gibt.
+In der Grafik ist gut zu erkennen, wie der anfängliche Nachfragesprung bei der Filiale Frankfurt noch moderat, bei Nordsee-Fisch KG dagegen bereits stark überzeichnet ankommt – die Bestellmenge "überschwingt" mit jeder Stufe stärker, bevor sie sich wieder auf ein neues Niveau einpendelt. Genau dieses Muster – nicht die absolute Höhe der Bestellungen – ist die charakteristische "Peitschenform", die dem Bullwhip-Effekt seinen Namen gibt.
 :::
 
 ## Wiederbeschaffungszeit-Effekte
@@ -375,8 +377,9 @@ $$
 und diese Änderung wird über die Bestellregel $q_t = S - p_t$ **unmittelbar und vollständig** in eine veränderte Bestellmenge übersetzt. Je länger die Wiederbeschaffungszeit, desto größer der Multiplikator $(l+1)$ – und desto stärker reagiert die Bestellmenge auf jede noch so kleine Prognoseänderung. Auch der Sicherheitsbestandsterm wächst mit $\sqrt{l+1}$, wenngleich unterproportional zum Grundbedarfsterm. Wir können diesen Zusammenhang direkt mit `diff()` aus dem ersten R-Exkurs sichtbar machen, indem wir den Ziellagerbestand für steigende Wiederbeschaffungszeiten berechnen und die Grenzzunahme je zusätzlichem WBZ-Tag bestimmen:
 
 ```{r ch8-wbz-sensitivitaet}
-mu_beispiel    <- 10
-sigma_beispiel <- 3
+# Nachfrageparameter der Filiale Frankfurt (mu = 280, sigma = 55)
+mu_beispiel    <- 280
+sigma_beispiel <- 55
 
 tibble(
   WBZ = 0:4,

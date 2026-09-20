@@ -152,8 +152,8 @@ Nach dieser Einheit können Sie …
 Sushi-Boxen im Supermarkt
 :::
 
-Ein Supermarkt bezieht täglich frisch produzierte Sushi-Boxen von einem
-regionalen Sushi-Lieferanten.
+Ein Supermarkt bezieht täglich frisch produzierte Sushi-Boxen von der
+**SushiFresh GmbH**, einem regionalen Sushi-Hersteller im Rhein-Main-Gebiet.
 
 ```{r}
 #| fig-height: 2
@@ -381,8 +381,10 @@ Zwei möglische Situation aus Sicht des Lieferanten
 Mögliche Nachfrage & Produktionsmenge
 :::
 
-Aus Verkaufshistorie, Wochentag, Wetterprognose und aktuellen Aktionen
-schätzt der Lieferant vier mögliche Nachfrageszenarien:
+Als vereinfachtes Miniaturbeispiel (z. B. für eine kleine Filiale oder
+einen Testverkauf) schätzt SushiFresh aus Verkaufshistorie, Wochentag,
+Wetterprognose und aktuellen Aktionen zunächst vier mögliche
+Nachfrageszenarien:
 
 | Nachfrage $D$ | Wahrscheinlichkeit $P(D=d)$ | Kumulierte Wahrscheinlichkeit $F(d)$ |
 |----------:|-------------------:|-----------------------:|
@@ -744,7 +746,7 @@ plot_ly(
 
 ::: {.column width="50%"}
 ::: {.fragment .fade-up}
-**Kontinuierliche Nachfrage** $D \sim N(45,5^2)$ 
+**Kontinuierliche Nachfrage (Filiale Frankfurt)** $D \sim N(280,55^2)$
 
 ```{r newsvendor-continuous-plot}
 #| echo: false
@@ -753,9 +755,9 @@ plot_ly(
 #| fig-width: 7
 #| fig-height: 3.5
 
-mu <- 45
-sigma <- 5
-q_show_cont <- 45
+mu <- 280
+sigma <- 55
+q_show_cont <- 280
 
 q_grid_cont <- seq(mu - 4 * sigma, mu + 4 * sigma, length.out = 500)
 
@@ -920,7 +922,7 @@ plot_ly(
 
 ::: {.column width="50%"}
 ::: {.fragment .fade-up}
-**Kontinuierliche Nachfrage** $D \sim N(45,5^2)$ mit $c^u = 5$ und $c^o=3$
+**Kontinuierliche Nachfrage (Filiale Frankfurt)** $D \sim N(280,55^2)$ mit $c^u = 5$ und $c^o=3$
 
 ```{r newsvendor-continuous-plot2}
 #| echo: false
@@ -1057,6 +1059,10 @@ Im Falle normalverteilter Nachfrage mit $D \sim (\mu,\sigma^2)$ kann die optimal
 $$q^*=\mu + \sigma \cdot \Phi^{-1} \left( \frac{c^u}{c^o + c^u} \right) \qquad E(C(q^*))=(c^u+c^o)\cdot \sigma \cdot \phi\left( \frac{c^u}{c^o + c^u} \right) $$
 :::
 
+Wir betrachten dazu die Filiale **Frankfurt** von SushiFresh mit $\mu=280$
+und $\sigma=55$ Sushi-Boxen pro Tag — dieselbe Filiale, für die in
+Kapitel 6 der Pooling-Effekt des Sicherheitsbestands diskutiert wird.
+
 
 ::: {.small-text}
 ::: {.columns}
@@ -1124,7 +1130,7 @@ plot_ly(
 
 ```
 
-$q^* = 45 + 5 \cdot$ `r round(qnorm(cu/(cu+co)),2)`=`r round(mu + sigma*qnorm(cu/(cu+co)),1)`
+$q^* = 280 + 55 \cdot$ `r round(qnorm(cu/(cu+co)),2)`=`r round(mu + sigma*qnorm(cu/(cu+co)),1)`
 :::
 :::
 
@@ -1190,7 +1196,7 @@ plot_ly(
   )
 
 ```
-$q^* = 45 + 5 \cdot$ `r round(qnorm(cu/(cu+co)),2)`=`r round(mu + sigma*qnorm(cu/(cu+co)),1)`
+$q^* = 280 + 55 \cdot$ `r round(qnorm(cu/(cu+co)),2)`=`r round(mu + sigma*qnorm(cu/(cu+co)),1)`
 :::
 :::
 
@@ -1206,7 +1212,7 @@ $q^* = 45 + 5 \cdot$ `r round(qnorm(cu/(cu+co)),2)`=`r round(mu + sigma*qnorm(cu
 #| fig-width: 3
 #| fig-height: 3.25
 
-cU <- 5
+cu <- 5
 co <- 1
 df_exp_cont$cost <- cu * df_exp_cont$expected_loss + co * df_exp_cont$expected_sales
 
@@ -1256,7 +1262,7 @@ plot_ly(
   )
 
 ```
-$q^* = 45 + 5 \cdot$ `r round(qnorm(cu/(cu+co)),2)`=`r round(mu + sigma*qnorm(cu/(cu+co)),1)`
+$q^* = 280 + 55 \cdot$ `r round(qnorm(cu/(cu+co)),2)`=`r round(mu + sigma*qnorm(cu/(cu+co)),1)`
 :::
 :::
 

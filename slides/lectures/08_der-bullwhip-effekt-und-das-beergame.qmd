@@ -78,27 +78,22 @@ Fortsetzung
 ::: 
 
 ::: {.callout-note}
-## Lachsversorgung
+## Die SushiFresh-Lieferkette
 
-Der Sushi-Box-Produzent ist auf die kontinuierliche Versorgung mit frischen Zutaten angewiesen, um jeden Tag frische Sushi-Boxen zu fertigen. Eine der wichtigsten Zutaten ist Lachsfilet. Dieses wird über einen Zwischenhändler in Hamburg aus einer nachhaltigen Lachsfarm in der Nordsee bezogen. Die Lachs-/Sushi-Supply-Chain ist also so strukturiert:
+**SushiFresh GmbH** ist ein regionaler Hersteller frischer Sushi-Boxen mit Zentralproduktion in **Wiesbaden-Erbenheim** (vgl. Standortentscheidung in Kapitel 5) und beliefert sechs Supermarkt-Filialen im Rhein-Main-Gebiet – darunter die besonders nachfragestarke Filiale **Frankfurt** ($\mu=280$, $\sigma=55$ Boxen/Tag), die uns bereits aus den Kapiteln 6 und 7 als Beispiel bekannt ist. Für die Produktion ist SushiFresh auf die tägliche Anlieferung von frischem Fisch, Nori und Reis angewiesen, den der Fischgroßhändler **Nordsee-Fisch KG** liefert. Die Sushi-Supply-Chain ist also so strukturiert:
 
 $$
-\text{Endkunden/Supermarkt}
+\text{Supermarkt-Filialen}
 \mathrel{
   \mathop{\leftrightharpoons}
   \limits^{\text{Lieferung}}_{\text{Bestellung}}
 }
-\text{Sushi-Produzent}
+\text{SushiFresh GmbH}
 \mathrel{
   \mathop{\leftrightharpoons}
   \limits^{\text{Lieferung}}_{\text{Bestellung}}
 }
-\text{Lachshändler}
-\mathrel{
-  \mathop{\leftrightharpoons}
-  \limits^{\text{Lieferung}}_{\text{Bestellung}}
-}
-\text{Lachsfarm}
+\text{Nordsee-Fisch KG}
 $$
 :::
 
@@ -107,62 +102,62 @@ $$
 ::: columns
 ::: {.column width="30%"}
 
-**Sushi-Produzent**
+**Supermarkt-Filialen**
 
-- beobachtet Endkundennachfrage in Supermärkten
-- bestellt Lachsfilet beim Lachshändler und hält einen Bestand an Lachsfilet als Vorrat
+- beobachten Endkundennachfrage (z. B. Filiale Frankfurt: $\mu=280$, $\sigma=55$)
+- bestellen Sushi-Boxen bei SushiFresh GmbH und halten einen Bestand als Vorrat
 :::
 
 ::: {.column width="30%"}
-**Lachshändler**
+**SushiFresh GmbH**
 
-- bekommt Bestellungen von Sushi-Produzenten (=Nachfrage)
-- bestellt Lachsfilet bei Lachsfarm und hält einen Bestand an Lachsfilet als Vorrat
+- bekommt Bestellungen der Filialen (=Nachfrage)
+- bestellt Rohstoffe für Sushi-Boxen bei Nordsee-Fisch KG und hält einen Bestand an Sushi-Boxen als Vorrat
 
 :::
 
 ::: {.column width="30%"}
-**Lachsfarm**
+**Nordsee-Fisch KG**
 
-- bekommt Bestellungen vom Lachhändler (=Nachfrage)
-- züchtet Lachse in Farmen, produziert Lachsfilet und lagert dieses, um schnell liefern zu können
+- bekommt Bestellungen von SushiFresh GmbH (=Nachfrage)
+- beschafft Rohfisch, produziert die Vorstufen der Sushi-Boxen und lagert diese, um schnell liefern zu können
 :::
 :::
 :::
 
 ::: {.fragment .fade-up}
 ::: {.callout-important}
-Alle Akteure halten einen (Sicherheits-)Bestand an Lachsfilet, um Fehlmengen zu vermeiden $\rightarrow$ Wie hoch sollte dieser sein?
+Alle Akteure halten einen (Sicherheits-)Bestand an Sushi-Boxen, um Fehlmengen zu vermeiden $\rightarrow$ Wie hoch sollte dieser sein?
 :::
 :::
 
 -----------------------------------------------------------------------------
 
-## Fallbeispiel: Lachsfilet-Supply-Chain {#fallbeispiel-ordering-stocks}
+## Fallbeispiel: SushiFresh GmbH {#fallbeispiel-ordering-stocks}
 ::: slide-subtitle
-Situation des Sushi-Produzenten
-::: 
+Situation von SushiFresh GmbH
+:::
 
 ::: {.callout-note}
-## Bestellprozess für Lachsfilet
+## Bestellprozess für Sushi-Boxen
 
-Der Sushi-Produzent entscheidet täglich über seine Produktionsmege an Sushi-Boxen (vlg. Folien Newsvendormodell). Je Sushi-Bol_tx wird eine Einheit Lachsfilet benötigt. Sei $d_t$ der Bedarf an Lachsfilet-Einheiten an Tag $t$. Der Sushi-Produzent kann jeden Tag Lachsfilets bestellen. Die Bestellmenge an Tag $t$ sei $q_t$. Bestellte Lachsfilets werden $l=2$ Tage später geliefert. Die physisch verfügbare Anzahl an Lachsfilet-Einheiten sei $i_t$. Falls kein Lachsfilet vorrätig ist, wird der Lachsfiletbedarf vorgemerkt ($b_t$) und die Sushi-Boxen später nachproduziert.
+SushiFresh GmbH entscheidet täglich über seine Produktionsmenge an Sushi-Boxen für die Filiale Frankfurt (vgl. Folien Newsvendormodell). Sei $d_t$ der Bedarf an Sushi-Boxen-Einheiten an Tag $t$ (Filiale Frankfurt: $\mu=280$, $\sigma=55$). SushiFresh kann jeden Tag Nachschub bei Nordsee-Fisch KG bestellen. Die Bestellmenge an Tag $t$ sei $q_t$. Bestellte Rohstoffe/Sushi-Boxen-Einheiten werden $l=2$ Tage später geliefert. Die physisch verfügbare Anzahl an Sushi-Boxen-Einheiten sei $i_t$. Falls keine Sushi-Boxen vorrätig sind, wird der Bedarf vorgemerkt ($b_t$) und später nachproduziert bzw. nachgeliefert.
 :::
 
 ::: {.fragment .fade-up}
-**Lachsfiletbestände**
+**Sushi-Boxen-Bestände**
 
-- der **physische Bestand** $i_t$ wird berechnet als $i_t = \max(0,i_{t-1} + q_{t-2} - d_t)$ 
+- der **physische Bestand** $i_t$ wird berechnet als $i_t = \max(0,i_{t-1} + q_{t-2} - d_t)$
 - der **Nettobestand** $n_t$ berücksichtigt auch Fehlmengen $n_t = i_{t-1} + q_{t-2} - d_t$
-- der **disponible Bestand** $p_t$ berücksichtigt auch offene Bestellungen $p_t = n_{t-1} + q_{t-1} (+q_t)$ 
+- der **disponible Bestand** $p_t$ berücksichtigt auch offene Bestellungen $p_t = n_{t-1} + q_{t-1} (+q_t)$
 :::
 
 
 ------------------------------------------------------------------------------
 
-## Fallbeispiel: Lachsfilet-Supply-Chain {#fallbeispiel-stock-overview}
+## Fallbeispiel: SushiFresh GmbH {#fallbeispiel-stock-overview}
 ::: slide-subtitle
-Bestand des Sushi-Produzenten
+Bestand von SushiFresh GmbH (Filiale Frankfurt)
 :::
 
 :::: columns
@@ -173,14 +168,14 @@ Bestand des Sushi-Produzenten
 #| fig-width: 13
 #| fig-height: 7
 
-# Parameter und Beispieldaten
-# Wiederbeschaffungszeit: zwei Perioden
+# Parameter und Beispieldaten: Filiale Frankfurt (mu=280, sigma=55)
+# Wiederbeschaffungszeit: zwei Perioden (Rohstoffbeschaffung + Produktion/Auslieferung)
 # Eine Bestellung o_t trifft zu Beginn der Periode t + 2 ein.
 
-dem <- c(8, 9, 13, 16, 10, 12, 7, 9, 10, 8, 9, 10)
+dem <- c(234, 256, 344, 410, 278, 322, 212, 256, 278, 234, 256, 278)
 
-i.ini <- 35
-S.par <- 35
+i.ini <- 990
+S.par <- 990
 
 res <- tS.lager(d = dem, t = 1, S = S.par, l.ini = i.ini, wbz = 2)
 
@@ -193,7 +188,7 @@ daten_bestand <- res |>
          Periode = 1:nrow(res),
          offene_Bestellungen = cumsum(Bestellmenge)-cumsum(Liefermenge)
          ) |> 
-  add_row(Periode = 0, Nettobestand = 35, 'Disponibler_Bestand' = 35, Bestellmenge = 0, Liefermenge = 0, 'Physischer_Bestand' = 35, offene_Bestellungen = 0, .before = 1) |> 
+  add_row(Periode = 0, Nettobestand = i.ini, 'Disponibler_Bestand' = i.ini, Bestellmenge = 0, Liefermenge = 0, 'Physischer_Bestand' = i.ini, offene_Bestellungen = 0, .before = 1) |>
   mutate(Nettobestand_vor_Bedarf = lag(Nettobestand))
 
 
@@ -410,7 +405,7 @@ daten_bestand |>
 
 ------------------------------------------------------------------------------
 
-## Fallbeispiel: Lachsfilet-Supply-Chain {#fallbeispiel-order-up-to-level}
+## Fallbeispiel: SushiFresh GmbH {#fallbeispiel-order-up-to-level}
 ::: slide-subtitle
 Festlegung des Ziellagerbestands
 :::
@@ -460,7 +455,7 @@ Wichtig: Die Parameter $\mu$ und $\sigma$ sind die erwarte tägliche **Nachfrage
 
 ------------------------------------------------------------------------------
 
-## Fallbeispiel: Lachsfilet-Supply-Chain {#fallbeispiel-order-decisions}
+## Fallbeispiel: SushiFresh GmbH {#fallbeispiel-order-decisions}
 ::: slide-subtitle
 Bestellentscheidungen und deren Auswirkungen
 :::
@@ -676,7 +671,7 @@ daten_order_decisions |>
 ::: {.callout-important}
 ## Beobachtung
 
-Die Schwankung der Nachfrage $\sigma_d=$ `r round(sd_vergleich$Standardabweichung[1],1)` ist deutlich kleiner als die Standardabweichung der Bestellmengen $\sigma_q=$ `r round(sd_vergleich$Standardabweichung[2],1)` $\rightarrow$ **zusätzliche Unsicherheit** für Lachsfilet-Lieferanten wird generiert
+Die Schwankung der Nachfrage $\sigma_d=$ `r round(sd_vergleich$Standardabweichung[1],1)` ist deutlich kleiner als die Standardabweichung der Bestellmengen $\sigma_q=$ `r round(sd_vergleich$Standardabweichung[2],1)` $\rightarrow$ **zusätzliche Unsicherheit** für Nordsee-Fisch KG wird generiert
 ::: 
 :::
 

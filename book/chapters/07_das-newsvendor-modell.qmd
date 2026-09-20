@@ -30,14 +30,14 @@ Damit ist das Newsvendor-Modell das mikroökonomische Fundament für sehr viel w
 
 ## Fallbeispiel: Sushi-Boxen im Supermarkt
 
-Zur Veranschaulichung begleiten wir das gesamte Kapitel mit einem durchgehenden Beispiel: Ein Supermarkt bezieht täglich frisch produzierte Sushi-Boxen von einem regionalen Lieferanten. Der zeitliche Ablauf eines Verkaufstages sieht wie folgt aus:
+Zur Veranschaulichung begleiten wir das gesamte Kapitel mit einem durchgehenden Beispiel: Die **SushiFresh GmbH**, ein regionaler Hersteller frischer Sushi-Boxen im Rhein-Main-Gebiet, beliefert täglich mehrere Supermarkt-Filialen mit frisch produzierten Sushi-Boxen. Der zeitliche Ablauf eines Verkaufstages sieht für jede Filiale wie folgt aus:
 
-1. **7 Uhr:** Die Sushi-Boxen werden frisch vorbereitet und vor Ladenöffnung geliefert.
+1. **7 Uhr:** Die Sushi-Boxen werden frisch vorbereitet und vor Ladenöffnung an die jeweilige Filiale geliefert.
 2. **8 Uhr:** Der Verkauf im Supermarkt beginnt. Nachlieferungen während des Tages sind ausgeschlossen — die produzierte Menge ist für den gesamten Tag fix.
-3. **19 Uhr:** Nicht verkaufte Boxen werden vom Lieferanten abgeholt.
+3. **19 Uhr:** Nicht verkaufte Boxen werden von SushiFresh wieder abgeholt.
 4. **20 Uhr:** Die Restware wird rabattiert verkauft, gespendet oder entsorgt — ein regulärer Verkauf am Folgetag ist aus Gründen der Lebensmittelsicherheit nicht mehr zulässig.
 
-Die zentrale unternehmerische Entscheidung fällt bereits am Morgen, lange bevor die tatsächliche Tagesnachfrage bekannt ist: **Wie viele Sushi-Boxen sollte der Lieferant produzieren?**
+Die zentrale unternehmerische Entscheidung fällt bereits am Morgen, lange bevor die tatsächliche Tagesnachfrage der jeweiligen Filiale bekannt ist: **Wie viele Sushi-Boxen sollte SushiFresh je Filiale produzieren?**
 
 ### Erlös- und Kostenstruktur
 
@@ -175,7 +175,7 @@ newsvendor_diskret <- function(nachfrage, wahrscheinlichkeit,
 }
 ```
 
-Nun wenden wir die Funktion auf unser Sushi-Beispiel an. Aus Verkaufshistorie, Wochentag, Wetterprognose und aktuellen Aktionen hat der Lieferant vier mögliche Nachfrageszenarien geschätzt:
+Nun wenden wir die Funktion auf ein bewusst kleines, vereinfachtes Miniaturbeispiel an — etwa einen Testverkauf in einer kleinen Filiale, für die noch keine verlässliche Verteilungsannahme getroffen werden kann. Aus Verkaufshistorie, Wochentag, Wetterprognose und aktuellen Aktionen wurden für diesen Testfall vier mögliche Nachfrageszenarien geschätzt:
 
 ```{r ch7-sushi-anwendung}
 sushi <- newsvendor_diskret(
@@ -234,7 +234,7 @@ Die kritische Verhältniszahl erlaubt zudem eine anschauliche Fallunterscheidung
 
 ## Stetige Nachfrage: Die Normalverteilung
 
-In der Praxis liegt Nachfrage selten in Form weniger diskreter Szenarien vor, sondern wird — wie in Kapitel 6 besprochen — häufig durch eine stetige Verteilung angenähert, meist die Normalverteilung $D \sim N(\mu, \sigma^2)$. Nehmen wir an, der Sushi-Lieferant hätte inzwischen so viele Verkaufstage dokumentiert, dass sich die Tagesnachfrage gut durch $\mu = 45$ Boxen und $\sigma = 8$ Boxen beschreiben lässt (bei unveränderter Kostenstruktur $c^u = 5\,$ €, $c^o = 3$ €).
+In der Praxis liegt Nachfrage selten in Form weniger diskreter Szenarien vor, sondern wird — wie in Kapitel 6 besprochen — häufig durch eine stetige Verteilung angenähert, meist die Normalverteilung $D \sim N(\mu, \sigma^2)$. Die SushiFresh GmbH beliefert inzwischen sechs Supermarkt-Filialen im Rhein-Main-Gebiet, deren Tagesnachfrage sich je nach Einzugsgebiet und Filialgröße deutlich unterscheidet. Wir betrachten im Folgenden die größte dieser Filialen, **Frankfurt**, für die aus der dokumentierten Verkaufshistorie eine Tagesnachfrage von $\mu = 280$ Boxen mit einer Standardabweichung von $\sigma = 55$ Boxen geschätzt wurde (bei unveränderter Kostenstruktur $c^u = 5\,$ €, $c^o = 3$ €, denn Verkaufspreis, Herstellkosten und Restwert sind produktbezogene und nicht filialspezifische Größen). Es handelt sich um dieselbe Filiale, die auch in Kapitel 6 im Kontext des Pooling-Effekts des Sicherheitsbestands über das SushiFresh-Filialnetz betrachtet wird.
 
 Da die Normalverteilung eine streng monoton wachsende, stetige Verteilungsfunktion $F$ besitzt, existiert die Umkehrfunktion $F^{-1}$ exakt — die Fraktilregel muss hier nicht mehr näherungsweise über eine Treppenfunktion, sondern kann direkt ausgewertet werden. Wie in Kapitel 6 gilt für die Standardisierung $Z = (D-\mu)/\sigma \sim N(0,1)$, sodass sich $q^*$ mit dem Quantil der Standardnormalverteilung ausdrücken lässt, das `qnorm()` liefert:
 
@@ -255,8 +255,8 @@ $$
 Genau diese beiden Formeln — für $q^*$ und $E[C(q^*)]$ — implementiert die Funktion `newsvendor_normal()` in `R/scm_functions.R`, die Sie zu Beginn dieses Kapitels bereits kennengelernt haben. Rechnen wir unser Beispiel nach:
 
 ```{r ch7-normal-parameter}
-mu_nachfrage    <- 45   # Erwartungswert der Tagesnachfrage (Boxen)
-sigma_nachfrage <- 8    # Standardabweichung der Tagesnachfrage (Boxen)
+mu_nachfrage    <- 280  # Erwartungswert der Tagesnachfrage der Filiale Frankfurt (Boxen)
+sigma_nachfrage <- 55   # Standardabweichung der Tagesnachfrage der Filiale Frankfurt (Boxen)
 
 cu <- 5   # Unterdeckungskosten (wie im diskreten Fall)
 co <- 3   # Ueberdeckungskosten
@@ -272,7 +272,7 @@ q_stern_normal
 kosten_optimum
 ```
 
-Mit $CR = 0{,}625$ ergibt sich $z^* = \Phi^{-1}(0{,}625) \approx 0{,}32$ und damit $q^* = 45 + 8 \cdot 0{,}32 \approx 47{,}5$ Sushi-Boxen. Da nur ganze Boxen produziert werden können, würde man in der Praxis auf $q^* = 48$ aufrunden. Die erwarteten Fehlmengen- und Überbestandskosten am Optimum betragen rund $24{,}3\,$€ pro Tag, sodass der erwartete Gewinn $E[P(q^*)] = \mu \cdot c^u - E[C(q^*)] \approx 45 \cdot 5 - 24{,}3 \approx 200{,}7\,$€ pro Tag beträgt.
+Mit $CR = 0{,}625$ ergibt sich $z^* = \Phi^{-1}(0{,}625) \approx 0{,}319$ und damit $q^* = 280 + 55 \cdot 0{,}319 \approx 297{,}5$ Sushi-Boxen. Da nur ganze Boxen produziert werden können, würde man in der Praxis auf $q^* = 298$ aufrunden. Die erwarteten Fehlmengen- und Überbestandskosten am Optimum betragen rund $166{,}8\,$€ pro Tag, sodass der erwartete Gewinn $E[P(q^*)] = \mu \cdot c^u - E[C(q^*)] \approx 280 \cdot 5 - 166{,}8 \approx 1233{,}2\,$€ pro Tag beträgt.
 
 Zur Kontrolle vergleichen wir unser eigenes Ergebnis direkt mit der fertigen Funktion aus `R/scm_functions.R`:
 
@@ -292,7 +292,7 @@ Die folgende Abbildung veranschaulicht die Nachfrageverteilung zusammen mit der 
 
 ```{r}
 #| label: fig-newsvendor-normal
-#| fig-cap: "Dichte der normalverteilten Sushi-Nachfrage mit optimaler Bestellmenge"
+#| fig-cap: "Dichte der normalverteilten Sushi-Nachfrage der Filiale Frankfurt mit optimaler Bestellmenge"
 #| fig-width: 7
 #| fig-height: 4
 
@@ -400,7 +400,7 @@ Bislang haben wir das Newsvendor-Modell für feste Werte von $\mu$, $\sigma$, $p
 ::: {.r-exkurs}
 **R-Exkurs: Sensitivitätsanalyse durch Vektorisierung**
 
-Zunächst untersuchen wir, wie der erwartete Gewinn $E[P(q)]$ über ein feines Raster möglicher Bestellmengen verläuft — nicht nur an den vier ursprünglichen Szenariowerten, sondern für jede ganzzahlige Menge zwischen 20 und 70 Boxen. Dazu kapseln wir die Gewinnformel aus dem Normalverteilungsfall in einer kleinen Funktion und werten sie mit `sapply()` für jeden Rasterpunkt aus:
+Zunächst untersuchen wir, wie der erwartete Gewinn $E[P(q)]$ über ein feines Raster möglicher Bestellmengen verläuft — für die Filiale Frankfurt also für jede Menge zwischen 100 und 460 Boxen. Dazu kapseln wir die Gewinnformel aus dem Normalverteilungsfall in einer kleinen Funktion und werten sie mit `sapply()` für jeden Rasterpunkt aus:
 
 ```{r}
 #| label: fig-newsvendor-sensitivitaet-q
@@ -417,7 +417,7 @@ erwarteter_gewinn_normal <- function(q, mu, sigma, cu, co) {
   mu * cu - cu * e_fehlmenge - co * e_ueberbestand
 }
 
-q_raster <- seq(20, 70, by = 1)
+q_raster <- seq(100, 460, by = 2)
 
 # sapply() wendet die Funktion auf jeden Wert des Rasters an
 gewinn_je_q <- sapply(
