@@ -3,15 +3,8 @@ title: "Supply Chain Management"
 subtitle: "Wintersemester 26/27"
 author: "Thomas Kirschstein"
 
-
-filters:
-  - diagram
-
 execute:
-  cache: true
-
-diagram:
-  cache: true
+  cache: false
 
 format:
   revealjs:

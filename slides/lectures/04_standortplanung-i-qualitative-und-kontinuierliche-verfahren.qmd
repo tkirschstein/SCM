@@ -53,7 +53,7 @@ Nach dieser Einheit können Sie …
 Supply Chain Planning Matrix
 :::
 
-![](../images/clipboard-38068832.png)
+![](images/clipboard-38068832.png)
 
 ## Strategische Netzwerkplanung {#slide-71}
 
@@ -68,6 +68,7 @@ Zielstellung der Standortplanung
 #| echo: false
 #| warning: false
 #| message: false
+#| cache: false
 #| out-width: "100%"
 #| fig-height: 1.1
 
@@ -236,7 +237,7 @@ digraph network {
 Phasen der Standortwahl
 :::
 
-![](../images/image61.jpeg)
+![](images/image61.jpeg)
 
 [@chopra2025supply]
 
@@ -248,7 +249,7 @@ Standortplanungsprozess
 
 ::::: columns
 ::: {.column width="70%"}
-![](../images/image62.png)
+![](images/image62.png)
 
 [@kik2022standortplanung]
 :::
@@ -267,7 +268,7 @@ Standortfaktoren
 
 :::::: columns
 ::: {.column width="70%"}
-![](../images/image63.png){width="950"}
+![](images/image63.png){width="950"}
 
 [@lahner2020regionaloekonomie]
 :::
@@ -290,10 +291,10 @@ Methoden der Standortplanung
 
 ::::::: columns
 :::: {.column width="60%"}
-![](../images/image64.png){width="800"}
+![](images/image64.png){width="800"}
 
 ::: small-text
-Merkmale von Optimierungsmodellen [@kik2022standortplanung] ![](../images/image65.png){width="800"}
+Merkmale von Optimierungsmodellen [@kik2022standortplanung] ![](images/image65.png){width="800"}
 :::
 ::::
 
@@ -458,7 +459,7 @@ nwa |>
 Analytical Hierarchy Process (AHP Methode)
 :::
 
-![](../images/image67.png){width="500"}
+![](images/image67.png){width="500"}
 
 ### Ablauf
 
@@ -479,7 +480,7 @@ Analytical Hierarchy Process (AHP Methode) - Beispiel
 ::: callout-note
 ## Fallbeispiel
 
-SushiFresh vergleicht die drei Kandidatenstandorte Wiesbaden-Erbenheim, Mainz-Hechtsheim und Raunheim nun **paarweise** statt über direkt geschätzte Punktwerte. Folgende Bewertungskriterien werden herangezogen.
+SushiFresh vergleicht die drei Kandidatenstandorte Wiesbaden-Erbenheim (W-E), Mainz-Hechtsheim (M-H) und Raunheim (R) nun **paarweise** statt über direkt geschätzte Punktwerte. Folgende Bewertungskriterien werden herangezogen.
 
 1.  Transportnähe: Distanz zu den sechs Filialen
 2.  Mietkosten: jährliche Fixkosten des Grundstücks
@@ -526,31 +527,31 @@ Analytical Hierarchy Process (AHP Methode) - Beispiel
 ::: {.column width="33%"}
 Transportnähe
 
-| site    |  WI-Erb  |  MZ-Hech  |  Raunheim  |
+| site    |  W-E  |  M-H  |  R  |
 |:--------|:--------:|:---------:|:----------:|
-| WI-Erb  |    1     |     2     |    1/2     |
-| MZ-Hech |   1/2    |     1     |    1/3     |
-| Raunheim|    2     |     3     |     1      |
+| W-E  |    1     |     2     |    1/2     |
+| M-H |   1/2    |     1     |    1/3     |
+| R |    2     |     3     |     1      |
 :::
 
 ::: {.column width="33%"}
 Mietkosten
 
-| site    |  WI-Erb  |  MZ-Hech  |  Raunheim  |
+| site    |  W-E  |  M-H  |  R  |
 |:--------|:--------:|:---------:|:----------:|
-| WI-Erb  |    1     |     2     |     4      |
-| MZ-Hech |   1/2    |     1     |     2      |
-| Raunheim|   1/4    |    1/2    |     1      |
+| W-E  |    1     |     2     |     4      |
+| M-H |   1/2    |     1     |     2      |
+| R |   1/4    |    1/2    |     1      |
 :::
 
 ::: {.column width="33%"}
 Fachkräfte
 
-| site    |  WI-Erb  |  MZ-Hech  |  Raunheim  |
+| site    |  W-E  |  M-H  |  R  |
 |:--------|:--------:|:---------:|:----------:|
-| WI-Erb  |    1     |    1/2    |     2      |
-| MZ-Hech |    2     |     1     |     3      |
-| Raunheim|   1/2    |    1/3    |     1      |
+| W-E  |    1     |    1/7    |     2      |
+| M-H |    7     |     1     |     5      |
+| R|   1/2    |    1/5    |     1      |
 :::
 :::::::
 
@@ -571,39 +572,46 @@ Analytical Hierarchy Process (AHP Methode) - Beispiel
 :::
 
 ::::::: small-text
-**Transportnähe** — Synthese über das geometrische Mittel der Zeilen (stabile Näherung an den Eigenvektor)
+**Transportnähe** — Synthese (Berechnung des größten Eigenvektors)
 
 :::::: {.columns .v-center}
-::: {.column width="30%"}
-Zeilenprodukte
+::: {.column width="31%"}
+Spaltensummen
 
-| Site     |  Produkt  |
-|:---------|:---------:|
-| WI-Erb   |     1     |
-| MZ-Hech  |    1/6    |
-| Raunheim |     6     |
+| site    |  W-E  |  M-H  |  R  |
+|:--------|:--------:|:---------:|:----------:|
+| W-E  |    1     |     2     |    1/2     |
+| M-H |   1/2    |     1     |    1/3     |
+| R |    2     |     3     |     1      |
+|  $\sum$ |    7/2     |     6     |    11/6      |
 :::
 
-::: {.column width="30%"}
-3. Wurzel je Zeile
+::: {.column width="31%"}
+::: {.fragment .fade-up}
 
-| Site     |  $\sqrt[3]{\cdot}$  |
-|:---------|:-------------------:|
-| WI-Erb   |        1.0000       |
-| MZ-Hech  |        0.5503       |
-| Raunheim |        1.8171       |
-| $\sum$   |        3.3674       |
+Normierung
+
+| site    |  W-E  |  M-H  |  R  |
+|:--------|:--------:|:---------:|:----------:|
+| W-E     |    2/7   |     1/3     |    3/11  |
+| M-H     |   1/7    |     1/6     |    2/11  |
+| R       |    4/7   |     1/2     |    6/11  |
+|  $\sum$ |    1     |     1       |    1     |
 :::
 
-::: {.column width="40%"}
-Normierung (÷ Summe)
+:::
 
-| Site     |   Gewicht   |
-|:---------|:-----------:|
-| WI-Erb   |   0.2970    |
-| MZ-Hech  |   0.1634    |
-| Raunheim |   0.5396    |
-| $\sum$   |   1.0000    |
+::: {.column width="37%"}
+::: {.fragment .fade-up}
+Konsolidierung
+
+| site    |  W-E  |  M-H  |  R  | $\varnothing$ |
+|:--------|:--------:|:---------:|:----------:|:----------:|
+| W-E     |   0.29   |     0.33     |   0.27     | **0.297** |
+| M-H     |   0.14   |     0.17     |   0.18     | **0.163** |
+| R       |   0.57   |     0.50     |   0.55     | **0.540** |
+|  $\sum$ |    1     |     1     |    1       | 1 |
+:::
 :::
 ::::::
 :::::::
@@ -628,9 +636,9 @@ Präferenzvektoren aller Standorte für alle Kriterien
 
 | site     | Transportnähe | Mietkosten | Fachkräfte |
 |:---------|:-------------:|:----------:|:----------:|
-| WI-Erb   |    0.2970     |   0.5714   |   0.2970   |
-| MZ-Hech  |    0.1634     |   0.2857   |   0.5396   |
-| Raunheim |    0.5396     |   0.1429   |   0.1634   |
+| WI-Erb   |    0.297     |   0.571   |   0.160   |
+| MZ-Hech  |    0.163     |   0.286   |   0.730   |
+| Raunheim |    0.540     |   0.143   |   0.110   |
 
 ## Qualitative Standortplanung {#slide-82}
 
@@ -651,9 +659,9 @@ Analytical Hierarchy Process (AHP Methode) - Beispiel
 | Kriterium      | Transportnähe | Mietkosten | Fachkräfte |
 |:---------------|:-------------:|:----------:|:----------:|
 | Transportnähe  |       1       |     3      |     2      |
-| Mietkosten     |      1/3      |     1      |    1/2     |
-| Fachkräfte     |      1/2      |     2      |     1      |
-| $\sum$         |     11/6      |     6      |    7/2     |
+| Mietkosten     |      1/3      |     1      |    1/5     |
+| Fachkräfte     |      1/2      |     5      |     1      |
+| $\sum$         |     11/6      |     9      |    16/5     |
 
 ## Qualitative Standortplanung
 
@@ -673,12 +681,12 @@ Analytical Hierarchy Process (AHP Methode) - Beispiel
 
 Nach demselben Verfahren (geometrisches Mittel der Zeilen, dann normieren) wie auf der vorherigen Folie für die Standorte ergibt sich für die drei Kriterien:
 
-| Kriterium     | Zeilenprodukt | 3. Wurzel | Gewicht |
-|:--------------|:-------------:|:---------:|:-------:|
-| Transportnähe |       6       |  1.8171   | 0.5396  |
-| Mietkosten    |      1/6      |  0.5503   | 0.1634  |
-| Fachkräfte    |       1       |  1.0000   | 0.2970  |
-| $\sum$        |               |  3.3674   | 1.0000  |
+| Kriterium      | Transportnähe | Mietkosten | Fachkräfte | $\varnothing$ |
+|:---------------|:-------------:|:----------:|:----------:|:----------:|
+| Transportnähe  |     6/11      |     1/3    |     10/16   | 0.501 |
+| Mietkosten     |     2/11      |     1/9    |     1/16    | 0.118 |
+| Fachkräfte     |     3/11      |     5/9    |     5/16    | 0.380 |
+| $\sum$         |     1         |     1      |     1      | 1 |
 
 ## Qualitative Standortplanung {#slide-83}
 
@@ -699,25 +707,25 @@ Analytical Hierarchy Process (AHP Methode) - Beispiel
 ::: smaller-text
 $\left(
 \begin{array}{ccc}
-0.2970 & 0.5714 & 0.2970 \\
-0.1634 & 0.2857 & 0.5396 \\
-0.5396 & 0.1429 & 0.1634
+0.297 & 0.571 & 0.160 \\
+0.163 & 0.286 & 0.730 \\
+0.540 & 0.143 & 0.110
 \end{array}
 \right)
 \times
 \left(
 \begin{array}{c}
-0.5396\\
-0.1634\\
-0.2970
+0.501\\
+0.118\\
+0.380
 \end{array}
 \right)
 =
 \left(
 \begin{array}{c}
-0.3418\\
-0.2951\\
-0.3631
+0.280\\
+0.390\\
+0.330
 \end{array}
 \right)
 \begin{array}{c}
@@ -726,7 +734,7 @@ $\left(
 \text{= Score Raunheim}
 \end{array}$
 
-**Ergebnis:** Beste Alternative ist Raunheim — allerdings nur **knapp** vor Wiesbaden-Erbenheim!
+**Ergebnis:** Beste Alternative ist Mainz-Hechtheim — allerdings nur **knapp** vor Raunheim!
 
 ::: {.fragment .fade-up}
 **Vorteile AHP**
@@ -749,25 +757,25 @@ Analytical Hierarchy Process (AHP Methode) - Konsistenzindex
 ::: smaller-text
 1.  Produkt aus nicht-normalisierter Präferenzmatrix und Präferenzvektor (Kriterienvergleich): $$\left(\begin{array}{ccc}
      1 & 3 & 2 \\
-     1\!/\!3 & 1 & 1\!/\!2 \\
-     1\!/\!2 & 2 & 1 \\
+     1\!/\!3 & 1 & 1\!/\!5 \\
+     1\!/\!2 & 5 & 1 \\
      \end{array}
      \right)\times\left(\begin{array}{c}
-     0.5396\\
-     0.1634\\
-     0.2970\\
+     0.510\\
+     0.118\\
+     0.380\\
      \end{array}\right)=\left(\begin{array}{c}
-     1.6238 \\
-     0.4918\\
-     0.8936\\
+     1.624 \\
+     0.364\\
+     1.225\\
      \end{array}\right)$$
 2.  Dividiere den Vektor komponentenweise durch die Präferenzwerte: $$\begin{align*}
-    1.6238 / 0.5396 &=  3.0092\\
-    0.4918 / 0.1634 &=  3.0092\\
-    0.8936 / 0.2970 &=  3.0092\\
-    \text{average }\bar{P} &= 3.0092
+    1.624 / 0.510 &=  3.184\\
+    0.364 / 0.118 &=  3.085\\
+    1.225 / 0.380 &=  3.224\\
+    \text{average }\bar{P} &= 3.164
     \end{align*}$$
-3.  Berechne den Konsistenzwert mit $n=3$ durch $$ KI =\frac{\bar{P}- n}{n-1} = 0.0046. $$
+3.  Berechne den Konsistenzwert mit $n=3$ durch $$ KI =\frac{\bar{P}- n}{n-1} = 0.08. $$
 :::
 ::::
 
@@ -776,7 +784,7 @@ Analytical Hierarchy Process (AHP Methode) - Konsistenzindex
 ::: callout-note
 ## Interpretation
 
-Je näher $KI$ an 0 liegt, desto konsistenter ist die Präferenzmatrix. Wenn $KI=0$ ist sie perfekt konsistent. $\bar{P}$ ist der größte Eigenwert der Präferenzmatrix. Mit $CR \approx 0{,}0079$ (Random Index $RI = 0{,}58$ bei $n=3$) liegt die Matrix sehr deutlich unter der 10-%-Schwelle und gilt damit als konsistent.
+Je näher $KI$ an 0 liegt, desto konsistenter ist die Präferenzmatrix. Wenn $KI=0$ ist sie perfekt konsistent. $\bar{P}$ ist der größte Eigenwert der Präferenzmatrix. Mit $CR \approx 0{,}08$ (Random Index $RI = 0{,}58$ bei $n=3$) liegt die Matrix sehr deutlich unter der 10-%-Schwelle und gilt damit als konsistent.
 :::
 :::
 ::::
@@ -808,7 +816,7 @@ Neoklassische Standorttheorie -- Steiner-Weber-Modell
 
 :::: {.column width="40%"}
 
-![](../images/image69.jpeg)
+![](images/image69.jpeg)
 ::::
 ::::::
 
@@ -1207,6 +1215,7 @@ anim_df <- res$history |>
 #| echo: false
 #| results: asis
 #| out-width: 100%
+#| cache: false
 
 fig <- plot_ly(height = "100%", width = 650) |>
   add_markers(data = kunden,
@@ -1469,7 +1478,7 @@ ggplot(kunden_plot, aes(x = u, y = v)) +
 
 ---
 
-##Kontinuierliche Standortplanung {#slide-steiner-weber-manhattan}
+## Kontinuierliche Standortplanung {#slide-steiner-weber-manhattan}
 
 ::: slide-subtitle
 Steiner-Weber-Modell mit Manhattan-Distanzen

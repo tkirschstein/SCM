@@ -1,6 +1,10 @@
 project:
-  output-dir: _output
+  output-dir: ../docs/slides
   execute-dir: project
+
+resource-path:
+    - .
+
 format:
   revealjs:
     slide-number: true

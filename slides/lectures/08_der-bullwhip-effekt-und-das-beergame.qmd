@@ -80,7 +80,7 @@ Fortsetzung
 ::: {.callout-note}
 ## Die SushiFresh-Lieferkette
 
-**SushiFresh GmbH** ist ein regionaler Hersteller frischer Sushi-Boxen mit Zentralproduktion in **Wiesbaden-Erbenheim** (vgl. Standortentscheidung in Kapitel 5) und beliefert sechs Supermarkt-Filialen im Rhein-Main-Gebiet – darunter die besonders nachfragestarke Filiale **Frankfurt** ($\mu=280$, $\sigma=55$ Boxen/Tag), die uns bereits aus den Kapiteln 6 und 7 als Beispiel bekannt ist. Für die Produktion ist SushiFresh auf die tägliche Anlieferung von frischem Fisch, Nori und Reis angewiesen, den der Fischgroßhändler **Nordsee-Fisch KG** liefert. Die Sushi-Supply-Chain ist also so strukturiert:
+**SushiFresh GmbH** ist ein regionaler Hersteller frischer Sushi-Boxen und beliefert sechs Supermarkt-Filialen im Rhein-Main-Gebiet. Für die Produktion ist SushiFresh auf die tägliche Lieferung von frischen Fischfilets angewiesen, die der Fischgroßhändler **Nord-Fisch KG** liefert. Die Sushi-Supply-Chain ist also so strukturiert:
 
 $$
 \text{Supermarkt-Filialen}
@@ -93,7 +93,7 @@ $$
   \mathop{\leftrightharpoons}
   \limits^{\text{Lieferung}}_{\text{Bestellung}}
 }
-\text{Nordsee-Fisch KG}
+\text{Nord-Fisch KG}
 $$
 :::
 
@@ -105,29 +105,29 @@ $$
 **Supermarkt-Filialen**
 
 - beobachten Endkundennachfrage (z. B. Filiale Frankfurt: $\mu=280$, $\sigma=55$)
-- bestellen Sushi-Boxen bei SushiFresh GmbH und halten einen Bestand als Vorrat
+- bestellen täglich Sushi-Boxen bei SushiFresh 
 :::
 
 ::: {.column width="30%"}
 **SushiFresh GmbH**
 
 - bekommt Bestellungen der Filialen (=Nachfrage)
-- bestellt Rohstoffe für Sushi-Boxen bei Nordsee-Fisch KG und hält einen Bestand an Sushi-Boxen als Vorrat
+- bestellt Fisch für die Sushi-Boxen bei Nord-Fisch KG und hält einen Bestand an Fisch als Vorrat
 
 :::
 
 ::: {.column width="30%"}
-**Nordsee-Fisch KG**
+**Nord-Fisch KG**
 
 - bekommt Bestellungen von SushiFresh GmbH (=Nachfrage)
-- beschafft Rohfisch, produziert die Vorstufen der Sushi-Boxen und lagert diese, um schnell liefern zu können
+- beschafft Rohfisch, produziert die Fisch-Filets und lagert diese, um schnell liefern zu können
 :::
 :::
 :::
 
 ::: {.fragment .fade-up}
 ::: {.callout-important}
-Alle Akteure halten einen (Sicherheits-)Bestand an Sushi-Boxen, um Fehlmengen zu vermeiden $\rightarrow$ Wie hoch sollte dieser sein?
+SushiFresh und Nord-Fisch Akteure halten einen (Sicherheits-)Bestand an Fischfilets, um Fehlmengen zu vermeiden $\rightarrow$ Wie hoch sollte dieser sein?
 :::
 :::
 
@@ -139,9 +139,9 @@ Situation von SushiFresh GmbH
 :::
 
 ::: {.callout-note}
-## Bestellprozess für Sushi-Boxen
+## Bestellprozess für Fischfilets
 
-SushiFresh GmbH entscheidet täglich über seine Produktionsmenge an Sushi-Boxen für die Filiale Frankfurt (vgl. Folien Newsvendormodell). Sei $d_t$ der Bedarf an Sushi-Boxen-Einheiten an Tag $t$ (Filiale Frankfurt: $\mu=280$, $\sigma=55$). SushiFresh kann jeden Tag Nachschub bei Nordsee-Fisch KG bestellen. Die Bestellmenge an Tag $t$ sei $q_t$. Bestellte Rohstoffe/Sushi-Boxen-Einheiten werden $l=2$ Tage später geliefert. Die physisch verfügbare Anzahl an Sushi-Boxen-Einheiten sei $i_t$. Falls keine Sushi-Boxen vorrätig sind, wird der Bedarf vorgemerkt ($b_t$) und später nachproduziert bzw. nachgeliefert.
+SushiFresh GmbH entscheidet täglich über seine Produktionsmenge an Sushi-Boxen für die Filiale Frankfurt (vgl. Folien Newsvendormodell). Basierend auf der Sushi-Box-Nachfrage, sei $d_t$ der Bedarf an Fischfilet-Einheiten an Tag $t$ (Filiale Frankfurt: $\mu=280$, $\sigma=55$). SushiFresh kann jeden Tag Nachschub bei Nord-Fisch KG bestellen. Die Bestellmenge an Tag $t$ sei $q_t$. Bestellte Fischfilets werden $l=2$ Tage später geliefert. Die physisch verfügbare Menge an Fischfilet-Einheiten sei $i_t$. Falls keine Fischfilets vorrätig sind, wird der Bedarf vorgemerkt ($b_t$) und später nachproduziert bzw. nachgeliefert.
 :::
 
 ::: {.fragment .fade-up}
@@ -671,7 +671,7 @@ daten_order_decisions |>
 ::: {.callout-important}
 ## Beobachtung
 
-Die Schwankung der Nachfrage $\sigma_d=$ `r round(sd_vergleich$Standardabweichung[1],1)` ist deutlich kleiner als die Standardabweichung der Bestellmengen $\sigma_q=$ `r round(sd_vergleich$Standardabweichung[2],1)` $\rightarrow$ **zusätzliche Unsicherheit** für Nordsee-Fisch KG wird generiert
+Die Schwankung der Nachfrage $\sigma_d=$ `r round(sd_vergleich$Standardabweichung[1],1)` ist deutlich kleiner als die Standardabweichung der Bestellmengen $\sigma_q=$ `r round(sd_vergleich$Standardabweichung[2],1)` $\rightarrow$ **zusätzliche Unsicherheit** für Nord-Fisch KG wird generiert
 ::: 
 :::
 

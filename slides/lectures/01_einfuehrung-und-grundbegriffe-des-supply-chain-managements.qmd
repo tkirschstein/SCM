@@ -42,7 +42,7 @@ Klausur: zusammen mit Distribution & BBA-Kurs
 3.  Unsicherheits- und Risikomanagement in Supply Chains
 
 
-# Grundlagen des Supply Chain Managements {#slide-5}
+# Grundlagen des Supply Chain Managements 
 
 ## Grundlagen des Supply Chain Managements {#slide-5}
 
@@ -76,9 +76,9 @@ Cheops and building supply chains
 - Required coordinated transport, tool inventory, and mass catering about 100,000 workers
 
 ::: {layout-ncol="2"}
-![](../images/image6.jpeg "Picture 8")
+![](images/image6.jpeg "Picture 8")
 
-![](../images/image7.png)
+![](images/image7.png)
 :::
 
 ## Supply chains in History {#slide-7}
@@ -92,9 +92,9 @@ Hannibals invasion of Italy
 - Supply of troops and beasts need to be realized in hostile territory
 
 ::: {layout-ncol="2"}
-![](../images/image8.jpeg){width="542"}
+![](images/image8.jpeg){width="542"}
 
-![](../images/image9.png){width="559"}
+![](images/image9.png){width="559"}
 :::
 
 
@@ -690,7 +690,7 @@ good -> consumption
 
 ## Logistiksysteme im Unternehmen {#slide-10}
 
-![](../images/clipboard-1798916514.png)
+![](images/clipboard-1798916514.png)
 
 ## Supply Chain Strukturen {#slide-11}
 
@@ -823,12 +823,12 @@ Wertschöpfung in der Supply Chain
 ::: {.column width="40%"}
 ### Porter's value chain
 
-![](../images/clipboard-871463286.png)
+![](images/clipboard-871463286.png)
 :::
 
 :::: {.column width="60%"}
 ::: {.fragment .fade-up}
-![](../images/clipboard-2899353534.png)
+![](images/clipboard-2899353534.png)
 :::
 ::::
 ::::::
@@ -851,7 +851,7 @@ Offenes Unternehmensmodell
 
 ::::: columns
 ::: {.column width="50%"}
-![](../images/image15.png){width="760"}
+![](images/image15.png){width="760"}
 
 :::{.smaller-text}
 [@kummer2018grundzuge]
@@ -867,7 +867,7 @@ Offenes Unternehmensmodell
 
 ## Flüsse in Supply Chains {#slide-15}
 
-![](../images/clipboard-35016753.png)
+![](images/clipboard-35016753.png)
 
 ## Supply Chain Strukturen {#slide-16}
 
@@ -875,7 +875,7 @@ Offenes Unternehmensmodell
 Fokale Supply Chain
 :::
 
-![](../images/clipboard-1428622780.png){fig-align="center" width="2428"}
+![](images/clipboard-1428622780.png){fig-align="center" width="2428"}
 
 ::: small-text
 **Charakteristiken**:
@@ -892,7 +892,7 @@ Fokale Supply Chain
 Polyzentrische Supply Chains
 :::
 
-![](../images/clipboard-574717847.png){fig-align="center" width="2600"}
+![](images/clipboard-574717847.png){fig-align="center" width="2600"}
 
 ::: small-text
 **Charakteristiken**:
@@ -932,14 +932,14 @@ Ordnen Sie die einzelnen Prozessschritte (Produktion und Logistik) räumlich zu.
 
 :::: {.column width="37%"}
 <!-- ::: product-grid -->
-<!-- ![](../images/image21.png){.product-image .chocolate} -->
+<!-- ![](images/image21.png){.product-image .chocolate} -->
 
-<!-- ![](../images/image22.jpeg){.product-image .bottle} -->
+<!-- ![](images/image22.jpeg){.product-image .bottle} -->
 
-<!-- ![](../images/image23.png){.product-image .shirt} -->
+<!-- ![](images/image23.png){.product-image .shirt} -->
 <!-- ::: -->
-![](../images/image21.png){width="300"}
-![](../images/image23.png){width="200"}
-![](../images/image22.jpeg){width="150"}
-![](../images/image20_urwahn.png){width="400"}
+![](images/image21.png){width="300"}
+![](images/image23.png){width="200"}
+![](images/image22.jpeg){width="150"}
+![](images/image20_urwahn.png){width="400"}
 ::::

@@ -1,13 +1,6 @@
 ---
-filters:
-  - diagram
-
 execute:
   cache: true
-
-diagram:
-  cache: true
-
 ---
 
 # Grundlagen des SCM - Ziele & Zielkonflikte
@@ -53,7 +46,7 @@ Nach dieser Einheit können Sie …
 
 ## Wertschöpfung als Prozess {#slide-31}
 
-![](../images/clipboard-2707534972.png){width="1500"}
+![](images/clipboard-2707534972.png){width="1500"}
 
 :::::: columns
 ::: {.column width="69%"}
@@ -68,7 +61,7 @@ Nach dieser Einheit können Sie …
 
 :::: {.column width="30%"}
 ::: {.fragment .fade-up}
-![](../images/image31.png)
+![](images/image31.png)
 [@chopra2025supply, Kapitel 1.5]
 
 :::
@@ -81,7 +74,7 @@ Nach dieser Einheit können Sie …
 Entkopplungspunkt & Fertigungsstrategien
 :::
 
-![](../images/clipboard-1974239309.png)
+![](images/clipboard-1974239309.png)
 
 ## Strategische Fertigung {#slide-33}
 
@@ -103,7 +96,7 @@ Denken in Zyklen
 ::::
 
 ::: {.column width="50%"}
-![](../images/image32.png){width="707"}
+![](images/image32.png){width="707"}
 
 [@kummer2018grundzuge, S. 45]
 :::
@@ -119,7 +112,7 @@ Entkopplung von Zyklen
 :::: {.column width="50%"}
 **Make-to-stock**
 
-![](../images/image33.png){width="690"}
+![](images/image33.png){width="690"}
 
 *Beispiele*: Lebensmitteleinzelhandel, Drogerien, ...
 ::::
@@ -128,7 +121,7 @@ Entkopplung von Zyklen
 **Make-to-order**
 
 
-![](../images/image34.png){width="600"}
+![](images/image34.png){width="600"}
 
 *Beispiele*: Gebäude, Flugzeuge, Gemälde
 ::::
@@ -141,7 +134,7 @@ Entkopplung von Zyklen
 Kundenzufriedenheit -- Kundenerwartungen erfüllen
 :::
 
-![](../images/clipboard-1284723232.png){width="391"}
+![](images/clipboard-1284723232.png){width="391"}
 
 ## Strategische Ziele {#slide-36}
 
@@ -149,9 +142,10 @@ Kundenzufriedenheit -- Kundenerwartungen erfüllen
 Kundenzufriedenheit & Unsicherheit
 :::
 
-``` tikz
-%%| label: fig-kundenzufriedenheit
-%%| filename: kundenzufriedenheit.svg
+```{tikz}
+%| fig-width: 15
+%| out-width: 100%
+%| fig-align: center
 
 \usetikzlibrary{calc,decorations.pathmorphing}
 
@@ -311,11 +305,10 @@ Rollen & Risikoallokation in Supply Chain
 :::
 
 ::: {.r-stretch .tikz-slide}
-``` tikz
-%%| label: fig-implied-uncertainty
-%%| fig-width: 12
-%%| fig-height: 5
-%%| fig-align: center
+```{tikz}
+%| fig-width: 12
+%| fig-height: 5
+%| fig-align: center
 
 % Farben
 \definecolor{boxblue}{RGB}{201,230,242}
@@ -420,12 +413,12 @@ ist die Fähigkeit einer Supply Chain mit Nachfrageunsicherheit umzugehen
 ::::: {.column width="50%"}
 :::: {.fragment .fade-up}
 ::: {style="width:100%; text-align:center;"}
-``` tikz
-%%| label: fig-strategic-fit
-%%| fig-width: 12
-%%| fig-height: 6
-%%| out-width: 100%
-%%| fig-align: center
+```{tikz}
+%| label: fig-strategic-fit
+%| fig-width: 12
+%| fig-height: 6
+%| out-width: 100%
+%| fig-align: center
 
 \begin{tikzpicture}[
   x=2cm,
@@ -520,17 +513,22 @@ Die Reaktionsfähigkeit einer Supply Chain ist die Fähigkeit einer Supply Chain
 :::: {.fragment .fade-up}
 **Strategische Treiber**
 
-``` tikz
-%%| label: fig-strategic_drivers
-%%| fig-width: 9
-%%| fig-height: 6
-%%| out-width: 100%
-%%| fig-align: center
+```{tikz}
+%| fig-width: 9
+%| fig-height: 6
+%| out-width: 100%
+%| fig-align: center
 
 \begin{tikzpicture}[
   x=2cm,
   y=1cm,
-  font=\LARGE\bfseries
+  font=\LARGE\bfseries,
+  box/.style={
+    draw=black,
+ draw=black,
+    rounded corners=3pt,
+    inner sep=0.5cm
+  }
 ]
 
 % Zeichenfläche auf die tatsächlichen Inhalte begrenzen
@@ -560,12 +558,12 @@ $\rightarrow$ Reaktionsfähigkeit verursacht Kosten!
 Effizienz einer Supply Chain ist das Inverse der Gesamtkosten einer Supply Chain, d.h. aller Kosten eines Produkts von
 :::
 
-``` tikz
-%%| label: fig-cost-responsiveness-frontier
-%%| fig-width: 9
-%%| fig-height: 6
-%%| out-width: 100%
-%%| fig-align: center
+```{tikz}
+%| label: fig-cost-responsiveness-frontier
+%| fig-width: 9
+%| fig-height: 6
+%| out-width: 100%
+%| fig-align: center
 
 \begin{tikzpicture}[
   x=2cm,
@@ -612,12 +610,12 @@ Supply Chain Treiber
 :::
 
 ::: {.r-stretch .tikz-slide}
-``` tikz
-%%| label: fig-supply-chain-treiber
-%%| fig-width: 12
-%%| fig-height: 3
-%%| out-width: 96%
-%%| fig-align: center
+```{tikz}
+%| label: fig-supply-chain-treiber
+%| fig-width: 12
+%| fig-height: 3
+%| out-width: 96%
+%| fig-align: center
 
 \begin{tikzpicture}[
   x=2cm,

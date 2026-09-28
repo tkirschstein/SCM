@@ -49,7 +49,7 @@ Nach dieser Einheit können Sie …
 **Ebenen im Managementsystem**
 :::
 
-![](../images/image45.png) [@dyckhoff1998grundzuege]
+![](images/image45.png) [@dyckhoff1998grundzuege]
 ::::
 
 :::: {.column width="50%"}
@@ -57,7 +57,7 @@ Nach dieser Einheit können Sie …
 **Ziele im Managementsystem**
 :::
 
-![](../images/image46.png)
+![](images/image46.png)
 ::::
 :::::::
 
@@ -69,12 +69,11 @@ Traditionelle Zielmetriken
 
 :::::: columns
 ::: {.column width="50%"}
-``` tikz
-%%| label: fig-scm-zielgroessen
-%%| fig-width: 6
-%%| fig-height: 6
-%%| out-width: 95%
-%%| fig-align: center
+```{tikz}
+%| fig-width: 6
+%| fig-height: 6
+%| out-width: 95%
+%| fig-align: center
 
 \begin{tikzpicture}[
   x=2.5cm,
@@ -734,11 +733,11 @@ bewerteter Verzehr von Sachgütern und Dienstleistungen zum Zweck der Erbringung
 ::: panel-tabset
 ### Bananen
 
-![](../images/image51.png)
+![](images/image51.png)
 
 ### McKinsey
 
-![](../images/image50.png)
+![](images/image50.png)
 :::
 
 ## Supply Chain Costing {#slide-58}
@@ -1000,7 +999,7 @@ Beispiel -- Apple Video IPod 30 GB
 ```
 :::
 
-[@dedrick2008profits]
+[@dedrick2012usitc]
 
 ## Sustainable Supply Chain management {#slide-59}
 
@@ -1018,13 +1017,13 @@ Ein Gesellschaftssystem wird als nachhaltig bezeichnet, wenn es intra- als inter
 ::: {.column width="50%"}
 **Nachhaltigkeit & nachhaltige Entwicklung**
 
-![](../images/image53.png)
+![](images/image53.png)
 :::
 
 ::: {.column width="50%"}
 **Mögliche Zieldimensionen**
 
-![](../images/image54.png "Inhaltsplatzhalter 13")
+![](images/image54.png "Inhaltsplatzhalter 13")
 :::
 :::::
 
@@ -1984,7 +1983,7 @@ Allgemeine Konzepte (Ellen MacArthur Foundation)
 :::
 
 ::: {.column width="50%"}
-**Kreislaufwirtschaft** ![](../images/image57.png)
+**Kreislaufwirtschaft** ![](images/image57.png)
 :::
 :::::
 
@@ -1994,7 +1993,7 @@ Allgemeine Konzepte (Ellen MacArthur Foundation)
 Zusammenhang von linearer, reverser und zirkulärer Supply Chain
 :::
 
-![](../images/clipboard-1258714443.png)
+![](images/clipboard-1258714443.png)
 
 ::: callout-note
 ## Sustainable SCM
@@ -2006,7 +2005,7 @@ bezeichnet die Planung, Ausführung und Kontrolle von Geschäftsprozessen unter 
 
 :::::: columns
 ::: {.column width="63%"}
-![](../images/clipboard-1304502711.png)
+![](images/clipboard-1304502711.png)
 :::
 
 :::: {.column width="37%"}
@@ -2030,11 +2029,11 @@ bezeichnet die Planung, Ausführung und Kontrolle von Geschäftsprozessen unter 
 ## Sustainable SCM {#slide-63}
 
 ::: slide-subtitle
-Planungsaufgaben (Stint, 2017)
+Planungsaufgaben 
 :::
 
-![](../images/image58.png)
-
+![](images/image58.png)
+[@stindt2017]
 
 ## Circular Supply Chain Management {auto-animate=true}
 ::: slide-subtitle
@@ -2303,3 +2302,73 @@ Normstrategien
 make_matrix_plot(show_quadrants = TRUE, show_items = TRUE, highlight_right = TRUE)
 ```
 :::
+
+
+---
+
+## Fallbeispiel SushiFresh GmbH {#slide-sushifresh-idee}
+::: slide-subtitle
+Die Geschäftsidee
+:::
+
+:::: {.columns}
+::: {.column width="55%"}
+**SushiFresh GmbH** ist ein Start-up, das **täglich frisch hergestellte Sushi-Boxen** in einer deutschen Metropolregion anbietet.
+
+- **Versprechen:** „Heute gefertigt, heute verkauft" – Sushi in Restaurantqualität, aber ohne Wartezeit
+- **Produktion:** eine zentrale Küche, Fertigung in den frühen Morgenstunden
+- **Absatzkanal:** Supermärkte (Regalverkauf)
+- **Sortiment:** ca. 12 Boxen (klassisch, vegetarisch, vegan)
+:::
+
+::: {.column width="45%"}
+::: {.callout-note}
+## Eckdaten 
+
+- Haltbarkeit: max. 24–36 Stunden
+- Kühlkette: durchgehend 0–4 °C
+- Zutaten: Reis, Nori, Gemüse (regional), Lachs und Thunfisch (Import)
+- Nachfrage: stark schwankend (Wochentag, Wetter, Events)
+- Verkaufsstart: Wachstum von 3 auf 30 Verkaufsstellen geplant
+:::
+:::
+::::
+
+---
+
+## Fallbeispiel SushiFresh GmbH {#slide-sushifresh-fragen}
+::: slide-subtitle
+Diskussion
+:::
+
+:::: {.columns .smaller-text}
+::: {.column width="50%"}
+**Leitfragen: Strategische Position**
+
+::: {.fragment}
+- Welche **Kundengruppen** und Bedürfnisse steuern die Positionierung – Preis, Frische, Bequemlichkeit oder Nachhaltigkeit?
+- Wie unterscheidet sich SushiFresh von **Wettbewerbern** (Restaurants, Lieferdienste, Supermarkt-Sushi)?
+- Welche **Zielkonflikte** entstehen (Frische vs. Kosten vs. Ausschuss vs. Umwelt)?
+- Wo liegt das Unternehmen zwischen **Effizienz und Reaktionsfähigkeit**? Welche Zielgrößen sind strategisch wichtig?
+:::
+:::
+
+::: {.column width="50%"}
+::: {.fragment}
+**Leitfragen: Supply-Chain-Struktur**
+
+- Wie geht die Supply Chain mit **schwankender Nachfrage** und schnell verderblicher Ware um?
+- Wie lassen sich **Kühlkette und Frische** über die gesamte Kette sichern?
+- Welche **Stufen und Partner** gehören zur Supply Chain (Lieferanten, Küche, Logistik, Handel)?
+- Wie sollte die Supply Chain strukturiert werden **Zentralität vs. Dezentralität**?
+- Welche **Wertschöpfungstiefe** könnte SushiFresh anstreben? (z.B. eigene Logistik?)
+
+:::
+:::
+::::
+
+::: {.fragment}
+> **Ziel:** Erstellen Sie eine strategische Analyse des Geschäftsmodells von SushiFresh. Leiten Sie eine geeignete Struktur der Supply Chain ab.
+:::
+
+

@@ -16,6 +16,8 @@ library(plotly)
 library(knitr)
 library(kableExtra)
 library(DiagrammeR)
+library(osrm)
+
 
 ```
 
@@ -224,7 +226,7 @@ Ausgangslage
 ::: columns
 ::: {.column width="48%"}
 
-```{r karte}
+```{r karte+data}
 #| echo: false
 #| warning: false
 #| message: false
@@ -232,25 +234,34 @@ Ausgangslage
 #| fig-height: 6.5
 
 # Filialen (Nachfrageknoten): sechs Supermarkt-Filialen im Rhein-Main-Gebiet
-kunden <- data.frame(
-  name = c("Wiesbaden", "Mainz", "Frankfurt", "Ruesselsheim",
-           "Darmstadt", "Offenbach"),
-  lat  = c(50.0782, 50.0000, 50.1109, 49.9904, 49.8728, 50.0956),
-  lon  = c(8.2398, 8.2711, 8.6821, 8.4116, 8.6512, 8.7761),
-  typ  = "Filiale"
+werke <- data.frame(
+  ID     = paste0("C",1:6),
+  Ort    = c("Wiesbaden", "Mainz", "Frankfurt", "Rüsselsheim",
+             "Darmstadt", "Offenbach"),
+  Lon    = c(8.2398, 8.2711, 8.6821, 8.4116, 8.6512, 8.7761),
+  Lat    = c(50.0782, 50.0000, 50.1109, 49.9904, 49.8728, 50.0956),
+  Bedarf = c(120, 150, 280, 90, 110, 95)
 )
 
-# Kandidatenstandorte fuer Produktion/Distribution (aus Kapitel 4)
-lager_data <- data.frame(
-  name = c("Wiesbaden-Erbenheim", "Mainz-Hechtsheim", "Raunheim"),
-  lat  = c(50.0632, 49.9698, 50.0000),
-  lon  = c(8.2999, 8.2831, 8.4650)
+
+
+standorte <- data.frame(
+  ID       = c("S1","S2","S3", "S4", "S5"),
+  Standort = c("Wiesbaden-Erbenheim","Mainz-Hechtsheim","Raunheim","Höchst", "Isenburg"),
+  Lon      = c(8.2999, 8.2831, 8.4650, 8.54218, 8.7072),
+  Lat      = c(50.0632, 49.9698, 50.0000, 50.11146, 50.0543),
+  Kosten   = c(180, 210, 260, 240, 200)/5
 )
+
+
+
+# Kandidatenstandorte fuer Produktion/Distribution (aus Kapitel 4)
+lager_data <- standorte
 
 # Haversine-Distanzen (aus scm_functions.R) exemplarisch zur Filiale Frankfurt
 lager_data$dist_frankfurt <- mapply(
   haversine,
-  lager_data$lat, lager_data$lon,
+  lager_data$Lat, lager_data$Lon,
   MoreArgs = list(lat2 = 50.1109, lon2 = 8.6821)
 )
 
@@ -261,10 +272,10 @@ map <- leaflet(options = leafletOptions(zoomControl = TRUE)) %>%
 
   # Filialen (blau)
   addAwesomeMarkers(
-    data        = kunden,
-    lng         = ~lon,
-    lat         = ~lat,
-    label       = ~name,
+    data        = werke,
+    lng         = ~Lon,
+    lat         = ~Lat,
+    label       = ~Ort,
     icon        = awesomeIcons(
       icon        = "shopping-cart",
       library     = "fa",
@@ -277,9 +288,9 @@ map <- leaflet(options = leafletOptions(zoomControl = TRUE)) %>%
   # Kandidatenstandorte (grün)
   addAwesomeMarkers(
     data        = lager_data,
-    lng         = ~lon,
-    lat         = ~lat,
-    label       = ~name,
+    lng         = ~Lon,
+    lat         = ~Lat,
+    label       = ~Standort,
     icon        = awesomeIcons(
       icon        = "home",
       library     = "fa",
@@ -310,7 +321,7 @@ map
 
 ::: {.callout-note appearance="simple"}
 ## Problemstellung
-Die **SushiFresh GmbH** beliefert täglich sechs Supermarkt-Filialen im Rhein-Main-Gebiet mit frisch produzierten Sushi-Boxen. In Kapitel 4 wurde bereits eine **qualitative Standortvorauswahl per AHP** durchgeführt (Ergebnis: Raunheim knapp vorn) sowie eine **kontinuierliche Standortoptimierung** (Center of Gravity/Weiszfeld). Nun stellt sich die Frage: Hält dieses Ergebnis auch einer harten, kostenbasierten Prüfung stand?
+Die **SushiFresh GmbH** beliefert täglich sechs Supermarkt-Filialen im Rhein-Main-Gebiet mit frisch produzierten Sushi-Boxen. In Kapitel 4 wurde bereits eine **qualitative Standortvorauswahl per AHP** durchgeführt (Ergebnis: Mainz-Hechtsheim knapp vorn) sowie eine **kontinuierliche Standortoptimierung** (Center of Gravity/Weiszfeld). Nun stellt sich die Frage: Hält dieses Ergebnis auch einer  kostenbasierten Prüfung stand?
 :::
 
 ::: {.callout-tip appearance="simple"}
@@ -348,20 +359,12 @@ SushiFresh muss entscheiden, welcher der drei Kandidatenstandorte für Produktio
 #| warning: false
 #| message: false
 
-lager <- data.frame(
-  ID       = c("S1","S2","S3"),
-  Standort = c("Wiesbaden-Erbenheim","Mainz-Hechtsheim","Raunheim"),
-  Lon      = c(8.2999, 8.2831, 8.4650),
-  Lat      = c(50.0632, 49.9698, 50.0000),
-  Kosten   = c(180, 210, 260)
-)
-
-kbl(lager,
+kbl(standorte,
     col.names = c("ID","Standort","Längengrad","Breitengrad",
                   "Fixkosten/Jahr (1000 €)"),
     align = c("c","l","r","r","r")) |>
   kable_styling(bootstrap_options = c("condensed","striped"),
-                full_width = TRUE, font_size = 16) |>
+                full_width = TRUE, font_size = 20) |>
   column_spec(1, bold = TRUE, background = "#2F3E46", color = "white") |>
   row_spec(0, background = "#2F3E46", color = "white", bold = TRUE)
 ```
@@ -372,14 +375,30 @@ kbl(lager,
 #| echo: false
 #| warning: false
 #| message: false
+ 
+##########################################
+# Für direkte Berechnung via OSM
+# matrix_result <- osrmTable(
+#   src = standorte[, c("Lon", "Lat")],
+#   dst = werke[, c("Lon", "Lat")],
+#   measure = "distance" # Can be "duration", "distance", or c("duration", "distance")
+# )
+# 
+# dist_mat <- matrix(matrix_result$distances/1000,
+#   nrow = nrow(standorte), byrow = TRUE,
+#   dimnames = list(standorte$ID, werke$ID)
+# )
+##########################################
 
 dist_mat <- matrix(
-  c(4.6,  7.3, 27.8, 11.4, 32.9, 34.2,
-   12.4,  3.5, 32.5,  9.5, 28.5, 37.9,
-   18.3, 13.9, 19.8,  4.0, 19.4, 24.6),
-  nrow = 3, byrow = TRUE,
-  dimnames = list(paste0("S",1:3), paste0("C",1:6))
-)
+  c(
+    0.12348,	0.41478,	0.47474,	0.55152,	0.85996,	0.18220,
+    0.09206,	0.51490,	0.59168,	0.88578,	0.73856,	0.78004,
+  	0.48168,	0.27202,	0.17036,	0.54650,	0.44772,	0.12592,
+  	0.61176,	0.66708,	0.89392,	0.33502,	0.68526,	0.74242,
+  	0.50226,	0.87512,	0.90576,	0.60740,	0.32042,	0.11400),
+  nrow = nrow(standorte), byrow = TRUE,dimnames = list(standorte$ID, werke$ID))/.02
+
 
 df_dist <- as.data.frame(dist_mat)
 
@@ -388,7 +407,7 @@ kbl(df_dist,
     align = c( rep("r",6)),
     escape = FALSE) |>
   kable_styling(bootstrap_options = c("condensed","striped"),
-                full_width = TRUE, font_size = 16) |>
+                full_width = TRUE, font_size = 20) |>
   column_spec(1, bold = TRUE, background = "#2F3E46", color = "white") |>
   row_spec(0, background = "#2F3E46", color = "white", bold = TRUE)
 ```
@@ -405,14 +424,7 @@ kbl(df_dist,
 #| warning: false
 #| message: false
 
-werke <- data.frame(
-  ID     = paste0("C",1:6),
-  Ort    = c("Wiesbaden", "Mainz", "Frankfurt", "Rüsselsheim",
-             "Darmstadt", "Offenbach"),
-  Lon    = c(8.2398, 8.2711, 8.6821, 8.4116, 8.6512, 8.7761),
-  Lat    = c(50.0782, 50.0000, 50.1109, 49.9904, 49.8728, 50.0956),
-  Bedarf = c(120, 150, 280, 90, 110, 95)
-)
+
 
 kbl(werke,
     col.names = c("ID","Filiale",
@@ -422,7 +434,7 @@ kbl(werke,
     escape = FALSE,
     format.args = list(big.mark = "\u202f")) |>
   kable_styling(bootstrap_options = c("condensed","striped"),
-                full_width = TRUE, font_size = 15) |>
+                full_width = TRUE, font_size = 20) |>
   column_spec(1, bold = TRUE, background = "#2F3E46", color = "white", width = "1em") |>
   row_spec(0, background = "#2F3E46", color = "white", bold = TRUE)
 ```
@@ -431,27 +443,25 @@ kbl(werke,
 :::
 :::
 
----
+<!-- ## Fallstudie - SushiFresh GmbH -->
+<!-- ::: slide-subtitle -->
+<!-- Aufgabe -->
+<!-- ::: -->
 
-## Fallstudie - SushiFresh GmbH
-::: slide-subtitle
-Aufgabe
-:::
+<!-- ::: {.callout-note appearance="simple"} -->
+<!-- ## Zielformulierung -->
 
-::: {.callout-note appearance="simple"}
-## Zielformulierung
+<!-- Sie wurden von der Geschäftsführung beauftragt, eine Entscheidungsvorlage dafür zu erarbeiten, wie die Produktion und Distribution der Sushi-Boxen organisiert werden sollte. Die Vorlage soll eine Zuordnung der Filialen zu Versorgungsstandorten enthalten. Auf Basis dieser Zuordnung erwartet die Geschäftsführung eine Abschätzung der jährlichen Gesamtkosten, die aus Ihrem Vorschlag resultieren würden – und eine Einordnung, ob dies die AHP-Empfehlung aus Kapitel 4 (Raunheim) bestätigt. -->
+<!-- ::: -->
 
-Sie wurden von der Geschäftsführung beauftragt, eine Entscheidungsvorlage dafür zu erarbeiten, wie die Produktion und Distribution der Sushi-Boxen organisiert werden sollte. Die Vorlage soll eine Zuordnung der Filialen zu Versorgungsstandorten enthalten. Auf Basis dieser Zuordnung erwartet die Geschäftsführung eine Abschätzung der jährlichen Gesamtkosten, die aus Ihrem Vorschlag resultieren würden – und eine Einordnung, ob dies die AHP-Empfehlung aus Kapitel 4 (Raunheim) bestätigt.
-:::
+<!-- ::: {.fragment .fade-up} -->
+<!-- ### Aufgaben -->
 
-::: {.fragment .fade-up}
-### Aufgaben
-
-1. Formulieren Sie einen Ansatz zur Berechnung der jährlichen Gesamtkosten.
-2. Formulieren Sie einen Ansatz zur Berechnung der Transportkosten für die Distribution der Sushi-Boxen.
-3. Nutzen Sie dazu den gegebenen Transportkostensatz von 0,02 €/(Box·km).
-4. Finden Sie eine Zuordnung der Filialen zu den Kandidatenstandorten und ermitteln Sie die Gesamtkosten Ihrer Lösung.
-:::
+<!-- 1. Formulieren Sie einen Ansatz zur Berechnung der jährlichen Gesamtkosten. -->
+<!-- 2. Formulieren Sie einen Ansatz zur Berechnung der Transportkosten für die Distribution der Sushi-Boxen. -->
+<!-- 3. Nutzen Sie dazu den gegebenen Transportkostensatz von 0,02 €/(Box·km). -->
+<!-- 4. Finden Sie eine Zuordnung der Filialen zu den Kandidatenstandorten und ermitteln Sie die Gesamtkosten Ihrer Lösung. -->
+<!-- ::: -->
 
 ---
 
@@ -496,7 +506,7 @@ Es ist zu entscheiden, an welchen Standorten Lagerhäuser eingerichtet werden so
 #| fig-height: 5
 
 # --- Koordinaten (normiert 0..1) ---
-lager <- data.frame(
+lager_nodes <- data.frame(
   id  = c("W1","W2","W3"),
   lbl = c("1","2","3"),
   fi  = c("f<sub>1</sub>", "...", "f<sub>3</sub>"),
@@ -504,7 +514,7 @@ lager <- data.frame(
   y   = c(0.15, 0.50, 0.85)
 )
 
-kunden <- data.frame(
+kunden_nodes <- data.frame(
   id  = c("A","B","C","D"),
   lbl = c("A","B","C","D"),
   aj  = c("a<sub>A</sub>", "", "...", "a<sub>D</sub>"),
@@ -512,8 +522,8 @@ kunden <- data.frame(
   y   = c(0.85, 0.60, 0.35, 0.10)
 )
 
-lxy <- setNames(lager[, c("x","y")],   c("x","y")); rownames(lxy) <- lager$id
-kxy <- setNames(kunden[, c("x","y")],  c("x","y")); rownames(kxy) <- kunden$id
+lxy <- setNames(lager_nodes[, c("x","y")],   c("x","y")); rownames(lxy) <- lager_nodes$id
+kxy <- setNames(kunden_nodes[, c("x","y")],  c("x","y")); rownames(kxy) <- kunden_nodes$id
 
 # Knotenradius in Plot-Koordinaten (angepasst an fig-Größe)
 r <- 0.058   # <-- ggf. leicht anpassen wenn Größe ändert
@@ -562,7 +572,7 @@ for (i in seq_len(nrow(edges))) {
 
 # Lager-Knoten (Hexagon)
 fig <- fig %>% add_trace(
-  x = lager$x, y = lager$y, text = lager$lbl,
+  x = lager_nodes$x, y = lager_nodes$y, text = lager_nodes$lbl,
   mode = "markers+text",
   marker = list(symbol = "hexagon", size = 40,
                 color = "#BFDBF7", line = list(color = "#4B5563", width = 1.5)),
@@ -573,16 +583,16 @@ fig <- fig %>% add_trace(
 
 # f_i links
 fig <- fig %>% add_annotations(
-  x = lager$x - 0.10, y = lager$y,
+  x = lager_nodes$x - 0.10, y = lager_nodes$y,
   xref = "x", yref = "y",
-  text = lager$fi, showarrow = FALSE,
+  text = lager_nodes$fi, showarrow = FALSE,
   font = list(size = 14, color = "#1F2933", family = "Arial"),
   xanchor = "right"
 )
 
 # Kunden-Knoten (Circle)
 fig <- fig %>% add_trace(
-  x = kunden$x, y = kunden$y, text = kunden$lbl,
+  x = kunden_nodes$x, y = kunden_nodes$y, text = kunden_nodes$lbl,
   mode = "markers+text",
   marker = list(symbol = "circle", size = 40,
                 color = "#2D9E8E", line = list(color = "#2F3E46", width = 1.5)),
@@ -593,9 +603,9 @@ fig <- fig %>% add_trace(
 
 # a_j rechts
 fig <- fig %>% add_annotations(
-  x = kunden$x + 0.08, y = kunden$y,
+  x = kunden_nodes$x + 0.08, y = kunden_nodes$y,
   xref = "x", yref = "y",
-  text = kunden$aj, showarrow = FALSE,
+  text = kunden_nodes$aj, showarrow = FALSE,
   font = list(size = 14, color = "#1F2933", family = "Arial"),
   xanchor = "left"
 )
@@ -810,25 +820,19 @@ Fallbeispiel
 
 # Problemdaten: 3 Kandidatenstandorte, 6 Filialen (SushiFresh GmbH)
 wlp_lager <- data.frame(
-  ID      = c("S1", "S2", "S3"),
-  fi      = c(180000, 210000, 260000),   # Fixkosten (EUR/Jahr)
+  ID      = standorte$ID,
+  fi      = standorte$Kosten*1000,   # Fixkosten (EUR/Jahr)
   stringsAsFactors = FALSE
 )
 
 wlp_kunden <- data.frame(
-  ID  = c("C1", "C2", "C3", "C4", "C5", "C6"),
-  aj  = c(43800, 54750, 102200, 32850, 40150, 34675),   # Nachfrage (Boxen/Jahr)
+  ID  = werke$ID,
+  aj  = werke$Bedarf*1000,   # Nachfrage (Boxen/Jahr)
   stringsAsFactors = FALSE
 )
 
 # Transportkosten cij (EUR je Box, aus Distanz x 0,02 EUR/(Box*km))
-wlp_cij <- matrix(
-  c(0.092044, 0.146448, 0.555583, 0.227330, 0.657125, 0.683408,
-    0.248882, 0.069319, 0.650567, 0.189390, 0.569494, 0.757793,
-    0.365663, 0.277179, 0.396128, 0.079272, 0.388659, 0.492523),
-  nrow = 3, byrow = TRUE,
-  dimnames = list(wlp_lager$ID, wlp_kunden$ID)
-)
+wlp_cij <-df_dist*.02
 ```
 
 ::: columns
@@ -840,7 +844,7 @@ wlp_cij <- matrix(
 ```{r}
 #| echo: false
 kbl(wlp_lager,
-    col.names = c("Standort $i$", "$f_i$ (€)"),
+    col.names = c("Standort i", "f_i (€)"),
     align = c("c","r"), escape = FALSE,
     format.args = list(big.mark = " ")) |>
   kable_styling(bootstrap_options = c("condensed","striped"),
@@ -854,7 +858,7 @@ kbl(wlp_lager,
 ```{r}
 #| echo: false
 kbl(wlp_kunden,
-    col.names = c("Filiale $j$", "$a_j$"),
+    col.names = c("Filiale j", "a_j"),
     align = c("c","r"), escape = FALSE,
     format.args = list(big.mark = " ")) |>
   kable_styling(bootstrap_options = c("condensed","striped"),
@@ -907,13 +911,16 @@ library(ompr.roi)
 library(ROI.plugin.glpk)
 
 # Problemdaten
-n_I <- 3; n_J <- 6
-f   <- c(180000, 210000, 260000)
-a   <- c(43800, 54750, 102200, 32850, 40150, 34675)
+n_I <- 5; n_J <- 6
+f   <- c(36000, 42000, 52000, 48000, 40000)
+a   <- c(120000, 150000, 280000, 90000, 110000, 95000)
 c_ij <- matrix(
-  c(0.092044, 0.146448, 0.555583, 0.227330, 0.657125, 0.683408,
-    0.248882, 0.069319, 0.650567, 0.189390, 0.569494, 0.757793,
-    0.365663, 0.277179, 0.396128, 0.079272, 0.388659, 0.492523),
+  c(
+    0.12348,	0.41478,	0.47474,	0.55152,	0.85996,	0.18220,
+    0.09206,	0.51490,	0.59168,	0.88578,	0.73856,	0.78004,
+  	0.48168,	0.27202,	0.17036,	0.54650,	0.44772,	0.12592,
+  	0.61176,	0.66708,	0.89392,	0.33502,	0.68526,	0.74242,
+  	0.50226,	0.87512,	0.90576,	0.60740,	0.32042,	0.11400),
   nrow = n_I, byrow = TRUE)
 
 # MILP-Modell
@@ -1048,12 +1055,10 @@ kbl(kosten_df,
 #| fig-height: 5.5
 
 lager_pos <- data.frame(
-  id = paste0("S", 1:3),
+  id = paste0("S", 1:nrow(standorte)),
   x  = 0.18,
-  y  = c(0.15, 0.50, 0.85),
-  open = c(1 %in% offene_lager,
-           2 %in% offene_lager,
-           3 %in% offene_lager)
+  y  =  seq(0.04 , 0.9, length.out = nrow(standorte)), #c(0.15, 0.50, 0.85),
+  open = (1:nrow(standorte)) %in% offene_lager
 )
 
 kunden_pos <- data.frame(
@@ -1076,7 +1081,7 @@ active_edges <- x_sol |> dplyr::filter(value > 0.001) |>
   dplyr::mutate(from = paste0("S", i), to = paste0("C", j))
 
 # Alle möglichen Kanten (dünn, grau)
-for (ii in 1:3) for (jj in 1:6) {
+for (ii in 1:nrow(standorte)) for (jj in 1:nrow(werke)) {
   wi <- paste0("S", ii); cj <- paste0("C", jj)
   x0 <- lxy2[wi,"x"]; y0 <- lxy2[wi,"y"]
   x1 <- kxy2[cj,"x"]; y1 <- kxy2[cj,"y"]
@@ -1228,7 +1233,7 @@ fig_h <- plot_ly()
 
 # Add-Kurve: startet leer, oeffnet direkt S1 (Wiesbaden-Erbenheim) -> Optimum
 fig_h <- fig_h %>% add_trace(
-  x = c(1), y = c(306.4),
+  x = c(1, 2), y = c(269, 262),
   type = "scatter", mode = "lines+markers",
   name = "Add-Heuristik",
   line   = list(color = "#01696f", width = 2.5),
@@ -1238,7 +1243,7 @@ fig_h <- fig_h %>% add_trace(
 # Drop-Kurve: startet mit allen 3 Standorten offen, schliesst Raunheim, dann
 # Mainz-Hechtsheim -> selbes Optimum
 fig_h <- fig_h %>% add_trace(
-  x = c(3, 2, 1), y = c(733.6, 507.4, 306.4),
+  x = c(5,4,3, 2), y = c(388, 340 ,300, 262),
   type = "scatter", mode = "lines+markers",
   name = "Drop-Heuristik",
   line   = list(color = "#da7101", width = 2.5, dash = "dash"),
@@ -1247,17 +1252,17 @@ fig_h <- fig_h %>% add_trace(
 
 # Optimum
 fig_h <- fig_h %>% add_trace(
-  x = c(1, 2, 3), y = rep(306.4, 3),
+  x = c(1), y = c(262),
   type = "scatter", mode = "lines",
-  name = "Optimum (Z* = 306,4)",
+  name = "Optimum (Z* = 262)",
   line = list(color = "#a12c7b", width = 1.5, dash = "dot")
 )
 
 fig_h <- fig_h %>% layout(
   xaxis = list(title = "Anzahl offener Standorte", dtick = 1,
-               range = c(0.5, 3.5)),
+               range = c(0.5, 5.5)),
   yaxis = list(title = "Gesamtkosten (T€/Jahr)",
-               range = c(280, 760)),
+               range = c(250, 760)),
   legend = list(orientation = "h", y = -0.2),
   plot_bgcolor  = "transparent",
   paper_bgcolor = "transparent",
@@ -1413,16 +1418,17 @@ Add-Heuristik – Fallbeispiel
 #| message: false
 
 # Problemdaten (identisch zu slide-wlp-example)
-n_I  <- 3; n_J <- 6
-f_h  <- c(180000, 210000, 260000)
-a_h  <- c(43800, 54750, 102200, 32850, 40150, 34675)
-c_h  <- matrix(
-  c(0.092044, 0.146448, 0.555583, 0.227330, 0.657125, 0.683408,
-    0.248882, 0.069319, 0.650567, 0.189390, 0.569494, 0.757793,
-    0.365663, 0.277179, 0.396128, 0.079272, 0.388659, 0.492523),
-  nrow = n_I, byrow = TRUE,
-  dimnames = list(paste0("S", 1:n_I), paste0("C", 1:n_J))
-)
+n_I  <- nrow(standorte); n_J <- nrow(werke)
+f_h  <- standorte$Kosten*1000 # c(180000, 210000, 260000)
+a_h  <- werke$Bedarf*1000 # c(43800, 54750, 102200, 32850, 40150, 34675)
+c_h  <- c_ij
+#   matrix(
+#   c(0.092044, 0.146448, 0.555583, 0.227330, 0.657125, 0.683408,
+#     0.248882, 0.069319, 0.650567, 0.189390, 0.569494, 0.757793,
+#     0.365663, 0.277179, 0.396128, 0.079272, 0.388659, 0.492523),
+#   nrow = n_I, byrow = TRUE,
+#   dimnames = list(paste0("S", 1:n_I), paste0("C", 1:n_J))
+# )
 
 total_cost_h <- function(S) {
   if (length(S) == 0) return(Inf)
@@ -1439,12 +1445,17 @@ rem_h    <- 1:n_I
 add_log  <- list()
 
 repeat {
-  cur_cost <- total_cost_h(S_add_h)
-  gains <- sapply(rem_h, function(i) cur_cost - total_cost_h(c(S_add_h, i)))
-  best_idx  <- which.max(gains)
+  cur_cost  <- total_cost_h(S_add_h)
+  cand_cost <- sapply(rem_h, function(i) total_cost_h(c(S_add_h, i)))
+  gains     <- cur_cost - cand_cost
+  # Auswahl über die resultierenden Gesamtkosten (robust auch wenn
+  # cur_cost = Inf ist, d.h. im allerersten Schritt: dort sind alle
+  # Differenzen zu Inf gleich "Inf" und which.max(gains) waere nur
+  # Zufall der Reihenfolge in rem_h)
+  best_idx  <- which.min(cand_cost)
   best_gain <- gains[best_idx]
   best_i    <- rem_h[best_idx]
-  if (best_gain <= 0) break
+  if (is.finite(best_gain) && best_gain <= 0) break
   S_add_h  <- c(S_add_h, best_i)
   rem_h    <- setdiff(rem_h, best_i)
   asgn     <- best_assign(S_add_h)
@@ -1529,6 +1540,7 @@ kbl(assign_df,
 ::: {.column width="46%"}
 
 ```{r add-solution-plot}
+#| cache: false
 #| echo: false
 #| warning: false
 #| message: false
@@ -1539,9 +1551,9 @@ final_open_add <- S_add_h
 final_asgn_add <- best_assign(final_open_add)
 
 lp_add <- data.frame(
-  id   = paste0("S", 1:n_I),
-  x    = 0.18,
-  y    = c(0.15, 0.50, 0.85),
+  id = paste0("S", 1:nrow(standorte)),
+  x  = 0.18,
+  y  =  seq(0.04 , 0.9, length.out = nrow(standorte)), #c(0.15, 0.50, 0.85),
   open = seq_len(n_I) %in% final_open_add
 )
 kp_add <- data.frame(
@@ -1751,9 +1763,9 @@ final_open_drop <- S_drop_h
 final_asgn_drop <- best_assign(final_open_drop)
 
 lp_drop <- data.frame(
-  id   = paste0("S", 1:n_I),
-  x    = 0.18,
-  y    = c(0.15, 0.50, 0.85),
+  id = paste0("S", 1:nrow(standorte)),
+  x  = 0.18,
+  y  =  seq(0.04 , 0.9, length.out = nrow(standorte)), #c(0.15, 0.50, 0.85),
   open = seq_len(n_I) %in% final_open_drop
 )
 kp_drop <- data.frame(
@@ -1843,7 +1855,7 @@ Lösungsvergleich
 #| message: false
 
 # Alle Lösungsdaten zusammenführen
-cost_opt_val  <- total_cost_h(c(1))     # S1 (Wiesbaden-Erbenheim) – optimale Lösung (MILP)
+cost_opt_val  <- total_cost_h(offene_lager) 
 cost_add_val  <- total_cost_h(S_add_h)
 cost_drop_val <- total_cost_h(S_drop_h)
 
@@ -1880,8 +1892,8 @@ comp_df <- data.frame(
     "Gap zum Optimum (%)"
   ),
   Optimum = c(
-    paste0("S", sort(c(1)), collapse=", "),
-    length(c(1)),
+    paste0("S", sort(offene_lager), collapse=", "),
+    length(offene_lager),
     fix_opt,
     round(tr_opt, 1),
     round(cost_opt_val, 1),
@@ -1998,7 +2010,7 @@ Diskussion
 ::: {.callout-warning appearance="simple"}
 ## Widerspruch zu Kapitel 4?
 
-Die **AHP-Analyse** aus Kapitel 4 favorisierte knapp **Raunheim**. Die **quantitative WLP-Analyse** dieses Kapitels favorisiert eindeutig **Wiesbaden-Erbenheim**. Wie passt das zusammen?
+Die **AHP-Analyse** aus Kapitel 4 favorisierte knapp **Mainz-Hechtsheim**. Die **quantitative WLP-Analyse** dieses Kapitels favorisiert **Wiesbaden-Erbenheim** und **Raunheim**. Wie passt das zusammen?
 :::
 
 ::: {.fragment .fade-up}
@@ -2027,7 +2039,7 @@ kbl(vergleich_ahp,
 :::
 
 ::: {.fragment .fade-up}
-Raunheim ist geografisch zentraler und transportkostengünstiger (~19.400 €/Jahr Vorteil) – doch die um 80.000 €/Jahr höheren Fixkosten kehren den Gesamtvergleich um.
+Raunheim und Wiesbaden-Erbenheim sind transportkostengünstiger, die Einsparungen kompensieren die höheren Fixkosten.
 :::
 
 :::

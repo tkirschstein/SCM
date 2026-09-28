@@ -141,9 +141,10 @@ Nach dieser Einheit können Sie …
 
 **Literatur zur Vertiefung**
 
-- **Einperiodige Bestandsmodelle und Critical-Fractile-Logik:** Kapitel 13 in [@cachon2024matching].
-- **Newsvendor-Modelle im Kontext des Inventory Managements:** Kapitel 9 in [@silver2017inventory].
 - **Einführung Newsvendor:** [@thonemann2023operations, Kapitel 5].
+- **Einperiodige Bestandsmodelle und Critical-Fractile-Logik:** [@cachon2024matching, Kapitel 13].
+- **Newsvendor-Modelle im Kontext des Inventory Managements:** [@silver2017inventory, Kapitel 9].
+
 
 ------------------------------------------------------------------------------
 

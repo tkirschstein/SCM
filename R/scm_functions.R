@@ -846,16 +846,21 @@ add_heuristic_wlp <- function(fixed_costs, transport_cost_mat, demand,
       .wlp_cost(open, fixed_costs, transport_cost_mat, demand)$total
     else Inf
 
-    # Evaluate marginal saving from each candidate
-    savings <- sapply(candidates, function(wh) {
-      cost_cur - .wlp_cost(c(open, wh), fixed_costs, transport_cost_mat, demand)$total
+    # Resulting total cost for each candidate addition
+    cand_cost <- sapply(candidates, function(wh) {
+      .wlp_cost(c(open, wh), fixed_costs, transport_cost_mat, demand)$total
     })
-    names(savings) <- wh_names[candidates]
+    names(cand_cost) <- wh_names[candidates]
+    savings <- cost_cur - cand_cost
 
-    best_saving <- max(savings)
+    # Auswahl über die resultierenden Gesamtkosten (robust auch wenn
+    # cost_cur = Inf ist: sonst sind im ersten Schritt alle savings
+    # gleich "Inf" und which.max() waere nur Zufall der Reihenfolge)
+    best_idx    <- which.min(cand_cost)
+    best_saving <- savings[best_idx]
     if (best_saving <= 0 && length(open) > 0) break   # no improvement
 
-    best_wh <- candidates[which.max(savings)]
+    best_wh <- candidates[best_idx]
     open    <- c(open, best_wh)
 
     if (verbose) {

@@ -15,12 +15,12 @@ book:
     - chapters/01_einfuehrung-und-grundbegriffe-des-supply-chain-managements.qmd
     - chapters/02_wertschoepfung-strategische-fertigung-und-strategic-fit.qmd
     - chapters/03_ziele-zielkonflikte-und-logistikkosten.qmd
+    - chapters/09_nachhaltigkeit-im-supply-chain-management.qmd
     - chapters/04_standortplanung-i-qualitative-und-kontinuierliche-verfahren.qmd
     - chapters/05_standortplanung-ii-diskrete-netzwerkplanungsmodelle.qmd
     - chapters/06_unsicherheit-in-supply-chains-pooling.qmd
     - chapters/07_das-newsvendor-modell.qmd
     - chapters/08_der-bullwhip-effekt-und-das-beergame.qmd
-    - chapters/09_nachhaltigkeit-im-supply-chain-management.qmd
     - references.qmd
 
 lang: de
@@ -51,6 +51,6 @@ execute:
   echo: true
   warning: false
   message: false
-  freeze: false
+  freeze: auto
 
 bibliography: ../literature/!references.bib
