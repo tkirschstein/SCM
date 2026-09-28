@@ -7,7 +7,7 @@
 # Quarto
 /.quarto/
 /_site/
-/docs/
+/literature/
 
 # OS
 .DS_Store
