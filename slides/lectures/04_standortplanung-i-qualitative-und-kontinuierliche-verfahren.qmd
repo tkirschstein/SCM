@@ -784,7 +784,7 @@ Analytical Hierarchy Process (AHP Methode) - Konsistenzindex
 ::: callout-note
 ## Interpretation
 
-Je näher $KI$ an 0 liegt, desto konsistenter ist die Präferenzmatrix. Wenn $KI=0$ ist sie perfekt konsistent. $\bar{P}$ ist der größte Eigenwert der Präferenzmatrix. Mit $CR \approx 0{,}08$ (Random Index $RI = 0{,}58$ bei $n=3$) liegt die Matrix sehr deutlich unter der 10-%-Schwelle und gilt damit als konsistent.
+Je näher $KI$ an 0 liegt, desto konsistenter ist die Präferenzmatrix. Wenn $KI=0$ ist sie perfekt konsistent. $\bar{P}$ ist der größte Eigenwert der Präferenzmatrix. Mit $CR \approx 0{,}08$ ist die Matrix sehr nah an 0 und kann damit als konsistent gelten.
 :::
 :::
 ::::
@@ -1499,7 +1499,7 @@ weighted_median <- function(x, w) {
   x <- x[ord]
   w <- w[ord]
 
-  x[which(cumsum(w) >= sum(w) / 2)][2]
+  x[which(cumsum(w) >= sum(w) / 2)][1]
 }
 
 # Manhattan-Optimum: gewichteter Median je Koordinate

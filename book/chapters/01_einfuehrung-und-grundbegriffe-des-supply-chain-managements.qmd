@@ -129,6 +129,53 @@ Das Ergebnis war eine drastische Preissteigerung entlang der Kette: Ausgehend vo
 
 Nach 1498, mit der Umsegelung Afrikas durch Vasco da Gama, entstand eine zweite, rein seegestützte Route von Lissabon über Mosambik und Malindi direkt nach Calicut. Sie umging die zahlreichen Zwischenstufen der Karawanen- und Levante-Route und veränderte dadurch nachhaltig, welche Akteure am Gewürzhandel verdienten — ein frühes Beispiel dafür, wie eine veränderte Netzwerkstruktur die Verteilung der Wertschöpfung innerhalb einer Supply Chain verschiebt, ohne dass sich das Produkt selbst änderte.
 
+### Die Wirtschaftlichkeit einer Supply-Chain-Innovation: die Magellan-Expedition
+
+Die Vorlesungsfolien stellen der Preisentwicklung entlang der Gewürzroute eine zweite Grafik gegenüber: die wirtschaftliche Bilanz der Magellan-Expedition. Sie lohnt eine genauere Betrachtung, weil sie ein Grundmuster jeder Netzwerkentscheidung zeigt, das uns in den Kapiteln zur Standortplanung wiederbegegnen wird: Einer **hohen, sicheren Anfangsinvestition** (Schiffe, Ausrüstung, Proviant, Heuer, Tauschwaren) steht ein **unsicherer, zeitlich weit entfernter Rückfluss** gegenüber (der Erlös der Gewürzladung). Die Kosten- und Erlöspositionen sind in der Rechnungswährung der spanischen Krone, dem *Maravedí*, überliefert [@zweig1983magellan]. Um sie mit den Preisangaben der Gewürzroute vergleichbar zu machen, werden sie in Silberäquivalente umgerechnet (rund 3,195 g Silber je 34 Maravedís):
+
+```{r}
+#| label: ch1-magellan-bilanz
+#| fig-cap: "Wirtschaftliche Bilanz der Magellan-Expedition in kg Silberäquivalent (Wasserfalldiagramm)"
+
+library(tidyverse)
+
+silber_je_maravedi <- 3.195 / 34   # g Silber je Maravedi
+
+magellan <- tribble(
+  ~position,                                     ~maravedis,
+  "Schiffe, Takelage, Artillerie, Bewaffnung",   -3912241,
+  "Proviant und Fässer",                         -1585551,
+  "Heuer für 237 Personen",                      -1154504,
+  "Tausch- und Handelswaren",                    -1679769,
+  "Sonstiger Bedarf",                             -415060,
+  "Erlös der Nelkenladung",                       7888684,
+  "Weitere Waren",                                1000000
+) |>
+  mutate(
+    silber_kg = maravedis * silber_je_maravedi / 1000,  # Umrechnung in kg Silber
+    typ       = if_else(silber_kg < 0, "Kosten", "Erlös"),
+    ende      = cumsum(silber_kg),                       # kumulierter Saldo
+    anfang    = lag(ende, default = 0),
+    nr        = row_number()
+  )
+
+# Wasserfalldiagramm: jedes Rechteck beginnt dort, wo das vorige endet
+ggplot(magellan) +
+  geom_rect(aes(xmin = nr - 0.4, xmax = nr + 0.4,
+                ymin = pmin(anfang, ende), ymax = pmax(anfang, ende), fill = typ)) +
+  geom_hline(yintercept = 0, colour = "grey40") +
+  scale_x_continuous(breaks = magellan$nr, labels = magellan$position) +
+  scale_fill_manual(values = c(Kosten = "#b2182b", "Erlös" = "#1b7837")) +
+  labs(x = NULL, y = "kg Silberäquivalent", fill = NULL) +
+  theme_minimal(base_size = 11) +
+  theme(axis.text.x = element_text(angle = 30, hjust = 1))
+
+# Saldo der Expedition in kg Silber
+round(sum(magellan$silber_kg), 1)
+```
+
+Den Kosten von rund `r round(-sum(magellan$silber_kg[magellan$silber_kg < 0]), 0)` kg Silber standen Erlöse von rund `r round(sum(magellan$silber_kg[magellan$silber_kg > 0]), 0)` kg Silber gegenüber — trotz des Verlusts von vier der fünf Schiffe blieb also ein knapper Überschuss. Die Rechnung macht zweierlei deutlich. Erstens: Der Wert der Ladung — gut 20 Tonnen Gewürznelken — war so hoch, dass selbst ein einziges zurückkehrendes Schiff die gesamte Expedition refinanzierte. Die gewaltige Preisspanne zwischen Molukken und Europa (siehe oben) ist die ökonomische Ursache dafür. Zweitens: Die Bilanz war extrem riskant. Wäre auch das letzte Schiff verloren gegangen, hätten den Kosten keinerlei Erlöse gegenübergestanden. Hohe Margen entlang einer Supply Chain sind deshalb nicht nur Ausdruck von Marktmacht, sondern häufig auch eine **Risikoprämie** für Akteure, die Transport-, Verderbs- und Ausfallrisiken tragen — ein Gedanke, der in Kapitel [-@sec-strategic-fit] (Risikoallokation) und in den Kapiteln zur Unsicherheit (Kapitel [-@sec-unsicherheit-pooling] bis [-@sec-bullwhip]) wieder aufgegriffen wird.
+
 ::: {.r-exkurs}
 **R-Exkurs: `data.frame` und `tibble` als Tabellenstruktur**
 
@@ -275,6 +322,43 @@ $$
 
 Dieser SCM-Gewinn ist zugleich die Summe der individuellen Gewinne aller beteiligten Akteure. Daraus folgt eine zentrale, oft unterschätzte Erkenntnis: **Die Optimierung der individuellen Gewinne einzelner Akteure führt in der Regel nicht zur Optimierung des SCM-Gewinns.** Ein Lieferant, der seinen eigenen Gewinn maximiert, indem er große Losgrößen produziert, kann beim Abnehmer hohe Lagerkosten und Kapitalbindung verursachen, die den Gesamtgewinn der Kette schmälern. Genau diese Diskrepanz zwischen individueller und gesamthafter Optimierung begründet den eigenständigen Koordinationsbedarf, den Supply Chain Management adressiert — ein Thema, das in späteren Kapiteln dieses Buches, etwa beim Bullwhip-Effekt, wieder aufgegriffen wird.
 
+::: {.vertiefung}
+**Theorie-Vertiefung: Doppelte Marginalisierung — warum lokale Gewinnmaximierung den SCM-Gewinn senkt**
+
+Die Folienaussage "Optimierung der individuellen Gewinne führt i. d. R. nicht zur Optimierung des SCM-Gewinns" lässt sich an einem klassischen mikroökonomischen Modell präzise zeigen, der **doppelten Marginalisierung** [@spengler1950vertical]. Betrachtet wird eine zweistufige Kette aus Hersteller und Händler. Der Hersteller produziert zu Stückkosten $c$ und verkauft an den Händler zum Großhandelspreis $w$; der Händler setzt den Endkundenpreis $p$. Die Endkundennachfrage sei linear, $q = a - p$.
+
+*Integrierte Kette (ein Entscheider):* Maximiert wird der gesamte Kettengewinn $(p - c)\,q = (a - q - c)\,q$. Die Bedingung erster Ordnung $a - 2q - c = 0$ liefert $q^{I} = (a-c)/2$ und einen Kettengewinn von $(a-c)^2/4$.
+
+*Dezentrale Kette (jeder optimiert für sich):* Der Händler maximiert $(a - q - w)\,q$ und wählt $q = (a-w)/2$. Der Hersteller antizipiert diese Reaktion und maximiert $(w-c)\,(a-w)/2$, woraus $w = (a+c)/2$ folgt. Eingesetzt ergibt sich $q^{D} = (a-c)/4$ — **nur die Hälfte** der integrierten Menge. Beide Stufen schlagen nacheinander einen eigenen Aufschlag ("Marge") auf, der Endkundenpreis steigt, die Absatzmenge sinkt, und der Kettengewinn fällt auf $3(a-c)^2/16$, also auf 75 % des möglichen Wertes.
+
+```{r}
+#| label: ch1-doppelte-marginalisierung
+
+a <- 100   # Marktgröße (Prohibitivpreis)
+k <- 20    # Stückkosten des Herstellers (nicht "c" nennen: c() ist die R-Funktion zum Kombinieren)
+
+# Integrierte Kette
+q_int     <- (a - k) / 2
+gewinn_int <- (a - q_int - k) * q_int
+
+# Dezentrale Kette: Hersteller setzt w, Händler reagiert
+w_dez      <- (a + k) / 2
+q_dez      <- (a - w_dez) / 2
+p_dez      <- a - q_dez
+gewinn_haendler   <- (p_dez - w_dez) * q_dez
+gewinn_hersteller <- (w_dez - k) * q_dez
+
+tibble(
+  Kennzahl  = c("Menge", "Endkundenpreis", "Gewinn Hersteller", "Gewinn Händler", "SCM-Gewinn"),
+  Integriert = c(q_int, a - q_int, NA, NA, gewinn_int),
+  Dezentral  = c(q_dez, p_dez, gewinn_hersteller, gewinn_haendler,
+                 gewinn_hersteller + gewinn_haendler)
+)
+```
+
+Das Beispiel ist bewusst einfach, zeigt aber den Kern des Koordinationsproblems: Jeder Akteur handelt für sich völlig rational, und dennoch verschenkt die Kette ein Viertel ihres Gewinnpotenzials — zulasten von Hersteller, Händler **und** Endkunden, die höhere Preise zahlen. Instrumente wie Mengenrabatte, Rücknahme- oder Erlösbeteiligungsverträge (*Supply Chain Contracts*) setzen genau hier an, indem sie die Anreize der Einzelakteure an das Kettenoptimum angleichen [@cachon2024matching; @chopra2025supply].
+:::
+
 ## Supply-Chain-Strukturen: Netzwerke, fokale und polyzentrische Ketten
 
 Der Begriff "Kette" (chain) ist insofern irreführend, als reale Supply Chains selten linear verlaufen. Realistischer ist die Vorstellung eines mehrstufigen **Netzwerks**: Auf jeder Stufe — Lieferant, Hersteller, Distributor, Händler, Konsument — existieren typischerweise mehrere parallele Akteure, und die Verbindungen zwischen benachbarten Stufen kreuzen sich: Ein Hersteller bezieht von mehreren Lieferanten und beliefert mehrere Distributoren, die wiederum jeweils mehrere Händler versorgen. Diese netzwerkartige Struktur erhöht die Flexibilität (z. B. bei Lieferantenausfällen), erschwert zugleich aber die Koordination, weil Entscheidungen an einem Knoten Rückwirkungen auf viele andere Knoten im Netzwerk haben können.
@@ -298,6 +382,21 @@ Eine **polyzentrische Supply Chain** zeichnet sich durch verteilte und sich übe
 ![Struktur einer polyzentrischen Supply Chain](../images/clipboard-574717847.png){fig-align="center" width="85%"}
 
 Wie unterschiedlich Supply-Chain-Strukturen im Detail aussehen können, zeigt bereits ein flüchtiger Vergleich alltäglicher Konsumgüter: Die Glasflasche eines Erfrischungsgetränks folgt einer anderen Beschaffungs- und Distributionslogik als ein Baumwoll-T-Shirt, ein handgefertigtes Gravel-Bike oder eine Tafel Schokolade mit Kakao- und Haselnusszulieferungen aus verschiedenen Kontinenten. Rohstoffherkunft, Verarbeitungstiefe, Transportmodalität und Distributionskanal unterscheiden sich hier so stark, dass ein und derselbe theoretische Rahmen — Akteure, Stufen, Flüsse — auf jeweils sehr unterschiedliche konkrete Netzwerke angewendet werden muss.
+
+Warum sich in manchen Branchen fokale, in anderen polyzentrische Strukturen herausbilden, lässt sich mit der **Engpassposition** begründen: Wer eine knappe, schwer ersetzbare Ressource kontrolliert — die Marke und den Endkundenzugang (Apple), die Systemintegration eines komplexen Produkts (Automobil-OEM) oder eine Schlüsseltechnologie —, kann den übrigen Akteuren Standards, Mengen und Preise vorgeben. Je austauschbarer dagegen die Leistungen der einzelnen Stufen sind und je stärker sich Kompetenzen überlappen, desto eher entsteht ein polyzentrisches Netz, in dem Koordination über Verhandlung und Kooperation statt über Weisung erfolgt. Für das Supply Chain Management folgt daraus, dass die **Koordinationsinstrumente** zur Struktur passen müssen: In fokalen Ketten kann der Koordinator Planungsdaten, Lieferabrufe und Qualitätsstandards zentral setzen; in polyzentrischen Ketten sind gemeinsame Planung, Informationsteilung und vertragliche Anreizsysteme die wichtigeren Hebel.
+
+::: {.kontrollfragen}
+**Übung aus der Vorlesung: Supply-Chain-Strukturen beschreiben**
+
+Beschreiben Sie die Struktur der Supply Chains — insbesondere die Distributionsstruktur — der folgenden Produkte: eine Flasche Coca-Cola (Glas, 0,3 l), ein T-Shirt von Patagonia, das Gravel-Bike *Waldwiesel* von Urwahn und eine Tafel Ritter Sport Haselnuss.
+
+1. Beschreiben Sie die wesentlichen Produktionsschritte durch Angabe der verwendeten Rohstoffe, Materialien und Bauteile sowie der erzeugten (Zwischen-)Produkte.
+2. Ergänzen Sie die Darstellung durch die logistischen Prozesse, die die Fertigungsstufen verbinden.
+3. Ordnen Sie die einzelnen Prozessschritte (Produktion und Logistik) räumlich zu.
+4. Handelt es sich eher um eine fokale oder eine polyzentrische Supply Chain? Wer besetzt gegebenenfalls die Engpassposition?
+
+*Hinweis zur Bearbeitung:* Hilfreich ist es, für jedes Produkt mit dem Endprodukt zu beginnen und die Stückliste "rückwärts" aufzulösen (z. B. Schokolade → Kakaomasse, Zucker, Milchpulver, Haselnüsse, Verpackung), bevor Orte und Transportmittel ergänzt werden.
+:::
 
 ## Supply Chain Management: Definitionen und Abgrenzung
 
@@ -380,4 +479,6 @@ Parallel dazu wurden die ersten Bausteine der Programmiersprache R eingeführt: 
 6. Grenzen Sie eine fokale von einer polyzentrischen Supply-Chain-Struktur ab und nennen Sie je ein Beispiel.
 7. Worin unterscheidet sich Supply Chain Management von Logistik und von Beschaffung? Begründen Sie Ihre Antwort mit mindestens einer der im Kapitel zitierten Definitionen.
 8. Wählen Sie zwei der folgenden Produkte — eine Glasflasche Cola, ein T-Shirt, ein Gravel-Bike, eine Tafel Schokolade — und skizzieren Sie stichpunktartig deren Supply-Chain-Struktur: Welche Rohstoffe und Bauteile sind beteiligt, welche Produktionsschritte lassen sich unterscheiden, und wie könnten strategische, taktische und operative Entscheidungen in dieser Kette aussehen?
+9. Erläutern Sie das Prinzip der doppelten Marginalisierung. Um wie viel Prozent sinkt im linearen Modell der Kettengewinn, wenn Hersteller und Händler ihre Preise unabhängig voneinander setzen?
+10. Warum war die Magellan-Expedition trotz des Verlusts von vier Schiffen profitabel, und welches allgemeine Muster von Netzwerkentscheidungen illustriert ihre Bilanz?
 :::

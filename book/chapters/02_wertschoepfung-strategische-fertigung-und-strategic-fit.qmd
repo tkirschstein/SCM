@@ -86,7 +86,7 @@ Zwischen diesen Polen liegen hybride Strategien wie *Assemble-to-order* (Endmont
 ::: {.r-exkurs}
 **R-Exkurs: Eigene Funktionen definieren**
 
-In Kapitel 1 haben Sie mit Vektoren, `data.frame`/`tibble` und Basisfunktionen wie `mean()` oder `sum()` gearbeitet. Häufig möchte man eine Berechnung, die mehrfach benötigt wird, nicht jedes Mal neu ausschreiben, sondern in einer **eigenen Funktion** kapseln. Eine Funktion wird mit dem Schlüsselwort `function()` definiert; ihr Rumpf steht in geschweiften Klammern `{ }`, und der letzte ausgewertete Ausdruck (oder ein expliziter `return()`-Aufruf) ist der Rückgabewert.
+In Kapitel [-@sec-einfuehrung] haben Sie mit Vektoren, `data.frame`/`tibble` und Basisfunktionen wie `mean()` oder `sum()` gearbeitet. Häufig möchte man eine Berechnung, die mehrfach benötigt wird, nicht jedes Mal neu ausschreiben, sondern in einer **eigenen Funktion** kapseln. Eine Funktion wird mit dem Schlüsselwort `function()` definiert; ihr Rumpf steht in geschweiften Klammern `{ }`, und der letzte ausgewertete Ausdruck (oder ein expliziter `return()`-Aufruf) ist der Rückgabewert.
 
 Als Beispiel: Eine einfache Faustregel für die Make-or-Buy-Entscheidung lautet, eine Aktivität dann intern zu fertigen (Make), wenn die eigenen Herstellkosten je Einheit niedriger sind als der Angebotspreis eines externen Zulieferers zuzüglich Beschaffungskosten. Wir bilden das als Funktion ab:
 
@@ -149,7 +149,15 @@ Wichtig: Eine solche Kostenfaustregel greift zu kurz, wenn Kernkompetenz, Kapazi
 
 ## Strategische Ziele: Kundenzufriedenheit unter Unsicherheit
 
-Jede Supply Chain wird letztlich daran gemessen, wie gut sie Kundenerwartungen erfüllt — und Kundenerwartungen sind vielschichtig. Sie lassen sich entlang mehrerer **Servicedimensionen** beschreiben: Kosten, Qualität, Zeit, Zuverlässigkeit und Zugänglichkeit. Aus Sicht der Supply Chain sind dabei insbesondere die Dimensionen Zeit und Zuverlässigkeit von Interesse, da sie unmittelbar mit der **Kunden- und Supply-Chain-Unsicherheit** zusammenhängen. Diese Unsicherheit äußert sich unter anderem in:
+Jede Supply Chain wird letztlich daran gemessen, wie gut sie Kundenerwartungen erfüllt — und Kundenerwartungen sind vielschichtig. Sie lassen sich entlang von fünf Dimensionen beschreiben:
+
+- **Kosten**: der Preis, den der Kunde für die Leistung insgesamt zu zahlen bereit ist (einschließlich Liefer- und Nebenkosten),
+- **Qualität**: die Übereinstimmung des Produkts mit den zugesagten Eigenschaften — bei Lebensmitteln etwa Frische und Hygiene,
+- **Zeit**: die Lieferzeit zwischen Bestellung und Verfügbarkeit bzw. bei Handelsware die sofortige Verfügbarkeit im Regal,
+- **Zuverlässigkeit**: die Verlässlichkeit, mit der Zusagen zu Menge, Termin und Qualität eingehalten werden,
+- **Zugänglichkeit**: wie leicht der Kunde an das Produkt gelangt (Zahl und Lage der Verkaufsstellen, Öffnungszeiten, Vertriebskanäle).
+
+Die Dimensionen Zeit und Zuverlässigkeit werden in den Folien als **Servicedimensionen** hervorgehoben: Sie werden nicht durch das Produkt selbst, sondern durch die Supply Chain erbracht und hängen unmittelbar mit der **Kunden- und Supply-Chain-Unsicherheit** zusammen. Ein Produkt kann qualitativ hervorragend und günstig sein — ist es nicht rechtzeitig und verlässlich verfügbar, verfehlt die Supply Chain dennoch die Kundenerwartung. Diese Unsicherheit äußert sich unter anderem in:
 
 - der Nachfragemenge je Kundenauftrag,
 - der vom Kunden akzeptierten Lieferzeit,
@@ -183,10 +191,12 @@ Die folgende Tabelle systematisiert, wie unterschiedliche Kundenbedürfnisse die
 
 Diese implizierte Unsicherheit ist nicht gleichmäßig über die Supply Chain verteilt: Je nachdem, wo Lager- und Kapazitätspuffer positioniert sind, tragen unterschiedliche Akteure einen unterschiedlichen Anteil der **gesamten implizierten Unsicherheit der Supply Chain**. In einer Kette, in der der Händler große Sicherheitsbestände hält, ist der Produzent von kurzfristigen Nachfrageschwankungen weitgehend abgeschirmt; verschiebt sich diese Pufferfunktion Richtung Produzent, trägt dieser einen größeren Anteil der Unsicherheit (vgl. @chopra2025supply, S. 57).
 
+Die Folien veranschaulichen dies mit zwei Ketten, die **dieselbe gesamte implizierte Unsicherheit** bewältigen müssen, sie aber unterschiedlich aufteilen. In *Supply Chain I* übernimmt der Händler den größten Teil: Er hält ein breites Sortiment vorrätig und puffert Nachfrageschwankungen über Bestände ab, sodass Produzent und Lieferant mit einer vergleichsweise stabilen Nachfrage planen können und sich auf Effizienz konzentrieren dürfen. In *Supply Chain II* übernimmt der Produzent den größten Teil — etwa weil er kundenindividuell fertigt (Make-to-order) und der Händler nur noch als Verkaufs- und Auslieferungspunkt fungiert. Daraus folgt eine wichtige Präzisierung des Strategic-Fit-Gedankens: Nicht jede Stufe einer Kette muss gleich reaktionsfähig sein. Entscheidend ist, dass die Stufe, die einen großen Anteil der Unsicherheit trägt, reaktionsfähig ausgelegt ist, während Stufen, die durch vor- oder nachgelagerte Puffer abgeschirmt werden, effizient arbeiten können. Ein Frischehersteller wie die SushiFresh GmbH, die uns ab Kapitel [-@sec-logistikkosten] begleitet, kann diese Unsicherheit übrigens kaum an den Handel weiterreichen: Sushi-Boxen sind nicht lagerfähig, sodass die Mengenentscheidung jeden Morgen beim Hersteller neu getroffen werden muss (vgl. das Newsvendor-Modell in Kapitel [-@sec-newsvendor]).
+
 ::: {.r-exkurs}
 **R-Exkurs: `dplyr`-Grundverben — `mutate()`, `filter()`, `select()`**
 
-Aus Kapitel 1 kennen Sie bereits `tibble()` zur Erstellung von Datentabellen. Das Paket `dplyr` (Teil des `tidyverse`) stellt einige wenige, gut kombinierbare "Verben" bereit, um solche Tabellen zu transformieren:
+Aus Kapitel [-@sec-einfuehrung] kennen Sie bereits `tibble()` zur Erstellung von Datentabellen. Das Paket `dplyr` (Teil des `tidyverse`) stellt einige wenige, gut kombinierbare "Verben" bereit, um solche Tabellen zu transformieren:
 
 - `mutate()` erzeugt neue Spalten (oder verändert bestehende),
 - `filter()` behält nur Zeilen, die eine Bedingung erfüllen,
@@ -233,7 +243,7 @@ wertschoepfung_erweitert |>
   select(stufe, marge_relativ)
 ```
 
-Der Pipe-Operator `|>` (aus Kapitel 1 bereits bekannt) verkettet diese Schritte lesbar von links nach rechts: "Nimm die Tabelle, dann erzeuge neue Spalten, dann filtere, dann wähle Spalten aus." Diese drei Verben — zusammen mit `arrange()` (Sortieren) und `summarise()` (Aggregieren), die in späteren Kapiteln folgen — bilden das Rückgrat der Datenanalyse mit `dplyr`.
+Der Pipe-Operator `|>` (aus Kapitel [-@sec-einfuehrung] bereits bekannt) verkettet diese Schritte lesbar von links nach rechts: "Nimm die Tabelle, dann erzeuge neue Spalten, dann filtere, dann wähle Spalten aus." Diese drei Verben — zusammen mit `arrange()` (Sortieren) und `summarise()` (Aggregieren), die in späteren Kapiteln folgen — bilden das Rückgrat der Datenanalyse mit `dplyr`.
 :::
 
 ## Reaktionsfähigkeit und Effizienz
@@ -280,6 +290,16 @@ Strategic Fit ist erreicht, wenn eine Supply-Chain-Konfiguration nahe dieser Dia
 
 - Eine **zu effiziente** Supply Chain für ein Produkt mit hoher Nachfrageunsicherheit führt zu Fehlmengen, verpassten Verkaufschancen und unzufriedenen Kunden, weil die Kette nicht schnell genug auf Nachfrageschwankungen reagieren kann.
 - Eine **zu reaktionsfähige** (und damit teure) Supply Chain für ein Produkt mit niedriger Nachfrageunsicherheit verursacht unnötige Kosten, die im Wettbewerb um preissensitive Kunden nicht wettgemacht werden können.
+
+::: {.vertiefung}
+**Theorie-Vertiefung: Funktionale und innovative Produkte nach Fisher**
+
+Der Strategic-Fit-Gedanke geht wesentlich auf @fisher1997right zurück. Fisher unterscheidet **funktionale Produkte** — Güter des Grundbedarfs mit langen Lebenszyklen, stabiler, gut prognostizierbarer Nachfrage und geringen Margen (z. B. Grundnahrungsmittel, Standardverbrauchsgüter) — von **innovativen Produkten** mit kurzen Lebenszyklen, hoher Variantenvielfalt, schwer prognostizierbarer Nachfrage und hohen Margen (z. B. Mode, Unterhaltungselektronik). Seine zentrale These lautet, dass beide Produkttypen **unterschiedliche Supply Chains** erfordern: Funktionale Produkte gehören in eine *physisch effiziente* Kette, deren Aufgabe es ist, die gut vorhersagbare Nachfrage zu minimalen Kosten zu bedienen. Innovative Produkte gehören in eine *marktreaktionsfähige* Kette, deren Aufgabe es ist, Angebot und Nachfrage auch bei großer Prognoseunsicherheit rasch in Einklang zu bringen.
+
+Die ökonomische Begründung liegt in den Kosten der beiden möglichen Fehler: Bei funktionalen Produkten sind die Margen klein, sodass jeder zusätzliche Euro an Bestand oder Kapazitätsreserve den Gewinn unmittelbar schmälert — Effizienz lohnt sich. Bei innovativen Produkten sind die Margen hoch, sodass eine verpasste Verkaufschance (Fehlmenge) sehr teuer ist, während übrig gebliebene Ware am Saisonende oft nur mit hohem Abschlag abgesetzt werden kann. Hier lohnt es sich, in Reaktionsfähigkeit zu investieren. Genau diese Abwägung zwischen den Kosten einer Fehlmenge und den Kosten eines Überbestands wird in Kapitel [-@sec-newsvendor] mit dem Newsvendor-Modell formal gefasst: Das dort hergeleitete kritische Verhältnis $c^u/(c^u+c^o)$ steigt mit der Marge und begründet damit quantitativ, warum margenstarke Produkte höhere Servicegrade und mehr Puffer rechtfertigen.
+
+Chopra und Meindl verallgemeinern Fishers Zweiteilung zum Kontinuum der implizierten Unsicherheit, weil nicht nur das Produkt, sondern auch die bedienten Kundenanforderungen (Lieferzeit, Servicegrad, Kanäle) die Unsicherheit bestimmen [@chopra2025supply]. Dasselbe Produkt kann deshalb je nach Marktsegment eine effiziente oder eine reaktionsfähige Kette erfordern.
+:::
 
 Die praktische Konsequenz: Supply-Chain-Design ist kein universelles Optimierungsproblem mit einer einzigen "besten" Lösung, sondern muss stets im Kontext der bedienten Nachfrage und der Wettbewerbsstrategie des Unternehmens beurteilt werden. Zwei Unternehmen mit identischem Produkt, aber unterschiedlicher Wettbewerbspositionierung (etwa Kostenführer vs. Serviceführer), sollten folgerichtig auch unterschiedliche Supply-Chain-Strategien verfolgen.
 

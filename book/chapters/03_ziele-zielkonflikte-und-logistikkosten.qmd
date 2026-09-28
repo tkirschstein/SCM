@@ -38,11 +38,11 @@ Eine fundierte Entscheidung erfordert daher mehr als die Frage, welche Alternati
 
 ## Zielsysteme in Unternehmen: eine Verortung
 
-Bevor wir uns den logistikspezifischen Zielen zuwenden, lohnt ein kurzer Blick auf die Struktur betrieblicher Zielsysteme insgesamt. In jedem Unternehmen existiert ein hierarchisch gegliedertes Managementsystem: Auf der **normativen Ebene** werden grundsätzliche Werte, die Unternehmensverfassung und die -kultur festgelegt; auf der **strategischen Ebene** werden langfristige Erfolgspotenziale aufgebaut (dies war der Gegenstand von Kapitel 2); auf der **operativen Ebene** schließlich werden die Tagesgeschäfte so gesteuert, dass die strategischen Vorgaben erfüllt werden [@dyckhoff1998grundzuege].
+Bevor wir uns den logistikspezifischen Zielen zuwenden, lohnt ein kurzer Blick auf die Struktur betrieblicher Zielsysteme insgesamt. In jedem Unternehmen existiert ein hierarchisch gegliedertes Managementsystem: Auf der **normativen Ebene** werden grundsätzliche Werte, die Unternehmensverfassung und die -kultur festgelegt; auf der **strategischen Ebene** werden langfristige Erfolgspotenziale aufgebaut (dies war der Gegenstand von Kapitel [-@sec-strategic-fit]); auf der **operativen Ebene** schließlich werden die Tagesgeschäfte so gesteuert, dass die strategischen Vorgaben erfüllt werden [@dyckhoff1998grundzuege].
 
 Jeder dieser Ebenen sind eigene Ziele zugeordnet — von sehr allgemeinen, langfristigen Leitbildern bis zu sehr konkreten, kurzfristig messbaren Kennzahlen. Logistik- und SCM-Ziele sind typischerweise auf der strategischen bis operativen Ebene angesiedelt: Sie leiten sich aus übergeordneten Unternehmenszielen (z. B. Rentabilität, Wachstum, Kundenzufriedenheit) ab, sind aber konkret genug, um im Tagesgeschäft als Entscheidungskriterium zu dienen.
 
-Diese Einordnung ist mehr als eine akademische Fingerübung: Sie erklärt, warum Logistikentscheidungen fast nie "im luftleeren Raum" getroffen werden. Eine Entscheidung über die Anzahl der Auslieferungslager etwa ist eine operative bis strategische Entscheidung, die aber nur dann sinnvoll ist, wenn sie zur übergeordneten Servicestrategie des Unternehmens passt. Wer sich auf der strategischen Ebene für eine Kostenführerschaft entschieden hat (vgl. Kapitel 2), wird auf der operativen Ebene tendenziell andere Ziel-Anspruchsniveaus setzen als ein Unternehmen, das auf Differenzierung durch Schnelligkeit setzt. Das Zielsystem der Logistik ist also kein Selbstzweck, sondern die operative "Übersetzung" der Wettbewerbsstrategie in messbare Größen.
+Diese Einordnung ist mehr als eine akademische Fingerübung: Sie erklärt, warum Logistikentscheidungen fast nie "im luftleeren Raum" getroffen werden. Eine Entscheidung über die Anzahl der Auslieferungslager etwa ist eine operative bis strategische Entscheidung, die aber nur dann sinnvoll ist, wenn sie zur übergeordneten Servicestrategie des Unternehmens passt. Wer sich auf der strategischen Ebene für eine Kostenführerschaft entschieden hat (vgl. Kapitel [-@sec-strategic-fit]), wird auf der operativen Ebene tendenziell andere Ziel-Anspruchsniveaus setzen als ein Unternehmen, das auf Differenzierung durch Schnelligkeit setzt. Das Zielsystem der Logistik ist also kein Selbstzweck, sondern die operative "Übersetzung" der Wettbewerbsstrategie in messbare Größen.
 
 ::: {.definition}
 **Definition: Ziel**
@@ -99,6 +99,14 @@ Würde man jede der sechs Zielgrößen unabhängig maximieren bzw. minimieren wo
 **Definition: Zielkonflikt**
 
 Ein **Zielkonflikt** liegt vor, wenn die Verbesserung einer Zielgröße (z. B. kürzere Lieferzeit) notwendigerweise die Verschlechterung mindestens einer anderen Zielgröße (z. B. höhere Kosten) nach sich zieht. Zielkonflikte lassen sich nicht "auflösen", sondern nur durch eine bewusste Abwägung — einen **Trade-off** — handhaben.
+:::
+
+::: {.vertiefung}
+**Theorie-Vertiefung: Zielbeziehungen und Pareto-Effizienz**
+
+Die betriebswirtschaftliche Entscheidungstheorie unterscheidet drei Arten von Beziehungen zwischen zwei Zielen [@dyckhoff1998grundzuege]: **Komplementäre** Ziele fördern sich gegenseitig (eine bessere Lieferqualität senkt z. B. Reklamations- und damit Logistikkosten), **indifferente** Ziele beeinflussen sich nicht, und **konkurrierende** Ziele stehen im Konflikt. Wichtig ist, dass die Art der Beziehung nicht "naturgegeben" ist, sondern vom betrachteten Bereich der Alternativen abhängt: Solange ein Logistiksystem Verschwendung enthält (etwa Leerfahrten oder doppelt gehaltene Bestände), lassen sich Kosten und Lieferzeit oft **gleichzeitig** verbessern — die Ziele verhalten sich in diesem Bereich komplementär. Erst wenn alle solchen Verbesserungen ausgeschöpft sind, wird die Beziehung konkurrierend.
+
+Formal nennt man eine Alternative **Pareto-effizient** (oder dominanzfrei), wenn es keine andere zulässige Alternative gibt, die in mindestens einem Ziel besser und in keinem Ziel schlechter ist. Die Menge aller Pareto-effizienten Alternativen bildet die **Effizienzgrenze** — dieselbe Denkfigur, die in Kapitel [-@sec-strategic-fit] als Kosten-Reaktionsfähigkeits-Grenze eingeführt wurde. Echte Zielkonflikte existieren nur *auf* dieser Grenze. Daraus folgen zwei Managementaufgaben, die man sauber trennen sollte: Erstens ein ineffizientes System an die Grenze heranzuführen (hier gibt es keinen Zielkonflikt, nur Verbesserungspotenzial), und zweitens auf der Grenze eine Position zu wählen, die zur Wettbewerbsstrategie passt (hier ist eine Abwägung unvermeidlich). Die Zielprofile weiter unten sind im Grunde nichts anderes als unterschiedliche Positionen auf einer solchen mehrdimensionalen Effizienzgrenze.
 :::
 
 Zur Veranschaulichung reduziert man das Zielsystem häufig auf vier zentrale, stark verdichtete Dimensionen: **Qualität**, **Geschwindigkeit**, **Kosten** und **Flexibilität/Resilienz**. Stellt man diese vier Dimensionen als die vier Eckpunkte eines Tetraeders (einer dreiseitigen Pyramide) dar, wird das Spannungsfeld unmittelbar sichtbar: Jede Kante des Tetraeders verbindet zwei Zielgrößen, zwischen denen abgewogen werden muss, und kein reales Logistiksystem kann gleichzeitig in allen vier Ecken "perfekt" positioniert sein.
@@ -203,7 +211,7 @@ fig_zielprofile <- fig_zielprofile |>
 fig_zielprofile
 ```
 
-Beide Darstellungen — Tetraeder und Zielprofil — transportieren dieselbe Botschaft: Logistik- und SCM-Entscheidungen sind fast immer **Abwägungsentscheidungen**. Es geht nicht darum, "das beste" System schlechthin zu finden, sondern dasjenige Zielprofil zu wählen, das am besten zur übergeordneten Wettbewerbsstrategie passt — eine unmittelbare Fortsetzung des in Kapitel 2 behandelten Strategic-Fit-Gedankens [@chopra2025supply].
+Beide Darstellungen — Tetraeder und Zielprofil — transportieren dieselbe Botschaft: Logistik- und SCM-Entscheidungen sind fast immer **Abwägungsentscheidungen**. Es geht nicht darum, "das beste" System schlechthin zu finden, sondern dasjenige Zielprofil zu wählen, das am besten zur übergeordneten Wettbewerbsstrategie passt — eine unmittelbare Fortsetzung des in Kapitel [-@sec-strategic-fit] behandelten Strategic-Fit-Gedankens [@chopra2025supply].
 
 ::: {.r-exkurs}
 **R-Exkurs: Der Pipe-Operator `|>`**
@@ -225,7 +233,7 @@ kosten |>
   round(1)
 ```
 
-Der Pipe-Operator verändert *nicht*, was berechnet wird — nur, wie leicht der Rechenweg nachvollziehbar ist. Ab jetzt werden wir ihn durchgängig verwenden, insbesondere in Verbindung mit den `dplyr`-Funktionen `filter()`, `mutate()`, `group_by()` und `summarise()`, die Sie in Kapitel 2 bereits kennengelernt haben bzw. im Folgenden kennenlernen. Eine Pipe-Kette liest sich dann fast wie ein Satz: *"Nimm die Kostendaten, gruppiere sie nach Kostenart, und fasse sie zu Summen zusammen."*
+Der Pipe-Operator verändert *nicht*, was berechnet wird — nur, wie leicht der Rechenweg nachvollziehbar ist. Ab jetzt werden wir ihn durchgängig verwenden, insbesondere in Verbindung mit den `dplyr`-Funktionen `filter()`, `mutate()`, `group_by()` und `summarise()`, die Sie in Kapitel [-@sec-strategic-fit] bereits kennengelernt haben bzw. im Folgenden kennenlernen. Eine Pipe-Kette liest sich dann fast wie ein Satz: *"Nimm die Kostendaten, gruppiere sie nach Kostenart, und fasse sie zu Summen zusammen."*
 :::
 
 
@@ -440,7 +448,7 @@ Ein besonders anschauliches Fallbeispiel für **Supply Chain Costing** — also 
 
 Die Wertschöpfungskette umfasst vier Prozessstufen: **Beschaffung**, **Produktion**, **Distribution** und **Absatz**. Komponenten wie Festplatte und Display kommen aus Japan, Speicherchips aus Korea, Prozessor und Flash-Speicher aus den USA, weitere Teile (u. a. Akku) aus anderen Ländern. Die Endmontage findet in China statt, Distribution und Handel laufen über die USA, bevor das Produkt bei US-amerikanischen Endkund:innen ankommt.
 
-Die Kostenstruktur lässt sich wie folgt zusammenfassen: Die eingekauften Komponenten summieren sich auf 97 + 3 + 16 + 24 = 140 US-Dollar. Die Montage in China kostet zusätzlich 4 US-Dollar, sodass die reinen Herstellungskosten bei Apple bei 219 US-Dollar liegen — diese Zahl enthält bereits Distribution/Handel in den USA mit rund 75 US-Dollar. Bei einem Verkaufspreis von 299 US-Dollar verbleibt Apple ein Deckungsbeitrag von absolut 80 US-Dollar bzw. relativ rund 26 % des Verkaufspreises.
+Die Kostenstruktur lässt sich wie folgt zusammenfassen: Die eingekauften Komponenten summieren sich auf 97 + 3 + 16 + 24 = 140 US-Dollar. Die Montage in China kostet zusätzlich 4 US-Dollar, und für Distribution und Einzelhandel in den USA fallen rund 75 US-Dollar an. Zusammen ergeben sich 140 + 4 + 75 = 219 US-Dollar, die in der Studie als "Herstellungskosten" aus Sicht von Apple ausgewiesen werden — der Begriff ist hier also weit gefasst und umfasst die gesamte Kette bis zum Regal. Bei einem Verkaufspreis von 299 US-Dollar verbleibt Apple ein Deckungsbeitrag von absolut 80 US-Dollar bzw. relativ rund 26 % des Verkaufspreises.
 
 ```{r}
 #| label: ch3-ipod-kostenrechnung
@@ -585,6 +593,56 @@ Ein belastbarer Entscheidungsprozess umfasst typischerweise fünf Schritte:
 
 Die explizite Dokumentation von Annahmen ist besonders wichtig. Sie macht Entscheidungen nachvollziehbar und erlaubt, Modellresultate bei veränderten Rahmenbedingungen zu aktualisieren.
 
+## Fallstudie SushiFresh GmbH: Geschäftsidee und strategische Analyse {#sec-sushifresh-intro}
+
+Zum Abschluss der Grundlagenkapitel wird das Fallbeispiel eingeführt, das uns durch den gesamten weiteren Reader begleitet. Es erlaubt, die bisher eingeführten Konzepte — Wertschöpfungsprozess, Strategic Fit, Zielsystem und Zielkonflikte — auf ein konkretes, überschaubares Geschäftsmodell anzuwenden, bevor in den folgenden Kapiteln die quantitativen Planungsmodelle an demselben Unternehmen durchgerechnet werden.
+
+::: {.fallstudie}
+**Fallstudie: Die Geschäftsidee der SushiFresh GmbH**
+
+Die **SushiFresh GmbH** ist ein (fiktives) Start-up, das **täglich frisch hergestellte Sushi-Boxen** im Rhein-Main-Gebiet anbietet.
+
+- **Versprechen:** "Heute gefertigt, heute verkauft" — Sushi in Restaurantqualität, aber ohne Wartezeit.
+- **Produktion:** eine zentrale Küche, Fertigung in den frühen Morgenstunden.
+- **Absatzkanal:** Supermärkte (Regalverkauf im Kühlregal).
+- **Sortiment:** ca. 12 Boxen (klassisch, vegetarisch, vegan).
+
+*Eckdaten:* Haltbarkeit maximal 24–36 Stunden; durchgehende Kühlkette von 0–4 °C; Zutaten Reis, Nori, regionales Gemüse sowie importierter Lachs und Thunfisch; stark schwankende Nachfrage (Wochentag, Wetter, Events); geplantes Wachstum von 3 auf 30 Verkaufsstellen.
+:::
+
+Die Vorlesung stellt zu dieser Geschäftsidee zwei Gruppen von Leitfragen: zur **strategischen Position** und zur **Struktur der Supply Chain**. Im Folgenden wird eine mögliche Analyse skizziert, die die Begriffe der Kapitel [-@sec-einfuehrung] bis [-@sec-logistikkosten] systematisch anwendet. Sie ist nicht als einzig richtige Lösung zu verstehen, sondern als Beispiel für eine strukturierte Argumentation.
+
+### Strategische Position
+
+**Kundengruppen und Nutzenversprechen.** SushiFresh adressiert Kundinnen und Kunden, die eine schnelle, hochwertige Mahlzeit suchen — Berufstätige in der Mittagspause, Pendler, Kleinhaushalte am Abend. Im Sinne der Nutzenarten aus Kapitel [-@sec-einfuehrung] steht nicht allein der Formnutzen (das Produkt), sondern vor allem der **Zeitnutzen** (sofort verfügbar, ohne Wartezeit) und der **Raumnutzen** (im ohnehin besuchten Supermarkt) im Vordergrund. Die Frische ist dabei das zentrale Qualitätsmerkmal. Gegenüber Restaurants und Lieferdiensten punktet SushiFresh mit Bequemlichkeit und Preis, gegenüber industriell gefertigtem, länger haltbarem Supermarkt-Sushi mit Qualität und Frische. Wettbewerbsstrategisch entspricht dies am ehesten einer **Qualitäts- bzw. Serviceführerschaft** (vgl. die Normstrategien in Kapitel [-@sec-strategic-fit]) — nicht einer Kostenführerschaft.
+
+**Implizierte Unsicherheit und Strategic Fit.** Nach der Systematik aus Kapitel [-@sec-strategic-fit] ist die implizierte Unsicherheit hoch: Die Tagesnachfrage schwankt mit Wochentag, Wetter und Events; das Sortiment umfasst zwölf Varianten, deren Einzelnachfrage schwerer zu prognostizieren ist als die Gesamtnachfrage; der Kunde erwartet sofortige Verfügbarkeit (Lieferzeit null); und die Zahl der Verkaufsstellen soll stark wachsen. Hinzu kommt eine Besonderheit des Produkts: Wegen der Haltbarkeit von maximal 36 Stunden lässt sich Unsicherheit **nicht über Fertigwarenbestände** über mehrere Tage puffern. Das Produkt verhält sich damit ähnlich wie Fishers "innovative" Produkte, obwohl es sich um ein Lebensmittel handelt. Strategic Fit verlangt deshalb eine eher **reaktionsfähige** Supply Chain — allerdings mit einer Einschränkung: Die Reaktionsfähigkeit kann nicht über Lagerbestände fertiger Boxen, sondern nur über **flexible Produktionsmengen**, **kurze Durchlaufzeiten** und **gute Prognosen** hergestellt werden.
+
+**Zielkonflikte.** Übertragen auf das Tetraeder dieses Kapitels treten vor allem drei Konflikte auf. *Frische versus Kosten:* Tägliche Produktion und Auslieferung verhindern große Lose und volle Lkw-Auslastung. *Verfügbarkeit versus Ausschuss:* Jede zusätzliche Box, die zur Absicherung gegen leere Regale produziert wird, erhöht das Risiko, am Abend unverkaufte Ware abschreiben zu müssen — genau der Zielkonflikt, den das Newsvendor-Modell in Kapitel [-@sec-newsvendor] optimiert. *Service versus Umwelt:* Häufige, kleine Kühltransporte und Lebensmittelabfälle belasten die Ökobilanz (vgl. Kapitel [-@sec-nachhaltigkeit]). Strategisch besonders wichtig sind damit die Zielgrößen **Lieferqualität** (Frische, Kühlkette), **Liefertreue** (Ware muss vor Ladenöffnung im Regal sein) und **Verfügbarkeit**; die Logistikkosten sind nachrangig, dürfen aber die Marge nicht aufzehren.
+
+### Struktur der Supply Chain
+
+**Stufen und Partner.** Die Kette umfasst die Lieferanten (Fischgroßhandel für Lachs und Thunfisch, regionaler Gemüsehandel, Reis- und Nori-Lieferanten), die zentrale Küche von SushiFresh, die Kühllogistik zu den Filialen sowie den Lebensmitteleinzelhandel als Absatzkanal. Der Fisch ist dabei die kritische Komponente: Er ist teuer, verderblich und wird importiert, sodass Beschaffungsmenge und -zeitpunkt eng mit der Produktionsplanung abgestimmt werden müssen (vgl. den Bullwhip-Effekt in Kapitel [-@sec-bullwhip]).
+
+**Umgang mit Nachfrageschwankungen und Frische.** Da Fertigwaren nicht gelagert werden können, liegt der Entkopplungspunkt (Kapitel [-@sec-strategic-fit]) *vor* der Endmontage der Boxen: Vorgehalten werden allenfalls Rohwaren und vorbereitete Komponenten (gekochter Reis, geschnittenes Gemüse, portionierter Fisch), während die Boxen selbst täglich auf Basis einer Tagesprognose gefertigt werden. Die Kühlkette muss lückenlos dokumentiert werden, was für eine enge Anbindung der Logistik an SushiFresh spricht.
+
+**Zentralität versus Dezentralität.** Eine zentrale Küche nutzt Skaleneffekte, bündelt Know-how und Qualitätskontrolle und erlaubt — wie Kapitel [-@sec-unsicherheit-pooling] zeigen wird — erhebliche Einsparungen durch **Pooling** der Nachfrageunsicherheit. Dem stehen längere Transportwege, ein höheres Ausfallrisiko (ein Standort) und frühere Produktionszeitpunkte gegenüber. Mehrere kleine, filialnahe Küchen wären reaktionsfähiger, aber teurer. Wo genau Produktionsstandorte liegen sollten und wie viele es sein sollten, ist Gegenstand der Kapitel [-@sec-standort-1] und 5.
+
+**Wertschöpfungstiefe.** Die Kernkompetenz liegt in der Rezeptur, der Produktion und der Frischegarantie — diese Stufen gehören in eigene Hand (*Make*). Bei der Kühllogistik ist eine Make-or-Buy-Abwägung im Sinne von Kapitel [-@sec-strategic-fit] nötig: Ein spezialisierter Dienstleister bietet Skaleneffekte und variable statt fixer Kosten, eine eigene Flotte dagegen Kontrolle über Zeitfenster und Kühlkette — ein Argument, das angesichts des Frischeversprechens und der engen Anlieferzeit vor Ladenöffnung schwer wiegt. Beim Fischeinkauf spricht die Volatilität der Rohwarenpreise und -verfügbarkeit für langfristige Rahmenverträge mit wenigen, zuverlässigen Großhändlern.
+
+### Wie die Fallstudie im Reader weitergeht
+
+Die folgenden Kapitel greifen jeweils eine der hier aufgeworfenen Fragen auf und beantworten sie quantitativ:
+
+| Kapitel | Fragestellung für SushiFresh | Methode |
+|:---|:---|:---|
+| [-@sec-nachhaltigkeit] | Welche ökologischen Zielkonflikte (Kühlkette, Lebensmittelabfall) entstehen? | Nachhaltigkeitsstrategien, Circular SCM |
+| [-@sec-standort-1] | Welcher von drei Kandidatenstandorten eignet sich für die Produktion? Wo läge der transportkostenminimale Punkt? | Nutzwertanalyse, AHP, Center of Gravity, Weiszfeld |
+| [-@sec-standort-2] | Welche Standorte sollten eröffnet und welche Filialen von wo beliefert werden? | Warehouse Location Problem, Add-/Drop-Heuristik |
+| [-@sec-unsicherheit-pooling] | Wie viel Sicherheitsbestand spart eine zentrale Versorgung gegenüber einer dezentralen? | Kapazitäts- und Lagerbestandspooling |
+| [-@sec-newsvendor] | Wie viele Boxen sollen jeden Morgen für eine Filiale produziert werden? | Newsvendor-Modell |
+| [-@sec-bullwhip] | Wie schaukeln sich Bestellschwankungen zwischen Filialen, SushiFresh und Fischgroßhändler auf? | Bullwhip-Effekt, Order-up-to-Politik |
+
 ## Zusammenfassung
 
 Dieses Kapitel hat das Zielsystem der Logistik und des Supply Chain Managements eingeführt: Lieferzeit, Liefertreue, Lieferqualität, Flexibilität/Resilienz, Information und Kosten bilden gemeinsam den Rahmen, an dem logistische Entscheidungen gemessen werden. Da sich diese Ziele nicht unabhängig voneinander optimieren lassen, entstehen unvermeidliche **Zielkonflikte**, die sich anschaulich als "Tetraeder" zwischen Qualität, Geschwindigkeit, Kosten und Flexibilität/Resilienz sowie als individuelle Zielprofile darstellen lassen. Konkret wird dieses Spannungsfeld bei typischen logistischen Abwägungsentscheidungen — Transportmittelwahl, Lageranzahl, Sicherheitsbestand, Losgröße —, bei denen jeweils zwei gegenläufige Kostenkomponenten eine u-förmige Gesamtkostenkurve mit einem (theoretischen) Minimum ergeben.
@@ -593,7 +651,7 @@ Auf der Kostenseite wurden die wichtigsten **Logistikkostenarten** (Transport-, 
 
 Auf der R-Seite haben Sie vier neue Werkzeuge kennengelernt: den **Pipe-Operator** `|>` zur lesbaren Verkettung von Operationen, `dplyr::group_by()` und `summarise()` zur Aggregation von Daten nach Gruppen, **vektorisierte Berechnungen** zur eleganten Kombination mehrerer Kostenkomponenten sowie formatierte Tabellen mit `kableExtra`. Diese Werkzeuge werden Sie in den folgenden Kapiteln — insbesondere bei der Standortplanung und der Bestandsplanung unter Unsicherheit — regelmäßig wiederverwenden: Immer dann, wenn Rohdaten zunächst aufbereitet, nach einem Merkmal gruppiert, zu Kennzahlen verdichtet und anschließend präsentationsfähig aufbereitet werden müssen, ist die Kombination aus Pipe, `group_by()`/`summarise()` und `kableExtra` das Standardwerkzeug der angewandten Datenanalyse in R.
 
-Inhaltlich bildet dieses Kapitel das Scharnier zwischen der strategischen Positionierung aus Kapitel 2 und den quantitativen Planungsmodellen der folgenden Kapitel: Das hier eingeführte Zielsystem und die Grundidee der Kostenabwägung ziehen sich als roter Faden durch das gesamte weitere Buch — sei es bei der Wahl von Lagerstandorten, bei der Bestimmung optimaler Bestellmengen oder bei der Festlegung von Sicherheitsbeständen unter Nachfrageunsicherheit.
+Inhaltlich bildet dieses Kapitel das Scharnier zwischen der strategischen Positionierung aus Kapitel [-@sec-strategic-fit] und den quantitativen Planungsmodellen der folgenden Kapitel: Das hier eingeführte Zielsystem und die Grundidee der Kostenabwägung ziehen sich als roter Faden durch das gesamte weitere Buch — sei es bei der Wahl von Lagerstandorten, bei der Bestimmung optimaler Bestellmengen oder bei der Festlegung von Sicherheitsbeständen unter Nachfrageunsicherheit.
 
 Logistikkosten müssen systemisch erfasst werden. Relevante Kosten entstehen in Beschaffung, Transport, Umschlag, Lagerung, Fehlmengen, Rücknahme und Koordination. Für Nachhaltigkeitsentscheidungen ist es zusätzlich notwendig, Emissionen und andere Umweltwirkungen sichtbar zu machen.
 
@@ -603,7 +661,7 @@ Drei Modellierungslogiken sind besonders wichtig:
 - Ein CO₂-Preis oder Gewichtungsparameter kann Emissionen in eine gemeinsame Zielfunktion überführen.
 - Ein Emissionsbudget kann als Nebenbedingung festgelegt werden, während die Kosten minimiert werden.
 
-Die folgenden Kapitel wenden diese Ideen auf Standort- und Netzwerkentscheidungen an. Sie zeigen, wie räumliche Struktur, Kapazität, Transport und Service formal modelliert und unter erweiterten Zielsystemen bewertet werden können.
+Mit der Fallstudie der SushiFresh GmbH wurde schließlich ein Geschäftsmodell eingeführt, an dem sich Strategic Fit und Zielkonflikte konkret zeigen: hohe implizierte Unsicherheit bei zugleich kaum lagerfähiger Ware, Zielkonflikte zwischen Frische, Verfügbarkeit, Kosten und Abfall sowie die Grundsatzfrage zentraler oder dezentraler Produktion. Die folgenden Kapitel wenden diese Ideen auf Standort- und Netzwerkentscheidungen an. Sie zeigen, wie räumliche Struktur, Kapazität, Transport und Service formal modelliert und unter erweiterten Zielsystemen bewertet werden können.
 
 
 ::: {.kontrollfragen}
@@ -615,10 +673,12 @@ Die folgenden Kapitel wenden diese Ideen auf Standort- und Netzwerkentscheidunge
 4. Erläutern Sie anhand des Tetraeders, weshalb ein Logistiksystem nicht gleichzeitig maximale Qualität, Geschwindigkeit, Flexibilität und minimale Kosten erreichen kann.
 5. Skizzieren Sie für zwei der vier Beispiele "Transportmittel, Lageranzahl, Sicherheitsbestand, Losgröße" jeweils die beiden gegenläufigen Kostenkomponenten.
 6. Warum ist die Transparenz realer Kostenfunktionen in der Logistik häufig eingeschränkt? Nennen Sie mindestens zwei Gründe.
-7. Nennen Sie mindestens vier Logistikkostenarten und ordnen Sie diese den vier Abwägungsbeispielen aus Frage 4 zu.
+7. Nennen Sie mindestens vier Logistikkostenarten und ordnen Sie diese den vier Abwägungsbeispielen aus Frage 5 zu.
 8. Erläutern Sie am Beispiel der Bananenwertschöpfungskette, warum ein hoher Anteil des Endpreises nicht bei den Produzent:innen, sondern bei Handel und Distribution verbleibt.
 9. Was zeigt das Apple-iPod-Beispiel über die Verteilung von Kosten und Wertschöpfung in globalen Supply Chains, und weshalb reicht eine isolierte Betrachtung einzelner Wertschöpfungsstufen nicht aus?
 10. Unter welchen Bedingungen kann eine Zentralisierung gleichzeitig Kosten, Emissionen und Verderb reduzieren — und wann ist dies eher unwahrscheinlich?
+11. Ordnen Sie die SushiFresh GmbH in das Raster aus implizierter Unsicherheit und Reaktionsfähigkeit ein. Warum kann das Unternehmen Reaktionsfähigkeit nicht über Fertigwarenbestände herstellen, und welche Hebel bleiben ihm?
+12. Unterscheiden Sie komplementäre, indifferente und konkurrierende Zielbeziehungen. Warum treten echte Zielkonflikte nur auf der Effizienzgrenze auf?
 :::
 
 

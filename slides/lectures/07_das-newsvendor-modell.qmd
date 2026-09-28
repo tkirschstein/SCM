@@ -369,7 +369,7 @@ Zwei möglische Situation aus Sicht des Lieferanten
 :::
 
 ::: {.fragment .fade-up}
-**Gesamtdeckungsbeitrag:** $P(D,q) = q \cdot c^u $
+**Gesamtdeckungsbeitrag:** $P(D,q) = q \cdot c^u$
 :::
 :::
 :::
@@ -415,8 +415,8 @@ Erwartetes Ergebnis
 |------:|------:|------:|-----:|------:|
 | 30 Sushi-Boxen | 0,20 | 10 |  0 | 120 €
 | 40 Sushi-Boxen | 0,35 | 0  |  0 | 200 €
-| 50 Sushi-Boxen | 0,30 | 0  | 10 | 150 €
-| 60 Sushi-Boxen | 0,15 | 0  | 20 | 100 €
+| 50 Sushi-Boxen | 0,30 | 0  | 10 | 200 €
+| 60 Sushi-Boxen | 0,15 | 0  | 20 | 200 €
 :::
 
 ::: {.vspace-2}
@@ -424,7 +424,7 @@ Erwartetes Ergebnis
 
 ::: {.fragment .fade-up}
 **erwarteter Gesamtdeckungsbeitrag:** $\begin{align} E(P|q=40)= & 0.2 \cdot 120 + 0.35 \cdot 200 + \\
-& 0.30 \cdot 150 + 0.15 \cdot 100= 154 \end{align}$
+& 0.30 \cdot 200 + 0.15 \cdot 200= 184 \end{align}$
 :::
 
 :::
@@ -453,10 +453,11 @@ v <- 2  # Restwert je nicht verkaufter Sushi-Box
 
 # Erwarteter Deckungsbeitrag bzw. erwarteter Periodengewinn
 expected_profit <- function(order_quantity) {
-  realised_profit <- p * pmin(order_quantity, demand) +
+  realised_profit <-
+    p * pmin(order_quantity, demand) +
     v * pmax(order_quantity - demand, 0) -
-    c * order_quantity -
-    (p-c) * pmax(demand - order_quantity, 0)
+    c * order_quantity 
+    #(p-c) * pmax(demand - order_quantity, 0)
 
   sum(probability * realised_profit)
 }
@@ -1057,12 +1058,10 @@ Optimale Lösung bei Normalverteilung
 ## Normalverteilte Nachfrage
 
 Im Falle normalverteilter Nachfrage mit $D \sim (\mu,\sigma^2)$ kann die optimale Bestellmenge durch Transformation zur Standardnormalverteilung berechnet werden. Für optimale Bestellmenge und Kosten gilt
-$$q^*=\mu + \sigma \cdot \Phi^{-1} \left( \frac{c^u}{c^o + c^u} \right) \qquad E(C(q^*))=(c^u+c^o)\cdot \sigma \cdot \phi\left( \frac{c^u}{c^o + c^u} \right) $$
+$$z^* = \Phi^{-1} \left( \frac{c^u}{c^o + c^u} \right) \qquad q^*=\mu + \sigma \cdot z^* \qquad E(C(q^*))=(c^u+c^o)\cdot \sigma \cdot \varphi\left( z^* \right) $$
 :::
 
-Wir betrachten dazu die Filiale **Frankfurt** von SushiFresh mit $\mu=280$
-und $\sigma=55$ Sushi-Boxen pro Tag — dieselbe Filiale, für die in
-Kapitel 6 der Pooling-Effekt des Sicherheitsbestands diskutiert wird.
+**Fallbeispiel** Filiale Frankfurt mit $N(280,55^2)$
 
 
 ::: {.small-text}

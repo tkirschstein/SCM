@@ -28,7 +28,7 @@ library(kableExtra)
 
 ## Standortentscheidungen im strategischen Supply-Chain-Design
 
-Kapitel 3 hat gezeigt, dass sich Supply-Chain-Entscheidungen an einem Zielsystem ausrichten, das zwischen Kosten, Servicegrad und weiteren Zielgrößen vermittelt, und dass Logistikkosten in erheblichem Umfang von der räumlichen Struktur eines Netzwerks abhängen. Genau an dieser räumlichen Struktur setzt dieses Kapitel an: Es geht um die Frage, **wo** ein Unternehmen seine Werke, Lager, Umschlagpunkte oder Verkaufsstandorte ansiedeln sollte, damit das Netzwerk als Ganzes den Zielkonflikt aus Kosten und Service möglichst gut löst.
+Kapitel [-@sec-logistikkosten] hat gezeigt, dass sich Supply-Chain-Entscheidungen an einem Zielsystem ausrichten, das zwischen Kosten, Servicegrad und weiteren Zielgrößen vermittelt, und dass Logistikkosten in erheblichem Umfang von der räumlichen Struktur eines Netzwerks abhängen. Genau an dieser räumlichen Struktur setzt dieses Kapitel an: Es geht um die Frage, **wo** ein Unternehmen seine Werke, Lager, Umschlagpunkte oder Verkaufsstandorte ansiedeln sollte, damit das Netzwerk als Ganzes den Zielkonflikt aus Kosten und Service möglichst gut löst.
 
 Standortentscheidungen gehören zur **strategischen Netzwerkplanung** und unterscheiden sich in mehreren Punkten grundlegend von operativen Entscheidungen wie der Bestellmengenplanung, die in späteren Kapiteln behandelt wird. Erstens sind sie in aller Regel **kapitalintensiv und langfristig bindend**: Ein Werk oder ein Zentrallager lässt sich nicht ohne Weiteres verlegen, wenn sich Nachfragestrukturen ändern. Zweitens ist der Entscheidungsraum **mehrdimensional** – neben Transport- und Baukosten spielen Arbeitsmarkt, Infrastruktur, Steuern, politische Stabilität oder Nähe zu Kunden eine Rolle, und diese Kriterien lassen sich nicht immer in einer gemeinsamen Einheit (z. B. Euro) ausdrücken. Drittens sind viele der relevanten Informationen **unsicher oder subjektiv einzuschätzen**, etwa die künftige Entwicklung eines regionalen Arbeitsmarkts oder die "Standortqualität" im weichen Sinne. Diese drei Eigenschaften – Irreversibilität, Mehrdimensionalität und Unsicherheit – begründen, warum die Standortplanung ein eigenständiges Methodenspektrum entwickelt hat, das deutlich über eine einfache Kostenvergleichsrechnung hinausgeht [@kik2022standortplanung].
 
@@ -36,7 +36,19 @@ Der Standortplanungsprozess verläuft typischerweise in mehreren Phasen mit sink
 
 ![Phasen der Standortwahl von der globalen bis zur lokalen Ebene [@chopra2025supply]](../images/image61.jpeg){#fig-phasen-standortwahl width="85%"}
 
-Für die eigentliche Bewertung von Standorten (oder Standortregionen) stehen grundsätzlich zwei Klassen von Verfahren zur Verfügung. **Qualitative Verfahren** sind heuristische, häufig umfragebasierte Bewertungsansätze, die ein Stimmungsbild aus mehreren, meist auch weichen Kriterien zusammenführen; sie eignen sich besonders für die Vorauswahl zwischen einer begrenzten Zahl diskreter Alternativen. **Quantitative Verfahren** formulieren die Standortsuche dagegen als Optimierungsproblem mit einer expliziten Zielfunktion. In diesem Kapitel behandeln wir aus der qualitativen Familie die **Nutzwertanalyse** und den **Analytic Hierarchy Process (AHP)**; anschließend wenden wir uns den **kontinuierlichen** quantitativen Verfahren zu, bei denen der Standort nicht aus einer vorgegebenen Liste ausgewählt, sondern als beliebiger Punkt einer Ebene bestimmt wird. Die **diskreten** quantitativen Verfahren, bei denen aus einer endlichen Menge potenzieller Standorte eine kostenminimale Teilmenge auszuwählen ist, folgen in Kapitel 5.
+::: {.vertiefung}
+**Theorie-Vertiefung: Die Supply Chain Planning Matrix**
+
+Die Vorlesung ordnet die Standortplanung in die **Supply Chain Planning Matrix** ein [@stadtler2000supply]. Die Matrix spannt zwei Dimensionen auf: horizontal die Prozesse der Wertschöpfung (Beschaffung, Produktion, Distribution, Absatz), vertikal den Planungshorizont (lang-, mittel- und kurzfristig). In jeder Zelle stehen typische Planungsaufgaben — etwa Materialprogramm und Lieferantenwahl (langfristig, Beschaffung), Hauptproduktionsprogrammplanung (mittelfristig, Produktion) oder Tourenplanung (kurzfristig, Distribution). Die langfristige Zeile über alle Prozesse hinweg heißt **strategische Netzwerkplanung**: Sie legt fest, welche Standorte es gibt, welche Kapazität sie haben und welche Transportverbindungen zwischen ihnen bestehen.
+
+Zwei Eigenschaften dieser Matrix sind für das Verständnis der folgenden Kapitel wichtig. Erstens wirken Entscheidungen **top-down**: Die strategische Netzwerkplanung setzt den Rahmen, innerhalb dessen mittelfristige Mengen- und kurzfristige Ablaufplanung stattfinden. Ein ungünstig gelegenes Lager kann durch noch so gute Tourenplanung nicht ausgeglichen werden. Zweitens gibt es eine **Rückkopplung bottom-up**: Um Standorte sinnvoll zu bewerten, müssen die späteren operativen Kosten (Transporte, Bestände) zumindest näherungsweise antizipiert werden. Standortmodelle arbeiten deshalb mit aggregierten Größen — durchschnittlichen Tagesnachfragen, Transportkostensätzen je Kilometer —, die die operative Ebene vereinfacht abbilden. Die Kapitel [-@sec-unsicherheit-pooling] bis [-@sec-bullwhip] zeigen später, welche zusätzlichen Effekte (Bestände, Unsicherheit, Bullwhip) auf dieser vereinfachten Ebene noch nicht sichtbar sind.
+:::
+
+Die Folien heben außerdem hervor, warum die Bewertung von Standorten so schwierig ist: Standortentscheidungen sind **kurzfristig irreversibel** und erzeugen **Pfadabhängigkeiten** (spätere Entscheidungen bauen auf dem einmal gewählten Netz auf), sie sind **mehrdimensional** (ihre Auswirkungen auf das Zielsystem aus Kapitel [-@sec-logistikkosten] sind schwer zu überblicken) und sie sind **subjektiv** (die Einschätzung weicher Faktoren schwankt zwischen Entscheidern, und deren Bedeutung wird unterschiedlich gewichtet).
+
+Entsprechend breit ist das Spektrum der **Methoden der Standortplanung** [@kik2022standortplanung]. *Qualitative Verfahren* sind heuristische, meist umfragebasierte Verfahren, die ein Stimmungsbild und individuelle Einschätzungen zusammenführen. Unter den *quantitativen Verfahren* verlangt die **Optimierung** einen klar abgegrenzten Entscheidungsraum (die Optionen) und ein eindimensionales Zielsystem (z. B. Kosten); die **Simulation** kann komplexe, mehrdimensionale Wirkungszusammenhänge abbilden, ist aber aufwendig und schwer übertragbar; **spieltheoretische** Ansätze antizipieren das Verhalten von Konkurrenten, etwa um den Absatz eines Einzelhandelsstandorts zu maximieren; und die **Investitionsrechnung** bewertet Standorte ausschließlich anhand monetärer Größen über die Nutzungsdauer. Dieses und das folgende Kapitel behandeln qualitative Verfahren sowie Optimierungsmodelle, weil beide in der Praxis am häufigsten kombiniert werden.
+
+Für die eigentliche Bewertung von Standorten (oder Standortregionen) stehen grundsätzlich zwei Klassen von Verfahren zur Verfügung. **Qualitative Verfahren** sind heuristische, häufig umfragebasierte Bewertungsansätze, die ein Stimmungsbild aus mehreren, meist auch weichen Kriterien zusammenführen; sie eignen sich besonders für die Vorauswahl zwischen einer begrenzten Zahl diskreter Alternativen. **Quantitative Verfahren** formulieren die Standortsuche dagegen als Optimierungsproblem mit einer expliziten Zielfunktion. In diesem Kapitel behandeln wir aus der qualitativen Familie die **Nutzwertanalyse** und den **Analytic Hierarchy Process (AHP)**; anschließend wenden wir uns den **kontinuierlichen** quantitativen Verfahren zu, bei denen der Standort nicht aus einer vorgegebenen Liste ausgewählt, sondern als beliebiger Punkt einer Ebene bestimmt wird. Die **diskreten** quantitativen Verfahren, bei denen aus einer endlichen Menge potenzieller Standorte eine kostenminimale Teilmenge auszuwählen ist, folgen in Kapitel [-@sec-standort-2].
 
 Welche Standortfaktoren dabei überhaupt relevant sind, hängt stark vom Einzelfall ab. Grob lassen sie sich in **harte** Faktoren (Transportkosten, Löhne, Steuern, Grundstückspreise – direkt monetär bewertbar) und **weiche** Faktoren (Lebensqualität, Image der Region, Verfügbarkeit qualifizierter Arbeitskräfte, politische Stabilität) einteilen. Weiche Faktoren entziehen sich einer unmittelbaren Kostenrechnung, beeinflussen die Standortqualität aber ebenso stark – und genau für ihre systematische Erfassung sind qualitative Bewertungsverfahren gemacht.
 
@@ -81,7 +93,7 @@ standorte
 transportkostensatz <- 0.02
 ```
 
-Wiesbaden-Erbenheim ist ein Gewerbegebiet mit direktem Anschluss an A66/A3 und vergleichsweise günstigen Grundstückspreisen; Mainz-Hechtsheim liegt an A60/A63 und in Rheinnähe, was die Anlieferung von Fisch begünstigt, ist aber teurer; Raunheim schließlich liegt nahe dem Frankfurter Flughafen mit sehr guter Anbindung an A3/A5, verlangt aber die höchsten Gewerbemieten. Mit insgesamt 845 Sushi-Boxen Tagesnachfrage (`r sum(filialen$mu)` Boxen) ist Frankfurt die mit Abstand größte Filiale – sie wird uns in Kapitel 7 als Beispiel für die Newsvendor-Formel wiederbegegnen. In diesem Kapitel geht es zunächst darum, wie SushiFresh die drei Kandidatenstandorte systematisch bewerten und wie das Unternehmen – unabhängig von den drei vorgegebenen Grundstücken – rein rechnerisch den transportkostenminimalen Punkt im Absatzgebiet bestimmen kann.
+Wiesbaden-Erbenheim ist ein Gewerbegebiet mit direktem Anschluss an A66/A3 und vergleichsweise günstigen Grundstückspreisen; Mainz-Hechtsheim liegt an A60/A63 und in Rheinnähe, was die Anlieferung von Fisch begünstigt, ist aber teurer; Raunheim schließlich liegt nahe dem Frankfurter Flughafen mit sehr guter Anbindung an A3/A5, verlangt aber die höchsten Gewerbemieten. Die Spalte `Fixkosten` enthält die einmaligen Investitions- und Erschließungskosten der Grundstücke (Einrichtung, Kühltechnik, Produktionsausstattung); in Kapitel [-@sec-standort-2] werden sie auf eine Nutzungsdauer von fünf Jahren verteilt und so in jährliche Fixkosten umgerechnet. Die sechs Filialen fragen zusammen `r sum(filialen$mu)` Sushi-Boxen pro Tag nach; Frankfurt ist mit 280 Boxen die mit Abstand größte Filiale – sie wird uns in Kapitel [-@sec-newsvendor] als Beispiel für die Newsvendor-Formel wiederbegegnen. In diesem Kapitel geht es zunächst darum, wie SushiFresh die drei Kandidatenstandorte systematisch bewerten und wie das Unternehmen – unabhängig von den drei vorgegebenen Grundstücken – rein rechnerisch den transportkostenminimalen Punkt im Absatzgebiet bestimmen kann.
 
 ## Qualitative Standortbewertung
 
@@ -240,15 +252,15 @@ mietkosten <- matrix(
 )
 
 fachkraefte <- matrix(
-  c(1,   1/2, 2,
-    2,   1,   3,
-    1/2, 1/3, 1),
+  c(1,   1/7, 2,
+    7,   1,   5,
+    1/2, 1/5, 1),
   nrow = 3, byrow = TRUE,
   dimnames = list(c("WI-Erb", "MZ-Hech", "Raunheim"), c("WI-Erb", "MZ-Hech", "Raunheim"))
 )
 ```
 
-Die Matrix `mietkosten` spiegelt dabei unmittelbar die tatsächlichen Fixkosten der drei Grundstücke wider (180.000 € / 210.000 € / 260.000 € pro Jahr): Wiesbaden-Erbenheim wird gegenüber Raunheim mit dem Wert 4 klar bevorzugt. Aus jeder dieser drei Matrizen liefert `ahp_priority_vector()` aus `R/scm_functions.R` den zugehörigen Prioritätsvektor (die relativen Standortpräferenzen je Kriterium). Anstatt die Funktion dreimal einzeln aufzurufen, bündeln wir die drei Matrizen in einer **Liste** und wenden die Funktion mit `sapply()` auf jedes Listenelement an.
+Die Matrix `mietkosten` spiegelt dabei unmittelbar die Fixkosten der drei Grundstücke wider (180.000 € / 210.000 € / 260.000 €): Wiesbaden-Erbenheim wird gegenüber Raunheim mit dem Wert 4 klar bevorzugt. Aus jeder dieser drei Matrizen liefert `ahp_priority_vector()` aus `R/scm_functions.R` den zugehörigen Prioritätsvektor (die relativen Standortpräferenzen je Kriterium). Anstatt die Funktion dreimal einzeln aufzurufen, bündeln wir die drei Matrizen in einer **Liste** und wenden die Funktion mit `sapply()` auf jedes Listenelement an.
 
 ::: {.r-exkurs}
 **R-Exkurs: `sapply()` und `apply()`**
@@ -275,7 +287,7 @@ praeferenz_matrix
 ```
 :::
 
-Die Tabelle `praeferenz_matrix` zeigt: Raunheim dominiert klar bei der Transportnähe (ca. 54 %), Wiesbaden-Erbenheim bei den Mietkosten (ca. 57 %), Mainz-Hechtsheim bei der Fachkräfteverfügbarkeit (ca. 54 %) – die drei Standorte spielen also, wie schon in der Nutzwertanalyse, jeweils eine unterschiedliche Stärke aus. Damit ist Schritt 2 des AHP (Synthese je Kriterium) abgeschlossen; es fehlt noch das Ranking der drei Kriterien selbst (Schritt 3 und 4), wofür wiederum eine Paarvergleichsmatrix – diesmal zwischen den Kriterien statt zwischen den Standorten – benötigt wird.
+Die Tabelle `praeferenz_matrix` zeigt: Raunheim dominiert klar bei der Transportnähe (ca. 54 %), Wiesbaden-Erbenheim bei den Mietkosten (ca. 57 %), Mainz-Hechtsheim sehr deutlich bei der Fachkräfteverfügbarkeit (ca. 74 %) – die drei Standorte spielen also, wie schon in der Nutzwertanalyse, jeweils eine unterschiedliche Stärke aus. Damit ist Schritt 2 des AHP (Synthese je Kriterium) abgeschlossen; es fehlt noch das Ranking der drei Kriterien selbst (Schritt 3 und 4), wofür wiederum eine Paarvergleichsmatrix – diesmal zwischen den Kriterien statt zwischen den Standorten – benötigt wird.
 
 ```{r}
 #| label: ch4-ahp-kriterien
@@ -284,8 +296,8 @@ Die Tabelle `praeferenz_matrix` zeigt: Raunheim dominiert klar bei der Transport
 # Paarweiser Vergleich der drei Bewertungskriterien untereinander
 kriterien_vergleich <- matrix(
   c(1,   3,   2,
-    1/3, 1,   1/2,
-    1/2, 2,   1),
+    1/3, 1,   1/5,
+    1/2, 5,   1),
   nrow = 3, byrow = TRUE,
   dimnames = list(
     c("Transportnaehe", "Mietkosten", "Fachkraefte"),
@@ -297,7 +309,7 @@ kriterien_gewichte <- ahp_priority_vector(kriterien_vergleich)
 kriterien_gewichte
 ```
 
-Transportnähe erhält mit rund `r sprintf("%.0f", kriterien_gewichte["Transportnaehe"]*100)` % das mit Abstand höchste Gewicht, gefolgt von Fachkräfteverfügbarkeit (ca. `r sprintf("%.0f", kriterien_gewichte["Fachkraefte"]*100)` %); Mietkosten spielen mit rund `r sprintf("%.0f", kriterien_gewichte["Mietkosten"]*100)` % eine vergleichsweise untergeordnete Rolle. Bevor wir diese Gewichte weiterverwenden, prüfen wir, ob die zugrundeliegende Paarvergleichsmatrix überhaupt **konsistent** genug ist, um belastbare Schlüsse zuzulassen. Ein Entscheider, der Transportnähe deutlich über Mietkosten und Mietkosten über Fachkräfte stellt, sollte auch Transportnähe deutlich über Fachkräfte stellen – tut er das nicht, ist die Matrix inkonsistent. Formal wird dazu der **Konsistenzindex**
+Transportnähe erhält mit rund `r sprintf("%.0f", kriterien_gewichte["Transportnaehe"]*100)` % das mit Abstand höchste Gewicht, gefolgt von Fachkräfteverfügbarkeit (ca. `r sprintf("%.0f", kriterien_gewichte["Fachkraefte"]*100)` %); Mietkosten spielen mit rund `r sprintf("%.0f", kriterien_gewichte["Mietkosten"]*100)` % eine vergleichsweise untergeordnete Rolle. Bevor wir diese Gewichte weiterverwenden, prüfen wir, ob die zugrundeliegende Paarvergleichsmatrix überhaupt **konsistent** genug ist, um belastbare Schlüsse zuzulassen. Konsistenz bedeutet dabei **Transitivität der Intensitäten**: Wer Transportnähe dreimal so wichtig findet wie Mietkosten ($a_{TM}=3$) und Fachkräfte fünfmal so wichtig wie Mietkosten ($a_{FM}=5$), müsste Transportnähe folgerichtig nur $3/5 = 0{,}6$-mal so wichtig finden wie Fachkräfte. Tatsächlich wurde aber $a_{TF}=2$ angegeben – Transportnähe also doppelt so wichtig wie Fachkräfte. Eine perfekt konsistente Matrix erfüllt $a_{ik} = a_{ij}\cdot a_{jk}$ für alle $i,j,k$; je stärker diese Bedingung verletzt ist, desto größer wird der größte Eigenwert der Matrix gegenüber $n$. Formal wird dazu der **Konsistenzindex**
 $$
 CI = \frac{\bar{\lambda} - n}{n - 1}
 $$
@@ -315,7 +327,14 @@ konsistenz <- ahp_consistency(kriterien_vergleich, kriterien_gewichte)
 konsistenz
 ```
 
-Mit $CR \approx `r sprintf("%.4f", konsistenz$CR)`$ liegt die Kriterienmatrix sehr deutlich unter der 10-%-Schwelle und gilt damit als konsistent. Im letzten Schritt werden die Standort-Kriterien-Matrix und der Kriteriengewichtsvektor mit dem Matrixprodukt `%*%` zu einem **Gesamt-Score je Standort** verrechnet – genau die Operation, die im R-Exkurs zu Matrizen angekündigt wurde:
+Mit $CI \approx `r sprintf("%.3f", konsistenz$CI)`$ und $CR \approx `r sprintf("%.2f", konsistenz$CR)`$ liegt die Kriterienmatrix **über** der 10-%-Schwelle. Die oben beschriebene Intransitivität zwischen Transportnähe, Fachkräften und Mietkosten ist also zu groß, als dass man die Gewichte ungeprüft übernehmen sollte. In der Praxis würde man die Entscheider bitten, ihre Vergleiche zu überdenken – etwa den Vergleich Transportnähe gegenüber Fachkräften von 2 auf 1/2 zu korrigieren, was die Matrix nahezu konsistent machen würde. Für das Lehrbeispiel rechnen wir mit den Originalurteilen der Vorlesung weiter, behalten diesen Vorbehalt aber im Hinterkopf: Er zeigt gerade den Nutzen des AHP, der Inkonsistenzen – anders als die Nutzwertanalyse – überhaupt sichtbar macht.
+
+::: {.callout-note}
+## Hinweis zu den Vorlesungsfolien
+Auf den Folien wird der Konsistenzwert $CI = (\bar{P}-n)/(n-1) \approx 0{,}08$ berechnet. Dieser Wert ist der **Konsistenzindex** $CI$. Für das Urteil "konsistent/inkonsistent" muss er noch durch den Random Index $RI = 0{,}58$ (für $n=3$) geteilt werden; erst die resultierende Konsistenzrate $CR \approx 0{,}14$ wird mit der 10-%-Schwelle verglichen.
+:::
+
+Im letzten Schritt werden die Standort-Kriterien-Matrix und der Kriteriengewichtsvektor mit dem Matrixprodukt `%*%` zu einem **Gesamt-Score je Standort** verrechnet – genau die Operation, die im R-Exkurs zu Matrizen angekündigt wurde:
 
 ```{r}
 #| label: ch4-ahp-scores
@@ -325,7 +344,44 @@ scores <- praeferenz_matrix %*% kriterien_gewichte
 scores
 ```
 
-Raunheim erzielt mit einem Score von rund `r sprintf("%.4f", scores["Raunheim", 1])` den höchsten Wert, aber nur **knapp** vor Wiesbaden-Erbenheim (`r sprintf("%.4f", scores["WI-Erb", 1])`); Mainz-Hechtsheim liegt mit `r sprintf("%.4f", scores["MZ-Hech", 1])` deutlicher zurück. Der AHP empfiehlt also, wenn auch nur knapp, **Raunheim** als Produktionsstandort – ausschlaggebend ist das hohe Gewicht der Transportnähe, bei der Raunheim am stärksten abschneidet. Im Vergleich zur Nutzwertanalyse hat der AHP zwei wesentliche Vorzüge: Erstens erhöht das paarweise Vergleichen die Transparenz, weil Entscheider jeweils nur zwei Elemente statt eines vollständigen Rankings gegeneinander abwägen müssen. Zweitens bietet der AHP der Voreingenommenheit einzelner Bewertungen weniger Angriffsfläche als die NWA, weil sich irrationale bzw. widersprüchliche Urteile über den Konsistenzindex explizit aufdecken lassen – ein Diagnosewerkzeug, das der Nutzwertanalyse fehlt. Ob sich diese qualitative, knappe Empfehlung zugunsten Raunheims auch bei einer rein quantitativen Kostenbetrachtung bestätigt, ist an dieser Stelle bewusst offen – wir kommen am Ende dieses Kapitels und dann noch einmal ausführlich in Kapitel 5 darauf zurück.
+**Mainz-Hechtsheim** erzielt mit einem Score von rund `r sprintf("%.3f", scores["MZ-Hech", 1])` den höchsten Wert, vor Raunheim (`r sprintf("%.3f", scores["Raunheim", 1])`) und Wiesbaden-Erbenheim (`r sprintf("%.3f", scores["WI-Erb", 1])`). Das Ergebnis ist auf den ersten Blick überraschend, denn das mit Abstand höchste Kriteriengewicht hat die Transportnähe, bei der Raunheim klar führt. Ausschlaggebend ist die **Stärke** der Präferenz bei den Fachkräften: Mainz-Hechtsheim wird dort gegenüber Wiesbaden-Erbenheim als "stark bevorzugt" (7) eingestuft und erhält rund 74 % des Kriteriengewichts – bei einem Kriteriengewicht der Fachkräfte von rund 38 % reicht das, um den Rückstand bei der Transportnähe mehr als auszugleichen. Der Vorsprung vor Raunheim ist allerdings knapp, und angesichts der festgestellten Inkonsistenz der Kriterienmatrix wäre eine Sensitivitätsanalyse der Gewichte (siehe Kontrollfragen) vor einer endgültigen Empfehlung angebracht.
+
+Im Vergleich zur Nutzwertanalyse hat der AHP zwei wesentliche Vorzüge: Erstens erhöht das paarweise Vergleichen die Transparenz, weil Entscheider jeweils nur zwei Elemente statt eines vollständigen Rankings gegeneinander abwägen müssen. Zweitens bietet der AHP der Voreingenommenheit einzelner Bewertungen weniger Angriffsfläche als die NWA, weil sich irrationale bzw. widersprüchliche Urteile über den Konsistenzindex explizit aufdecken lassen – ein Diagnosewerkzeug, das der Nutzwertanalyse fehlt und das im Fallbeispiel tatsächlich anschlägt. Ob sich die qualitative Empfehlung zugunsten von Mainz-Hechtsheim auch bei einer rein quantitativen Kostenbetrachtung bestätigt, ist an dieser Stelle bewusst offen – wir kommen am Ende dieses Kapitels und dann noch einmal ausführlich in Kapitel [-@sec-standort-2] darauf zurück.
+
+::: {.vertiefung}
+**Theorie-Vertiefung: Warum der Eigenvektor? – Die Rechenwege des AHP**
+
+Die Idee des AHP [@saaty1980analytic] lässt sich am besten vom Idealfall her verstehen. Angenommen, die "wahren" Gewichte der Alternativen seien $w_1,\dots,w_n$ und der Entscheider urteile fehlerfrei. Dann gäbe er als Paarvergleich genau die Verhältnisse $a_{ij} = w_i/w_j$ an. Multipliziert man eine solche Matrix mit dem Gewichtsvektor, erhält man
+$$
+(A\,w)_i = \sum_{j=1}^n \frac{w_i}{w_j}\, w_j = n\, w_i \qquad\Longleftrightarrow\qquad A\,w = n\,w .
+$$
+Der Gewichtsvektor ist also ein **Eigenvektor** der Paarvergleichsmatrix zum Eigenwert $n$. Weil die Matrix in diesem Idealfall den Rang 1 hat, sind alle übrigen Eigenwerte null, und $n$ ist der größte Eigenwert $\lambda_{\max}$. Reale Urteile sind nicht perfekt konsistent; dann ist $\lambda_{\max} > n$, und Saaty schlägt vor, den zum größten Eigenwert gehörenden Eigenvektor als "bestmöglichen" Gewichtsvektor zu verwenden. Die Abweichung $\lambda_{\max} - n$ misst zugleich, wie stark die Urteile vom konsistenten Idealfall abweichen – daraus leitet sich der Konsistenzindex $CI = (\lambda_{\max}-n)/(n-1)$ ab. Der Random Index $RI$ ist der durchschnittliche $CI$-Wert zufällig ausgefüllter reziproker Matrizen gleicher Größe; die Konsistenzrate $CR = CI/RI$ vergleicht die beobachtete Inkonsistenz also mit der eines "würfelnden" Entscheiders.
+
+In der Praxis wird der Eigenvektor häufig **approximiert**. Zwei Verfahren sind verbreitet:
+
+1. **Spaltennormierung und Zeilenmittel** (Rechenweg der Vorlesungsfolien): Jede Spalte wird durch ihre Spaltensumme geteilt, anschließend wird über jede Zeile gemittelt. Im konsistenten Fall ist jede normierte Spalte bereits exakt der Gewichtsvektor, das Mitteln gleicht bei Inkonsistenz die Abweichungen aus.
+2. **Geometrisches Zeilenmittel** (verwendet in `ahp_priority_vector()`): Für jede Zeile wird $\left(\prod_j a_{ij}\right)^{1/n}$ gebildet und anschließend normiert. Auch dieses Verfahren liefert im konsistenten Fall exakt $w$ und ist zudem invariant gegenüber der Transposition (Kehrwertbildung) der Urteile.
+
+Bei nahezu konsistenten Matrizen liefern beide Verfahren und der exakte Eigenvektor praktisch identische Werte; bei stärkeren Inkonsistenzen weichen sie in der dritten Nachkommastelle voneinander ab. Der folgende Code rechnet den Weg der Folien für die Kriterienmatrix nach und vergleicht ihn mit dem geometrischen Mittel und dem exakten Eigenvektor, den `eigen()` liefert:
+
+```{r}
+#| label: ch4-ahp-rechenwege
+
+# 1) Spaltennormierung und Zeilenmittel (Rechenweg der Folien)
+spalten_normiert <- sweep(kriterien_vergleich, 2, colSums(kriterien_vergleich), "/")
+w_spalten <- rowMeans(spalten_normiert)
+
+# 2) Geometrisches Zeilenmittel (ahp_priority_vector)
+w_geo <- ahp_priority_vector(kriterien_vergleich)
+
+# 3) Exakter Eigenvektor zum groessten Eigenwert
+ev    <- eigen(kriterien_vergleich)
+w_eig <- Re(ev$vectors[, 1]) / sum(Re(ev$vectors[, 1]))
+
+round(cbind(Spaltennormierung = w_spalten, Geometrisch = w_geo, Eigenvektor = w_eig), 3)
+Re(ev$values[1])   # groesster Eigenwert lambda_max (> n = 3 wegen Inkonsistenz)
+```
+:::
 
 ## Kontinuierliche Standortplanung: das Steiner-Weber-Modell
 
@@ -591,6 +647,50 @@ c(x = weiszfeld_check$x, y = weiszfeld_check$y,
 
 Das bestätigt die theoretische Erwartung: Das CoG ist eine schnell berechenbare, aber eben nur approximative Lösung; der iterative Weiszfeld-Algorithmus löst das eigentliche Steiner-Weber-Problem und verschiebt den Standort im Vergleich zum CoG spürbar in Richtung Frankfurt – der mit Abstand nachfragestärksten Filiale (280 von 845 Boxen/Tag). Wie stark sich das tatsächlich auf die *reale* (geografische) Distanz zu jeder einzelnen Filiale auswirkt, prüfen wir im nächsten Abschnitt mit der Haversine-Formel.
 
+Wie der Algorithmus sich dem Optimum nähert, zeigt die Vorlesung mit einem bewusst weit entfernten Startpunkt $(x_0, y_0) = (8{,}75;\ 49{,}85)$ südöstlich von Darmstadt. Um den Weg nachzuvollziehen, protokollieren wir diesmal jede Iteration:
+
+```{r}
+#| label: ch4-weiszfeld-verlauf
+#| fig-cap: "Iterationsverlauf des Weiszfeld-Algorithmus von einem entfernten Startpunkt"
+
+daten_w <- data.frame(u = filialen$lon, v = filialen$lat, a = filialen$mu)
+x <- 8.75; y <- 49.85                      # entfernter Startpunkt wie in der Vorlesung
+verlauf <- tibble(t = 0, x = x, y = y)
+
+for (t in 1:15) {
+  d <- sqrt((x - daten_w$u)^2 + (y - daten_w$v)^2)
+  g <- daten_w$a / d                        # Iterationsgewichte
+  x <- sum(daten_w$u * g) / sum(g)
+  y <- sum(daten_w$v * g) / sum(g)
+  verlauf <- add_row(verlauf, t = t, x = x, y = y)
+}
+
+verlauf |>
+  mutate(Schrittweite = sqrt((x - lag(x))^2 + (y - lag(y))^2)) |>
+  head(6) |>
+  kable(digits = 4)
+
+ggplot(filialen, aes(lon, lat)) +
+  geom_point(aes(size = mu), colour = "#c97a2b", alpha = 0.8) +
+  geom_text(aes(label = Filiale), vjust = -1.2, size = 3) +
+  geom_path(data = verlauf, aes(x, y), colour = "#d11f2f") +
+  geom_point(data = verlauf, aes(x, y), colour = "#d11f2f", shape = 4, size = 2.5) +
+  labs(x = "Laengengrad", y = "Breitengrad", size = "Nachfrage") +
+  theme_minimal(base_size = 12)
+```
+
+Bereits der erste Schritt überbrückt den größten Teil der Entfernung; danach werden die Schritte rasch kleiner. Die letzten Nachkommastellen stabilisieren sich allerdings nur langsam: Bis die Toleranz von $10^{-6}$ unterschritten ist, benötigt der Algorithmus mehrere Dutzend Iterationen (siehe oben). Das ist typisch für den Weiszfeld-Algorithmus, wenn das Optimum nahe an einem nachfragestarken Kunden liegt – hier Frankfurt –, weil dessen Iterationsgewicht $g_i = a_i/d_i$ bei kleiner werdender Distanz stark wächst und die Schritte immer kürzer werden.
+
+::: {.vertiefung}
+**Theorie-Vertiefung: Warum konvergiert der Weiszfeld-Algorithmus?**
+
+Die Zielfunktion $Z(x,y) = \sum_i a_i\, d_i(x,y)$ ist als Summe gewichteter euklidischer Normen **konvex**: Jede einzelne Distanzfunktion $d_i$ ist ein "Kegel" mit Spitze im Kundenstandort, und eine nichtnegativ gewichtete Summe konvexer Funktionen ist wieder konvex. Daraus folgt, dass jedes lokale Minimum zugleich ein globales Minimum ist — es gibt keine "Fallen", in denen ein Verfahren hängen bleiben könnte. Liegen die Kundenstandorte nicht alle auf einer Geraden, ist $Z$ sogar strikt konvex und das Optimum eindeutig.
+
+Der Algorithmus geht auf @weiszfeld1937point zurück. Man kann zeigen, dass jeder Iterationsschritt den Zielfunktionswert **nicht erhöht**: Die Update-Regel minimiert in jedem Schritt eine quadratische Hilfsfunktion, die $Z$ im aktuellen Punkt berührt und überall oberhalb von $Z$ liegt (*Majorisierungsprinzip*). Das Minimum der Hilfsfunktion ist gerade das gewichtete Mittel mit den Gewichten $g_i = a_i/d_i$ — also die Update-Regel. Da der Zielfunktionswert monoton fällt und nach unten beschränkt ist, konvergiert das Verfahren. Eine Sonderbehandlung ist nur nötig, wenn eine Iteration exakt auf einen Kundenstandort fällt ($d_i = 0$, Division durch null); in der Praxis fängt man diesen Fall wie in `weiszfeld_manual()` durch eine kleine Untergrenze für $d_i$ ab.
+
+Interessant ist auch die ökonomische Interpretation der Optimalitätsbedingung $\sum_i a_i (x-u_i)/d_i = 0$ (und analog für $y$): Jeder Kunde "zieht" den Standort mit einer Kraft der Stärke $a_i$ in seine Richtung, **unabhängig von seiner Entfernung**. Im Optimum heben sich alle Zugkräfte auf. Das erklärt den Unterschied zum Center of Gravity: Dort wächst die Zugkraft eines Kunden mit seiner Entfernung (Ableitung von $d_i^2$ ist $2 d_i$), sodass weit entfernte Kunden das Ergebnis überproportional beeinflussen.
+:::
+
 ### Manhattan-Distanzen: der gewichtete Median
 
 Wird statt der euklidischen die Manhattan-Distanz zugrunde gelegt, ändert sich die Struktur des Problems grundlegend – zu ihrem Vorteil. Die Zielfunktion
@@ -605,6 +705,9 @@ ist additiv **separierbar** in $x$ und $y$: Die optimale $x$-Koordinate lässt s
 
 Sortiere die Kunden aufsteigend nach ihrer $u_i$-Koordinate und bestimme die kumulierte Nachfrage $A_j = \sum_{i=1}^{j} a_i$. Die optimale $x$-Koordinate ist die $u_i$-Koordinate des ersten Kunden, für den $A_j \geq \tfrac{1}{2}\sum_{i=1}^n a_i$ gilt. Für $y$ verfährt man analog mit den $v_i$-Koordinaten.
 :::
+
+Warum gerade der gewichtete Median? Man überlege sich, was passiert, wenn der Standort auf der $x$-Achse um ein kleines Stück $\Delta$ nach rechts verschoben wird. Alle Kunden links des Standorts rücken um $\Delta$ weiter weg, alle Kunden rechts davon um $\Delta$ näher heran. Die Zielfunktion ändert sich also um $\Delta \cdot (A_{\text{links}} - A_{\text{rechts}})$, wobei $A_{\text{links}}$ und $A_{\text{rechts}}$ die Nachfragesummen links und rechts des Standorts sind. Eine Verschiebung nach rechts lohnt sich, solange rechts mehr Nachfrage liegt als links. Sobald links mindestens die Hälfte der Gesamtnachfrage liegt, bringt eine weitere Verschiebung keinen Vorteil mehr — genau das ist der gewichtete Median. Bemerkenswert ist, dass dabei nur die **Reihenfolge** der Kunden auf der Achse und ihre Nachfragemengen eine Rolle spielen, nicht aber die genauen Abstände: Ein Kunde, der sehr weit entfernt liegt, verschiebt den Median nicht stärker als ein naher Kunde mit derselben Nachfrage.
+
 
 ```{r}
 #| label: ch4-manhattan-median
@@ -715,15 +818,15 @@ realitaetscheck |>
 
 Das Bild ist aufschlussreich: Zur nachfragestärksten Filiale Frankfurt (280 Boxen/Tag) liegt das Weiszfeld-Optimum mit rund `r sprintf("%.1f", weiszfeld_dist[filialen$Filiale == "Frankfurt"])` km deutlich näher als das Center of Gravity mit rund `r sprintf("%.1f", cog_dist[filialen$Filiale == "Frankfurt"])` km – umgekehrt entfernt sich das Weiszfeld-Optimum von den kleineren, weiter westlich liegenden Filialen Wiesbaden und Mainz merklich stärker als das CoG. Der Weiszfeld-Algorithmus "zieht" den Standort also gezielt in Richtung der großen Einzelfiliale Frankfurt, während das Center of Gravity als reiner arithmetischer Mittelwert weniger empfindlich auf einzelne große Nachfrageschwerpunkte reagiert, dafür aber auch weniger nah an ihnen liegt. Das ist keine allgemeine Überlegenheit des einen oder anderen Verfahrens, sondern ein guter Diskussionsanlass: Wie stark ein Standortverfahren auf einzelne große Nachfrager reagieren *soll*, ist letztlich eine Frage der Robustheit gegenüber Nachfrageschwankungen und Ausreißern – nicht allein eine Frage der Optimalität im Modell.
 
-Damit schließt sich der Kreis zu den drei diskreten Kandidatenstandorten: Weder das Center of Gravity noch das Weiszfeld-Optimum liegen auf einem der drei tatsächlich verfügbaren Grundstücke – sie zeigen lediglich, in welche Richtung des Absatzgebiets sich eine Produktionsstätte "ideal" verschieben würde. Die eigentliche Standortentscheidung bleibt bei SushiFresh also eine **diskrete** Wahl zwischen den drei Kandidaten, für die der AHP in diesem Kapitel – knapp – Raunheim empfohlen hat. Ob sich diese qualitative Einschätzung auch bei einer reinen Kostenbetrachtung bestätigt, untersuchen wir in Kapitel 5: Dort formulieren wir mit dem Warehouse-Location-Problem ein quantitatives Optimierungsmodell, das neben den Transportkosten auch die tatsächlichen Fixkosten der drei Grundstücke (180.000 € / 210.000 € / 260.000 € pro Jahr) explizit berücksichtigt – und das, wie sich zeigen wird, nicht zwangsläufig zum selben Ergebnis kommen muss wie die hier vorgenommene qualitative Bewertung.
+Damit schließt sich der Kreis zu den drei diskreten Kandidatenstandorten: Weder das Center of Gravity noch das Weiszfeld-Optimum liegen auf einem der drei tatsächlich verfügbaren Grundstücke – sie zeigen lediglich, in welche Richtung des Absatzgebiets sich eine Produktionsstätte "ideal" verschieben würde. Die eigentliche Standortentscheidung bleibt bei SushiFresh also eine **diskrete** Wahl zwischen den drei Kandidaten, für die der AHP in diesem Kapitel – knapp – Mainz-Hechtsheim empfohlen hat, während Raunheim bei der Transportnähe klar vorne liegt. Ob sich diese qualitative Einschätzung auch bei einer reinen Kostenbetrachtung bestätigt, untersuchen wir in Kapitel [-@sec-standort-2]: Dort formulieren wir mit dem Warehouse-Location-Problem ein quantitatives Optimierungsmodell, das neben den Transportkosten auch die Fixkosten der Grundstücke explizit berücksichtigt und die Menge der Kandidaten um zwei weitere Standorte erweitert – und das, wie sich zeigen wird, nicht zwangsläufig zum selben Ergebnis kommen muss wie die hier vorgenommene qualitative Bewertung.
 
 ## Zusammenfassung
 
-Dieses Kapitel hat zwei grundsätzlich verschiedene Zugänge zur Standortplanung gegenübergestellt, durchgängig am Beispiel der SushiFresh GmbH und ihrer Suche nach einem Produktionsstandort im Rhein-Main-Gebiet. **Qualitative Verfahren** – die Nutzwertanalyse und der Analytic Hierarchy Process – bewerten eine begrenzte Menge diskreter Alternativen (bei SushiFresh: drei Kandidatengrundstücke) anhand mehrerer, auch weicher Kriterien. Die Nutzwertanalyse ist einfach anzuwenden, leidet aber unter der Kompensierbarkeit ihrer additiven Struktur, die im Extremfall dazu führen kann, dass Alternativen mit völlig unterschiedlichem Profil denselben Gesamtnutzwert erhalten – wie im Fallbeispiel, in dem alle drei Standorte exakt den Nutzwert 5,0 erreichten. Der AHP begegnet dieser Schwäche, indem er Kriterien- und Alternativengewichte aus paarweisen Vergleichen ableitet und über den Konsistenzindex eine explizite Qualitätskontrolle der Experteneinschätzungen ermöglicht; im Fallbeispiel empfahl er, wenn auch nur knapp, den Standort Raunheim.
+Dieses Kapitel hat zwei grundsätzlich verschiedene Zugänge zur Standortplanung gegenübergestellt, durchgängig am Beispiel der SushiFresh GmbH und ihrer Suche nach einem Produktionsstandort im Rhein-Main-Gebiet. **Qualitative Verfahren** – die Nutzwertanalyse und der Analytic Hierarchy Process – bewerten eine begrenzte Menge diskreter Alternativen (bei SushiFresh: drei Kandidatengrundstücke) anhand mehrerer, auch weicher Kriterien. Die Nutzwertanalyse ist einfach anzuwenden, leidet aber unter der Kompensierbarkeit ihrer additiven Struktur, die im Extremfall dazu führen kann, dass Alternativen mit völlig unterschiedlichem Profil denselben Gesamtnutzwert erhalten – wie im Fallbeispiel, in dem alle drei Standorte exakt den Nutzwert 5,0 erreichten. Der AHP begegnet dieser Schwäche, indem er Kriterien- und Alternativengewichte aus paarweisen Vergleichen ableitet und über den Konsistenzindex eine explizite Qualitätskontrolle der Experteneinschätzungen ermöglicht; im Fallbeispiel empfahl er – bei einer allerdings nicht ganz konsistenten Kriterienmatrix – knapp den Standort Mainz-Hechtsheim.
 
 **Kontinuierliche Verfahren** gehen einen Schritt weiter und suchen den optimalen Standort nicht unter vorgegebenen Alternativen, sondern als beliebigen Punkt einer Ebene. Das Center of Gravity liefert dafür eine schnelle, geschlossene Näherungslösung, die allerdings nur die quadrierte Zielfunktion exakt minimiert. Der Weiszfeld-Algorithmus löst iterativ das eigentliche, auf linearen euklidischen Distanzen basierende Problem und zog den SushiFresh-Standort spürbar in Richtung der nachfragestarken Filiale Frankfurt. Bei Manhattan-Distanzen vereinfacht sich das Problem sogar auf die Berechnung eines gewichteten Medians je Koordinate. Für großräumige, geografische Anwendungsfälle schließlich liefert die Haversine-Formel ein realistischeres Distanzmaß als die naive euklidische Distanz auf Grad-Koordinaten – und bestätigte im Fallbeispiel sowohl die AHP-Rangfolge bei der Transportnähe als auch die Robustheits-Unterschiede zwischen Center of Gravity und Weiszfeld-Optimum.
 
-Beiden Verfahrensfamilien ist gemeinsam, dass sie den Standort entweder aus einer *gegebenen* Alternativenliste wählen oder als *beliebigen* Punkt im Raum bestimmen. In der Praxis ist die Menge realistischer Standorte jedoch oft weder völlig frei wählbar noch auf wenige, von Hand vorausgewählte Alternativen beschränkt, sondern besteht aus einer größeren, aber endlichen Menge in Frage kommender Grundstücke oder Gebäude. Für diesen Fall – die **diskrete Standortplanung** mit Warehouse-Location-Modellen und Netzwerkplanungsheuristiken – wird in Kapitel 5 das methodische Instrumentarium um exakte und heuristische Optimierungsverfahren erweitert. Dort greifen wir die SushiFresh-Fallstudie wieder auf und prüfen, ob sich die knappe AHP-Empfehlung zugunsten Raunheims auch unter einer expliziten Kostenrechnung mit den tatsächlichen Fixkosten der drei Grundstücke bestätigt.
+Beiden Verfahrensfamilien ist gemeinsam, dass sie den Standort entweder aus einer *gegebenen* Alternativenliste wählen oder als *beliebigen* Punkt im Raum bestimmen. In der Praxis ist die Menge realistischer Standorte jedoch oft weder völlig frei wählbar noch auf wenige, von Hand vorausgewählte Alternativen beschränkt, sondern besteht aus einer größeren, aber endlichen Menge in Frage kommender Grundstücke oder Gebäude. Für diesen Fall – die **diskrete Standortplanung** mit Warehouse-Location-Modellen und Netzwerkplanungsheuristiken – wird in Kapitel [-@sec-standort-2] das methodische Instrumentarium um exakte und heuristische Optimierungsverfahren erweitert. Dort greifen wir die SushiFresh-Fallstudie wieder auf und prüfen, ob sich die knappe AHP-Empfehlung zugunsten von Mainz-Hechtsheim auch unter einer expliziten Kostenrechnung bestätigt.
 
 ::: {.kontrollfragen}
 **Kontrollfragen**
@@ -736,5 +839,6 @@ Beiden Verfahrensfamilien ist gemeinsam, dass sie den Standort entweder aus eine
 6. Warum liefert der Weiszfeld-Algorithmus in der Regel eine bessere (kostenminimalere) Lösung als das Center of Gravity, obwohl beide auf euklidischen Distanzen basieren? Was bedeutet das im SushiFresh-Beispiel konkret für die Filiale Frankfurt?
 7. Worin unterscheidet sich die Bestimmung des optimalen Standorts unter Manhattan-Distanzen von der Bestimmung unter euklidischen Distanzen?
 8. Warum ist die direkte Anwendung euklidischer Distanzen auf geografische Koordinaten (Breiten-/Längengrad) problematisch, und welche Alternative bietet die Haversine-Formel?
-9. Der AHP empfiehlt im Fallbeispiel knapp den Standort Raunheim. Nennen Sie zwei Gründe, warum eine rein kostenbasierte Betrachtung (wie in Kapitel 5) zu einem anderen Ergebnis kommen könnte.
+9. Der AHP empfiehlt im Fallbeispiel knapp den Standort Mainz-Hechtsheim. Nennen Sie zwei Gründe, warum eine rein kostenbasierte Betrachtung (wie in Kapitel [-@sec-standort-2]) zu einem anderen Ergebnis kommen könnte.
+10. Ändern Sie im R-Code den Vergleich "Transportnähe gegenüber Fachkräften" von 2 auf 1/2. Wie verändern sich Konsistenzrate und Rangfolge der Standorte? Interpretieren Sie das Ergebnis.
 :::

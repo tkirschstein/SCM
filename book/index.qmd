@@ -4,22 +4,26 @@ Dieses Lehrbuch begleitet die Vorlesung **Supply Chain Management (SCM)** und ve
 
 ## Aufbau des Buches
 
-Jedes Kapitel entspricht genau einer Vorlesungseinheit:
+Die Kapitel folgen den Vorlesungseinheiten, die sich in drei Blöcke gliedern: **Grundlagen des Supply Chain Managements**, **strategische Gestaltung von Supply Chains** und **Unsicherheits- und Risikomanagement in Supply Chains**.
 
-1. **Einführung und Grundbegriffe des Supply Chain Managements** — Was ist eine Supply Chain? Flüsse, Akteure, Planungsebenen.
-2. **Wertschöpfung, strategische Fertigung und Strategic Fit** — Wertschöpfungsketten, Make-or-Buy, Strategic Fit.
-3. **Ziele, Zielkonflikte und Logistikkosten** — Zielsystem des SCM, das Tetraeder der Zielkonflikte, Kostenarten.
-4. **Standortplanung I** — Qualitative Verfahren (Nutzwertanalyse, AHP) und kontinuierliche Verfahren (Center of Gravity, Weiszfeld-Algorithmus).
-5. **Standortplanung II** — Diskrete Netzwerkplanungsmodelle: Transportproblem, Warehouse-Location-Problem, Heuristiken und exakte Verfahren.
-6. **Unsicherheit in Supply Chains und Pooling** — Nachfrageunsicherheit, Sicherheitsbestände, das Quadratwurzelgesetz des Pooling.
-7. **Das Newsvendor-Modell** — Optimale Bestellmengen unter Unsicherheit, kritische Verhältniszahl, Service-Level.
-8. **Der Bullwhip-Effekt und das Beergame** — Verstärkung von Nachfrageschwankungen entlang der Kette, Ursachen und Gegenmaßnahmen.
-9. **Nachhaltigkeit im Supply Chain Management** — Ökologische, ökonomische und soziale Zieldimension, Kreislaufwirtschaft und Circular Supply Chains als Erweiterung des Zielkonflikte-Tetraeders aus Kapitel 3.
+1. **Einführung und Grundbegriffe des Supply Chain Managements** — Was ist eine Supply Chain? Flüsse, Akteure, Strukturen, SCM-Gewinn und doppelte Marginalisierung.
+2. **Wertschöpfung, strategische Fertigung und Strategic Fit** — Wertschöpfungsprozess, Entkopplungspunkt, Make-or-Buy, implizierte Unsicherheit, Strategic Fit.
+3. **Ziele, Zielkonflikte und Logistikkosten** — Zielsystem des SCM, das Tetraeder der Zielkonflikte, Kostenarten sowie die Einführung der Fallstudie **SushiFresh GmbH**.
+4. **Nachhaltigkeit im Supply Chain Management** — Vertiefung der Nachhaltigkeitsinhalte aus Einheit 3: ökologischer Strategic Fit, ökologische SCM-Strategien, Kreislaufwirtschaft und Circular Supply Chains.
+5. **Standortplanung I** — Qualitative Verfahren (Nutzwertanalyse, AHP) und kontinuierliche Verfahren (Center of Gravity, Weiszfeld-Algorithmus).
+6. **Standortplanung II** — Diskrete Netzwerkplanungsmodelle: Transportproblem, Warehouse-Location-Problem, Heuristiken und exakte Verfahren.
+7. **Unsicherheit in Supply Chains und Pooling** — Nachfrageunsicherheit, Kapazitäts- und Lagerbestandspooling, Sicherheitsbestände, das Quadratwurzelgesetz des Pooling.
+8. **Das Newsvendor-Modell** — Optimale Bestellmengen unter Unsicherheit, kritische Verhältniszahl, Servicegrad.
+9. **Der Bullwhip-Effekt und das Beergame** — Verstärkung von Nachfrageschwankungen entlang der Kette, Ursachen und Gegenmaßnahmen.
+
+Ab Kapitel [-@sec-logistikkosten] begleitet ein durchgängiges Fallbeispiel den Reader: Die fiktive **SushiFresh GmbH** produziert frische Sushi-Boxen für Supermärkte im Rhein-Main-Gebiet. An ihr werden – wie in der Vorlesung – Standortwahl, Netzwerkdesign, Sicherheitsbestände, Produktionsmengen und der Bullwhip-Effekt durchgerechnet.
 
 Jedes Kapitel folgt derselben Struktur:
 
 - **Lernziele** zu Beginn, damit klar ist, welche Kompetenzen erworben werden sollen.
 - **Konzeptionelle Erläuterungen** mit Beispielen aus der Praxis.
+- **Theorie-Vertiefungen** (violett hinterlegt), die theoretische Hintergründe, Herleitungen und Bezüge zur Fachliteratur ausführlicher darstellen als die Folien.
+- **Fallstudien-Boxen** (gelb hinterlegt) zur SushiFresh GmbH.
 - **Mathematische Herleitungen** in nachvollziehbaren Schritten.
 - **Kommentierter R-Code**, der die Modelle direkt berechnet und visualisiert — jeder Code-Block ist lauffähig und so kommentiert, dass auch Studierende ohne Vorerfahrung in R den Ablauf nachvollziehen können. Neben den fachlichen Inhalten werden dabei grundlegende R-Konzepte (Vektoren, Funktionen, Datenrahmen, das `tidyverse`, Pipes `|>`, Visualisierung mit `ggplot2`) Schritt für Schritt eingeführt.
 - **Kontrollfragen** am Kapitelende zur Selbstüberprüfung.

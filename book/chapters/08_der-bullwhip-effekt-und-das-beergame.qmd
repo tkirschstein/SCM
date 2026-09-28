@@ -41,15 +41,17 @@ Wir nähern uns dem Thema wie gewohnt über ein durchgehendes Fallbeispiel, leit
 
 ## Fallbeispiel: die SushiFresh-Supply-Chain
 
-Wir greifen erneut die **SushiFresh GmbH** aus den vorigen Kapiteln auf: den regionalen Hersteller frischer Sushi-Boxen mit Zentralproduktion in **Wiesbaden-Erbenheim** (vgl. die Standortentscheidung in Kapitel 5), der sechs Supermarkt-Filialen im Rhein-Main-Gebiet beliefert – darunter die bereits aus den Kapiteln 6 und 7 bekannte, besonders nachfragestarke Filiale **Frankfurt** ($\mu=280$, $\sigma=55$ Sushi-Boxen pro Tag). Für die Produktion bezieht SushiFresh frischen Fisch, Nori und Reis über den Fischgroßhändler **Nordsee-Fisch KG**:
+Wir greifen erneut die **SushiFresh GmbH** aus den vorigen Kapiteln auf: den regionalen Hersteller frischer Sushi-Boxen mit einer Zentralküche in **Raunheim** (vgl. die Standortanalyse in Kapitel [-@sec-standort-2] und die Pooling-Argumente in Kapitel [-@sec-unsicherheit-pooling]), der sechs Supermarkt-Filialen im Rhein-Main-Gebiet beliefert – darunter die bereits aus den Kapiteln [-@sec-unsicherheit-pooling] und [-@sec-newsvendor] bekannte, besonders nachfragestarke Filiale **Frankfurt** ($\mu=280$, $\sigma=55$ Sushi-Boxen pro Tag). Für die Produktion ist SushiFresh auf die tägliche Lieferung frischer Fischfilets angewiesen, die der Fischgroßhändler **Nord-Fisch KG** liefert. Nord-Fisch beschafft Rohfisch, produziert daraus Filets und lagert diese, um schnell liefern zu können. Die Kette ist also dreistufig; Bestellungen fließen stromaufwärts, Lieferungen stromabwärts:
 
 $$
 \text{Supermarkt-Filialen}
 \;\longleftrightarrow\;
 \text{SushiFresh GmbH}
 \;\longleftrightarrow\;
-\text{Nordsee-Fisch KG}
+\text{Nord-Fisch KG}
 $$
+
+Die **Filialen** beobachten die Endkundennachfrage (z. B. Frankfurt: $\mu=280$, $\sigma=55$) und bestellen täglich Sushi-Boxen bei SushiFresh. **SushiFresh** erhält diese Bestellungen als seine Nachfrage, bestellt Fisch bei Nord-Fisch und hält einen Vorrat an Fischfilets. **Nord-Fisch** wiederum sieht nur die Bestellungen von SushiFresh. SushiFresh und Nord-Fisch halten beide einen (Sicherheits-)Bestand an Fischfilets, um Fehlmengen zu vermeiden – die zentrale Frage lautet also: Wie hoch sollte dieser Bestand sein, und wie wirken die Bestellentscheidungen auf die vorgelagerte Stufe?
 
 Jede Stufe beobachtet nur die Bestellungen der ihr unmittelbar nachgelagerten Stufe und muss daraus – ohne Einblick in die tatsächliche Endkundennachfrage – ihre eigene Bestellentscheidung ableiten. Damit wir diese Entscheidung formal fassen können, benötigen wir drei Bestandsgrößen, die in jeder Periode $t$ fortgeschrieben werden:
 
@@ -67,7 +69,7 @@ $$ S = \mu \cdot (l+1) + z_\alpha \cdot \sigma \cdot \sqrt{l+1} $$
 
 Hierbei sind $\mu$ und $\sigma$ die erwartete Nachfrage pro Periode und ihre Standardabweichung, die in der Praxis aus vergangenen Bedarfen **geschätzt** werden müssen, und $z_\alpha$ das Quantil der Standardnormalverteilung zum gewünschten Servicegrad $\alpha$.
 
-Genau an dieser Schätzung setzt der Bullwhip-Effekt an. Simulieren wir SushiFresh GmbH für zwölf Tage mit der moderat schwankenden Sushi-Boxen-Nachfrage der Filiale Frankfurt ($\mu=280$, $\sigma=55$), einer Wiederbeschaffungszeit von zwei Tagen (ein Tag Vorlauf für die Fischanlieferung durch Nordsee-Fisch KG, ein weiterer Tag für Produktion und Auslieferung an die Filiale) und einem – zunächst fest vorgegebenen – Ziellagerbestand von $S=990$, können wir die Funktion `simuliere_tS()` aus `R/scm_functions.R` nutzen, die diese Fortschreibung von physischem, Netto- und disponiblem Bestand automatisiert:
+Genau an dieser Schätzung setzt der Bullwhip-Effekt an. Simulieren wir SushiFresh GmbH für zwölf Tage mit der moderat schwankenden Sushi-Boxen-Nachfrage der Filiale Frankfurt ($\mu=280$, $\sigma=55$), einer Wiederbeschaffungszeit von zwei Tagen (ein Tag Vorlauf für die Fischanlieferung durch Nord-Fisch KG, ein weiterer Tag für Produktion und Auslieferung an die Filiale) und einem – zunächst fest vorgegebenen – Ziellagerbestand von $S=990$, können wir die Funktion `simuliere_tS()` aus `R/scm_functions.R` nutzen, die diese Fortschreibung von physischem, Netto- und disponiblem Bestand automatisiert:
 
 ```{r ch8-sushi-sim}
 # Beobachtete Sushi-Boxen-Nachfrage der Filiale Frankfurt (Stueck je Tag,
@@ -115,6 +117,32 @@ $$
 
 wobei $q_t^{\,i}$ die Bestellmenge der $i$-ten Stufe (von den Endkunden aus gezählt) in Periode $t$ bezeichnet.
 :::
+
+Die Vorlesung zitiert die Definition von @cachon2024matching im Original: "The bullwhip effect is present in a supply chain if the variability of demand at one level of the supply chain is greater than the variability of demand at the next downstream level in the supply chain, where variability is measured with the coefficient of variation." Wichtig ist der Zusatz zum **Variationskoeffizienten** $VK = \sigma/\mu$: Er macht Stufen vergleichbar, auf denen in unterschiedlichen Einheiten oder Größenordnungen gerechnet wird (z. B. Sushi-Boxen bei der Filiale, Kilogramm Fisch beim Großhändler). Die typischen Verläufe zeigt die folgende, schematische Abbildung: Die Endkundennachfrage steigt einmalig von 4 auf 6 Einheiten; die Bestellungen des Einzelhandels schwingen darauf über, die des Großhandels noch stärker und länger, bevor sich alle Stufen auf dem neuen Niveau einpendeln.
+
+```{r ch8-typische-verlaeufe}
+#| fig-cap: "Schematischer Verlauf: Aufschaukeln eines einmaligen Nachfragesprungs über zwei Stufen"
+
+verlauf <- tibble(
+  Periode = 1:30,
+  Endkundennachfrage = c(rep(4, 5), rep(6, 25)),
+  `Bestellung Einzelhandel` = c(rep(4, 4), 6, 8, 9, 8, 7, 6, 5, 4, 4, 5, 6, 7, 7, 6,
+                                5, 5, 5, 5, 6, 6, 6, 6, 6, 6, 6, 6),
+  `Bestellung Großhandel` = c(rep(4, 5), 5, 8, 11, 13, 12, 10, 8, 6, 4, 3, 3, 4, 5,
+                              7, 8, 8, 7, 6, 5, 5, 5, 6, 6, 6, 6)
+) |>
+  pivot_longer(-Periode, names_to = "Reihe", values_to = "Menge")
+
+ggplot(verlauf, aes(Periode, Menge, colour = Reihe)) +
+  geom_line(linewidth = 1) + geom_point(size = 1.5) +
+  scale_colour_manual(values = c("Endkundennachfrage" = "#1F4E79",
+                                 "Bestellung Einzelhandel" = "#ED7D31",
+                                 "Bestellung Großhandel" = "#C00000")) +
+  labs(y = "Menge", colour = NULL) +
+  theme_minimal() + theme(legend.position = "bottom")
+```
+
+Die Folgen stromaufwärts sind ein "Aufschaukeln" der Bestellmengen, eine steigende Volatilität der Bestände und häufigere Fehlmengen – obwohl sich die Endkundennachfrage nur ein einziges Mal und nur moderat verändert hat.
 
 Der Grund für diese Verstärkung liegt bereits in der Struktur der Bestellregel: Die Bestellmenge $q_t = S - p_t$ setzt sich aus mehreren Bestandteilen zusammen, die sich **nicht** eins zu eins in der tatsächlichen Nachfrage widerspiegeln,
 
@@ -175,6 +203,87 @@ round(bullwhip_mass_sushi, 2)
 
 In diesem ersten, bewusst einfach gehaltenen Fallbeispiel ergibt sich $B=1{,}00$ – SushiFresh GmbH verstärkt die Nachfrageschwankung der Filiale Frankfurt hier noch **nicht**. Das ist kein Fehler, sondern folgt zwingend aus der Bestellregel: Solange der Ziellagerbestand $S$ **konstant** bleibt und täglich überprüft wird, entspricht die Bestellmenge exakt der (zeitversetzten) Nachfrage – die Order-up-to-Regel reicht die Nachfrage lediglich unverändert weiter. Der Bullwhip-Effekt entsteht erst, wenn $S$ selbst über rollierend **geschätzte** Nachfrageparameter $\hat\mu$ und $\hat\sigma$ periodisch neu berechnet wird, wie es in der Praxis – und im nachfolgenden Abschnitt zur mehrstufigen Simulation – der Fall ist: Dort wird die Bestellmenge einer Stufe zur (verzerrten) "Nachfrage" der nächsten Stufe, und mit jeder erneuten Schätzung von $\hat\mu$ und $\hat\sigma$ wächst die Bestellvarianz weiter an, **obwohl** jede Stufe sich strikt an dieselbe einfache, rationale Order-up-to-Regel hält. Der Bullwhip-Effekt ist damit kein Zeichen für irrationales Verhalten Einzelner, sondern eine strukturelle Eigenschaft der Interaktion von rollierender Prognose, Bestandspolitik und Wiederbeschaffungszeit.
 
+## Rollierende Parameterschätzung: wie der Bullwhip-Effekt entsteht
+
+In der Praxis kennt SushiFresh die Parameter $\mu$ und $\sigma$ nicht, sondern **schätzt** sie laufend aus den zuletzt beobachteten Bedarfen – etwa mit einem gleitenden Mittelwert und der empirischen Standardabweichung über die letzten $T$ Tage:
+$$
+\hat{\mu}_t = \frac{1}{T} \sum_{\tau=t-T}^{t-1} d_\tau,
+\qquad
+\hat{\sigma}_t = \sqrt{\frac{1}{T-1} \sum_{\tau=t-T}^{t-1} \big(d_\tau - \hat{\mu}_t\big)^2 } .
+$$
+$\hat\sigma_t$ misst dabei die Streuung der Nachfrage um die Prognose und damit den **Prognosefehler**. Mit diesen Schätzwerten wird der Ziellagerbestand jeden Tag neu berechnet: $S_t = (l+1)\,\hat\mu_t + z_\alpha\,\hat\sigma_t\sqrt{l+1}$. Die Vorlesung rechnet dieses Vorgehen für dieselben zwölf Tage durch, mit einem Schätzfenster von $T = 3$ Tagen, $l = 2$ und $\alpha = 95\,\%$:
+
+```{r ch8-dynamisch}
+fenster     <- 3
+wbz_s       <- 2
+z_95        <- qnorm(0.95)
+n_t         <- length(nachfrage)
+
+mu_hat <- sigma_hat <- S_t <- numeric(n_t)
+bestellung_dyn <- lieferung_dyn <- netto_dyn <- dispo_dyn <- numeric(n_t)
+netto_vor <- 990                               # Anfangsbestand
+
+for (t in seq_len(n_t)) {
+  # 1. Parameterschaetzung aus den (hoechstens) 'fenster' Vortagen;
+  #    am ersten Tag: Planwerte der Filiale Frankfurt (280 / 55)
+  hist <- if (t == 1) numeric(0) else nachfrage[max(1, t - fenster):(t - 1)]
+  mu_hat[t]    <- if (length(hist) == 0) 280 else mean(hist)
+  sigma_hat[t] <- if (length(hist) < 2) 55 else sd(hist)
+  S_t[t]       <- (wbz_s + 1) * mu_hat[t] + z_95 * sigma_hat[t] * sqrt(wbz_s + 1)
+
+  # 2. Lieferung der Bestellung von vor wbz Tagen trifft ein, Bedarf faellt an
+  lieferung_dyn[t] <- if (t > wbz_s) bestellung_dyn[t - wbz_s] else 0
+  netto_dyn[t]     <- netto_vor + lieferung_dyn[t] - nachfrage[t]
+
+  # 3. disponibler Bestand = Nettobestand + noch offene Bestellungen
+  offen <- if (t == 1) 0 else sum(bestellung_dyn[max(1, t - wbz_s + 1):(t - 1)])
+  dispo_dyn[t] <- netto_dyn[t] + offen
+
+  # 4. Auffuellen auf den (neu geschaetzten) Ziellagerbestand
+  bestellung_dyn[t] <- max(0, S_t[t] - dispo_dyn[t])
+  netto_vor <- netto_dyn[t]
+}
+
+tibble(Tag = 1:n_t, Bedarf = nachfrage, mu_hat = mu_hat, sigma_hat = sigma_hat,
+       S_t = S_t, Bestellung = bestellung_dyn) |>
+  kable(digits = 1, caption = "Bestellentscheidungen bei rollierender Parameterschätzung")
+
+c(sd_Nachfrage  = sd(nachfrage),
+  sd_Bestellung = sd(bestellung_dyn),
+  B             = var(bestellung_dyn) / var(nachfrage))
+```
+
+Die Standardabweichung der Bestellmengen ist nun mit rund `r round(sd(bestellung_dyn))` Boxen deutlich größer als die der Nachfrage (`r round(sd(nachfrage))` Boxen); das Varianzverhältnis beträgt $B \approx `r round(var(bestellung_dyn) / var(nachfrage), 1)`$. **SushiFresh erzeugt damit zusätzliche Unsicherheit für Nord-Fisch**, obwohl sich an der Endkundennachfrage nichts geändert hat. Die Ursache ist gut an den Tagen 4 und 5 zu erkennen: Die hohen Bedarfe der Tage 3 und 4 (344 und 410 Boxen) gehen in das Schätzfenster ein und erhöhen $\hat\mu_t$ – und jede Erhöhung von $\hat\mu_t$ wirkt mit dem Multiplikator $(l+1) = 3$ auf den Ziellagerbestand, der innerhalb von zwei Tagen um mehr als 400 Boxen steigt. Gleichzeitig steigt $\hat\sigma_t$, weil der Prognosefehler wächst. SushiFresh bestellt deshalb nicht nur den Mehrverbrauch nach, sondern baut zusätzlich Bestand auf – und reduziert die Bestellungen umso stärker, sobald die hohen Werte das Schätzfenster wieder verlassen haben.
+
+::: {.vertiefung}
+**Theorie-Vertiefung: Eine untere Schranke für den Bullwhip-Effekt**
+
+@chen2000quantifying haben den in der Tabelle sichtbaren Mechanismus analytisch untersucht. Betrachtet wird eine Stufe, die nach einer Order-up-to-Politik bestellt, die Wiederbeschaffungszeit $L$ hat und die mittlere Nachfrage mit einem gleitenden Durchschnitt über die letzten $p$ Perioden schätzt. Für unabhängige, identisch verteilte Nachfrage zeigen sie, dass das Varianzverhältnis mindestens
+$$
+B = \frac{\operatorname{Var}(q)}{\operatorname{Var}(d)} \;\geq\; 1 + \frac{2L}{p} + \frac{2L^2}{p^2}
+$$
+beträgt. (Die Schranke gilt, wenn auch die Standardabweichung geschätzt wird; wird nur der Mittelwert geschätzt, gilt sie mit Gleichheit.) Aus der Formel lassen sich drei Einsichten ablesen:
+
+1. **Der Bullwhip-Effekt ist unvermeidlich**, sobald Parameter geschätzt werden: Für jede positive Wiederbeschaffungszeit ist $B > 1$ – auch bei völlig rationalen Entscheidern.
+2. **Längere Wiederbeschaffungszeiten verstärken ihn quadratisch.** Eine Verkürzung von $L$ ist deshalb einer der wirksamsten Hebel.
+3. **Längere Schätzfenster dämpfen ihn.** Mit wachsendem $p$ reagiert die Prognose träger auf einzelne Ausreißer, und $B$ sinkt gegen 1 – allerdings um den Preis, dass echte Nachfrageverschiebungen später erkannt werden.
+
+Für das Beispiel der Vorlesung ($L = 2$, $p = 3$) ergibt sich eine Schranke von $1 + 4/3 + 8/9 \approx 3{,}2$. Für mehrstufige Ketten, in denen jede Stufe unabhängig prognostiziert, multiplizieren sich die Verstärkungen der einzelnen Stufen; teilen alle Stufen dagegen die Endkundennachfrage (zentralisierte Information), addieren sich die Wiederbeschaffungszeiten nur noch in der Formel, und der Effekt fällt deutlich kleiner aus.
+:::
+
+```{r ch8-chen-schranke}
+#| fig-cap: "Untere Schranke des Varianzverhältnisses nach Chen et al. (2000) in Abhängigkeit vom Schätzfenster p"
+
+expand_grid(L = 1:4, p = 2:20) |>
+  mutate(B_min = 1 + 2 * L / p + 2 * L^2 / p^2,
+         L = factor(paste("L =", L))) |>
+  ggplot(aes(p, B_min, colour = L)) +
+  geom_line(linewidth = 1) +
+  geom_hline(yintercept = 1, linetype = "dashed") +
+  labs(x = "Länge des Schätzfensters p (Perioden)", y = "untere Schranke für B", colour = NULL) +
+  theme_minimal()
+```
+
 ## R-Exkurs: Zeitversatz mit `dplyr::lag()`
 
 ::: {.r-exkurs}
@@ -210,6 +319,14 @@ Im Beergame bilden vier Spielergruppen die vierstufige Lieferkette eines fiktive
 
 Trotz dieser simplen, fast schon "langweiligen" Nachfrage zeigt sich im Beergame regelmäßig ein ausgeprägtes Aufschaukeln der Bestellmengen entlang der Kette: Bestände laufen zunächst leer, es kommt zu Fehlmengen, Spieler reagieren mit überproportionalen Nachbestellungen, und sobald die Lieferungen eintreffen, sitzen alle Stufen auf deutlich zu hohen Beständen. Das Spiel macht damit unmittelbar erfahrbar, was wir oben bereits formal hergeleitet haben: **Lokale, rationale Entscheidungen auf jeder Stufe führen – ohne bösen Willen und ohne fehlerhafte Information – in Summe zu einem für die gesamte Kette suboptimalen Ergebnis.** Genau diese Eigenschaft, dass individuelle Optimierung nicht automatisch zu einem globalen Optimum führt, ist eine der zentralen Lehren des Supply Chain Managements insgesamt.
 
+::: {.vertiefung}
+**Theorie-Vertiefung: Verhaltensursachen – was das Beergame über Entscheider zeigt**
+
+Das Beergame geht auf die Arbeiten von Jay Forrester zur *Industrial Dynamics* zurück, der bereits 1961 zeigte, dass Verzögerungen und Rückkopplungen in Produktions- und Distributionssystemen zu Schwingungen führen [@forrester1961industrial]. @sterman1989modeling hat das Spielverhalten systematisch ausgewertet und festgestellt, dass die Bestellungen der Teilnehmer gut durch eine einfache **Ankerungs- und Anpassungsheuristik** beschrieben werden: Man bestellt die erwartete Nachfrage plus einen Bruchteil der Lücke zwischen Soll- und Istbestand – und plus einen *noch kleineren* Bruchteil der Lücke in der Pipeline. Genau darin liegt der Fehler: Die Spieler **vernachlässigen die bereits bestellten, aber noch nicht gelieferten Mengen** (*supply line underweighting*). Sie bestellen deshalb immer wieder nach, obwohl die Ware bereits unterwegs ist, und stehen einige Perioden später vor überfüllten Lagern. Sterman spricht von einer *Fehlwahrnehmung von Rückkopplung*: Menschen unterschätzen systematisch, wie stark Verzögerungen die Wirkung ihrer eigenen Entscheidungen verschieben.
+
+Für die Formeln dieses Kapitels bedeutet das: Die Order-up-to-Regel $q_t = S - p_t$ berücksichtigt die Pipeline über den *disponiblen* Bestand $p_t$ korrekt. Menschen, die stattdessen nur auf den physischen Bestand schauen, erzeugen einen noch stärkeren Bullwhip-Effekt als die rationale Regel. Die rationalen Ursachen (Prognoseaktualisierung, Lieferzeiten) und die verhaltensbedingten Ursachen verstärken sich in der Praxis also gegenseitig.
+:::
+
 Wir können den Kern des Beergames – eine mehrstufige Kette, in der jede Stufe nur die Bestellungen ihrer Nachbarstufe beobachtet und daraus eine eigene Bestellentscheidung ableitet – mit den Werkzeugen dieses Buches direkt in R nachbilden.
 
 ## R-Exkurs: eine mehrstufige Simulationsschleife
@@ -222,9 +339,9 @@ Bislang haben wir mit `simuliere_tS()` immer nur *eine* Stufe simuliert. Das Pri
 ```{r ch8-mehrstufig-sim}
 # Anzahl Perioden und Stufen der Modellkette (wie im Beergame):
 # Filiale Frankfurt bestellt bei SushiFresh GmbH, SushiFresh GmbH
-# bestellt bei Nordsee-Fisch KG
+# bestellt bei Nord-Fisch KG
 n_perioden <- 30
-stufen     <- c("Filiale Frankfurt", "SushiFresh GmbH", "Nordsee-Fisch KG")
+stufen     <- c("Filiale Frankfurt", "SushiFresh GmbH", "Nord-Fisch KG")
 n_stufen   <- length(stufen)
 
 # Steuerungsparameter (hier fuer alle Stufen identisch angenommen)
@@ -363,7 +480,7 @@ ggplot(sim_daten, aes(x = Periode, y = Menge, color = `Größe`)) +
   theme_minimal()
 ```
 
-In der Grafik ist gut zu erkennen, wie der anfängliche Nachfragesprung bei der Filiale Frankfurt noch moderat, bei Nordsee-Fisch KG dagegen bereits stark überzeichnet ankommt – die Bestellmenge "überschwingt" mit jeder Stufe stärker, bevor sie sich wieder auf ein neues Niveau einpendelt. Genau dieses Muster – nicht die absolute Höhe der Bestellungen – ist die charakteristische "Peitschenform", die dem Bullwhip-Effekt seinen Namen gibt.
+In der Grafik ist gut zu erkennen, wie der anfängliche Nachfragesprung bei der Filiale Frankfurt noch moderat, bei Nord-Fisch KG dagegen bereits stark überzeichnet ankommt – die Bestellmenge "überschwingt" mit jeder Stufe stärker, bevor sie sich wieder auf ein neues Niveau einpendelt. Genau dieses Muster – nicht die absolute Höhe der Bestellungen – ist die charakteristische "Peitschenform", die dem Bullwhip-Effekt seinen Namen gibt.
 :::
 
 ## Wiederbeschaffungszeit-Effekte
@@ -407,13 +524,26 @@ Die bisherige Herleitung erklärt den Bullwhip-Effekt bereits vollständig aus d
 
 **Rationierung und Shortage Gaming.** Kommt es – etwa wegen einer Lieferengpasssituation – zu einer anteiligen Zuteilung (*Rationierung*) durch den Lieferanten, haben Kunden einen Anreiz, ihre Bestellmengen strategisch zu überhöhen, um trotz Rationierung genügend Ware zugeteilt zu bekommen. Sobald sich die Lage entspannt, werden überzählige Bestellungen storniert – für den Lieferanten bleibt eine scheinbar hochvolatile, in Wahrheit aber strategisch verzerrte Nachfrage zurück.
 
+Die Vorlesung fächert diese vier Grundursachen in eine feinere Übersicht mit acht Mechanismen auf, die sich in der Praxis gut als Checkliste eignet:
+
+| Ursache | Wirkungsmechanismus | Zuordnung nach Lee et al. |
+|:---|:---|:---|
+| Lokale Prognosen | Bestellungen werden als tatsächliche Nachfrage interpretiert | Demand Signaling |
+| Prognoseaktualisierung | Kleine Nachfrageänderungen führen zu Anpassungen der Zielbestände | Demand Signaling |
+| Lange Lieferzeiten | Entscheidungen müssen weit in die Zukunft wirken (Multiplikator $l+1$) | Demand Signaling (verstärkend) |
+| Auftragsbündelung | Seltene Großbestellungen erzeugen künstliche Bedarfsspitzen | Order Batching |
+| Preisaktionen | Vorratskäufe verzerren die beobachtete Nachfrage | Preisschwankungen |
+| Rationierung | Akteure bestellen strategisch mehr als ihren tatsächlichen Bedarf | Shortage Gaming |
+| Fehlende Transparenz | Endkundennachfrage ist nicht für alle Stufen sichtbar | übergreifend |
+| Lokale Zielsysteme | Stufen optimieren individuell statt systemweit | übergreifend |
+
 Alle vier Ursachen haben gemeinsam, dass sie auf **fehlender oder verzögerter Information** über die tatsächliche Endkundennachfrage beruhen und dass jede Stufe ausschließlich lokal – im eigenen Interesse und mit eigenen, unvollständigen Informationen – optimiert, ohne die Rückwirkung auf die gesamte Kette zu berücksichtigen.
 
 ## Empirische Befunde und Folgen
 
-Der Bullwhip-Effekt ist kein theoretisches Konstrukt, sondern empirisch vielfach belegt. In einer Analyse von rund 4.700 börsennotierten US-Unternehmen zeigte etwa die Hälfte bis zwei Drittel der Firmen eine positive Verstärkung der Beschaffungs- gegenüber der Absatzvariabilität, mit einer mittleren Verstärkung von rund 16 % [@bray2012information]. Ergänzende Arbeiten zeigen, dass ein stärkerer Bullwhip-Effekt systematisch mit höheren Lagerbeständen **und gleichzeitig** mehr Fehlmengen einhergeht [@yao2020empirically; @chen2012bullwhip] – Sicherheitsbestände allein kompensieren die zusätzliche Unsicherheit also nicht. Bemerkenswert ist zudem, dass auf aggregierter Ebene (z. B. Monats- oder Kategoriedaten) berechnete Kennzahlen den tatsächlichen Bullwhip-Effekt auf Ebene einzelner Artikel und Wochen systematisch unterschätzen [@yao2020empirically] – wer den Effekt im eigenen Unternehmen messen will, sollte deshalb möglichst granular vorgehen. Auch Studien zu realen Zulieferernetzwerken – etwa im Toyota-Produktionsnetzwerk – bestätigen, dass die Struktur einer Lieferkette (Anzahl Stufen, Konzentration der Zulieferer) die Weitergabe und Verstärkung von Schwankungen maßgeblich mitbestimmt [@kito2014structure].
+Der Bullwhip-Effekt ist kein theoretisches Konstrukt, sondern empirisch vielfach belegt. In einer Stichprobe von 4.689 börsennotierten US-Unternehmen zeigten rund **zwei Drittel** eine positive Verstärkung der Beschaffungs- gegenüber der Absatzvariabilität [@bray2012information]. Die mittlere Verstärkung betrug 15,8 % der Nachfragevariabilität, der Median 6,7 % – die Verteilung ist also rechtsschief: Wenige Unternehmen weisen einen sehr starken Effekt auf. In absoluten Größen lag die quartalsweise Standardabweichung der vorgelagerten Bestellungen im Mittel um rund 20 Mio. US-Dollar über derjenigen der beobachteten Nachfrage. Ergänzende Arbeiten zeigen, dass ein stärkerer Bullwhip-Effekt systematisch mit höheren Lagerbeständen **und gleichzeitig** mehr Fehlmengen einhergeht [@yao2020empirically; @chen2012bullwhip] – Sicherheitsbestände allein kompensieren die zusätzliche Unsicherheit also nicht. Bemerkenswert ist zudem, dass auf aggregierter Ebene (z. B. Monats- oder Kategoriedaten) berechnete Kennzahlen den tatsächlichen Bullwhip-Effekt auf Ebene einzelner Artikel und Wochen systematisch unterschätzen [@yao2020empirically] – wer den Effekt im eigenen Unternehmen messen will, sollte deshalb möglichst granular vorgehen. Auch Studien zu realen Zulieferernetzwerken – etwa im Toyota-Produktionsnetzwerk – bestätigen, dass die Struktur einer Lieferkette (Anzahl Stufen, Konzentration der Zulieferer) die Weitergabe und Verstärkung von Schwankungen maßgeblich mitbestimmt [@kito2014structure].
 
-Die operativen und ökonomischen Folgen des Bullwhip-Effekts sind vielfältig:
+Als Management-Botschaft fasst die Vorlesung zusammen: Nicht nur die Endkundennachfrage erzeugt Volatilität, sondern *Nachfragesignal + lokale Disposition = Bestellvarianz*. Die operativen und ökonomischen Folgen des Bullwhip-Effekts sind vielfältig:
 
 | Operative Folgen | Ökonomische Folgen |
 |---|---|
@@ -457,7 +587,9 @@ Auf der R-Seite haben Sie in diesem Kapitel gelernt, Zeitreihen als einfache Vek
 5. Beschreiben Sie Aufbau und Ziel des Beergames. Welche zentrale Erkenntnis des Supply Chain Managements macht es erfahrbar?
 6. Erklären Sie den Unterschied zwischen `diff()` und `dplyr::lag()` bei der Arbeit mit Zeitreihen in R.
 7. Was besagt der Begriff Vendor Managed Inventory (VMI), und inwiefern reduziert er den Bullwhip-Effekt?
-8. Skizzieren Sie mit eigenen Worten, wie eine mehrstufige Simulationsschleife in R aufgebaut sein muss, damit jede Stufe die Bestellungen der jeweils nachgelagerten Stufe als eigene Nachfrage verwendet.
+8. Berechnen Sie die untere Schranke des Varianzverhältnisses nach Chen et al. für $L = 2$ und ein Schätzfenster von $p = 3$ bzw. $p = 10$ Perioden. Was folgt daraus für die Wahl des Prognoseverfahrens?
+9. Warum bestellen Teilnehmer des Beergames systematisch zu viel, sobald Fehlmengen aufgetreten sind? Erläutern Sie den Begriff *supply line underweighting*.
+10. Skizzieren Sie mit eigenen Worten, wie eine mehrstufige Simulationsschleife in R aufgebaut sein muss, damit jede Stufe die Bestellungen der jeweils nachgelagerten Stufe als eigene Nachfrage verwendet.
 :::
 
 ## Ausblick
