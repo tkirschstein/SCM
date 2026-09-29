@@ -23,7 +23,7 @@ execute:
 | | |
 |---|---|
 | **Thema** | Einperiodige Bestandsplanung bei unsicherer Nachfrage für verderbliche Ware |
-| **Vorlesungsbezug** | Kapitel 7 des Readers: Newsvendor-Modell, kritisches Verhältnis, Unter- und Überbestandskosten, erwarteter Gewinn; Bezug zu Kapitel 9 (Lebensmittelverschwendung) |
+| **Vorlesungsbezug** | Kapitel 7 des Readers: Newsvendor-Modell, kritisches Verhältnis, Unter- und Überbestandskosten, erwarteter Gewinn |
 | **Typ** | Datenbasierte Fallstudie mit **realen Kassendaten** einer französischen Bäckerei (Kaggle) |
 | **Gruppengröße** | 3–6 Personen |
 | **Ergebnis** | Präsentation (30 Min.) + Diskussion (15 Min.), Foliensatz (PDF) und reproduzierbarer R-/Quarto-Code |

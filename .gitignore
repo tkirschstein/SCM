@@ -8,6 +8,7 @@
 /.quarto/
 /_site/
 /literature/
+/data/
 
 # OS
 .DS_Store

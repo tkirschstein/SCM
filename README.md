@@ -49,7 +49,7 @@ Jede Veranstaltung umfasst 90 Minuten. Das jeweilige Reader-Kapitel ist **vor** 
 | 8 | Do, 17.12.2026 | Der Bullwhip-Effekt (Kap. 8) und **Beer Game** | |
 | – | Do, 24.12.2026 | *keine Veranstaltung* | |
 | – | Do, 31.12.2026 | *keine Veranstaltung* | |
-| 9 | Do, 07.01.2027 | Zwischenreflexion: Methoden im Vergleich | **FS 4: Risk Pooling im Einzelhandel (M5-Daten)** |
+| 9 | Do, 07.01.2027 | Zwischenreflexion: Methoden im Vergleich | **FS 4: Risk Pooling im E-Commerce (Olist-Daten)** |
 | 10 | Do, 14.01.2027 | Vertiefung / Puffer | **FS 5: Newsvendor – französische Bäckerei** |
 | 11 | Do, 21.01.2027 | Vertiefung / Puffer | **FS 6: Bullwhip-Effekt – MTIS-Daten und Simulation** |
 | 12 | Do, 28.01.2027 | Synthese über alle Fallstudien (SushiFresh als Gesamtfall); Reflexionswerkstatt | |
@@ -67,7 +67,7 @@ Die sechs Fallstudien werden in Gruppen von **3–6 Personen** bearbeitet; jede 
 | 1 | Strategische Gestaltung von SCs: Werner & Mertz / Frosch | Strategic Fit, SC-Treiber, Zielkonflikte, Closed-Loop-SC | Recherche (qualitativ) |
 | 2 | Distributionshub für Lateinamerika | AHP, Nutzwertanalyse, Steiner-Weber, Haversine | Prognose- und Kostendaten (fiktiv), Weltbank-Indikatoren (LPI, WGI) |
 | 3 | Batterielogistik Norddeutschland/Benelux | UFLP/CFLP als MILP, Add/Drop, Transportproblem, Szenarien | reale Werksstandorte, Mengen und Kosten realitätsnah geschätzt |
-| 4 | Risk Pooling im Einzelhandel | Sicherheitsbestand, Quadratwurzelgesetz, Korrelation, Postponement | Walmart-Abverkaufsdaten (M5, Kaggle) |
+| 4 | Risk Pooling im E-Commerce: Zentral- oder Regionallager in Brasilien | Sicherheitsbestand, Quadratwurzelgesetz, Korrelation, Produkt-Pooling | Bestelldaten des Marktplatzes Olist (Kaggle) |
 | 5 | Newsvendor in einer französischen Bäckerei | Newsvendor (normal/empirisch), Backtest, zensierte Nachfrage | Kassendaten *French bakery daily sales* (Kaggle) |
 | 6 | Bullwhip-Effekt | Varianzverhältnis, Simulation, Chen-Schranke, Beer Game | U.S. Census MTIS über FRED |
 
@@ -145,6 +145,7 @@ Die Ausgabe landet jeweils im Ordner `docs/`. Das Arbeitsverzeichnis für R-Code
 install.packages(c(
   "tidyverse",        # Datenaufbereitung und Grafiken
   "lubridate",        # Datumsfunktionen (Fallstudie 5)
+  "zoo",              # gleitende Durchschnitte (Fallstudie 4)
   "knitr", "kableExtra",
   "plotly",           # interaktive Grafiken im Reader
   "ompr", "ompr.roi", "ROI", "ROI.plugin.glpk",  # MILP (Fallstudie 3)
@@ -153,7 +154,7 @@ install.packages(c(
 ))
 ```
 
-Für die Fallstudien 4 und 5 ist ein (kostenloses) **Kaggle-Konto** erforderlich; für den M5-Datensatz müssen zusätzlich die Wettbewerbsregeln akzeptiert werden.
+Für die Fallstudien 4 und 5 ist ein (kostenloses) **Kaggle-Konto** erforderlich, um die Datensätze herunterzuladen.
 
 ---
 
