@@ -108,6 +108,21 @@ Die Prüfungsleistung ist ein **individueller Reflexionsbericht**. Die Fallstudi
 
 ---
 
+## Beer Game
+
+Das **Beer Distribution Game** (Sterman 1989) simuliert den Bullwhip-Effekt in einer vierstufigen Supply Chain (Einzelhandel → Großhandel → Distributor → Hersteller). Wir spielen das Spiel mehrfach in der Veranstaltung in der Regel mit folgendem Ablauf:
+
+1. Einführung in die Regeln/Annahmen (variieren während des Semesters),
+2. Spielrunden/Simulation,
+3. Auswertung der Bestell- und Bestandsverläufe und Diskussion.
+
+Online-Plattform: [Transentis](https://beergame.transentis.com/de). 
+
+Machen Sie sich gern vorab mit den Regeln und Ablauf vertraut.
+
+---
+
+
 ## Aufbau des Repositories
 
 ```
@@ -164,18 +179,6 @@ install.packages(c(
 ```
 
 Für die Fallstudien 4 und 5 ist ein (kostenloses) **Kaggle-Konto** erforderlich, um die Datensätze herunterzuladen.
-
----
-
-## Beer Game
-
-Das **Beer Distribution Game** (Sterman 1989) simuliert den Bullwhip-Effekt in einer vierstufigen Supply Chain (Einzelhandel → Großhandel → Distributor → Hersteller). Ablauf am 17.12.2026 (ca. 60 Min.):
-
-1. Einführung in die Regeln (10 Min.),
-2. Spielrunden (30 Min.),
-3. Auswertung der Bestell- und Bestandsverläufe und Diskussion (20 Min.).
-
-Online-Plattform: [beergame.org](https://www.beergame.org). Die Spieldaten werden in Fallstudie 6 weiter ausgewertet.
 
 ---
 
