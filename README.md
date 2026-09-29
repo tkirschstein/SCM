@@ -1,4 +1,4 @@
-# Supply Chain Management – Kursmaterialien
+# Global Supply Chain Management – Kursmaterialien
 
 **Hochschule RheinMain | Master International Management | 1. Fachsemester | Wintersemester 2026/27**
 
