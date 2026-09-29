@@ -1,222 +1,188 @@
-# Supply Chain Management — Course Materials
+# Supply Chain Management – Kursmaterialien
 
-**HS RheinMain | Bachelor Program | 3rd Semester | English**
+**Hochschule RheinMain | Master International Management | 1. Fachsemester | Wintersemester 2026/27**
 
 Prof. Dr. Thomas Kirschstein
 
 ---
 
-## Course Overview
+## Kursüberblick
 
-This repository contains all lecture, exercise, and case study materials for the bachelor-level Supply Chain Management course at Hochschule RheinMain. The course introduces students to the quantitative and strategic foundations of SCM, with a focus on hands-on modelling in R.
+Dieses Repository enthält alle Materialien zur Lehrveranstaltung *Supply Chain Management* im Masterstudiengang International Management: Vorlesungsfolien, den begleitenden Reader, sechs Fallstudien und die zugehörige R-Funktionsbibliothek.
 
-**Course goal**: Students develop competency in analysing, designing, and optimising supply chains — from strategic network design to operational planning under uncertainty.
+Die Veranstaltung vermittelt die strategischen und quantitativen Grundlagen des Supply Chain Managements. Im Mittelpunkt steht die Übertragung von Methoden aus der Vorlesung auf möglichst realistische Problemstellungen. Das geschieht in Fallstudien, die in Gruppen bearbeitet, im Plenum präsentiert und gemeinsam reflektiert werden.
 
-**Credit hours**: 4 SWS (lecture + exercise session)  
-**Workload**: 150 hours (60 contact, 90 self-study)  
-**Assessment**: Written exam (60%) + Case study (40%)  
-**Language**: English  
-**Prerequisites**: Mathematics for economists (linear algebra, probability), introductory statistics, basic programming literacy
+| | |
+|---|---|
+| **Studiengang** | Master International Management, 1. Fachsemester |
+| **Umfang** | 2 SWS (seminaristische Vorlesung) |
+| **Termine** | donnerstags, 29.10.2026 – 28.01.2027 (12 Termine, keine Veranstaltung am 24.12. und 31.12.) |
+| **Sprache** | Deutsch (Fachliteratur überwiegend Englisch) |
+| **Lehrformat** | Inverted Classroom: Vorbereitung mit dem Reader, in der Veranstaltung kurzer Input, Fallstudienpräsentationen und gemeinsame Reflexion |
+| **Prüfungsleistung** | Individueller Reflexionsbericht (siehe unten), keine Klausur |
+| **Voraussetzungen** | Grundkenntnisse in Statistik; Programmierkenntnisse sind hilfreich, aber nicht erforderlich (R-Startercode wird bereitgestellt) |
+
+**Lernziele:** Nach der Veranstaltung können die Studierenden
+
+- Supply Chains als Netzwerke beschreiben und ihre strategische Ausrichtung (Strategic Fit) beurteilen,
+- Zielkonflikte zwischen Kosten, Service und Nachhaltigkeit erkennen und bewerten,
+- Standortentscheidungen mit qualitativen (Nutzwertanalyse, AHP), kontinuierlichen (Steiner-Weber) und diskreten Modellen (WLP) vorbereiten,
+- Bestandsentscheidungen unter Unsicherheit (Pooling, Newsvendor) treffen,
+- die Ursachen des Bullwhip-Effekts erklären und Gegenmaßnahmen bewerten sowie
+- die Aussagekraft und Grenzen quantitativer Modelle für reale Managemententscheidungen kritisch reflektieren.
 
 ---
 
-## Repository Structure
+## Ablaufplan
+
+Jede Veranstaltung umfasst 90 Minuten. Das jeweilige Reader-Kapitel ist **vor** dem Termin zu lesen. An Präsentationsterminen ist die Sitzung zweigeteilt: etwa 45 Minuten Fallstudie (30 Min. Präsentation, 15 Min. Diskussion und Reflexion) und etwa 45 Minuten Input zum nächsten Thema.
+
+| Nr. | Datum | Input (Reader-Kapitel) | Fallstudien |
+|:--:|---|---|---|
+| 1 | Do, 29.10.2026 | Kick-off und Organisation; Einführung und Grundbegriffe des SCM (Kap. 1) | Ausgabe aller Fallstudien, Gruppenbildung |
+| 2 | Do, 05.11.2026 | Wertschöpfung, strategische Fertigung und Strategic Fit (Kap. 2) | Kick-off-Gespräche mit den Gruppen (Sprechstunde) |
+| 3 | Do, 12.11.2026 | Ziele, Zielkonflikte und Logistikkosten (Kap. 3); Nachhaltigkeit im SCM (Kap. 9, Selbststudium) | |
+| 4 | Do, 19.11.2026 | Standortplanung I: Nutzwertanalyse, AHP, Steiner-Weber (Kap. 4) | **FS 1: Strategische Gestaltung – Werner & Mertz / Frosch** |
+| 5 | Do, 26.11.2026 | Standortplanung II: diskrete Netzwerkplanung, WLP (Kap. 5) | |
+| 6 | Do, 03.12.2026 | Unsicherheit in Supply Chains: Pooling (Kap. 6) | **FS 2: Distributionshub LATAM – AHP und Steiner-Weber** |
+| 7 | Do, 10.12.2026 | Das Newsvendor-Modell (Kap. 7) | **FS 3: Batterielogistik – WLP** |
+| 8 | Do, 17.12.2026 | Der Bullwhip-Effekt (Kap. 8) und **Beer Game** | |
+| – | Do, 24.12.2026 | *keine Veranstaltung* | |
+| – | Do, 31.12.2026 | *keine Veranstaltung* | |
+| 9 | Do, 07.01.2027 | Zwischenreflexion: Methoden im Vergleich | **FS 4: Risk Pooling im Einzelhandel (M5-Daten)** |
+| 10 | Do, 14.01.2027 | Vertiefung / Puffer | **FS 5: Newsvendor – französische Bäckerei** |
+| 11 | Do, 21.01.2027 | Vertiefung / Puffer | **FS 6: Bullwhip-Effekt – MTIS-Daten und Simulation** |
+| 12 | Do, 28.01.2027 | Synthese über alle Fallstudien (SushiFresh als Gesamtfall); Reflexionswerkstatt | |
+
+Die Fallstudien werden jeweils zwei bis drei Wochen nach dem zugehörigen Input präsentiert. Die Gruppen mit späteren Präsentationsterminen beginnen mit Datenbeschaffung und -aufbereitung bereits vor dem Input. Die Weihnachtspause verschafft den Gruppen 4–6 zusätzliche Bearbeitungszeit. Das Beer Game am 17.12. liefert die Spieldaten für Fallstudie 6.
+
+---
+
+## Fallstudien
+
+Die sechs Fallstudien werden in Gruppen von **3–6 Personen** bearbeitet; jede Gruppe übernimmt eine Fallstudie. Bis auf Fallstudie 1 arbeiten alle mit realen oder realitätsnahen Datensätzen.
+
+| Nr. | Thema | Methoden | Daten |
+|:--:|---|---|---|
+| 1 | Strategische Gestaltung von SCs: Werner & Mertz / Frosch | Strategic Fit, SC-Treiber, Zielkonflikte, Closed-Loop-SC | Recherche (qualitativ) |
+| 2 | Distributionshub für Lateinamerika | AHP, Nutzwertanalyse, Steiner-Weber, Haversine | Prognose- und Kostendaten (fiktiv), Weltbank-Indikatoren (LPI, WGI) |
+| 3 | Batterielogistik Norddeutschland/Benelux | UFLP/CFLP als MILP, Add/Drop, Transportproblem, Szenarien | reale Werksstandorte, Mengen und Kosten realitätsnah geschätzt |
+| 4 | Risk Pooling im Einzelhandel | Sicherheitsbestand, Quadratwurzelgesetz, Korrelation, Postponement | Walmart-Abverkaufsdaten (M5, Kaggle) |
+| 5 | Newsvendor in einer französischen Bäckerei | Newsvendor (normal/empirisch), Backtest, zensierte Nachfrage | Kassendaten *French bakery daily sales* (Kaggle) |
+| 6 | Bullwhip-Effekt | Varianzverhältnis, Simulation, Chen-Schranke, Beer Game | U.S. Census MTIS über FRED |
+
+**Ablauf je Gruppe:**
+
+1. Kick-off-Gespräch in der Sprechstunde (Datenzugang, Arbeitsplan),
+2. Zwischenstand etwa eine Woche vor der Präsentation,
+3. Präsentation (30 Min.) mit Beantwortung der Reflexionsfragen und Diskussion (15 Min.),
+4. Abgabe von Foliensatz (PDF) und – bei den datenbasierten Fallstudien – reproduzierbarem Quarto-/R-Code bis 24 Stunden vor dem Termin.
+
+Jede Fallstudie endet mit **Reflexionsfragen**, die die Gruppe in der Präsentation beantwortet und die die anschließende Diskussion eröffnen.
+
+---
+
+## Prüfungsleistung: Reflexionsbericht
+
+Die Prüfungsleistung ist ein **individueller Reflexionsbericht**. Die Fallstudienpräsentationen und die anschließenden Diskussionen sind seine Grundlage.
+
+- **Reflexionsjournal (begleitend, unbenotet):** Zu jeder Fallstudienpräsentation halten alle Teilnehmenden etwa eine Seite fest: Kernaussage, Annahmen und Grenzen der Methode, Bezug zur eigenen Erfahrung bzw. zu einem bekannten Unternehmen, offene Fragen.
+- **Reflexionsbericht:** Er umfasst drei Teile:
+  1. Reflexion der eigenen Fallstudie (Methodenanwendung, Grenzen, Zusammenarbeit im Team),
+  2. fallübergreifende Reflexion mindestens dreier weiterer Fallstudien auf Basis des Journals und des Readers,
+  3. Transfer auf den Kontext des International Managements.
+- Umfang, Abgabetermin und Bewertungskriterien werden in der ersten Veranstaltung bekannt gegeben.
+
+---
+
+## Aufbau des Repositorys
 
 ```
 SCM/
-├── slides/              # Quarto revealjs lecture slides (6 modules)
-│   ├── 01_foundations/  # SCM basics, flows, planning hierarchy
-│   ├── 02_strategy/     # Strategic fit, location planning, AHP
-│   ├── 03_network_design/  # Transportation problem, WLP heuristics
-│   ├── 04_transportation/  # Uncertainty, Newsvendor, Bullwhip
-│   ├── 05_uncertainty/  # SC coordination, contracts, VMI
-│   └── 06_coordination/ # Sustainable SCM, circular supply chains
-├── book/                # Quarto HTML course reader
-│   └── custom.css       # Matching CSS theme for the book
-├── exercises/           # Exercise sheets with R solutions (5 blocks)
-├── case_studies/        # Team-based case studies (2 cases)
-├── data/                # Datasets for exercises and case studies
-├── R/                   # Reusable R function library
-│   └── scm_functions.R  # All course functions documented with roxygen2
-└── _extensions/         # Custom Quarto reveal.js theme
-    └── scm-theme.scss
+├── slides/                  # Vorlesungsfolien (Quarto revealjs) → docs/slides
+│   ├── lectures/            # 8 Vorlesungseinheiten (01–08)
+│   ├── scm-komplett.qmd     # Gesamtausgabe aller Einheiten
+│   └── _quarto.yml
+├── book/                    # Reader (Quarto Book) → docs/book
+│   ├── chapters/            # Kapitel 1–9
+│   ├── index.qmd
+│   └── _quarto.yml
+├── case_studies/            # 6 Fallstudien → docs/case_studies
+│   └── _quarto.yml
+├── exercises/               # Übungsaufgaben mit R-Lösungen
+├── data/                    # Datensätze für Übungen und Fallstudien
+├── literature/              # Bibliografie (!references.bib)
+├── R/
+│   └── scm_functions.R      # R-Funktionsbibliothek des Kurses (roxygen2-dokumentiert)
+├── _extensions/             # Quarto-Theme für die Folien
+└── docs/                    # gerenderte Ausgabe (HTML)
 ```
 
----
+### Rendern
 
-## Modules
+```bash
+# Reader
+cd book && quarto render
 
-### Module 1 — SCM Foundations
-What is a supply chain? Flows (material, financial, information), planning hierarchy (strategic/tactical/operational), key performance metrics (OTIF, inventory turns, COGS), and the trade-off triangle (cost – service – flexibility). Introduction to the DuPont tree as a strategic SCM lens.
+# Vorlesungsfolien (einzeln oder als Gesamtausgabe, siehe slides/README.md)
+cd slides && quarto render lectures/01_einfuehrung-und-grundbegriffe-des-supply-chain-managements.qmd
+cd slides && quarto render --profile full
 
-### Module 2 — Location Planning and Strategic Fit
-Strategic fit between competitive strategy and supply chain design. Location planning: Center of Gravity, Weiszfeld algorithm, and the Analytic Hierarchy Process (AHP) for multi-criteria site selection. Case: selecting a European distribution centre.
+# Fallstudien
+cd case_studies && quarto render
+```
 
-### Module 3 — Network Design
-Transportation problem formulation. Solution methods: North-West Corner, Minimum Cost Method, Vogel's Approximation, and the simplex-based stepping-stone method. Warehouse Location Problem: Add Heuristic, Drop Heuristic, exact MILP with ompr/GLPK. Facility capacitation.
-
-### Module 4 — Managing Transportation Uncertainty
-Demand uncertainty and the single-period problem. Newsvendor Model: derivation, critical ratio, service levels, and expected profit. Extensions: lost sales, emergency orders, quick-response retailing. The Bullwhip Effect: causes, measurement, and mitigation strategies.
-
-### Module 5 — Supply Chain Coordination
-Decentralised decision-making and the double-marginalisation problem. Coordination contracts: buy-back, revenue sharing, quantity flexibility, two-part tariff. Vendor Managed Inventory (VMI) and Collaborative Planning, Forecasting and Replenishment (CPFR). Information sharing and the value of demand data.
-
-### Module 6 — Sustainable and Circular Supply Chains
-Sustainability in SCM: Scope 1/2/3 emissions, transport decarbonisation, and lifecycle thinking. Circular supply chains: reverse logistics, closed-loop systems, remanufacturing economics. ESG reporting frameworks (GRI, TCFD) and practical sustainability KPIs.
+Die Ausgabe landet jeweils im Ordner `docs/`. Das Arbeitsverzeichnis für R-Code ist der jeweilige Projektordner, die Funktionsbibliothek wird daher mit `source("../R/scm_functions.R")` eingebunden.
 
 ---
 
-## Learning Materials
+## Software
 
-### Recommended Textbooks
-
-| Title | Authors | Publisher | ISBN | Relevant Chapters |
-|-------|---------|-----------|------|-------------------|
-| *Supply Chain Management: Strategy, Planning, and Operation* (7th ed.) | Chopra & Meindl | Pearson, 2019 | 978-0-13-520072-0 | All modules |
-| *Fundamentals of Supply Chain Management* | Mentzer et al. | Sage, 2004 | 978-0-7619-2849-4 | Modules 1, 5, 6 |
-| *Operations Research: An Introduction* (10th ed.) | Taha | Pearson, 2017 | 978-0-13-438113-4 | Modules 3, 4 |
-| *Matching Supply with Demand* (3rd ed.) | Cachon & Terwiesch | McGraw-Hill, 2012 | 978-0-07-352515-8 | Modules 4, 5 |
-| *Sustainable Logistics and Supply Chain Management* (rev. ed.) | Grant et al. | Kogan Page, 2017 | 978-0-7494-8009-3 | Module 6 |
-
-### Online Resources
-
-**Open Courseware:**
-- [MIT OpenCourseWare 15.762 Supply Chain Planning](https://ocw.mit.edu/courses/15-762j-supply-chain-planning-spring-2011/) — lecture notes and problem sets
-- [MIT OpenCourseWare 15.760 Introduction to Operations Management](https://ocw.mit.edu/courses/15-760b-introduction-to-operations-management-spring-2004/)
-- [MIT CTL SCM Blossoms](https://blossoms.mit.edu/scm) — short video explanations of key SCM concepts
-- [APICS/ASCM Body of Knowledge](https://www.ascm.org/learning-development/certifications-credentials/cpim/) — CPIM and CSCP certification study materials
-
-**Industry and News:**
-- [Supply Chain Management Review (scmr.com)](https://www.scmr.com) — practitioner articles
-- [Logistics Management (logisticsmgmt.com)](https://www.logisticsmgmt.com) — industry news
-- [Supply Chain Dive (supplychaindive.com)](https://www.supplychaindive.com) — current events and case analysis
-
-**Data and Research:**
-- [Council of Supply Chain Management Professionals (CSCMP)](https://cscmp.org) — annual State of Logistics Report
-- [World Bank Logistics Performance Index](https://lpi.worldbank.org/) — country-level logistics benchmarks
-
-### Software and Tools
-
-**R / RStudio Setup:**
+- **R** ≥ 4.3 mit **RStudio** oder Positron
+- **Quarto** ≥ 1.4 (<https://quarto.org>)
 
 ```r
-# Install all packages used in this course
 install.packages(c(
-  # Core data and plotting
-  "tidyverse",    # dplyr, ggplot2, tidyr, readr, purrr
-  "ggrepel",      # non-overlapping text labels in ggplot2
-  "scales",       # axis formatting helpers
-
-  # Optimisation
-  "lpSolve",      # linear and transportation problem solver
-  "ompr",         # MILP modelling layer
-  "ompr.roi",     # ROI backend for ompr
-  "ROI",          # R Optimization Infrastructure
-  "ROI.plugin.glpk",  # GLPK solver binding
-
-  # Geographic computation
-  "sf",           # spatial features (optional — for proper maps)
-
-  # Tables
-  "knitr",
-  "kableExtra"    # styled HTML/PDF tables
+  "tidyverse",        # Datenaufbereitung und Grafiken
+  "lubridate",        # Datumsfunktionen (Fallstudie 5)
+  "knitr", "kableExtra",
+  "plotly",           # interaktive Grafiken im Reader
+  "ompr", "ompr.roi", "ROI", "ROI.plugin.glpk",  # MILP (Fallstudie 3)
+  "lpSolve",          # Transportproblem
+  "MASS"
 ))
 ```
 
-**Minimum R version**: 4.2.0  
-**RStudio version**: 2023.06 or later (Quarto integration)  
-**Quarto version**: 1.4 or later
-
-**Recommended IDE setup:**
-- R 4.3+ with RStudio 2023.12+
-- Quarto CLI installed separately (quarto.org)
-- GLPK installed system-wide: `sudo apt-get install glpk-utils` (Linux/WSL) or via Homebrew on macOS
+Für die Fallstudien 4 und 5 ist ein (kostenloses) **Kaggle-Konto** erforderlich; für den M5-Datensatz müssen zusätzlich die Wettbewerbsregeln akzeptiert werden.
 
 ---
 
-## Interactive Learning Formats
+## Beer Game
 
-### Beer Game Session
+Das **Beer Distribution Game** (Sterman 1989) simuliert den Bullwhip-Effekt in einer vierstufigen Supply Chain (Einzelhandel → Großhandel → Distributor → Hersteller). Ablauf am 17.12.2026 (ca. 60 Min.):
 
-The **Beer Distribution Game** (Sterman, 1989) simulates the Bullwhip Effect in a 4-echelon supply chain (retailer → wholesaler → distributor → manufacturer). Students manage one echelon and observe how small demand fluctuations amplify upstream.
+1. Einführung in die Regeln (10 Min.),
+2. Spielrunden (30 Min.),
+3. Auswertung der Bestell- und Bestandsverläufe und Diskussion (20 Min.).
 
-**Session format** (recommended: 60–90 minutes):
-1. Rules briefing (10 min): explain order mechanics, backlog cost, holding cost
-2. Game rounds 1–20 (30 min): students make decisions in silence
-3. Debrief (20 min): plot inventory/order patterns across echelons; calculate total cost
-4. Discussion (20 min): causes of bullwhip, managerial interventions
-
-**Online platforms:**
-- [beergame.org](https://www.beergame.org) — free, browser-based, multiplayer
-- [MIT LearningEdge Beer Game](https://beergame.mit.edu) — MIT-hosted version with built-in analytics
-
-### AHP Group Exercise
-
-Groups of 4 select a site for a real-world facility (e.g. a regional e-commerce fulfilment centre). Each group:
-
-1. Identifies 4–5 location alternatives (real cities/industrial parks)
-2. Defines 4–6 decision criteria (labour costs, transport access, land availability, regulatory environment, proximity to customers)
-3. Performs pairwise comparisons — each group member independently fills in the AHP matrix
-4. Discusses inconsistencies in preferences
-5. Presents their recommended location with AHP weights and sensitivity analysis
-
-**R functions used**: `ahp_priority_vector()`, `ahp_consistency()` from `R/scm_functions.R`
-
-### Supply Chain Design Hackathon
-
-A 3-hour competitive exercise where teams design a complete supply chain for a given product scenario. Teams receive a brief with demand data, supply options, and cost parameters. Deliverables:
-
-- Network design map (warehouses, routes)
-- Total annual cost calculation
-- Service level achieved
-- One identified risk and mitigation
-
-Winning team: lowest total cost with ≥95% service level. Graded on methodology and presentation.
+Online-Plattform: [beergame.org](https://www.beergame.org). Die Spieldaten werden in Fallstudie 6 weiter ausgewertet.
 
 ---
 
-## Assessment
+## Literatur
 
-| Component | Weight | Format | Notes |
-|-----------|:------:|--------|-------|
-| Written Exam | 60% | 90 min, closed book (formula sheet provided) | Modules 1–6, with calculations and interpretation |
-| Case Study | 40% | Team report (12 pp) + 10 min presentation | Case Study 1 or 2, assigned by instructor |
+| Titel | Autoren | Relevanz |
+|---|---|---|
+| *Supply Chain Management: Strategy, Planning, and Operation* | Chopra & Meindl | alle Themen |
+| *Matching Supply with Demand* | Cachon & Terwiesch | Pooling, Newsvendor, Bullwhip |
+| *Sustainable Logistics and Supply Chain Management* | Grant et al. | Nachhaltigkeit |
 
-**Exam format:**  
-- Part A: Multiple choice / short answer (30 min)
-- Part B: Quantitative problems — DuPont, Location, Transportation (30 min)
-- Part C: Newsvendor / WLP with interpretation (30 min)
-- Formula sheet: one A4 page provided by the examiner
-
-**Case study grading** (see rubric in each case study file):
-- Problem formulation (25%)
-- Solution methodology (25%)
-- Interpretation / management recommendations (30%)
-- Presentation quality (20%)
-
-**Pass threshold**: ≥50 points (out of 100) overall; ≥40 points in each case study criterion.
+Weitere Quellen sind im Reader und in den Fallstudien angegeben (`literature/!references.bib`).
 
 ---
 
-## Contributing
+## Kontakt
 
-Issues, corrections, and improvements are welcome. To contribute:
+Prof. Dr. Thomas Kirschstein – thomas.kirschstein@hs-rm.de
 
-1. **Report errors**: Open a GitHub Issue with the label `bug` or `content-error`. Include the file name and line number.
-
-2. **Suggest exercises**: Open an Issue with the label `enhancement`. Describe the topic, the learning objective, and a sketch of the problem.
-
-3. **Submit corrections via Pull Request**: Fork the repository, make changes in a feature branch, and submit a PR referencing the relevant Issue.
-
-4. **Contact**: thomas.kirschstein@hs-rm.de
-
-**Coding style for R files:**
-- Use `snake_case` for function and variable names
-- Document all exported functions with roxygen2-style `#'` comments
-- Prefer base R for core algorithms; use tidyverse for data manipulation and ggplot2 for visualisation
-- Include `stopifnot()` input validation in all exported functions
-
----
-
-*Last updated: see `date: last-modified` in individual Quarto files.*  
-*Repository maintained by the SCM teaching team at HS RheinMain, Wiesbaden.*
+Fehler und Verbesserungsvorschläge bitte als GitHub-Issue melden (mit Dateiname und Zeilennummer).

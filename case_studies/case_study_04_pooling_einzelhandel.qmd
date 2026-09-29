@@ -1,0 +1,157 @@
+---
+title: "Fallstudie 4: Risk Pooling im Einzelhandel"
+subtitle: "Zentralisierung von Sicherheitsbeständen auf Basis der Walmart-Verkaufsdaten (M5)"
+author: "Supply Chain Management – Gruppenarbeit"
+lang: de
+format:
+  html:
+    theme: cosmo
+    toc: true
+    toc-depth: 2
+    number-sections: true
+    embed-resources: true
+    code-fold: show
+execute:
+  echo: true
+  warning: false
+  message: false
+---
+
+::: {.callout-note}
+## Steckbrief
+
+| | |
+|---|---|
+| **Thema** | Standort- und Produkt-Pooling, Zentralisierung von Beständen |
+| **Vorlesungsbezug** | Kapitel 6 des Readers: Sicherheitsbestand, Servicegrad, Quadratwurzelgesetz, Einfluss der Korrelation, Postponement |
+| **Typ** | Datenbasierte Fallstudie mit **realen Abverkaufsdaten** (M5-Forecasting-Wettbewerb, Kaggle) |
+| **Gruppengröße** | 3–6 Personen |
+| **Ergebnis** | Präsentation (30 Min.) + Diskussion (15 Min.), Foliensatz (PDF) und reproduzierbarer R-/Quarto-Code |
+:::
+
+# Lernziele
+
+Nach Bearbeitung der Fallstudie können Sie
+
+- aus realen Transaktions- bzw. Abverkaufsdaten die für die Bestandsplanung relevanten Kenngrößen (Mittelwert, Standardabweichung, Prognosefehler, Korrelation) ableiten,
+- Sicherheitsbestände für dezentrale und zentrale Lagerstrukturen berechnen,
+- das **Quadratwurzelgesetz** empirisch überprüfen und Abweichungen durch Korrelationen erklären,
+- Standort-Pooling und Produkt-Pooling (Postponement, Variantenreduktion) unterscheiden und
+- den Pooling-Vorteil gegen zusätzliche Transport- und Lieferzeitkosten abwägen.
+
+# Ausgangslage
+
+Ein großer US-Einzelhändler beliefert seine Filialen in einigen Warengruppen heute **direkt vom Hersteller** (*Direct Store Delivery*). Jede Filiale disponiert dabei selbst und hält einen eigenen Sicherheitsbestand. Das Supply-Chain-Management prüft, ob sich eine Umstellung auf eine **zentrale Bevorratung** lohnt:
+
+- **Struktur I (Status quo):** 10 Filialen mit eigenem Sicherheitsbestand, Wiederbeschaffungszeit vom Hersteller $L = 2$ Wochen.
+- **Struktur II (regional):** Je Bundesstaat (Kalifornien, Texas, Wisconsin) ein Regionallager, das die Filialen täglich beliefert. Die Filialen halten nur noch einen Präsentations- und Zyklusbestand. Die Wiederbeschaffungszeit des Regionallagers beträgt 2 Wochen.
+- **Struktur III (national):** Ein nationales Zentrallager, Wiederbeschaffungszeit 2 Wochen, zuzüglich 1 Woche längerer Belieferungszeit zu den Filialen, die durch einen kleinen Filialsicherheitsbestand abgedeckt werden muss.
+
+Für die Analyse stehen die **realen täglichen Abverkäufe** von rund 3.000 Artikeln in 10 Walmart-Filialen über mehr als fünf Jahre zur Verfügung.
+
+# Daten
+
+## Datensatz
+
+Verwenden Sie den Datensatz des **M5 Forecasting Competition** (Makridakis et al. 2022), der auf Kaggle frei verfügbar ist (Anmeldung und Zustimmung zu den Wettbewerbsregeln erforderlich):
+
+<https://www.kaggle.com/competitions/m5-forecasting-accuracy/data>
+
+| Datei | Inhalt |
+|---|---|
+| `sales_train_evaluation.csv` | Tägliche Abverkaufsmengen je Artikel und Filiale (Spalten `d_1` … `d_1941`, 29.01.2011–22.05.2016), Hierarchie `item_id`, `dept_id`, `cat_id`, `store_id`, `state_id` |
+| `calendar.csv` | Zuordnung `d_x` → Datum, Wochentag, Walmart-Woche (`wm_yr_wk`), Feiertage/Events, SNAP-Tage |
+| `sell_prices.csv` | Verkaufspreis je Filiale, Artikel und Woche |
+
+Die 10 Filialen verteilen sich auf die Bundesstaaten Kalifornien (CA_1–CA_4), Texas (TX_1–TX_3) und Wisconsin (WI_1–WI_3). Es gibt drei Kategorien (FOODS, HOBBIES, HOUSEHOLD) mit insgesamt sieben Abteilungen.
+
+::: {.callout-important}
+## Hinweise zur Datenaufbereitung
+- Die Datei `sales_train_evaluation.csv` ist ca. 120 MB groß. Lesen Sie sie mit `readr::read_csv()` oder `data.table::fread()` und filtern Sie früh auf die benötigten Zeilen.
+- Viele Artikel haben **intermittierende Nachfrage** (viele Nulltage). Aggregieren Sie auf **Wochen** und wählen Sie für die Kernanalyse Artikel mit ausreichend Absatz aus (z. B. mittlerer Wochenabsatz ≥ 5 in jeder Filiale).
+- Einige Artikel werden erst später eingeführt. Nulltage vor dem ersten Verkauf sind keine Nachfrage von 0.
+- Beschränken Sie die Analyse auf einen konsistenten Zeitraum, z. B. die letzten 104 Wochen.
+:::
+
+## Planungsparameter
+
+| Parameter | Wert |
+|---|---|
+| Zielservicegrad (α-Servicegrad je Bestellzyklus) | 95 % (Sensitivität: 90 %, 99 %) |
+| Wiederbeschaffungszeit Hersteller → Filiale bzw. Lager | 2 Wochen |
+| Zusätzliche Belieferungszeit nationales Lager → Filiale | 1 Woche |
+| Lagerhaltungskostensatz | 25 % p. a. vom Warenwert (Warenwert = 70 % des Verkaufspreises) |
+| Zusätzliche Handling- und Transportkosten je Einheit | Regionallager: 0,04 USD, Zentrallager: 0,09 USD |
+| Fixkosten je Lager (anteilig für die betrachtete Abteilung) | Regionallager: 60.000 USD/a, Zentrallager: 110.000 USD/a |
+
+# Aufgaben
+
+## Teil A – Datenaufbereitung und Exploration
+
+**A1.** Wählen Sie **eine Abteilung** (z. B. `HOUSEHOLD_1` oder `FOODS_3`) und nach nachvollziehbaren Kriterien **mindestens 20 Artikel**. Aggregieren Sie die Abverkäufe auf Wochen je Artikel und Filiale und beschreiben Sie Niveau, Trend, Saisonalität und Variationskoeffizient.
+
+**A2.** Bestimmen Sie die Standardabweichung der **Prognosefehler** einer einfachen Prognose (z. B. gleitender Durchschnitt über 8 Wochen). Begründen Sie, warum für den Sicherheitsbestand der Prognosefehler und nicht die Rohstreuung maßgeblich ist.
+
+## Teil B – Standort-Pooling
+
+**B1.** Berechnen Sie je Artikel den Sicherheitsbestand $SB = z_\alpha\,\sigma\sqrt{L}$ in den Strukturen I, II und III, und zwar (a) unter der Annahme **unabhängiger** Filialnachfragen (Quadratwurzelgesetz, `pooling_safety_stock()`) und (b) mit der **empirischen Kovarianzmatrix** der Prognosefehler, $\sigma_{\text{pool}} = \sqrt{\mathbf 1^\top \Sigma\,\mathbf 1}$.
+
+**B2.** Vergleichen Sie (a) und (b). Stellen Sie die Korrelationen zwischen den Filialen als Heatmap dar und erklären Sie die Abweichung vom Quadratwurzelgesetz.
+
+**B3.** Rechnen Sie die Bestände mit den Preisen aus `sell_prices.csv` in Lagerhaltungskosten um und vergleichen Sie die Gesamtkosten (Bestand, Handling und Transport, Fixkosten) der drei Strukturen. Welche Struktur ist optimal, und bei welchem Zusatzkostensatz je Einheit kippt die Entscheidung?
+
+## Teil C – Produkt-Pooling
+
+**C1.** Vergleichen Sie auf Filialebene den Variationskoeffizienten der Prognosefehler je Artikel mit dem der aggregierten Nachfrage aller betrachteten Artikel. Übertragen Sie das Ergebnis auf ein **Postponement**-Szenario, in dem Varianten eines Grundprodukts erst im Regionallager differenziert werden. Welche Voraussetzungen und Kosten hat Postponement?
+
+## Teil D – Empfehlung und Reflexion
+
+**D1. Empfehlung.** Formulieren Sie eine Empfehlung an das SC-Management. Unterscheiden Sie dabei gegebenenfalls zwischen Schnell- und Langsamdrehern.
+
+**D2. Reflexion.** Beantworten Sie in der Präsentation die folgenden Fragen. Sie bilden den Ausgangspunkt der anschließenden Diskussion:
+
+1. Wie gut hat das Quadratwurzelgesetz die realen Daten beschrieben? Was lernen Sie daraus über die Anwendung von Lehrbuchformeln auf reale Daten?
+2. Welche Entscheidungen bei der Datenaufbereitung (Artikelauswahl, Zeitraum, Prognosemethode) haben das Ergebnis am stärksten beeinflusst? Wäre eine andere Gruppe zum selben Ergebnis gekommen?
+3. Welche Annahme verzerrt Ihr Ergebnis vermutlich am stärksten: Normalverteilung bei intermittierender Nachfrage, abgesetzte Menge als Nachfrage oder der Servicegrad je Artikel statt je Warenkorb? In welche Richtung?
+4. Warum zentralisieren viele Händler ihre Bestände trotz des Pooling-Vorteils nicht vollständig?
+5. Welche zusätzlichen Hindernisse begrenzen Pooling in internationalen Netzwerken, z. B. Zölle, lange Lieferzeiten oder länderspezifische Produktvarianten?
+
+# Literatur
+
+- Makridakis, S.; Spiliotis, E.; Assimakopoulos, V. (2022): M5 accuracy competition: Results, findings, and conclusions. *International Journal of Forecasting* 38(4), 1346–1364.
+- Eppen, G. D. (1979): Effects of Centralization on Expected Costs in a Multi-Location Newsboy Problem. *Management Science* 25(5), 498–501.
+- Reader zur Vorlesung, Kapitel 6.
+
+# Anhang: R-Startercode
+
+```{r}
+#| label: starter
+#| eval: false
+library(tidyverse)
+source("../R/scm_functions.R")   # pooling_safety_stock()
+
+sales <- read_csv("sales_train_evaluation.csv")
+cal   <- read_csv("calendar.csv")
+
+dept <- "HOUSEHOLD_1"
+wk <- sales |>
+  filter(dept_id == dept) |>
+  pivot_longer(starts_with("d_"), names_to = "d", values_to = "menge") |>
+  left_join(cal |> select(d, date, wm_yr_wk), by = "d") |>
+  group_by(item_id, store_id, state_id, wm_yr_wk) |>
+  summarise(menge = sum(menge), .groups = "drop")
+
+# Beispiel: Kovarianz der Wochenabsätze eines Artikels über die 10 Filialen
+m <- wk |>
+  filter(item_id == first(item_id)) |>
+  select(wm_yr_wk, store_id, menge) |>
+  pivot_wider(names_from = store_id, values_from = menge) |>
+  select(-wm_yr_wk) |> as.matrix()
+
+Sigma      <- cov(m)
+sigma_i    <- sqrt(diag(Sigma))
+z          <- qnorm(0.95); L <- 2
+SB_dezentral <- sum(z * sigma_i * sqrt(L))
+SB_zentral   <- z * sqrt(sum(Sigma)) * sqrt(L)   # 1' Sigma 1
+c(SB_dezentral = SB_dezentral, SB_zentral = SB_zentral)
+```
