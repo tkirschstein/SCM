@@ -4,8 +4,8 @@ author: "Prof. Dr. Thomas Kirschstein"
 
 format:
   revealjs:
-    logo: "../images/hsrm-logo.png"
-    css: "../styles.css"
+    logo: "images/hsrm-logo.png"
+    css: "styles.css"
     slide-number: true
     footer: "Supply Chain Management"
     chalkboard: true
