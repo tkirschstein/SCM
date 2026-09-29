@@ -276,6 +276,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <section id="vorwort" class="level1 unnumbered">
 <h1 class="unnumbered">Vorwort</h1>
 <p>Dieses Lehrbuch begleitet die Vorlesung <strong>Supply Chain Management (SCM)</strong> und vertieft die Inhalte der Vorlesungsfolien (<code>slides/</code>) in ausführlicher, textbasierter Form. Es ist als <strong>Reader zum Selbststudium</strong> gedacht: Während die Folien in der Vorlesung als visuelle Gedächtnisstütze dienen, erläutert dieses Buch dieselben Modelle, Verfahren und Fallbeispiele in vollständigen Sätzen, mit hergeleiteten Formeln und lauffähigem, kommentiertem R-Code.</p>
+<p><strong>Dieser Reader ist primär KI-generiert und bedarf der weiteren Korrektur. Etwaige Fehler können an thomas.kirschstein@hs-rm.de gemeldet werden.</strong></p>
 <section id="aufbau-des-buches" class="level2">
 <h2 class="anchored" data-anchor-id="aufbau-des-buches">Aufbau des Buches</h2>
 <p>Die Kapitel folgen den Vorlesungseinheiten, die sich in drei Blöcke gliedern: <strong>Grundlagen des Supply Chain Managements</strong>, <strong>strategische Gestaltung von Supply Chains</strong> und <strong>Unsicherheits- und Risikomanagement in Supply Chains</strong>.</p>
@@ -331,7 +332,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <blockquote class="blockquote">
 <p>Chopra, S., &amp; Meindl, P. <em>Supply Chain Management: Strategy, Planning, and Operation</em>. Pearson.</p>
 </blockquote>
-<p>Ergänzend werden im Text u. a. herangezogen: Eßig, Hofmann &amp; Stölzle, Günther &amp; Tempelmeier, Werner sowie Christopher (vollständige Angaben siehe <a href="./references.html">Literaturverzeichnis</a>).</p>
+<p>Ergänzend werden im Text u. a. herangezogen: Thonemann, Günther &amp; Tempelmeier sowie Cachon &amp; Terwich (vollständige Angaben siehe <a href="./references.html">Literaturverzeichnis</a>).</p>
 
 
 <!-- -->
@@ -804,64 +805,66 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>Dieses Lehrbuch begleitet die Vorlesung **Supply Chain Management (SCM)** und vertieft die Inhalte der Vorlesungsfolien (`slides/`) in ausführlicher, textbasierter Form. Es ist als **Reader zum Selbststudium** gedacht: Während die Folien in der Vorlesung als visuelle Gedächtnisstütze dienen, erläutert dieses Buch dieselben Modelle, Verfahren und Fallbeispiele in vollständigen Sätzen, mit hergeleiteten Formeln und lauffähigem, kommentiertem R-Code.</span>
 <span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a><span class="fu">## Aufbau des Buches</span></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>**Dieser Reader ist primär KI-generiert und bedarf der weiteren Korrektur. Etwaige Fehler können an thomas.kirschstein@hs-rm.de gemeldet werden.**</span>
 <span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>Die Kapitel folgen den Vorlesungseinheiten, die sich in drei Blöcke gliedern: **Grundlagen des Supply Chain Managements**, **strategische Gestaltung von Supply Chains** und **Unsicherheits- und Risikomanagement in Supply Chains**.</span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a><span class="fu">## Aufbau des Buches</span></span>
 <span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a><span class="ss">1. </span>**Einführung und Grundbegriffe des Supply Chain Managements** — Was ist eine Supply Chain? Flüsse, Akteure, Strukturen, SCM-Gewinn und doppelte Marginalisierung.</span>
-<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a><span class="ss">2. </span>**Wertschöpfung, strategische Fertigung und Strategic Fit** — Wertschöpfungsprozess, Entkopplungspunkt, Make-or-Buy, implizierte Unsicherheit, Strategic Fit.</span>
-<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a><span class="ss">3. </span>**Ziele, Zielkonflikte und Logistikkosten** — Zielsystem des SCM, das Tetraeder der Zielkonflikte, Kostenarten sowie die Einführung der Fallstudie **SushiFresh GmbH**.</span>
-<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a><span class="ss">4. </span>**Nachhaltigkeit im Supply Chain Management** — Vertiefung der Nachhaltigkeitsinhalte aus Einheit 3: ökologischer Strategic Fit, ökologische SCM-Strategien, Kreislaufwirtschaft und Circular Supply Chains.</span>
-<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a><span class="ss">5. </span>**Standortplanung I** — Qualitative Verfahren (Nutzwertanalyse, AHP) und kontinuierliche Verfahren (Center of Gravity, Weiszfeld-Algorithmus).</span>
-<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a><span class="ss">6. </span>**Standortplanung II** — Diskrete Netzwerkplanungsmodelle: Transportproblem, Warehouse-Location-Problem, Heuristiken und exakte Verfahren.</span>
-<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a><span class="ss">7. </span>**Unsicherheit in Supply Chains und Pooling** — Nachfrageunsicherheit, Kapazitäts- und Lagerbestandspooling, Sicherheitsbestände, das Quadratwurzelgesetz des Pooling.</span>
-<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a><span class="ss">8. </span>**Das Newsvendor-Modell** — Optimale Bestellmengen unter Unsicherheit, kritische Verhältniszahl, Servicegrad.</span>
-<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a><span class="ss">9. </span>**Der Bullwhip-Effekt und das Beergame** — Verstärkung von Nachfrageschwankungen entlang der Kette, Ursachen und Gegenmaßnahmen.</span>
-<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-19"><a href="#cb2-19" aria-hidden="true" tabindex="-1"></a>Ab Kapitel <span class="co">[</span><span class="ot">-@sec-logistikkosten</span><span class="co">]</span> begleitet ein durchgängiges Fallbeispiel den Reader: Die fiktive **SushiFresh GmbH** produziert frische Sushi-Boxen für Supermärkte im Rhein-Main-Gebiet. An ihr werden – wie in der Vorlesung – Standortwahl, Netzwerkdesign, Sicherheitsbestände, Produktionsmengen und der Bullwhip-Effekt durchgerechnet.</span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>Die Kapitel folgen den Vorlesungseinheiten, die sich in drei Blöcke gliedern: **Grundlagen des Supply Chain Managements**, **strategische Gestaltung von Supply Chains** und **Unsicherheits- und Risikomanagement in Supply Chains**.</span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a><span class="ss">1. </span>**Einführung und Grundbegriffe des Supply Chain Managements** — Was ist eine Supply Chain? Flüsse, Akteure, Strukturen, SCM-Gewinn und doppelte Marginalisierung.</span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a><span class="ss">2. </span>**Wertschöpfung, strategische Fertigung und Strategic Fit** — Wertschöpfungsprozess, Entkopplungspunkt, Make-or-Buy, implizierte Unsicherheit, Strategic Fit.</span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a><span class="ss">3. </span>**Ziele, Zielkonflikte und Logistikkosten** — Zielsystem des SCM, das Tetraeder der Zielkonflikte, Kostenarten sowie die Einführung der Fallstudie **SushiFresh GmbH**.</span>
+<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a><span class="ss">4. </span>**Nachhaltigkeit im Supply Chain Management** — Vertiefung der Nachhaltigkeitsinhalte aus Einheit 3: ökologischer Strategic Fit, ökologische SCM-Strategien, Kreislaufwirtschaft und Circular Supply Chains.</span>
+<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a><span class="ss">5. </span>**Standortplanung I** — Qualitative Verfahren (Nutzwertanalyse, AHP) und kontinuierliche Verfahren (Center of Gravity, Weiszfeld-Algorithmus).</span>
+<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a><span class="ss">6. </span>**Standortplanung II** — Diskrete Netzwerkplanungsmodelle: Transportproblem, Warehouse-Location-Problem, Heuristiken und exakte Verfahren.</span>
+<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a><span class="ss">7. </span>**Unsicherheit in Supply Chains und Pooling** — Nachfrageunsicherheit, Kapazitäts- und Lagerbestandspooling, Sicherheitsbestände, das Quadratwurzelgesetz des Pooling.</span>
+<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a><span class="ss">8. </span>**Das Newsvendor-Modell** — Optimale Bestellmengen unter Unsicherheit, kritische Verhältniszahl, Servicegrad.</span>
+<span id="cb2-19"><a href="#cb2-19" aria-hidden="true" tabindex="-1"></a><span class="ss">9. </span>**Der Bullwhip-Effekt und das Beergame** — Verstärkung von Nachfrageschwankungen entlang der Kette, Ursachen und Gegenmaßnahmen.</span>
 <span id="cb2-20"><a href="#cb2-20" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-21"><a href="#cb2-21" aria-hidden="true" tabindex="-1"></a>Jedes Kapitel folgt derselben Struktur:</span>
+<span id="cb2-21"><a href="#cb2-21" aria-hidden="true" tabindex="-1"></a>Ab Kapitel <span class="co">[</span><span class="ot">-@sec-logistikkosten</span><span class="co">]</span> begleitet ein durchgängiges Fallbeispiel den Reader: Die fiktive **SushiFresh GmbH** produziert frische Sushi-Boxen für Supermärkte im Rhein-Main-Gebiet. An ihr werden – wie in der Vorlesung – Standortwahl, Netzwerkdesign, Sicherheitsbestände, Produktionsmengen und der Bullwhip-Effekt durchgerechnet.</span>
 <span id="cb2-22"><a href="#cb2-22" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-23"><a href="#cb2-23" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Lernziele** zu Beginn, damit klar ist, welche Kompetenzen erworben werden sollen.</span>
-<span id="cb2-24"><a href="#cb2-24" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Konzeptionelle Erläuterungen** mit Beispielen aus der Praxis.</span>
-<span id="cb2-25"><a href="#cb2-25" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Theorie-Vertiefungen** (violett hinterlegt), die theoretische Hintergründe, Herleitungen und Bezüge zur Fachliteratur ausführlicher darstellen als die Folien.</span>
-<span id="cb2-26"><a href="#cb2-26" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Fallstudien-Boxen** (gelb hinterlegt) zur SushiFresh GmbH.</span>
-<span id="cb2-27"><a href="#cb2-27" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Mathematische Herleitungen** in nachvollziehbaren Schritten.</span>
-<span id="cb2-28"><a href="#cb2-28" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Kommentierter R-Code**, der die Modelle direkt berechnet und visualisiert — jeder Code-Block ist lauffähig und so kommentiert, dass auch Studierende ohne Vorerfahrung in R den Ablauf nachvollziehen können. Neben den fachlichen Inhalten werden dabei grundlegende R-Konzepte (Vektoren, Funktionen, Datenrahmen, das <span class="in">`tidyverse`</span>, Pipes <span class="in">`|&gt;`</span>, Visualisierung mit <span class="in">`ggplot2`</span>) Schritt für Schritt eingeführt.</span>
-<span id="cb2-29"><a href="#cb2-29" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Kontrollfragen** am Kapitelende zur Selbstüberprüfung.</span>
-<span id="cb2-30"><a href="#cb2-30" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-31"><a href="#cb2-31" aria-hidden="true" tabindex="-1"></a><span class="fu">## Voraussetzungen</span></span>
+<span id="cb2-23"><a href="#cb2-23" aria-hidden="true" tabindex="-1"></a>Jedes Kapitel folgt derselben Struktur:</span>
+<span id="cb2-24"><a href="#cb2-24" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-25"><a href="#cb2-25" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Lernziele** zu Beginn, damit klar ist, welche Kompetenzen erworben werden sollen.</span>
+<span id="cb2-26"><a href="#cb2-26" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Konzeptionelle Erläuterungen** mit Beispielen aus der Praxis.</span>
+<span id="cb2-27"><a href="#cb2-27" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Theorie-Vertiefungen** (violett hinterlegt), die theoretische Hintergründe, Herleitungen und Bezüge zur Fachliteratur ausführlicher darstellen als die Folien.</span>
+<span id="cb2-28"><a href="#cb2-28" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Fallstudien-Boxen** (gelb hinterlegt) zur SushiFresh GmbH.</span>
+<span id="cb2-29"><a href="#cb2-29" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Mathematische Herleitungen** in nachvollziehbaren Schritten.</span>
+<span id="cb2-30"><a href="#cb2-30" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Kommentierter R-Code**, der die Modelle direkt berechnet und visualisiert — jeder Code-Block ist lauffähig und so kommentiert, dass auch Studierende ohne Vorerfahrung in R den Ablauf nachvollziehen können. Neben den fachlichen Inhalten werden dabei grundlegende R-Konzepte (Vektoren, Funktionen, Datenrahmen, das <span class="in">`tidyverse`</span>, Pipes <span class="in">`|&gt;`</span>, Visualisierung mit <span class="in">`ggplot2`</span>) Schritt für Schritt eingeführt.</span>
+<span id="cb2-31"><a href="#cb2-31" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Kontrollfragen** am Kapitelende zur Selbstüberprüfung.</span>
 <span id="cb2-32"><a href="#cb2-32" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-33"><a href="#cb2-33" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Grundlagen der linearen Algebra und Wahrscheinlichkeitsrechnung.</span>
-<span id="cb2-34"><a href="#cb2-34" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Keine R-Vorkenntnisse notwendig — die Grundlagen werden im Buch eingeführt.</span>
-<span id="cb2-35"><a href="#cb2-35" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Grundlagen der Mikroökonomie sind hilfreich, aber nicht zwingend erforderlich.</span>
-<span id="cb2-36"><a href="#cb2-36" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-37"><a href="#cb2-37" aria-hidden="true" tabindex="-1"></a><span class="fu">## Software</span></span>
+<span id="cb2-33"><a href="#cb2-33" aria-hidden="true" tabindex="-1"></a><span class="fu">## Voraussetzungen</span></span>
+<span id="cb2-34"><a href="#cb2-34" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-35"><a href="#cb2-35" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Grundlagen der linearen Algebra und Wahrscheinlichkeitsrechnung.</span>
+<span id="cb2-36"><a href="#cb2-36" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Keine R-Vorkenntnisse notwendig — die Grundlagen werden im Buch eingeführt.</span>
+<span id="cb2-37"><a href="#cb2-37" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Grundlagen der Mikroökonomie sind hilfreich, aber nicht zwingend erforderlich.</span>
 <span id="cb2-38"><a href="#cb2-38" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-39"><a href="#cb2-39" aria-hidden="true" tabindex="-1"></a>Der gesamte R-Code dieses Buches verwendet die folgenden Pakete:</span>
+<span id="cb2-39"><a href="#cb2-39" aria-hidden="true" tabindex="-1"></a><span class="fu">## Software</span></span>
 <span id="cb2-40"><a href="#cb2-40" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-41"><a href="#cb2-41" aria-hidden="true" tabindex="-1"></a><span class="in">```r</span></span>
-<span id="cb2-42"><a href="#cb2-42" aria-hidden="true" tabindex="-1"></a><span class="fu">install.packages</span>(<span class="fu">c</span>(</span>
-<span id="cb2-43"><a href="#cb2-43" aria-hidden="true" tabindex="-1"></a>  <span class="st">"tidyverse"</span>,       <span class="co"># Datenmanipulation (dplyr, tidyr) und Visualisierung (ggplot2)</span></span>
-<span id="cb2-44"><a href="#cb2-44" aria-hidden="true" tabindex="-1"></a>  <span class="st">"plotly"</span>,          <span class="co"># interaktive Grafiken</span></span>
-<span id="cb2-45"><a href="#cb2-45" aria-hidden="true" tabindex="-1"></a>  <span class="st">"knitr"</span>,           <span class="co"># Einbettung von R-Code in Quarto-Dokumente</span></span>
-<span id="cb2-46"><a href="#cb2-46" aria-hidden="true" tabindex="-1"></a>  <span class="st">"kableExtra"</span>,      <span class="co"># formatierte Tabellen</span></span>
-<span id="cb2-47"><a href="#cb2-47" aria-hidden="true" tabindex="-1"></a>  <span class="st">"sf"</span>,              <span class="co"># Verarbeitung von Geodaten</span></span>
-<span id="cb2-48"><a href="#cb2-48" aria-hidden="true" tabindex="-1"></a>  <span class="st">"leaflet"</span>,         <span class="co"># interaktive Karten</span></span>
-<span id="cb2-49"><a href="#cb2-49" aria-hidden="true" tabindex="-1"></a>  <span class="st">"ompr"</span>, <span class="st">"ompr.roi"</span>, <span class="st">"ROI.plugin.glpk"</span>,  <span class="co"># algebraische Optimierungsmodelle (MILP)</span></span>
-<span id="cb2-50"><a href="#cb2-50" aria-hidden="true" tabindex="-1"></a>  <span class="st">"scales"</span>           <span class="co"># Achsen- und Zahlenformatierung in ggplot2</span></span>
-<span id="cb2-51"><a href="#cb2-51" aria-hidden="true" tabindex="-1"></a>))</span>
-<span id="cb2-52"><a href="#cb2-52" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb2-53"><a href="#cb2-53" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-54"><a href="#cb2-54" aria-hidden="true" tabindex="-1"></a>Alle Beispielfunktionen (z. B. für Center of Gravity, das Newsvendor-Modell oder die Add-/Drop-Heuristik) sind zusätzlich in <span class="in">`R/scm_functions.R`</span> gebündelt und werden im Buch an den passenden Stellen referenziert.</span>
+<span id="cb2-41"><a href="#cb2-41" aria-hidden="true" tabindex="-1"></a>Der gesamte R-Code dieses Buches verwendet die folgenden Pakete:</span>
+<span id="cb2-42"><a href="#cb2-42" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-43"><a href="#cb2-43" aria-hidden="true" tabindex="-1"></a><span class="in">```r</span></span>
+<span id="cb2-44"><a href="#cb2-44" aria-hidden="true" tabindex="-1"></a><span class="fu">install.packages</span>(<span class="fu">c</span>(</span>
+<span id="cb2-45"><a href="#cb2-45" aria-hidden="true" tabindex="-1"></a>  <span class="st">"tidyverse"</span>,       <span class="co"># Datenmanipulation (dplyr, tidyr) und Visualisierung (ggplot2)</span></span>
+<span id="cb2-46"><a href="#cb2-46" aria-hidden="true" tabindex="-1"></a>  <span class="st">"plotly"</span>,          <span class="co"># interaktive Grafiken</span></span>
+<span id="cb2-47"><a href="#cb2-47" aria-hidden="true" tabindex="-1"></a>  <span class="st">"knitr"</span>,           <span class="co"># Einbettung von R-Code in Quarto-Dokumente</span></span>
+<span id="cb2-48"><a href="#cb2-48" aria-hidden="true" tabindex="-1"></a>  <span class="st">"kableExtra"</span>,      <span class="co"># formatierte Tabellen</span></span>
+<span id="cb2-49"><a href="#cb2-49" aria-hidden="true" tabindex="-1"></a>  <span class="st">"sf"</span>,              <span class="co"># Verarbeitung von Geodaten</span></span>
+<span id="cb2-50"><a href="#cb2-50" aria-hidden="true" tabindex="-1"></a>  <span class="st">"leaflet"</span>,         <span class="co"># interaktive Karten</span></span>
+<span id="cb2-51"><a href="#cb2-51" aria-hidden="true" tabindex="-1"></a>  <span class="st">"ompr"</span>, <span class="st">"ompr.roi"</span>, <span class="st">"ROI.plugin.glpk"</span>,  <span class="co"># algebraische Optimierungsmodelle (MILP)</span></span>
+<span id="cb2-52"><a href="#cb2-52" aria-hidden="true" tabindex="-1"></a>  <span class="st">"scales"</span>           <span class="co"># Achsen- und Zahlenformatierung in ggplot2</span></span>
+<span id="cb2-53"><a href="#cb2-53" aria-hidden="true" tabindex="-1"></a>))</span>
+<span id="cb2-54"><a href="#cb2-54" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
 <span id="cb2-55"><a href="#cb2-55" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-56"><a href="#cb2-56" aria-hidden="true" tabindex="-1"></a><span class="fu">## Literaturempfehlungen</span></span>
+<span id="cb2-56"><a href="#cb2-56" aria-hidden="true" tabindex="-1"></a>Alle Beispielfunktionen (z. B. für Center of Gravity, das Newsvendor-Modell oder die Add-/Drop-Heuristik) sind zusätzlich in <span class="in">`R/scm_functions.R`</span> gebündelt und werden im Buch an den passenden Stellen referenziert.</span>
 <span id="cb2-57"><a href="#cb2-57" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-58"><a href="#cb2-58" aria-hidden="true" tabindex="-1"></a>Als Hauptlehrbuch dient:</span>
+<span id="cb2-58"><a href="#cb2-58" aria-hidden="true" tabindex="-1"></a><span class="fu">## Literaturempfehlungen</span></span>
 <span id="cb2-59"><a href="#cb2-59" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-60"><a href="#cb2-60" aria-hidden="true" tabindex="-1"></a><span class="at">&gt; Chopra, S., &amp; Meindl, P. *Supply Chain Management: Strategy, Planning, and Operation*. Pearson.</span></span>
+<span id="cb2-60"><a href="#cb2-60" aria-hidden="true" tabindex="-1"></a>Als Hauptlehrbuch dient:</span>
 <span id="cb2-61"><a href="#cb2-61" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-62"><a href="#cb2-62" aria-hidden="true" tabindex="-1"></a>Ergänzend werden im Text u. a. herangezogen: Eßig, Hofmann &amp; Stölzle, Günther &amp; Tempelmeier, Werner sowie Christopher (vollständige Angaben siehe <span class="co">[</span><span class="ot">Literaturverzeichnis</span><span class="co">](references.qmd)</span>).</span></code></pre></div><button title="In die Zwischenablage kopieren" class="code-copy-button" data-in-quarto-modal=""><i class="bi"></i></button></div>
+<span id="cb2-62"><a href="#cb2-62" aria-hidden="true" tabindex="-1"></a><span class="at">&gt; Chopra, S., &amp; Meindl, P. *Supply Chain Management: Strategy, Planning, and Operation*. Pearson.</span></span>
+<span id="cb2-63"><a href="#cb2-63" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-64"><a href="#cb2-64" aria-hidden="true" tabindex="-1"></a>Ergänzend werden im Text u. a. herangezogen: Thonemann, Günther &amp; Tempelmeier  sowie Cachon &amp; Terwich (vollständige Angaben siehe <span class="co">[</span><span class="ot">Literaturverzeichnis</span><span class="co">](references.qmd)</span>).</span></code></pre></div><button title="In die Zwischenablage kopieren" class="code-copy-button" data-in-quarto-modal=""><i class="bi"></i></button></div>
 </div></div></div></div></div>
 </div> <!-- /content -->
 <footer class="footer">

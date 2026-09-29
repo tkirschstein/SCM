@@ -4,7 +4,7 @@
     "href": "index.html",
     "title": "Supply Chain Management",
     "section": "",
-    "text": "Vorwort\nDieses Lehrbuch begleitet die Vorlesung Supply Chain Management (SCM) und vertieft die Inhalte der Vorlesungsfolien (slides/) in ausführlicher, textbasierter Form. Es ist als Reader zum Selbststudium gedacht: Während die Folien in der Vorlesung als visuelle Gedächtnisstütze dienen, erläutert dieses Buch dieselben Modelle, Verfahren und Fallbeispiele in vollständigen Sätzen, mit hergeleiteten Formeln und lauffähigem, kommentiertem R-Code.",
+    "text": "Vorwort\nDieses Lehrbuch begleitet die Vorlesung Supply Chain Management (SCM) und vertieft die Inhalte der Vorlesungsfolien (slides/) in ausführlicher, textbasierter Form. Es ist als Reader zum Selbststudium gedacht: Während die Folien in der Vorlesung als visuelle Gedächtnisstütze dienen, erläutert dieses Buch dieselben Modelle, Verfahren und Fallbeispiele in vollständigen Sätzen, mit hergeleiteten Formeln und lauffähigem, kommentiertem R-Code.\nDieser Reader ist primär KI-generiert und bedarf der weiteren Korrektur. Etwaige Fehler können an thomas.kirschstein@hs-rm.de gemeldet werden.",
     "crumbs": [
       "Vorwort"
     ]
@@ -44,7 +44,7 @@
     "href": "index.html#literaturempfehlungen",
     "title": "Supply Chain Management",
     "section": "Literaturempfehlungen",
-    "text": "Literaturempfehlungen\nAls Hauptlehrbuch dient:\n\nChopra, S., & Meindl, P. Supply Chain Management: Strategy, Planning, and Operation. Pearson.\n\nErgänzend werden im Text u. a. herangezogen: Eßig, Hofmann & Stölzle, Günther & Tempelmeier, Werner sowie Christopher (vollständige Angaben siehe Literaturverzeichnis).",
+    "text": "Literaturempfehlungen\nAls Hauptlehrbuch dient:\n\nChopra, S., & Meindl, P. Supply Chain Management: Strategy, Planning, and Operation. Pearson.\n\nErgänzend werden im Text u. a. herangezogen: Thonemann, Günther & Tempelmeier sowie Cachon & Terwich (vollständige Angaben siehe Literaturverzeichnis).",
     "crumbs": [
       "Vorwort"
     ]
