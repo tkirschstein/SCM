@@ -39,22 +39,22 @@ Jede Veranstaltung umfasst 90 Minuten. Das jeweilige Reader-Kapitel ist **vor** 
 
 | Nr. | Datum | Input (Reader-Kapitel) | Fallstudien |
 |:--:|---|---|---|
-| 1 | Do, 29.10.2026 | Kick-off und Organisation; Einführung und Grundbegriffe des SCM (Kap. 1) | Ausgabe aller Fallstudien, Gruppenbildung |
-| 2 | Do, 05.11.2026 | Wertschöpfung, strategische Fertigung und Strategic Fit (Kap. 2) | Kick-off-Gespräche mit den Gruppen (Sprechstunde) |
-| 3 | Do, 12.11.2026 | Ziele, Zielkonflikte und Logistikkosten (Kap. 3); Nachhaltigkeit im SCM (Kap. 9, Selbststudium) | |
-| 4 | Do, 19.11.2026 | Standortplanung I: Nutzwertanalyse, AHP, Steiner-Weber (Kap. 4) | **FS 1: Strategische Gestaltung – Werner & Mertz / Frosch** |
-| 5 | Do, 26.11.2026 | Standortplanung II: diskrete Netzwerkplanung, WLP (Kap. 5) | |
-| 6 | Do, 03.12.2026 | Unsicherheit in Supply Chains: Pooling (Kap. 6) | **FS 2: Distributionshub LATAM – AHP und Steiner-Weber** |
-| 7 | Do, 10.12.2026 | Das Newsvendor-Modell (Kap. 7) | **FS 3: Batterielogistik – WLP** |
-| 8 | Do, 17.12.2026 | Der Bullwhip-Effekt (Kap. 8) und **Beer Game** | |
+| 1 | Do, 29.10.2026 | Kick-off und Organisation; Einführung und Grundbegriffe des SCM (Kap. 1) | Ausgabe aller Fallstudien & Beergame (1) |
+| 2 | Do, 05.11.2026 | Wertschöpfung, strategische Fertigung und Strategic Fit (Kap. 2) | Kick-off-Gespräche mit den Gruppen  |
+| 3 | Do, 12.11.2026 | Ziele, Zielkonflikte und Logistikkosten (Kap. 3) | Konsultation |
+| 4 | Do, 19.11.2026 | Standortplanung I: Nutzwertanalyse, AHP, Steiner-Weber (Kap. 4) | Konsultation  |
+| 5 | Do, 26.11.2026 | Standortplanung II: diskrete Netzwerkplanung, WLP (Kap. 5) |Konsultation |
+| 6 | Do, 03.12.2026 | Unsicherheit in Supply Chains: Pooling (Kap. 6) |Konsultation  |
+| 7 | Do, 10.12.2026 | Das Newsvendor-Modell (Kap. 7) | **FS 1: Strategische Gestaltung – Werner & Mertz / Frosch** |
+| 8 | Do, 17.12.2026 | Der Bullwhip-Effekt (Kap. 8) und **Beer Game** |  Beergame (2)|
 | – | Do, 24.12.2026 | *keine Veranstaltung* | |
 | – | Do, 31.12.2026 | *keine Veranstaltung* | |
-| 9 | Do, 07.01.2027 | Zwischenreflexion: Methoden im Vergleich | **FS 4: Risk Pooling im E-Commerce (Olist-Daten)** |
-| 10 | Do, 14.01.2027 | Vertiefung / Puffer | **FS 5: Newsvendor – französische Bäckerei** |
-| 11 | Do, 21.01.2027 | Vertiefung / Puffer | **FS 6: Bullwhip-Effekt – MTIS-Daten und Simulation** |
-| 12 | Do, 28.01.2027 | Synthese über alle Fallstudien (SushiFresh als Gesamtfall); Reflexionswerkstatt | |
+| 9 | Do, 07.01.2027 | **FS 2: Distributionshub LATAM – AHP und Steiner-Weber** | **FS 3: Batterielogistik – WLP** |
+| 10 | Do, 14.01.2027 | Zwischenfeedback Case Studies 1-3  | Konsultationen  |
+| 11 | Do, 21.01.2027 | **FS 4: Risk Pooling im E-Commerce (Olist-Daten)** | **FS 5: Newsvendor – französische Bäckerei** |
+| 12 | Do, 28.01.2027 | **FS 6: Bullwhip-Effekt – MTIS-Daten und Simulation** | (Beergame (3)) |
 
-Die Fallstudien werden jeweils zwei bis drei Wochen nach dem zugehörigen Input präsentiert. Die Gruppen mit späteren Präsentationsterminen beginnen mit Datenbeschaffung und -aufbereitung bereits vor dem Input. Die Weihnachtspause verschafft den Gruppen 4–6 zusätzliche Bearbeitungszeit. Das Beer Game am 17.12. liefert die Spieldaten für Fallstudie 6.
+Die Fallstudien werden jeweils zwei bis drei Wochen nach dem zugehörigen Input präsentiert. Die Gruppen mit späteren Präsentationsterminen beginnen mit Datenbeschaffung und -aufbereitung bereits vor dem Input. Die Weihnachtspause verschafft den Gruppen 2–6 zusätzliche Bearbeitungszeit. Das Beer Game wird dreimal während der Veranstaltung gespielt und liefert ergänzende Daten für Fallstudie 6.
 
 ---
 
@@ -73,29 +73,42 @@ Die sechs Fallstudien werden in Gruppen von **3–6 Personen** bearbeitet; jede 
 
 **Ablauf je Gruppe:**
 
-1. Kick-off-Gespräch in der Sprechstunde (Datenzugang, Arbeitsplan),
+1. Kick-off-Gespräch & Konsultationen zu den Veranstaltungsterminen,
 2. Zwischenstand etwa eine Woche vor der Präsentation,
 3. Präsentation (30 Min.) mit Beantwortung der Reflexionsfragen und Diskussion (15 Min.),
 4. Abgabe von Foliensatz (PDF) und – bei den datenbasierten Fallstudien – reproduzierbarem Quarto-/R-Code bis 24 Stunden vor dem Termin.
 
-Jede Fallstudie endet mit **Reflexionsfragen**, die die Gruppe in der Präsentation beantwortet und die die anschließende Diskussion eröffnen.
+Jede Fallstudie endet mit **Reflexionsfragen**, die die Gruppe in der Präsentation beantwortet und die die anschließende Diskussion eröffnen. Die Diskussion wird von einer anderen Gruppe moderiert.
 
 ---
 
 ## Prüfungsleistung: Reflexionsbericht
 
-Die Prüfungsleistung ist ein **individueller Reflexionsbericht**. Die Fallstudienpräsentationen und die anschließenden Diskussionen sind seine Grundlage.
+Die Prüfungsleistung ist ein **individueller Reflexionsbericht**. Die Fallstudienpräsentationen und die anschließenden Diskussionen sind seine Grundlage. Die **aktive Teilnahme an den Diskussionen** ist Teil der Reflexion und geht in die **Benotung ein**. Insgesamt umfasst die Reflektion:
 
-- **Reflexionsjournal (begleitend, unbenotet):** Zu jeder Fallstudienpräsentation halten alle Teilnehmenden etwa eine Seite fest: Kernaussage, Annahmen und Grenzen der Methode, Bezug zur eigenen Erfahrung bzw. zu einem bekannten Unternehmen, offene Fragen.
-- **Reflexionsbericht:** Er umfasst drei Teile:
-  1. Reflexion der eigenen Fallstudie (Methodenanwendung, Grenzen, Zusammenarbeit im Team),
-  2. fallübergreifende Reflexion mindestens dreier weiterer Fallstudien auf Basis des Journals und des Readers,
-  3. Transfer auf den Kontext des International Managements.
+- **Reflexionsjournal (begleitend):** Zu jeder Fallstudienpräsentation halten alle Teilnehmenden etwa eine Seite fest: Kernaussage, Annahmen und Grenzen der Methode, Bezug zur eigenen Erfahrung bzw. zu einem bekannten Unternehmen, offene Fragen.
+- **Reflexionsbericht:** Er umfasst zwei Teile:
+  1. Präsentation der eigenen Fallstudie,
+  2. Zusammenfassung der Reflektionsfragen & Diskussionsergbnisse,
 - Umfang, Abgabetermin und Bewertungskriterien werden in der ersten Veranstaltung bekannt gegeben.
 
 ---
 
-## Aufbau des Repositorys
+## Direkter Zugriff auf die Ressourcen
+
+- Slides: https://tkirschstein.github.io/SCM/slides/scm-komplett.html
+- Reader: https://tkirschstein.github.io/SCM/book/index
+- Case-Studies: 
+  - https://tkirschstein.github.io/SCM/case_studies/case_study_01_strategie_frosch
+  - https://tkirschstein.github.io/SCM/case_studies/case_study_02_standort_ahp_steiner_weber
+  - https://tkirschstein.github.io/SCM/case_studies/case_study_03_wlp_batterielogistik
+  - https://tkirschstein.github.io/SCM/case_studies/case_study_04_pooling_einzelhandel
+  - https://tkirschstein.github.io/SCM/case_studies/case_study_05_newsvendor_baeckerei
+  - https://tkirschstein.github.io/SCM/case_studies/case_study_06_bullwhip
+
+---
+
+## Aufbau des Repositories
 
 ```
 SCM/
@@ -109,12 +122,8 @@ SCM/
 │   └── _quarto.yml
 ├── case_studies/            # 6 Fallstudien → docs/case_studies
 │   └── _quarto.yml
-├── exercises/               # Übungsaufgaben mit R-Lösungen
-├── data/                    # Datensätze für Übungen und Fallstudien
-├── literature/              # Bibliografie (!references.bib)
 ├── R/
 │   └── scm_functions.R      # R-Funktionsbibliothek des Kurses (roxygen2-dokumentiert)
-├── _extensions/             # Quarto-Theme für die Folien
 └── docs/                    # gerenderte Ausgabe (HTML)
 ```
 
@@ -186,4 +195,4 @@ Weitere Quellen sind im Reader und in den Fallstudien angegeben (`literature/!re
 
 Prof. Dr. Thomas Kirschstein – thomas.kirschstein@hs-rm.de
 
-Fehler und Verbesserungsvorschläge bitte als GitHub-Issue melden (mit Dateiname und Zeilennummer).
+Fehler und Verbesserungsvorschläge bitte als GitHub-Issue melden oder an thomas.kirschstein@hs-rm.de.

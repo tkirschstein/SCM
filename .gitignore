@@ -1,30 +1,40 @@
-# R
+# R / RStudio
 .Rhistory
 .RData
 .Rproj.user/
 *.Rproj
 
-# Quarto
-/.quarto/
-/_site/
-/literature/
+# Editor / KI-Werkzeuge
+.claude/
+
+# Quarto: Caches (gilt für alle Unterordner)
+.quarto/
+_freeze/
+*_cache/
+**/*.quarto_ipynb
+
+# Nicht veröffentlichte Ordner
+/literature/*
+!/literature/\!references.bib
 /data/
+/_extensions/
+/slides/_archiv_images/
 
-# OS
-.DS_Store
-Thumbs.db
-
-# Temp
-*~
-*.swp
-*.log
-
-# Rendered outputs (generated, not tracked)
+# Gerenderte Ausgaben außerhalb von docs/
+/_site/
 book/_book/
 slides/**/*_files/
-slides/**/*_cache/
 slides/**/*.html
 exercises/*.html
 case_studies/*.html
 
-**/*.quarto_ipynb
+# Nicht webfähige Grafikformate
+*.emf
+*.wmf
+
+# Betriebssystem / Temporäres
+.DS_Store
+Thumbs.db
+*~
+*.swp
+*.log

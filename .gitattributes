@@ -1,0 +1,15 @@
+# Zeilenenden im Repository einheitlich (LF) speichern
+* text=auto
+
+# Binärdateien nie verändern
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.pdf binary
+*.xlsx binary
+*.woff binary
+*.woff2 binary
+*.ttf binary
+*.eot binary
+*.otf binary
