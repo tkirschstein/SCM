@@ -1,0 +1,122 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Supply Chain Management – Kursmaterialien</title>
+<meta name="description" content="Reader, Vorlesungsfolien und Fallstudien zur Lehrveranstaltung Supply Chain Management (Master International Management, Hochschule RheinMain).">
+<style>
+  :root {
+    --bg: #f7f8fa;
+    --surface: #ffffff;
+    --text: #1f2933;
+    --muted: #5b6875;
+    --border: #dde2e8;
+    --accent: #1f5fa8;
+    --accent-soft: #e7eff9;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #14181d;
+      --surface: #1c2229;
+      --text: #e6e9ed;
+      --muted: #a0abb7;
+      --border: #2f3842;
+      --accent: #7fb0ea;
+      --accent-soft: #22303f;
+    }
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--text);
+    font: 16px/1.55 system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  }
+  main { max-width: 960px; margin: 0 auto; padding: 48px 16px 64px; }
+  header p { margin: 4px 0; color: var(--muted); }
+  h1 { font-size: 2rem; line-height: 1.2; margin: 0 0 8px; }
+  h2 { font-size: 1.25rem; margin: 0 0 12px; }
+  a { color: var(--accent); }
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 16px;
+    margin: 32px 0;
+  }
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+  }
+  .card p { margin: 0 0 16px; color: var(--muted); flex: 1; }
+  .button {
+    display: inline-block;
+    align-self: flex-start;
+    padding: 8px 14px;
+    border-radius: 6px;
+    background: var(--accent-soft);
+    text-decoration: none;
+    font-weight: 600;
+  }
+  .button:hover, .button:focus-visible { text-decoration: underline; }
+  section.cases {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 20px;
+  }
+  ol { margin: 0; padding-left: 1.4em; }
+  li { margin: 8px 0; }
+  li span { display: block; color: var(--muted); font-size: 0.92rem; }
+  footer { margin-top: 40px; color: var(--muted); font-size: 0.9rem; }
+</style>
+</head>
+<body>
+<main>
+  <header>
+    <h1>Supply Chain Management</h1>
+    <p>Master International Management · 1. Fachsemester · Wintersemester 2026/27</p>
+    <p>Hochschule RheinMain · Prof. Dr. Thomas Kirschstein</p>
+  </header>
+
+  <div class="grid">
+    <div class="card">
+      <h2>Reader</h2>
+      <p>Das begleitende Lehrbuch mit allen Kapiteln, Herleitungen und dem durchgehenden Fallbeispiel SushiFresh GmbH. Bitte das jeweilige Kapitel vor der Veranstaltung lesen.</p>
+      <a class="button" href="book/index.html">Reader öffnen</a>
+    </div>
+    <div class="card">
+      <h2>Vorlesungsfolien</h2>
+      <p>Die Folien aller acht Vorlesungseinheiten in einer Gesamtausgabe.</p>
+      <a class="button" href="slides/scm-komplett.html">Folien öffnen</a>
+    </div>
+  </div>
+
+  <section class="cases" aria-labelledby="fs-titel">
+    <h2 id="fs-titel">Fallstudien</h2>
+    <ol>
+      <li><a href="case_studies/case_study_01_strategie_frosch.html">Strategische Gestaltung von Supply Chains</a>
+        <span>Werner &amp; Mertz und die Marke Frosch – Kreislaufwirtschaft als Wettbewerbsstrategie</span></li>
+      <li><a href="case_studies/case_study_02_standort_ahp_steiner_weber.html">Qualitative und kontinuierliche Standortplanung</a>
+        <span>Ein Distributionshub für Lateinamerika – AHP und Steiner-Weber-Modell</span></li>
+      <li><a href="case_studies/case_study_03_wlp_batterielogistik.html">Diskrete Standort- und Netzwerkplanung</a>
+        <span>Batterielogistik für die Automobilindustrie in Norddeutschland und Benelux</span></li>
+      <li><a href="case_studies/case_study_04_pooling_einzelhandel.html">Risk Pooling im E-Commerce</a>
+        <span>Zentral- oder Regionallager für einen brasilianischen Online-Marktplatz (Olist-Daten)</span></li>
+      <li><a href="case_studies/case_study_05_newsvendor_baeckerei.html">Das Newsvendor-Modell in der Praxis</a>
+        <span>Tägliche Produktionsplanung einer französischen Bäckerei</span></li>
+      <li><a href="case_studies/case_study_06_bullwhip.html">Der Bullwhip-Effekt</a>
+        <span>Empirische Messung in US-Wirtschaftsdaten und Simulation von Gegenmaßnahmen</span></li>
+    </ol>
+  </section>
+
+  <footer>
+    Quellcode und Ablaufplan: <a href="https://github.com/tkirschstein/SCM">github.com/tkirschstein/SCM</a>
+  </footer>
+</main>
+</body>
+</html>

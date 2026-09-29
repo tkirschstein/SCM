@@ -96,6 +96,7 @@ Die Prüfungsleistung ist ein **individueller Reflexionsbericht**. Die Fallstudi
 
 ## Direkter Zugriff auf die Ressourcen
 
+- Navigation: https://tkirschstein.github.io/SCM/
 - Slides: https://tkirschstein.github.io/SCM/slides/scm-komplett.html
 - Reader: https://tkirschstein.github.io/SCM/book/index
 - Case-Studies: 
