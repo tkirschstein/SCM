@@ -180,6 +180,9 @@ install.packages(c(
 
 Für die Fallstudien 4 und 5 ist ein (kostenloses) **Kaggle-Konto** erforderlich, um die Datensätze herunterzuladen.
 
+Für diejenigen, die sich mit R vertraut machen wollen, ist unter [Data Science](https://ds-pl-r-book.netlify.app/) ein Einführungs-Kurs verfügbar. 
+
+
 ---
 
 ## Literatur
