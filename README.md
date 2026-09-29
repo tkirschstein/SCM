@@ -2,7 +2,7 @@
 
 **Hochschule RheinMain | Master International Management | 1. Fachsemester | Wintersemester 2026/27**
 
-Prof. Dr. Thomas Kirschstein
+Prof. Dr. Matthias Kalverkamp & Prof. Dr. Thomas Kirschstein
 
 ---
 
