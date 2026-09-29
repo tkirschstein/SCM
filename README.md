@@ -35,9 +35,9 @@ Die Veranstaltung vermittelt die strategischen und quantitativen Grundlagen des 
 
 ## Ablaufplan
 
-Jede Veranstaltung umfasst 90 Minuten. Das jeweilige Reader-Kapitel ist **vor** dem Termin zu lesen. An Präsentationsterminen ist die Sitzung zweigeteilt: etwa 45 Minuten Fallstudie (30 Min. Präsentation, 15 Min. Diskussion und Reflexion) und etwa 45 Minuten Input zum nächsten Thema.
+Jede Veranstaltung umfasst 90 Minuten. Es werden jeweils 2 Themen behandelt. Das jeweilige Kapitel ist **vor** dem Termin zu studieren (Reader & Folien). Die Kapitel werden in den Veranstaltungen **nicht** vollständig präsentiert, sondern nur Rückfragen disktiert und ausgewählte Inhalte vertieft bzw. wiederholt. 
 
-| Nr. | Datum | Input (Reader-Kapitel) | Fallstudien |
+| Nr. | Datum | Teil 1  | Teil 2 |
 |:--:|---|---|---|
 | 1 | Do, 29.10.2026 | Kick-off und Organisation; Einführung und Grundbegriffe des SCM (Kap. 1) | Ausgabe aller Fallstudien & Beergame (1) |
 | 2 | Do, 05.11.2026 | Wertschöpfung, strategische Fertigung und Strategic Fit (Kap. 2) | Kick-off-Gespräche mit den Gruppen  |
