@@ -1,14 +1,14 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml" lang="de" xml:lang="de"><head>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
 
 <meta charset="utf-8">
 <meta name="generator" content="quarto-1.9.38">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
-<meta name="author" content="Supply Chain Management – Gruppenarbeit">
+<meta name="author" content="Supply Chain Management – Group Work">
 
-<title>Fallstudie 6: Der Bullwhip-Effekt</title>
+<title>Case Study 6: The Bullwhip Effect</title>
 <style>
 
 code{white-space: pre-wrap;}
@@ -2344,25 +2344,25 @@ window.Quarto = {
 <div id="quarto-content" class="page-columns page-rows-contents page-layout-article">
 <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
   <nav id="TOC" role="doc-toc" class="toc-active">
-    <h2 id="toc-title">Inhaltsverzeichnis</h2>
+    <h2 id="toc-title">Table of contents</h2>
    
   <ul class="collapse">
-  <li><a href="#lernziele" id="toc-lernziele" class="nav-link active" data-scroll-target="#lernziele"><span class="header-section-number">1</span> Lernziele</a></li>
-  <li><a href="#ausgangslage" id="toc-ausgangslage" class="nav-link" data-scroll-target="#ausgangslage"><span class="header-section-number">2</span> Ausgangslage</a></li>
-  <li><a href="#daten" id="toc-daten" class="nav-link" data-scroll-target="#daten"><span class="header-section-number">3</span> Daten</a>
+  <li><a href="#learning-objectives" id="toc-learning-objectives" class="nav-link active" data-scroll-target="#learning-objectives"><span class="header-section-number">1</span> Learning objectives</a></li>
+  <li><a href="#initial-situation" id="toc-initial-situation" class="nav-link" data-scroll-target="#initial-situation"><span class="header-section-number">2</span> Initial situation</a></li>
+  <li><a href="#data" id="toc-data" class="nav-link" data-scroll-target="#data"><span class="header-section-number">3</span> Data</a>
   <ul class="collapse">
-  <li><a href="#teil-a-manufacturing-and-trade-inventories-and-sales-mtis" id="toc-teil-a-manufacturing-and-trade-inventories-and-sales-mtis" class="nav-link" data-scroll-target="#teil-a-manufacturing-and-trade-inventories-and-sales-mtis"><span class="header-section-number">3.1</span> Teil A: Manufacturing and Trade Inventories and Sales (MTIS)</a></li>
-  <li><a href="#teil-b-endkundennachfrage-für-die-simulation" id="toc-teil-b-endkundennachfrage-für-die-simulation" class="nav-link" data-scroll-target="#teil-b-endkundennachfrage-für-die-simulation"><span class="header-section-number">3.2</span> Teil B: Endkundennachfrage für die Simulation</a></li>
+  <li><a href="#part-a-manufacturing-and-trade-inventories-and-sales-mtis" id="toc-part-a-manufacturing-and-trade-inventories-and-sales-mtis" class="nav-link" data-scroll-target="#part-a-manufacturing-and-trade-inventories-and-sales-mtis"><span class="header-section-number">3.1</span> Part A: Manufacturing and Trade Inventories and Sales (MTIS)</a></li>
+  <li><a href="#part-b-end-customer-demand-for-the-simulation" id="toc-part-b-end-customer-demand-for-the-simulation" class="nav-link" data-scroll-target="#part-b-end-customer-demand-for-the-simulation"><span class="header-section-number">3.2</span> Part B: End-customer demand for the simulation</a></li>
   </ul></li>
-  <li><a href="#aufgaben" id="toc-aufgaben" class="nav-link" data-scroll-target="#aufgaben"><span class="header-section-number">4</span> Aufgaben</a>
+  <li><a href="#tasks" id="toc-tasks" class="nav-link" data-scroll-target="#tasks"><span class="header-section-number">4</span> Tasks</a>
   <ul class="collapse">
-  <li><a href="#teil-a-empirische-messung" id="toc-teil-a-empirische-messung" class="nav-link" data-scroll-target="#teil-a-empirische-messung"><span class="header-section-number">4.1</span> Teil A – Empirische Messung</a></li>
-  <li><a href="#teil-b-simulation-einer-vierstufigen-supply-chain" id="toc-teil-b-simulation-einer-vierstufigen-supply-chain" class="nav-link" data-scroll-target="#teil-b-simulation-einer-vierstufigen-supply-chain"><span class="header-section-number">4.2</span> Teil B – Simulation einer vierstufigen Supply Chain</a></li>
-  <li><a href="#teil-c-beer-game-in-der-lehrveranstaltung" id="toc-teil-c-beer-game-in-der-lehrveranstaltung" class="nav-link" data-scroll-target="#teil-c-beer-game-in-der-lehrveranstaltung"><span class="header-section-number">4.3</span> Teil C – Beer Game (in der Lehrveranstaltung)</a></li>
-  <li><a href="#teil-d-empfehlung-und-reflexion" id="toc-teil-d-empfehlung-und-reflexion" class="nav-link" data-scroll-target="#teil-d-empfehlung-und-reflexion"><span class="header-section-number">4.4</span> Teil D – Empfehlung und Reflexion</a></li>
+  <li><a href="#part-a-empirical-measurement" id="toc-part-a-empirical-measurement" class="nav-link" data-scroll-target="#part-a-empirical-measurement"><span class="header-section-number">4.1</span> Part A – Empirical measurement</a></li>
+  <li><a href="#part-b-simulation-of-a-four-stage-supply-chain" id="toc-part-b-simulation-of-a-four-stage-supply-chain" class="nav-link" data-scroll-target="#part-b-simulation-of-a-four-stage-supply-chain"><span class="header-section-number">4.2</span> Part B – Simulation of a four-stage supply chain</a></li>
+  <li><a href="#part-c-beer-game-in-class" id="toc-part-c-beer-game-in-class" class="nav-link" data-scroll-target="#part-c-beer-game-in-class"><span class="header-section-number">4.3</span> Part C – Beer Game (in class)</a></li>
+  <li><a href="#part-d-recommendation-and-reflection" id="toc-part-d-recommendation-and-reflection" class="nav-link" data-scroll-target="#part-d-recommendation-and-reflection"><span class="header-section-number">4.4</span> Part D – Recommendation and reflection</a></li>
   </ul></li>
-  <li><a href="#literatur" id="toc-literatur" class="nav-link" data-scroll-target="#literatur"><span class="header-section-number">5</span> Literatur</a></li>
-  <li><a href="#anhang-r-startercode" id="toc-anhang-r-startercode" class="nav-link" data-scroll-target="#anhang-r-startercode"><span class="header-section-number">6</span> Anhang: R-Startercode</a></li>
+  <li><a href="#literature" id="toc-literature" class="nav-link" data-scroll-target="#literature"><span class="header-section-number">5</span> Literature</a></li>
+  <li><a href="#appendix-r-starter-code" id="toc-appendix-r-starter-code" class="nav-link" data-scroll-target="#appendix-r-starter-code"><span class="header-section-number">6</span> Appendix: R starter code</a></li>
   </ul>
 </nav>
 </div>
@@ -2370,8 +2370,8 @@ window.Quarto = {
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title">Fallstudie 6: Der Bullwhip-Effekt</h1>
-<p class="subtitle lead">Empirische Messung in US-Wirtschaftsdaten und Simulation von Gegenmaßnahmen</p>
+<h1 class="title">Case Study 6: The Bullwhip Effect</h1>
+<p class="subtitle lead">Empirical measurement in US economic data and simulation of countermeasures</p>
 </div>
 
 
@@ -2379,9 +2379,9 @@ window.Quarto = {
 <div class="quarto-title-meta">
 
     <div>
-    <div class="quarto-title-meta-heading">Autor:in</div>
+    <div class="quarto-title-meta-heading">Author</div>
     <div class="quarto-title-meta-contents">
-             <p>Supply Chain Management – Gruppenarbeit </p>
+             <p>Supply Chain Management – Group Work </p>
           </div>
   </div>
     
@@ -2400,7 +2400,7 @@ window.Quarto = {
 <i class="callout-icon"></i>
 </div>
 <div class="callout-title-container flex-fill">
-<span class="screen-reader-only">Hinweis</span>Steckbrief
+<span class="screen-reader-only">Note</span>Overview
 </div>
 </div>
 <div class="callout-body-container callout-body">
@@ -2411,54 +2411,54 @@ window.Quarto = {
 </colgroup>
 <tbody>
 <tr class="odd">
-<td><strong>Thema</strong></td>
-<td>Nachfrageaufschaukelung in mehrstufigen Supply Chains</td>
+<td><strong>Topic</strong></td>
+<td>Demand amplification in multi-stage supply chains</td>
 </tr>
 <tr class="even">
-<td><strong>Vorlesungsbezug</strong></td>
-<td>Kapitel 8 des Readers: Ursachen des Bullwhip-Effekts, Bestellpolitik mit Bestellniveau, Varianzverhältnis, Schranke nach Chen et al. (2000), Beer Game, Gegenmaßnahmen</td>
+<td><strong>Link to the lecture</strong></td>
+<td>Chapter 8 of the course reader: causes of the bullwhip effect, order-up-to ordering policy, variance ratio, bound according to Chen et al. (2000), Beer Game, countermeasures</td>
 </tr>
 <tr class="odd">
-<td><strong>Typ</strong></td>
-<td>Datenbasierte Fallstudie: <strong>reale Umsatz- und Bestandsdaten</strong> des U.S. Census Bureau (über FRED) und eine Simulation</td>
+<td><strong>Type</strong></td>
+<td>Data-based case study: <strong>real sales and inventory data</strong> from the U.S. Census Bureau (via FRED) and a simulation</td>
 </tr>
 <tr class="even">
-<td><strong>Gruppengröße</strong></td>
-<td>3–6 Personen</td>
+<td><strong>Group size</strong></td>
+<td>3–6 people</td>
 </tr>
 <tr class="odd">
-<td><strong>Ergebnis</strong></td>
-<td>Präsentation (30 Min.) + Diskussion (15 Min.), Foliensatz (PDF) und reproduzierbarer R-/Quarto-Code</td>
+<td><strong>Deliverable</strong></td>
+<td>Presentation (30 min) + discussion (15 min), slide deck (PDF) and reproducible R/Quarto code</td>
 </tr>
 </tbody>
 </table>
 </div>
 </div>
-<section id="lernziele" class="level1" data-number="1">
-<h1 data-number="1"><span class="header-section-number">1</span> Lernziele</h1>
-<p>Nach Bearbeitung der Fallstudie können Sie</p>
+<section id="learning-objectives" class="level1" data-number="1">
+<h1 data-number="1"><span class="header-section-number">1</span> Learning objectives</h1>
+<p>After working through this case study, you will be able to</p>
 <ul>
-<li>den Bullwhip-Effekt als Varianzverhältnis operationalisieren und in realen Wirtschaftsdaten messen,</li>
-<li>Messprobleme (Saisonbereinigung, Aggregation, Trends) erkennen und diskutieren,</li>
-<li>eine mehrstufige Supply Chain mit Bestellniveau-Politik und gleitender Durchschnittsprognose simulieren,</li>
-<li>die theoretische Schranke nach Chen et al. (2000) mit Simulationsergebnissen vergleichen und</li>
-<li>die Wirkung von Gegenmaßnahmen (Informationsaustausch, kürzere Lieferzeiten, bessere Prognosen, Vermeidung von Bestellbündelung) quantitativ bewerten.</li>
+<li>operationalise the bullwhip effect as a variance ratio and measure it in real economic data,</li>
+<li>recognise and discuss measurement problems (seasonal adjustment, aggregation, trends),</li>
+<li>simulate a multi-stage supply chain with an order-up-to policy and a moving-average forecast,</li>
+<li>compare the theoretical bound according to Chen et al. (2000) with simulation results, and</li>
+<li>quantitatively evaluate the effect of countermeasures (information sharing, shorter lead times, better forecasts, avoidance of order batching).</li>
 </ul>
 </section>
-<section id="ausgangslage" class="level1" data-number="2">
-<h1 data-number="2"><span class="header-section-number">2</span> Ausgangslage</h1>
-<p>Seit Forrester (1961) und Lee et al. (1997) ist bekannt, dass die Schwankungen der Bestellungen stromaufwärts in einer Supply Chain zunehmen. Die Folgen sind hohe Sicherheitsbestände, schlecht ausgelastete Kapazitäten und Lieferengpässe. Spätestens die Jahre 2020–2023 haben gezeigt, wie stark sich das auswirken kann: Auf den Nachfrageeinbruch zu Beginn der Pandemie folgten Hamsterkäufe, später Knappheit bei Halbleitern und schließlich volle Lager.</p>
-<p>Ein Beratungsunternehmen erhält von einem Branchenverband zwei Aufträge:</p>
+<section id="initial-situation" class="level1" data-number="2">
+<h1 data-number="2"><span class="header-section-number">2</span> Initial situation</h1>
+<p>Since Forrester (1961) and Lee et al. (1997), it has been known that the variability of orders increases upstream in a supply chain. The consequences are high safety stocks, poorly utilised capacities and supply shortages. The years 2020–2023 at the latest have shown how strong the impact can be: the slump in demand at the start of the pandemic was followed by panic buying, later by a shortage of semiconductors and finally by full warehouses.</p>
+<p>A consulting firm receives two assignments from an industry association:</p>
 <ol type="1">
-<li><strong>Empirisch</strong> zu prüfen, ob und wie stark der Bullwhip-Effekt in der US-Wirtschaft zwischen Einzelhandel, Großhandel und Industrie messbar ist.</li>
-<li>In einem <strong>Simulationsmodell</strong> zu zeigen, welche Gegenmaßnahmen den Effekt in einer typischen vierstufigen Supply Chain (Einzelhandel – Großhandel – Hersteller – Zulieferer) am wirksamsten dämpfen.</li>
+<li>To examine <strong>empirically</strong> whether and how strongly the bullwhip effect is measurable in the US economy between retail, wholesale and manufacturing.</li>
+<li>To show in a <strong>simulation model</strong> which countermeasures most effectively dampen the effect in a typical four-stage supply chain (retail – wholesale – manufacturer – supplier).</li>
 </ol>
 </section>
-<section id="daten" class="level1" data-number="3">
-<h1 data-number="3"><span class="header-section-number">3</span> Daten</h1>
-<section id="teil-a-manufacturing-and-trade-inventories-and-sales-mtis" class="level2" data-number="3.1">
-<h2 data-number="3.1" class="anchored" data-anchor-id="teil-a-manufacturing-and-trade-inventories-and-sales-mtis"><span class="header-section-number">3.1</span> Teil A: Manufacturing and Trade Inventories and Sales (MTIS)</h2>
-<p>Das U.S. Census Bureau veröffentlicht monatlich Umsätze und Lagerbestände für die Stufen Einzelhandel, Großhandel und Industrie. Die Reihen sind frei über FRED (Federal Reserve Bank of St. Louis) abrufbar, z. B. als CSV unter <code>https://fred.stlouisfed.org/graph/fredgraph.csv?id=&lt;ID&gt;</code>.</p>
+<section id="data" class="level1" data-number="3">
+<h1 data-number="3"><span class="header-section-number">3</span> Data</h1>
+<section id="part-a-manufacturing-and-trade-inventories-and-sales-mtis" class="level2" data-number="3.1">
+<h2 data-number="3.1" class="anchored" data-anchor-id="part-a-manufacturing-and-trade-inventories-and-sales-mtis"><span class="header-section-number">3.1</span> Part A: Manufacturing and Trade Inventories and Sales (MTIS)</h2>
+<p>The U.S. Census Bureau publishes monthly sales and inventories for the retail, wholesale and manufacturing stages. The series are freely available via FRED (Federal Reserve Bank of St. Louis), e.g. as CSV at <code>https://fred.stlouisfed.org/graph/fredgraph.csv?id=&lt;ID&gt;</code>.</p>
 <table class="caption-top table">
 <colgroup>
 <col style="width: 33%">
@@ -2467,62 +2467,62 @@ window.Quarto = {
 </colgroup>
 <thead>
 <tr class="header">
-<th>Stufe</th>
-<th>Umsatz (Mio. USD, saisonbereinigt)</th>
-<th>Lagerbestand (Mio. USD, saisonbereinigt, Monatsende)</th>
+<th>Stage</th>
+<th>Sales (million USD, seasonally adjusted)</th>
+<th>Inventory (million USD, seasonally adjusted, end of month)</th>
 </tr>
 </thead>
 <tbody>
 <tr class="odd">
-<td>Einzelhandel</td>
+<td>Retail</td>
 <td><code>RETAILSMSA</code></td>
 <td><code>RETAILIMSA</code></td>
 </tr>
 <tr class="even">
-<td>Großhandel (Merchant Wholesalers)</td>
+<td>Wholesale (merchant wholesalers)</td>
 <td><code>WHLSLRSMSA</code></td>
 <td><code>WHLSLRIMSA</code></td>
 </tr>
 <tr class="odd">
-<td>Industrie (Manufacturers)</td>
+<td>Manufacturing (manufacturers)</td>
 <td><code>MNFCTRSMSA</code></td>
 <td><code>MNFCTRIMSA</code></td>
 </tr>
 </tbody>
 </table>
-<p>Für Branchenanalysen stellt das Census Bureau (<a href="https://www.census.gov/mtis/" class="uri">https://www.census.gov/mtis/</a> sowie die Einzelstatistiken <em>Monthly Retail Trade</em>, <em>Monthly Wholesale Trade</em> und <em>M3 Manufacturers’ Shipments, Inventories &amp; Orders</em>) die Daten nach NAICS-Branchen bereit, zum Teil auch <strong>nicht saisonbereinigt</strong>. Ein Beispiel für eine Lebensmittelkette: Food and Beverage Stores (NAICS 445) → Grocery Wholesalers (NAICS 4244) → Food Manufacturing (NAICS 311).</p>
-<p>Da Bestellungen in diesen Daten nicht direkt beobachtet werden, verwendet die empirische Literatur (z. B. Cachon et al. 2007) als Näherung die <strong>Produktion bzw. Beschaffung</strong> einer Stufe:</p>
+<p>For industry analyses, the Census Bureau (<a href="https://www.census.gov/mtis/" class="uri">https://www.census.gov/mtis/</a> as well as the individual statistics <em>Monthly Retail Trade</em>, <em>Monthly Wholesale Trade</em> and <em>M3 Manufacturers’ Shipments, Inventories &amp; Orders</em>) provides the data by NAICS industry, in some cases also <strong>not seasonally adjusted</strong>. An example of a food chain: Food and Beverage Stores (NAICS 445) → Grocery Wholesalers (NAICS 4244) → Food Manufacturing (NAICS 311).</p>
+<p>Since orders are not directly observed in these data, the empirical literature (e.g. Cachon et al. 2007) uses the <strong>production or procurement</strong> of a stage as a proxy:</p>
 <p><span class="math display">\[
 P_t = S_t + I_t - I_{t-1},
 \]</span></p>
-<p>wobei <span class="math inline">\(S_t\)</span> den Umsatz (bewertet zu Einstandspreisen) und <span class="math inline">\(I_t\)</span> den Lagerbestand am Monatsende bezeichnet. Der Bullwhip-Effekt einer Stufe wird dann als <span class="math inline">\(B = \operatorname{Var}(P)/\operatorname{Var}(S)\)</span> gemessen.</p>
+<p>where <span class="math inline">\(S_t\)</span> denotes sales (valued at cost) and <span class="math inline">\(I_t\)</span> the inventory at the end of the month. The bullwhip effect of a stage is then measured as <span class="math inline">\(B = \operatorname{Var}(P)/\operatorname{Var}(S)\)</span>.</p>
 </section>
-<section id="teil-b-endkundennachfrage-für-die-simulation" class="level2" data-number="3.2">
-<h2 data-number="3.2" class="anchored" data-anchor-id="teil-b-endkundennachfrage-für-die-simulation"><span class="header-section-number">3.2</span> Teil B: Endkundennachfrage für die Simulation</h2>
-<p>Als Endkundennachfrage verwenden Sie eine <strong>reale Zeitreihe</strong> Ihrer Wahl, zum Beispiel</p>
+<section id="part-b-end-customer-demand-for-the-simulation" class="level2" data-number="3.2">
+<h2 data-number="3.2" class="anchored" data-anchor-id="part-b-end-customer-demand-for-the-simulation"><span class="header-section-number">3.2</span> Part B: End-customer demand for the simulation</h2>
+<p>As end-customer demand, use a <strong>real time series</strong> of your choice, for example</p>
 <ul>
-<li>die wöchentlichen Abverkäufe eines Artikels aus dem M5-Datensatz (Fallstudie 4),</li>
-<li>den Tagesabsatz eines Artikels der französischen Bäckerei (Fallstudie 5) oder</li>
-<li>eine monatliche Einzelhandelsumsatzreihe aus FRED (z. B. <code>RSXFS</code>).</li>
+<li>the weekly demand of a product category from the Olist dataset (Case Study 4),</li>
+<li>the daily sales of an item from the French bakery (Case Study 5), or</li>
+<li>a monthly retail sales series from FRED (e.g. <code>RSXFS</code>).</li>
 </ul>
-<p>Begründen Sie Ihre Wahl und beschreiben Sie die statistischen Eigenschaften der Reihe (Niveau, Streuung, Saisonalität, Autokorrelation).</p>
+<p>Justify your choice and describe the statistical properties of the series (level, variability, seasonality, autocorrelation).</p>
 </section>
 </section>
-<section id="aufgaben" class="level1" data-number="4">
-<h1 data-number="4"><span class="header-section-number">4</span> Aufgaben</h1>
-<section id="teil-a-empirische-messung" class="level2" data-number="4.1">
-<h2 data-number="4.1" class="anchored" data-anchor-id="teil-a-empirische-messung"><span class="header-section-number">4.1</span> Teil A – Empirische Messung</h2>
-<p><strong>A1.</strong> Laden Sie die sechs MTIS-Reihen ab 1992, berechnen Sie <span class="math inline">\(P_t\)</span> je Stufe und visualisieren Sie <span class="math inline">\(S_t\)</span> und <span class="math inline">\(P_t\)</span> gemeinsam.</p>
-<p><strong>A2.</strong> Berechnen Sie das Varianzverhältnis <span class="math inline">\(B\)</span> je Stufe auf den Niveaus und auf den ersten Differenzen, jeweils für mindestens zwei Teilperioden (z. B. 1992–2019 und 2020–heute). Ist <span class="math inline">\(B &gt; 1\)</span>? Wie unterscheiden sich Stufen und Perioden?</p>
-<p><strong>A3.</strong> Nennen Sie zwei wesentliche Messprobleme dieses Vorgehens (z. B. Saisonbereinigung, Aggregation über Branchen) und vergleichen Sie Ihre Ergebnisse mit Cachon et al. (2007).</p>
+<section id="tasks" class="level1" data-number="4">
+<h1 data-number="4"><span class="header-section-number">4</span> Tasks</h1>
+<section id="part-a-empirical-measurement" class="level2" data-number="4.1">
+<h2 data-number="4.1" class="anchored" data-anchor-id="part-a-empirical-measurement"><span class="header-section-number">4.1</span> Part A – Empirical measurement</h2>
+<p><strong>A1.</strong> Load the six MTIS series from 1992 onwards, calculate <span class="math inline">\(P_t\)</span> for each stage and visualise <span class="math inline">\(S_t\)</span> and <span class="math inline">\(P_t\)</span> together.</p>
+<p><strong>A2.</strong> Calculate the variance ratio <span class="math inline">\(B\)</span> for each stage on the levels and on the first differences, in each case for at least two sub-periods (e.g. 1992–2019 and 2020–today). Is <span class="math inline">\(B &gt; 1\)</span>? How do stages and periods differ?</p>
+<p><strong>A3.</strong> Name two significant measurement problems of this approach (e.g. seasonal adjustment, aggregation across industries) and compare your results with Cachon et al. (2007).</p>
 </section>
-<section id="teil-b-simulation-einer-vierstufigen-supply-chain" class="level2" data-number="4.2">
-<h2 data-number="4.2" class="anchored" data-anchor-id="teil-b-simulation-einer-vierstufigen-supply-chain"><span class="header-section-number">4.2</span> Teil B – Simulation einer vierstufigen Supply Chain</h2>
-<p><strong>B1.</strong> Nutzen Sie den Startercode, in dem jede Stufe <span class="math inline">\(k\)</span> in jeder Periode die Nachfrage ihres Kunden beobachtet, Mittelwert und Standardabweichung mit einem gleitenden Durchschnitt über <span class="math inline">\(p\)</span> Perioden schätzt, das Bestellniveau <span class="math inline">\(S_t = \hat\mu_t (L+1) + z\,\hat\sigma_t\sqrt{L+1}\)</span> bestimmt und <span class="math inline">\(O_t = \max\{0,\ D_t + S_t - S_{t-1}\}\)</span> bestellt. Simulieren Sie den Basisfall (<span class="math inline">\(L=2\)</span>, <span class="math inline">\(p=4\)</span>, <span class="math inline">\(z=1{,}65\)</span>) mit Ihrer realen Endkundennachfrage und vergleichen Sie <span class="math inline">\(B_k\)</span> je Stufe mit der Schranke nach Chen et al. (2000):</p>
+<section id="part-b-simulation-of-a-four-stage-supply-chain" class="level2" data-number="4.2">
+<h2 data-number="4.2" class="anchored" data-anchor-id="part-b-simulation-of-a-four-stage-supply-chain"><span class="header-section-number">4.2</span> Part B – Simulation of a four-stage supply chain</h2>
+<p><strong>B1.</strong> Use the starter code, in which each stage <span class="math inline">\(k\)</span> in each period observes its customer’s demand, estimates the mean and standard deviation with a moving average over <span class="math inline">\(p\)</span> periods, determines the order-up-to level <span class="math inline">\(S_t = \hat\mu_t (L+1) + z\,\hat\sigma_t\sqrt{L+1}\)</span> and orders <span class="math inline">\(O_t = \max\{0,\ D_t + S_t - S_{t-1}\}\)</span>. Simulate the base case (<span class="math inline">\(L=2\)</span>, <span class="math inline">\(p=4\)</span>, <span class="math inline">\(z=1.65\)</span>) with your real end-customer demand and compare <span class="math inline">\(B_k\)</span> for each stage with the bound according to Chen et al. (2000):</p>
 <p><span class="math display">\[
 \frac{\operatorname{Var}(O)}{\operatorname{Var}(D)} \;\ge\; 1 + \frac{2L}{p} + \frac{2L^2}{p^2}.
 \]</span></p>
-<p><strong>B2.</strong> Untersuchen Sie mindestens <strong>drei</strong> der folgenden Gegenmaßnahmen und stellen Sie die Ergebnisse vergleichend dar:</p>
+<p><strong>B2.</strong> Investigate at least <strong>three</strong> of the following countermeasures and present the results comparatively:</p>
 <table class="caption-top table">
 <colgroup>
 <col style="width: 50%">
@@ -2530,65 +2530,65 @@ P_t = S_t + I_t - I_{t-1},
 </colgroup>
 <thead>
 <tr class="header">
-<th>Szenario</th>
-<th>Veränderung</th>
+<th>Scenario</th>
+<th>Change</th>
 </tr>
 </thead>
 <tbody>
 <tr class="odd">
-<td>Längeres Prognosefenster</td>
+<td>Longer forecast window</td>
 <td><span class="math inline">\(p = 8, 12, 26\)</span></td>
 </tr>
 <tr class="even">
-<td>Kürzere Lieferzeit</td>
-<td><span class="math inline">\(L = 1\)</span> (und <span class="math inline">\(L = 4\)</span> zum Vergleich)</td>
+<td>Shorter lead time</td>
+<td><span class="math inline">\(L = 1\)</span> (and <span class="math inline">\(L = 4\)</span> for comparison)</td>
 </tr>
 <tr class="odd">
-<td>Informationsaustausch</td>
-<td>Alle Stufen prognostizieren auf Basis der Endkundennachfrage</td>
+<td>Information sharing</td>
+<td>All stages forecast on the basis of end-customer demand</td>
 </tr>
 <tr class="even">
-<td>Bestellbündelung</td>
-<td>Bestellungen nur alle <span class="math inline">\(m = 4\)</span> Perioden</td>
+<td>Order batching</td>
+<td>Orders only every <span class="math inline">\(m = 4\)</span> periods</td>
 </tr>
 <tr class="odd">
-<td>Vendor Managed Inventory</td>
-<td>Stufe 1 und 2 werden gemeinsam disponiert</td>
+<td>Vendor managed inventory</td>
+<td>Stages 1 and 2 are planned jointly</td>
 </tr>
 </tbody>
 </table>
-<p>Welche Maßnahme wirkt am stärksten, und an welcher Ursache nach Lee et al. (1997) setzt sie an?</p>
+<p>Which measure has the strongest effect, and which cause according to Lee et al. (1997) does it address?</p>
 </section>
-<section id="teil-c-beer-game-in-der-lehrveranstaltung" class="level2" data-number="4.3">
-<h2 data-number="4.3" class="anchored" data-anchor-id="teil-c-beer-game-in-der-lehrveranstaltung"><span class="header-section-number">4.3</span> Teil C – Beer Game (in der Lehrveranstaltung)</h2>
-<p><strong>C1.</strong> Dokumentieren Sie beim Beer Game Bestellungen, Bestände und Rückstände Ihrer Gruppe je Runde und berechnen Sie die Varianzverhältnisse je Stufe.</p>
+<section id="part-c-beer-game-in-class" class="level2" data-number="4.3">
+<h2 data-number="4.3" class="anchored" data-anchor-id="part-c-beer-game-in-class"><span class="header-section-number">4.3</span> Part C – Beer Game (in class)</h2>
+<p><strong>C1.</strong> During the Beer Game, document your group’s orders, inventories and backlogs for each round and calculate the variance ratios for each stage.</p>
 </section>
-<section id="teil-d-empfehlung-und-reflexion" class="level2" data-number="4.4">
-<h2 data-number="4.4" class="anchored" data-anchor-id="teil-d-empfehlung-und-reflexion"><span class="header-section-number">4.4</span> Teil D – Empfehlung und Reflexion</h2>
-<p><strong>D1. Empfehlung.</strong> Welche drei Maßnahmen sollten Unternehmen zuerst umsetzen, und welche Voraussetzungen (IT, Vertrauen, Verträge) sind dafür nötig?</p>
-<p><strong>D2. Reflexion.</strong> Beantworten Sie in der Präsentation die folgenden Fragen. Sie bilden den Ausgangspunkt der anschließenden Diskussion:</p>
+<section id="part-d-recommendation-and-reflection" class="level2" data-number="4.4">
+<h2 data-number="4.4" class="anchored" data-anchor-id="part-d-recommendation-and-reflection"><span class="header-section-number">4.4</span> Part D – Recommendation and reflection</h2>
+<p><strong>D1. Recommendation.</strong> Which three measures should companies implement first, and which prerequisites (IT, trust, contracts) are necessary for this?</p>
+<p><strong>D2. Reflection.</strong> Answer the following questions in your presentation. They form the starting point for the subsequent discussion:</p>
 <ol type="1">
-<li>Warum ist der Bullwhip-Effekt in den aggregierten Wirtschaftsdaten deutlich schwächer als in Simulation und Beer Game? Was sagt das über die Aussagekraft der jeweiligen Methode?</li>
-<li>Was hat das Beer Game über Ihr eigenes Entscheidungsverhalten gezeigt? Haben Sie Pipeline-Bestände vernachlässigt (Sterman 1989), und warum?</li>
-<li>Welche Gegenmaßnahme wirkt in der Simulation stark, ist in der Praxis aber schwer umzusetzen, und woran scheitert sie (Anreize, Vertrauen, Daten)?</li>
-<li>Wie verstärken internationale Supply Chains mit langer Seefracht, vielen Schnittstellen und unterschiedlichen Kulturen der Zusammenarbeit den Effekt?</li>
-<li>Wie lassen sich die Engpässe und Überbestände der Jahre 2020–2023 (Pandemie, Chipkrise) mit Ihren Ergebnissen erklären?</li>
+<li>Why is the bullwhip effect considerably weaker in the aggregated economic data than in the simulation and the Beer Game? What does this say about the significance of each method?</li>
+<li>What did the Beer Game reveal about your own decision-making behaviour? Did you neglect pipeline inventories (Sterman 1989), and why?</li>
+<li>Which countermeasure has a strong effect in the simulation but is difficult to implement in practice, and why does it fail (incentives, trust, data)?</li>
+<li>How do international supply chains with long sea freight, many interfaces and different cultures of collaboration amplify the effect?</li>
+<li>How can the shortages and excess inventories of 2020–2023 (pandemic, chip crisis) be explained with your results?</li>
 </ol>
 </section>
 </section>
-<section id="literatur" class="level1" data-number="5">
-<h1 data-number="5"><span class="header-section-number">5</span> Literatur</h1>
+<section id="literature" class="level1" data-number="5">
+<h1 data-number="5"><span class="header-section-number">5</span> Literature</h1>
 <ul>
 <li>Cachon, G. P.; Randall, T.; Schmidt, G. M. (2007): In Search of the Bullwhip Effect. <em>Manufacturing &amp; Service Operations Management</em> 9(4), 457–479.</li>
 <li>Chen, F.; Drezner, Z.; Ryan, J. K.; Simchi-Levi, D. (2000): Quantifying the Bullwhip Effect in a Simple Supply Chain. <em>Management Science</em> 46(3), 436–443.</li>
 <li>Forrester, J. W. (1961): <em>Industrial Dynamics</em>. Cambridge, MA: MIT Press.</li>
 <li>Lee, H. L.; Padmanabhan, V.; Whang, S. (1997): The Bullwhip Effect in Supply Chains. <em>Sloan Management Review</em> 38(3), 93–102.</li>
 <li>Sterman, J. D. (1989): Modeling Managerial Behavior: Misperceptions of Feedback in a Dynamic Decision Making Experiment. <em>Management Science</em> 35(3), 321–339.</li>
-<li>Reader zur Vorlesung, Kapitel 8.</li>
+<li>Course reader for the lecture, Chapter 8.</li>
 </ul>
 </section>
-<section id="anhang-r-startercode" class="level1" data-number="6">
-<h1 data-number="6"><span class="header-section-number">6</span> Anhang: R-Startercode</h1>
+<section id="appendix-r-starter-code" class="level1" data-number="6">
+<h1 data-number="6"><span class="header-section-number">6</span> Appendix: R starter code</h1>
 <div class="cell">
 <details open class="code-fold">
 <summary>Code</summary>
@@ -2601,10 +2601,10 @@ P_t = S_t + I_t - I_{t-1},
 <span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>}</span>
 <span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>stufen <span class="ot">&lt;-</span> <span class="fu">tribble</span>(</span>
-<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>  <span class="sc">~</span>stufe,         <span class="sc">~</span>umsatz,      <span class="sc">~</span>bestand,</span>
-<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>  <span class="st">&quot;Einzelhandel&quot;</span>, <span class="st">&quot;RETAILSMSA&quot;</span>, <span class="st">&quot;RETAILIMSA&quot;</span>,</span>
-<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>  <span class="st">&quot;Großhandel&quot;</span>,   <span class="st">&quot;WHLSLRSMSA&quot;</span>, <span class="st">&quot;WHLSLRIMSA&quot;</span>,</span>
-<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>  <span class="st">&quot;Industrie&quot;</span>,    <span class="st">&quot;MNFCTRSMSA&quot;</span>, <span class="st">&quot;MNFCTRIMSA&quot;</span></span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>  <span class="sc">~</span>stufe,          <span class="sc">~</span>umsatz,      <span class="sc">~</span>bestand,</span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>  <span class="st">&quot;Retail&quot;</span>,        <span class="st">&quot;RETAILSMSA&quot;</span>, <span class="st">&quot;RETAILIMSA&quot;</span>,</span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>  <span class="st">&quot;Wholesale&quot;</span>,     <span class="st">&quot;WHLSLRSMSA&quot;</span>, <span class="st">&quot;WHLSLRIMSA&quot;</span>,</span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>  <span class="st">&quot;Manufacturing&quot;</span>, <span class="st">&quot;MNFCTRSMSA&quot;</span>, <span class="st">&quot;MNFCTRIMSA&quot;</span></span>
 <span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>)</span>
 <span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>mtis <span class="ot">&lt;-</span> stufen <span class="sc">|&gt;</span></span>
@@ -2618,44 +2618,44 @@ P_t = S_t + I_t - I_{t-1},
 <span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a>mtis <span class="sc">|&gt;</span> <span class="fu">group_by</span>(stufe) <span class="sc">|&gt;</span></span>
 <span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">B_niveau =</span> <span class="fu">var</span>(P, <span class="at">na.rm =</span> <span class="cn">TRUE</span>) <span class="sc">/</span> <span class="fu">var</span>(S),</span>
-<span id="cb1-27"><a href="#cb1-27" aria-hidden="true" tabindex="-1"></a>            <span class="at">B_diff   =</span> <span class="fu">var</span>(<span class="fu">diff</span>(P[<span class="sc">-</span><span class="dv">1</span>])) <span class="sc">/</span> <span class="fu">var</span>(<span class="fu">diff</span>(S[<span class="sc">-</span><span class="dv">1</span>])))</span></code></pre></div><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb1-27"><a href="#cb1-27" aria-hidden="true" tabindex="-1"></a>            <span class="at">B_diff   =</span> <span class="fu">var</span>(<span class="fu">diff</span>(P[<span class="sc">-</span><span class="dv">1</span>])) <span class="sc">/</span> <span class="fu">var</span>(<span class="fu">diff</span>(S[<span class="sc">-</span><span class="dv">1</span>])))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
 </div>
 <div class="cell">
 <details open class="code-fold">
 <summary>Code</summary>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Einfache Simulation der Bestellungen in einer mehrstufigen Supply Chain</span></span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="co"># (ohne Lagerbestände und Lieferungen)</span></span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Simple simulation of orders in a multi-stage supply chain</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="co"># (without inventories and deliveries)</span></span>
 <span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>simuliere_bullwhip <span class="ot">&lt;-</span> <span class="cf">function</span>(D, <span class="at">stufen =</span> <span class="dv">4</span>, <span class="at">L =</span> <span class="dv">2</span>, <span class="at">p =</span> <span class="dv">4</span>, <span class="at">z =</span> <span class="fl">1.65</span>,</span>
 <span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>                               <span class="at">info_sharing =</span> <span class="cn">FALSE</span>) {</span>
 <span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>  n <span class="ot">&lt;-</span> <span class="fu">length</span>(D)</span>
 <span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>  O <span class="ot">&lt;-</span> <span class="fu">matrix</span>(<span class="cn">NA_real_</span>, <span class="at">nrow =</span> n, <span class="at">ncol =</span> stufen <span class="sc">+</span> <span class="dv">1</span>)</span>
-<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>  O[, <span class="dv">1</span>] <span class="ot">&lt;-</span> D                                    <span class="co"># Spalte 1 = Endkundennachfrage</span></span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>  O[, <span class="dv">1</span>] <span class="ot">&lt;-</span> D                                    <span class="co"># column 1 = end-customer demand</span></span>
 <span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>  <span class="cf">for</span> (k <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>stufen) {</span>
-<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>    d_k   <span class="ot">&lt;-</span> O[, k]                              <span class="co"># Nachfrage, die Stufe k sieht</span></span>
-<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>    d_fc  <span class="ot">&lt;-</span> <span class="cf">if</span> (info_sharing) D <span class="cf">else</span> d_k        <span class="co"># Datengrundlage der Prognose</span></span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>    d_k   <span class="ot">&lt;-</span> O[, k]                              <span class="co"># demand seen by stage k</span></span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>    d_fc  <span class="ot">&lt;-</span> <span class="cf">if</span> (info_sharing) D <span class="cf">else</span> d_k        <span class="co"># data basis for the forecast</span></span>
 <span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>    S_alt <span class="ot">&lt;-</span> <span class="cn">NA</span></span>
 <span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> (t <span class="cf">in</span> <span class="fu">seq_len</span>(n)) {</span>
-<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a>      <span class="cf">if</span> (t <span class="sc">&lt;</span> p) { O[t, k <span class="sc">+</span> <span class="dv">1</span>] <span class="ot">&lt;-</span> d_k[t]; <span class="cf">next</span> } <span class="co"># Einschwingphase</span></span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a>      <span class="cf">if</span> (t <span class="sc">&lt;</span> p) { O[t, k <span class="sc">+</span> <span class="dv">1</span>] <span class="ot">&lt;-</span> d_k[t]; <span class="cf">next</span> } <span class="co"># warm-up phase</span></span>
 <span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a>      fenster <span class="ot">&lt;-</span> d_fc[(t <span class="sc">-</span> p <span class="sc">+</span> <span class="dv">1</span>)<span class="sc">:</span>t]</span>
 <span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a>      S <span class="ot">&lt;-</span> <span class="fu">mean</span>(fenster) <span class="sc">*</span> (L <span class="sc">+</span> <span class="dv">1</span>) <span class="sc">+</span> z <span class="sc">*</span> <span class="fu">sd</span>(fenster) <span class="sc">*</span> <span class="fu">sqrt</span>(L <span class="sc">+</span> <span class="dv">1</span>)</span>
 <span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a>      O[t, k <span class="sc">+</span> <span class="dv">1</span>] <span class="ot">&lt;-</span> <span class="cf">if</span> (<span class="fu">is.na</span>(S_alt)) d_k[t] <span class="cf">else</span> <span class="fu">max</span>(<span class="dv">0</span>, d_k[t] <span class="sc">+</span> S <span class="sc">-</span> S_alt)</span>
 <span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a>      S_alt <span class="ot">&lt;-</span> S</span>
 <span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a>    }</span>
 <span id="cb2-19"><a href="#cb2-19" aria-hidden="true" tabindex="-1"></a>  }</span>
-<span id="cb2-20"><a href="#cb2-20" aria-hidden="true" tabindex="-1"></a>  <span class="fu">colnames</span>(O) <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">&quot;Endkunde&quot;</span>, <span class="fu">paste0</span>(<span class="st">&quot;Stufe_&quot;</span>, <span class="dv">1</span><span class="sc">:</span>stufen))</span>
+<span id="cb2-20"><a href="#cb2-20" aria-hidden="true" tabindex="-1"></a>  <span class="fu">colnames</span>(O) <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">&quot;End_customer&quot;</span>, <span class="fu">paste0</span>(<span class="st">&quot;Stage_&quot;</span>, <span class="dv">1</span><span class="sc">:</span>stufen))</span>
 <span id="cb2-21"><a href="#cb2-21" aria-hidden="true" tabindex="-1"></a>  <span class="fu">as.data.frame</span>(O)</span>
 <span id="cb2-22"><a href="#cb2-22" aria-hidden="true" tabindex="-1"></a>}</span>
 <span id="cb2-23"><a href="#cb2-23" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-24"><a href="#cb2-24" aria-hidden="true" tabindex="-1"></a><span class="co"># Demonstration mit künstlicher Nachfrage – ersetzen Sie D durch Ihre reale Reihe</span></span>
+<span id="cb2-24"><a href="#cb2-24" aria-hidden="true" tabindex="-1"></a><span class="co"># Demonstration with artificial demand – replace D with your real series</span></span>
 <span id="cb2-25"><a href="#cb2-25" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">42</span>)</span>
 <span id="cb2-26"><a href="#cb2-26" aria-hidden="true" tabindex="-1"></a>D <span class="ot">&lt;-</span> <span class="fu">round</span>(<span class="fu">rnorm</span>(<span class="dv">156</span>, <span class="at">mean =</span> <span class="dv">100</span>, <span class="at">sd =</span> <span class="dv">15</span>))</span>
 <span id="cb2-27"><a href="#cb2-27" aria-hidden="true" tabindex="-1"></a>sim <span class="ot">&lt;-</span> <span class="fu">simuliere_bullwhip</span>(D, <span class="at">L =</span> <span class="dv">2</span>, <span class="at">p =</span> <span class="dv">8</span>)</span>
-<span id="cb2-28"><a href="#cb2-28" aria-hidden="true" tabindex="-1"></a><span class="fu">round</span>(<span class="fu">sapply</span>(sim[<span class="sc">-</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">20</span>), ], var) <span class="sc">/</span> <span class="fu">var</span>(D[<span class="sc">-</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">20</span>)]), <span class="dv">2</span>)</span></code></pre></div><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb2-28"><a href="#cb2-28" aria-hidden="true" tabindex="-1"></a><span class="fu">round</span>(<span class="fu">sapply</span>(sim[<span class="sc">-</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">20</span>), ], var) <span class="sc">/</span> <span class="fu">var</span>(D[<span class="sc">-</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">20</span>)]), <span class="dv">2</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
 <div class="cell-output cell-output-stdout">
-<pre><code>Endkunde  Stufe_1  Stufe_2  Stufe_3  Stufe_4 
-    1.00     2.10     6.41    20.62    71.63 </code></pre>
+<pre><code>End_customer      Stage_1      Stage_2      Stage_3      Stage_4 
+        1.00         2.10         6.41        20.62        71.63 </code></pre>
 </div>
 </div>
 </section>
@@ -2687,12 +2687,12 @@ P_t = S_t + I_t - I_{t-1},
       // flash "checked"
       button.classList.add('code-copy-button-checked');
       var currentTitle = button.getAttribute("title");
-      button.setAttribute("title", "Kopiert");
+      button.setAttribute("title", "Copied!");
       let tooltip;
       if (window.bootstrap) {
         button.setAttribute("data-bs-toggle", "tooltip");
         button.setAttribute("data-bs-placement", "left");
-        button.setAttribute("data-bs-title", "Kopiert");
+        button.setAttribute("data-bs-title", "Copied!");
         tooltip = new bootstrap.Tooltip(button, 
           { trigger: "manual", 
             customClass: "code-copy-button-tooltip",

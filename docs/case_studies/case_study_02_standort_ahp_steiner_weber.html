@@ -1,14 +1,14 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml" lang="de" xml:lang="de"><head>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
 
 <meta charset="utf-8">
 <meta name="generator" content="quarto-1.9.38">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
-<meta name="author" content="Supply Chain Management – Gruppenarbeit">
+<meta name="author" content="Supply Chain Management – Group Work">
 
-<title>Fallstudie 2: Qualitative und kontinuierliche Standortplanung</title>
+<title>Case Study 2: Qualitative and Continuous Facility Location Planning</title>
 <style>
 
 code{white-space: pre-wrap;}
@@ -2205,26 +2205,26 @@ vertical-align: -.125em;
 <div id="quarto-content" class="page-columns page-rows-contents page-layout-article">
 <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
   <nav id="TOC" role="doc-toc" class="toc-active">
-    <h2 id="toc-title">Inhaltsverzeichnis</h2>
+    <h2 id="toc-title">Table of contents</h2>
    
   <ul class="collapse">
-  <li><a href="#lernziele" id="toc-lernziele" class="nav-link active" data-scroll-target="#lernziele"><span class="header-section-number">1</span> Lernziele</a></li>
-  <li><a href="#ausgangslage" id="toc-ausgangslage" class="nav-link" data-scroll-target="#ausgangslage"><span class="header-section-number">2</span> Ausgangslage</a></li>
-  <li><a href="#daten" id="toc-daten" class="nav-link" data-scroll-target="#daten"><span class="header-section-number">3</span> Daten</a>
+  <li><a href="#learning-objectives" id="toc-learning-objectives" class="nav-link active" data-scroll-target="#learning-objectives"><span class="header-section-number">1</span> Learning objectives</a></li>
+  <li><a href="#initial-situation" id="toc-initial-situation" class="nav-link" data-scroll-target="#initial-situation"><span class="header-section-number">2</span> Initial situation</a></li>
+  <li><a href="#data" id="toc-data" class="nav-link" data-scroll-target="#data"><span class="header-section-number">3</span> Data</a>
   <ul class="collapse">
-  <li><a href="#absatzprognose-nach-ländern" id="toc-absatzprognose-nach-ländern" class="nav-link" data-scroll-target="#absatzprognose-nach-ländern"><span class="header-section-number">3.1</span> Absatzprognose nach Ländern</a></li>
-  <li><a href="#standortalternativen" id="toc-standortalternativen" class="nav-link" data-scroll-target="#standortalternativen"><span class="header-section-number">3.2</span> Standortalternativen</a></li>
-  <li><a href="#aussagen-aus-experteninterviews" id="toc-aussagen-aus-experteninterviews" class="nav-link" data-scroll-target="#aussagen-aus-experteninterviews"><span class="header-section-number">3.3</span> Aussagen aus Experteninterviews</a></li>
-  <li><a href="#frei-verfügbare-länderindikatoren-eigene-recherche" id="toc-frei-verfügbare-länderindikatoren-eigene-recherche" class="nav-link" data-scroll-target="#frei-verfügbare-länderindikatoren-eigene-recherche"><span class="header-section-number">3.4</span> Frei verfügbare Länderindikatoren (eigene Recherche)</a></li>
+  <li><a href="#sales-forecast-by-country" id="toc-sales-forecast-by-country" class="nav-link" data-scroll-target="#sales-forecast-by-country"><span class="header-section-number">3.1</span> Sales forecast by country</a></li>
+  <li><a href="#location-alternatives" id="toc-location-alternatives" class="nav-link" data-scroll-target="#location-alternatives"><span class="header-section-number">3.2</span> Location alternatives</a></li>
+  <li><a href="#statements-from-expert-interviews" id="toc-statements-from-expert-interviews" class="nav-link" data-scroll-target="#statements-from-expert-interviews"><span class="header-section-number">3.3</span> Statements from expert interviews</a></li>
+  <li><a href="#freely-available-country-indicators-own-research" id="toc-freely-available-country-indicators-own-research" class="nav-link" data-scroll-target="#freely-available-country-indicators-own-research"><span class="header-section-number">3.4</span> Freely available country indicators (own research)</a></li>
   </ul></li>
-  <li><a href="#aufgaben" id="toc-aufgaben" class="nav-link" data-scroll-target="#aufgaben"><span class="header-section-number">4</span> Aufgaben</a>
+  <li><a href="#tasks" id="toc-tasks" class="nav-link" data-scroll-target="#tasks"><span class="header-section-number">4</span> Tasks</a>
   <ul class="collapse">
-  <li><a href="#teil-a-bewertungsmodell-und-mindestanforderungen" id="toc-teil-a-bewertungsmodell-und-mindestanforderungen" class="nav-link" data-scroll-target="#teil-a-bewertungsmodell-und-mindestanforderungen"><span class="header-section-number">4.1</span> Teil A – Bewertungsmodell und Mindestanforderungen</a></li>
-  <li><a href="#teil-b-kriteriengewichtung-mit-ahp" id="toc-teil-b-kriteriengewichtung-mit-ahp" class="nav-link" data-scroll-target="#teil-b-kriteriengewichtung-mit-ahp"><span class="header-section-number">4.2</span> Teil B – Kriteriengewichtung mit AHP</a></li>
-  <li><a href="#teil-c-steiner-weber-modell" id="toc-teil-c-steiner-weber-modell" class="nav-link" data-scroll-target="#teil-c-steiner-weber-modell"><span class="header-section-number">4.3</span> Teil C – Steiner-Weber-Modell</a></li>
-  <li><a href="#teil-d-empfehlung-und-reflexion" id="toc-teil-d-empfehlung-und-reflexion" class="nav-link" data-scroll-target="#teil-d-empfehlung-und-reflexion"><span class="header-section-number">4.4</span> Teil D – Empfehlung und Reflexion</a></li>
+  <li><a href="#part-a-evaluation-model-and-minimum-requirements" id="toc-part-a-evaluation-model-and-minimum-requirements" class="nav-link" data-scroll-target="#part-a-evaluation-model-and-minimum-requirements"><span class="header-section-number">4.1</span> Part A – Evaluation model and minimum requirements</a></li>
+  <li><a href="#part-b-criteria-weighting-with-ahp" id="toc-part-b-criteria-weighting-with-ahp" class="nav-link" data-scroll-target="#part-b-criteria-weighting-with-ahp"><span class="header-section-number">4.2</span> Part B – Criteria weighting with AHP</a></li>
+  <li><a href="#part-c-steinerweber-model" id="toc-part-c-steinerweber-model" class="nav-link" data-scroll-target="#part-c-steinerweber-model"><span class="header-section-number">4.3</span> Part C – Steiner–Weber model</a></li>
+  <li><a href="#part-d-recommendation-and-reflection" id="toc-part-d-recommendation-and-reflection" class="nav-link" data-scroll-target="#part-d-recommendation-and-reflection"><span class="header-section-number">4.4</span> Part D – Recommendation and reflection</a></li>
   </ul></li>
-  <li><a href="#anhang-r-startercode" id="toc-anhang-r-startercode" class="nav-link" data-scroll-target="#anhang-r-startercode"><span class="header-section-number">5</span> Anhang: R-Startercode</a></li>
+  <li><a href="#appendix-r-starter-code" id="toc-appendix-r-starter-code" class="nav-link" data-scroll-target="#appendix-r-starter-code"><span class="header-section-number">5</span> Appendix: R starter code</a></li>
   </ul>
 </nav>
 </div>
@@ -2232,8 +2232,8 @@ vertical-align: -.125em;
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title">Fallstudie 2: Qualitative und kontinuierliche Standortplanung</h1>
-<p class="subtitle lead">Ein Distributionshub für Lateinamerika – AHP und Steiner-Weber-Modell</p>
+<h1 class="title">Case Study 2: Qualitative and Continuous Facility Location Planning</h1>
+<p class="subtitle lead">A distribution hub for Latin America – AHP and the Steiner–Weber model</p>
 </div>
 
 
@@ -2241,9 +2241,9 @@ vertical-align: -.125em;
 <div class="quarto-title-meta">
 
     <div>
-    <div class="quarto-title-meta-heading">Autor:in</div>
+    <div class="quarto-title-meta-heading">Author</div>
     <div class="quarto-title-meta-contents">
-             <p>Supply Chain Management – Gruppenarbeit </p>
+             <p>Supply Chain Management – Group Work </p>
           </div>
   </div>
     
@@ -2262,7 +2262,7 @@ vertical-align: -.125em;
 <i class="callout-icon"></i>
 </div>
 <div class="callout-title-container flex-fill">
-<span class="screen-reader-only">Hinweis</span>Steckbrief
+<span class="screen-reader-only">Note</span>Overview
 </div>
 </div>
 <div class="callout-body-container callout-body">
@@ -2273,63 +2273,63 @@ vertical-align: -.125em;
 </colgroup>
 <tbody>
 <tr class="odd">
-<td><strong>Thema</strong></td>
-<td>Standortwahl für einen internationalen Distributionshub</td>
+<td><strong>Topic</strong></td>
+<td>Location choice for an international distribution hub</td>
 </tr>
 <tr class="even">
-<td><strong>Vorlesungsbezug</strong></td>
-<td>Kapitel 4 des Readers: Nutzwertanalyse, AHP, Steiner-Weber-Modell (Center of Gravity, Weiszfeld)</td>
+<td><strong>Link to the lecture</strong></td>
+<td>Chapter 4 of the course reader: scoring model (utility analysis), AHP, Steiner–Weber model (centre of gravity, Weiszfeld)</td>
 </tr>
 <tr class="odd">
-<td><strong>Typ</strong></td>
-<td>Datenbasierte Fallstudie: Prognosedaten und Kostenparameter (vorgegeben) + frei verfügbare Länderindikatoren (eigene Recherche)</td>
+<td><strong>Type</strong></td>
+<td>Data-based case study: forecast data and cost parameters (given) + freely available country indicators (own research)</td>
 </tr>
 <tr class="even">
-<td><strong>Gruppengröße</strong></td>
-<td>3–6 Personen</td>
+<td><strong>Group size</strong></td>
+<td>3–6 people</td>
 </tr>
 <tr class="odd">
-<td><strong>Ergebnis</strong></td>
-<td>Präsentation (30 Min.) + Diskussion (15 Min.), Foliensatz (PDF) und reproduzierbarer R-/Quarto-Code</td>
+<td><strong>Deliverable</strong></td>
+<td>Presentation (30 min) + discussion (15 min), slide deck (PDF) and reproducible R/Quarto code</td>
 </tr>
 </tbody>
 </table>
 </div>
 </div>
-<section id="lernziele" class="level1" data-number="1">
-<h1 data-number="1"><span class="header-section-number">1</span> Lernziele</h1>
-<p>Nach Bearbeitung der Fallstudie können Sie</p>
+<section id="learning-objectives" class="level1" data-number="1">
+<h1 data-number="1"><span class="header-section-number">1</span> Learning objectives</h1>
+<p>After working through this case study, you will be able to</p>
 <ul>
-<li>ein mehrstufiges Standortbewertungsmodell aufbauen, das Mindestanforderungen (K.-o.-Kriterien), gewichtete Kriterien und eine Sensitivitätsanalyse umfasst,</li>
-<li>Kriteriengewichte mit dem <strong>Analytic Hierarchy Process (AHP)</strong> herleiten und die Konsistenz der Urteile prüfen,</li>
-<li>qualitative Kriterien mit frei verfügbaren Indikatoren (z. B. Weltbank-Daten) operationalisieren,</li>
-<li>den nachfrageoptimalen Standort mit dem <strong>Steiner-Weber-Modell</strong> auf realen Koordinaten bestimmen und seine Grenzen kritisch reflektieren,</li>
-<li>quantitative und qualitative Bewertungen zu einer begründeten Standortempfehlung verbinden.</li>
+<li>build a multi-level location evaluation model comprising minimum requirements (knock-out criteria), weighted criteria and a sensitivity analysis,</li>
+<li>derive criteria weights using the <strong>Analytic Hierarchy Process (AHP)</strong> and check the consistency of the judgements,</li>
+<li>operationalise qualitative criteria with freely available indicators (e.g. World Bank data),</li>
+<li>determine the demand-optimal location with the <strong>Steiner–Weber model</strong> on real coordinates and critically reflect on its limitations,</li>
+<li>combine quantitative and qualitative evaluations into a well-founded location recommendation.</li>
 </ul>
 </section>
-<section id="ausgangslage" class="level1" data-number="2">
-<h1 data-number="2"><span class="header-section-number">2</span> Ausgangslage</h1>
-<p>Die <strong>Luminé Cosmetics GmbH</strong> (fiktiv) ist ein mittelständischer Hersteller von Farbkosmetik mit Sitz in Hessen. Das Sortiment umfasst Lippenstifte, Mascara, Lidschatten und Nagellack und zeichnet sich durch viele Varianten, kurze Produktlebenszyklen und niedrige Stückpreise aus. Der Vertrieb ins Ausland läuft über <strong>Distributoren</strong>, die die Ware heute <em>ab Werk</em> (EXW) im zentralen Distributionszentrum in Hessen abholen. Transport, Verzollung und Weiterverteilung liegen damit vollständig beim Distributor.</p>
-<p>Lateinamerika ist der am schnellsten wachsende Absatzmarkt. Die Distributoren klagen jedoch über lange Lieferzeiten (Seefracht ab Europa plus Konsolidierung plus Verzollung: 6–10 Wochen), hohe Sicherheitsbestände und landesspezifische Etikettierungspflichten. Die Geschäftsführung prüft daher, ob ein <strong>regionaler Distributionshub in Lateinamerika</strong> aufgebaut werden soll. Der Hub soll Warenströme aus Europa bündeln, länderspezifisch etikettieren (Labeling) und die Distributoren der Region beliefern.</p>
+<section id="initial-situation" class="level1" data-number="2">
+<h1 data-number="2"><span class="header-section-number">2</span> Initial situation</h1>
+<p><strong>Luminé Cosmetics GmbH</strong> (fictitious) is a medium-sized manufacturer of colour cosmetics based in Hesse. Its range includes lipsticks, mascara, eyeshadow and nail polish and is characterised by many variants, short product life cycles and low unit prices. Sales abroad are handled by <strong>distributors</strong>, who currently collect the goods <em>ex works</em> (EXW) at the central distribution centre in Hesse. Transport, customs clearance and onward distribution are therefore entirely the distributor’s responsibility.</p>
+<p>Latin America is the fastest-growing sales market. However, the distributors complain about long delivery times (sea freight from Europe plus consolidation plus customs clearance: 6–10 weeks), high safety stocks and country-specific labelling requirements. Management is therefore considering whether to set up a <strong>regional distribution hub in Latin America</strong>. The hub would consolidate flows of goods from Europe, apply country-specific labels (labelling) and supply the distributors in the region.</p>
 <div class="callout callout-style-default callout-tip callout-titled">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
 <div class="callout-title-container flex-fill">
-<span class="screen-reader-only">Tipp</span>Leitfrage
+<span class="screen-reader-only">Tip</span>Guiding question
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p><em>Sollte Luminé einen regionalen Hub in Lateinamerika errichten, und wenn ja, an welchem Standort?</em></p>
+<p><em>Should Luminé set up a regional hub in Latin America and, if so, at which location?</em></p>
 </div>
 </div>
 </section>
-<section id="daten" class="level1" data-number="3">
-<h1 data-number="3"><span class="header-section-number">3</span> Daten</h1>
-<section id="absatzprognose-nach-ländern" class="level2" data-number="3.1">
-<h2 data-number="3.1" class="anchored" data-anchor-id="absatzprognose-nach-ländern"><span class="header-section-number">3.1</span> Absatzprognose nach Ländern</h2>
-<p>Die Prognose des Vertriebs (in Mio. Verkaufseinheiten pro Jahr) ist nach Zielmärkten aufgeschlüsselt. Als Koordinaten dient jeweils der wichtigste Distributionsstandort (in der Regel die größte Stadt bzw. der Sitz des Distributors).</p>
+<section id="data" class="level1" data-number="3">
+<h1 data-number="3"><span class="header-section-number">3</span> Data</h1>
+<section id="sales-forecast-by-country" class="level2" data-number="3.1">
+<h2 data-number="3.1" class="anchored" data-anchor-id="sales-forecast-by-country"><span class="header-section-number">3.1</span> Sales forecast by country</h2>
+<p>The sales department’s forecast (in million sales units per year) is broken down by target market. The coordinates used are those of the most important distribution location in each case (usually the largest city or the distributor’s headquarters).</p>
 <div class="cell">
 <details open class="code-fold">
 <summary>Code</summary>
@@ -2346,28 +2346,28 @@ vertical-align: -.125em;
 <span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>  <span class="at">p2032 =</span> <span class="fu">c</span>(<span class="fl">30.0</span>, <span class="fl">19.0</span>, <span class="fl">17.0</span>, <span class="fl">16.0</span>, <span class="fl">10.0</span>, <span class="fl">4.0</span>, <span class="fl">3.5</span>, <span class="fl">3.0</span>, <span class="fl">2.5</span>, <span class="fl">2.0</span>, <span class="fl">2.0</span>)</span>
 <span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>)</span>
 <span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>knitr<span class="sc">::</span><span class="fu">kable</span>(maerkte, <span class="at">digits =</span> <span class="dv">2</span>,</span>
-<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>             <span class="at">col.names =</span> <span class="fu">c</span>(<span class="st">&quot;Land&quot;</span>, <span class="st">&quot;Stadt&quot;</span>, <span class="st">&quot;Breite&quot;</span>, <span class="st">&quot;Länge&quot;</span>,</span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>             <span class="at">col.names =</span> <span class="fu">c</span>(<span class="st">&quot;Country&quot;</span>, <span class="st">&quot;City&quot;</span>, <span class="st">&quot;Latitude&quot;</span>, <span class="st">&quot;Longitude&quot;</span>,</span>
 <span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>                           <span class="st">&quot;2027&quot;</span>, <span class="st">&quot;2029&quot;</span>, <span class="st">&quot;2032&quot;</span>),</span>
-<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>             <span class="at">caption =</span> <span class="st">&quot;Absatzprognose in Mio. Einheiten/Jahr&quot;</span>)</span></code></pre></div><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>             <span class="at">caption =</span> <span class="st">&quot;Sales forecast in million units/year&quot;</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
 <div class="cell-output-display">
 <table class="caption-top table table-sm table-striped small">
-<caption>Absatzprognose in Mio. Einheiten/Jahr</caption>
+<caption>Sales forecast in million units/year</caption>
 <colgroup>
-<col style="width: 30%">
-<col style="width: 24%">
-<col style="width: 10%">
-<col style="width: 10%">
+<col style="width: 28%">
+<col style="width: 22%">
+<col style="width: 12%">
+<col style="width: 14%">
 <col style="width: 7%">
 <col style="width: 7%">
 <col style="width: 7%">
 </colgroup>
 <thead>
 <tr class="header">
-<th style="text-align: left;">Land</th>
-<th style="text-align: left;">Stadt</th>
-<th style="text-align: right;">Breite</th>
-<th style="text-align: right;">Länge</th>
+<th style="text-align: left;">Country</th>
+<th style="text-align: left;">City</th>
+<th style="text-align: right;">Latitude</th>
+<th style="text-align: right;">Longitude</th>
 <th style="text-align: right;">2027</th>
 <th style="text-align: right;">2029</th>
 <th style="text-align: right;">2032</th>
@@ -2478,9 +2478,9 @@ vertical-align: -.125em;
 </div>
 </div>
 </section>
-<section id="standortalternativen" class="level2" data-number="3.2">
-<h2 data-number="3.2" class="anchored" data-anchor-id="standortalternativen"><span class="header-section-number">3.2</span> Standortalternativen</h2>
-<p>Vorausgewählt wurden fünf Hafenstandorte, die jeweils über eine Freihandels- bzw. Sonderwirtschaftszone verfügen. Hinzu kommt der Status quo, also die zentrale Versorgung aus Deutschland. Die Kostenangaben sind Richtwerte, die ein Logistikberater für einen 3PL-Betrieb auf Basis von Angeboten geschätzt hat.</p>
+<section id="location-alternatives" class="level2" data-number="3.2">
+<h2 data-number="3.2" class="anchored" data-anchor-id="location-alternatives"><span class="header-section-number">3.2</span> Location alternatives</h2>
+<p>Five port locations have been pre-selected, each of which has a free trade zone or special economic zone. In addition, there is the status quo, i.e. central supply from Germany. The cost figures are guide values estimated by a logistics consultant for a 3PL operation on the basis of quotations.</p>
 <div class="cell">
 <details open class="code-fold">
 <summary>Code</summary>
@@ -2488,40 +2488,40 @@ vertical-align: -.125em;
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">hub   =</span> <span class="fu">c</span>(<span class="st">&quot;Colón&quot;</span>, <span class="st">&quot;Cartagena&quot;</span>, <span class="st">&quot;Puerto Limón/Moín&quot;</span>, <span class="st">&quot;Veracruz&quot;</span>, <span class="st">&quot;Callao&quot;</span>),</span>
 <span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">land  =</span> <span class="fu">c</span>(<span class="st">&quot;Panama&quot;</span>, <span class="st">&quot;Kolumbien&quot;</span>, <span class="st">&quot;Costa Rica&quot;</span>, <span class="st">&quot;Mexiko&quot;</span>, <span class="st">&quot;Peru&quot;</span>),</span>
 <span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">zone  =</span> <span class="fu">c</span>(<span class="st">&quot;Zona Libre de Colón&quot;</span>, <span class="st">&quot;Zona Franca Cartagena&quot;</span>,</span>
-<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>            <span class="st">&quot;Zona Franca Limón&quot;</span>, <span class="st">&quot;Recinto Fiscalizado Estratégico&quot;</span>, <span class="st">&quot;ZED Callao (in Aufbau)&quot;</span>),</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>            <span class="st">&quot;Zona Franca Limón&quot;</span>, <span class="st">&quot;Recinto Fiscalizado Estratégico&quot;</span>, <span class="st">&quot;ZED Callao (under construction)&quot;</span>),</span>
 <span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">lat   =</span> <span class="fu">c</span>(<span class="fl">9.36</span>, <span class="fl">10.39</span>, <span class="fl">10.00</span>, <span class="fl">19.17</span>, <span class="sc">-</span><span class="fl">12.05</span>),</span>
 <span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">lon   =</span> <span class="fu">c</span>(<span class="sc">-</span><span class="fl">79.90</span>, <span class="sc">-</span><span class="fl">75.51</span>, <span class="sc">-</span><span class="fl">83.03</span>, <span class="sc">-</span><span class="fl">96.13</span>, <span class="sc">-</span><span class="fl">77.15</span>),</span>
-<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">fix_musd     =</span> <span class="fu">c</span>(<span class="fl">2.4</span>, <span class="fl">1.9</span>, <span class="fl">1.7</span>, <span class="fl">2.1</span>, <span class="fl">1.8</span>),  <span class="co"># Fixkosten Hub (Mio. USD/Jahr)</span></span>
-<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>  <span class="at">handling_usd =</span> <span class="fu">c</span>(<span class="fl">0.050</span>, <span class="fl">0.045</span>, <span class="fl">0.048</span>, <span class="fl">0.042</span>, <span class="fl">0.046</span>),  <span class="co"># Handling inkl. Labeling je Einheit</span></span>
-<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>  <span class="at">see_tage     =</span> <span class="fu">c</span>(<span class="dv">18</span>, <span class="dv">17</span>, <span class="dv">19</span>, <span class="dv">20</span>, <span class="dv">28</span>)   <span class="co"># Seefracht-Transitzeit ab Rotterdam/Hamburg (Tage)</span></span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">fix_musd     =</span> <span class="fu">c</span>(<span class="fl">2.4</span>, <span class="fl">1.9</span>, <span class="fl">1.7</span>, <span class="fl">2.1</span>, <span class="fl">1.8</span>),  <span class="co"># fixed costs of hub (million USD/year)</span></span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>  <span class="at">handling_usd =</span> <span class="fu">c</span>(<span class="fl">0.050</span>, <span class="fl">0.045</span>, <span class="fl">0.048</span>, <span class="fl">0.042</span>, <span class="fl">0.046</span>),  <span class="co"># handling incl. labelling per unit</span></span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>  <span class="at">see_tage     =</span> <span class="fu">c</span>(<span class="dv">18</span>, <span class="dv">17</span>, <span class="dv">19</span>, <span class="dv">20</span>, <span class="dv">28</span>)   <span class="co"># sea freight transit time from Rotterdam/Hamburg (days)</span></span>
 <span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>)</span>
 <span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>knitr<span class="sc">::</span><span class="fu">kable</span>(hubs, <span class="at">digits =</span> <span class="dv">3</span>,</span>
-<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a>             <span class="at">col.names =</span> <span class="fu">c</span>(<span class="st">&quot;Hub&quot;</span>, <span class="st">&quot;Land&quot;</span>, <span class="st">&quot;Zone&quot;</span>, <span class="st">&quot;Breite&quot;</span>, <span class="st">&quot;Länge&quot;</span>,</span>
-<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a>                           <span class="st">&quot;Fixkosten [Mio. USD/a]&quot;</span>, <span class="st">&quot;Handling [USD/Einh.]&quot;</span>,</span>
-<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a>                           <span class="st">&quot;Seefracht [Tage]&quot;</span>))</span></code></pre></div><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a>             <span class="at">col.names =</span> <span class="fu">c</span>(<span class="st">&quot;Hub&quot;</span>, <span class="st">&quot;Country&quot;</span>, <span class="st">&quot;Zone&quot;</span>, <span class="st">&quot;Latitude&quot;</span>, <span class="st">&quot;Longitude&quot;</span>,</span>
+<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a>                           <span class="st">&quot;Fixed costs [million USD/yr]&quot;</span>, <span class="st">&quot;Handling [USD/unit]&quot;</span>,</span>
+<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a>                           <span class="st">&quot;Sea freight [days]&quot;</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
 <div class="cell-output-display">
 <table class="caption-top table table-sm table-striped small">
 <colgroup>
+<col style="width: 12%">
+<col style="width: 7%">
+<col style="width: 21%">
+<col style="width: 6%">
+<col style="width: 6%">
+<col style="width: 19%">
 <col style="width: 13%">
-<col style="width: 8%">
-<col style="width: 23%">
-<col style="width: 5%">
-<col style="width: 5%">
-<col style="width: 16%">
-<col style="width: 15%">
 <col style="width: 12%">
 </colgroup>
 <thead>
 <tr class="header">
 <th style="text-align: left;">Hub</th>
-<th style="text-align: left;">Land</th>
+<th style="text-align: left;">Country</th>
 <th style="text-align: left;">Zone</th>
-<th style="text-align: right;">Breite</th>
-<th style="text-align: right;">Länge</th>
-<th style="text-align: right;">Fixkosten [Mio. USD/a]</th>
-<th style="text-align: right;">Handling [USD/Einh.]</th>
-<th style="text-align: right;">Seefracht [Tage]</th>
+<th style="text-align: right;">Latitude</th>
+<th style="text-align: right;">Longitude</th>
+<th style="text-align: right;">Fixed costs [million USD/yr]</th>
+<th style="text-align: right;">Handling [USD/unit]</th>
+<th style="text-align: right;">Sea freight [days]</th>
 </tr>
 </thead>
 <tbody>
@@ -2568,7 +2568,7 @@ vertical-align: -.125em;
 <tr class="odd">
 <td style="text-align: left;">Callao</td>
 <td style="text-align: left;">Peru</td>
-<td style="text-align: left;">ZED Callao (in Aufbau)</td>
+<td style="text-align: left;">ZED Callao (under construction)</td>
 <td style="text-align: right;">-12.05</td>
 <td style="text-align: right;">-77.15</td>
 <td style="text-align: right;">1.8</td>
@@ -2579,123 +2579,123 @@ vertical-align: -.125em;
 </table>
 </div>
 </div>
-<p><strong>Weitere Kostenparameter (Richtwerte):</strong></p>
+<p><strong>Further cost parameters (guide values):</strong></p>
 <ul>
-<li>Seefracht Europa → Hub: ca. 2.800 USD je 40’-Container, ca. 40.000 Einheiten je Container (für alle Häfen der Karibikküste gleich; Callao +35 %).</li>
-<li>Weiterverteilung Hub → Markt (Feeder-Schiff/Lkw, inkl. Zollabwicklung): <strong>0,03 USD je 1.000 Einheiten und km</strong> (Luftlinie, Haversine-Distanz) zuzüglich 25 % Umwegfaktor.</li>
-<li>Unterstellen Sie für die Wirtschaftlichkeitsbetrachtung Direktverschiffung je Land mit durchschnittlich 45 % Containerauslastung (Kleinmengen, LCL-Zuschläge) und ein Handling in Deutschland von 0,08 USD/Einheit, ohne länderspezifisches Labeling vor Ort.</li>
-<li><strong>Status quo</strong>: Die Distributoren tragen die Transportkosten. Allerdings gewährt Luminé Cosmetics den Distributoren einen Rabatt auf den Abverkaufspreis, dessen Höhe von Land zu Land unterschiedlich ist. Dabei gilt je weiter das Land/der Markt von Deutschland entfernt ist, desto größer der Rabatt. Gehen Sie davon aus, dass der Rabatt bei 5 % für mittelamerikanische Länder und 10 % für südamerikanische Länder beträgt. Der durchschnittliche Warenwert beträgt 1 €/Einheit.</li>
+<li>Sea freight Europe → hub: approx. USD 2,800 per 40’ container, approx. 40,000 units per container (the same for all ports on the Caribbean coast; Callao +35%).</li>
+<li>Onward distribution hub → market (feeder ship/truck, incl. customs handling): <strong>USD 0.03 per 1,000 units and km</strong> (straight-line, haversine distance) plus a 25% detour factor.</li>
+<li>For the economic assessment of the status quo, assume direct shipping to each country with an average container utilisation of 45% (small quantities, LCL surcharges) and handling in Germany of USD 0.08/unit, without country-specific labelling on site.</li>
+<li><strong>Status quo</strong>: The distributors bear the transport costs. However, Luminé Cosmetics grants the distributors a discount on the selling price, the level of which differs from country to country. The further the country/market is from Germany, the larger the discount. Assume that the discount is 5% for Central American countries and 10% for South American countries. The average value of goods is €1/unit.</li>
 </ul>
 </section>
-<section id="aussagen-aus-experteninterviews" class="level2" data-number="3.3">
-<h2 data-number="3.3" class="anchored" data-anchor-id="aussagen-aus-experteninterviews"><span class="header-section-number">3.3</span> Aussagen aus Experteninterviews</h2>
-<p>Im Vorfeld wurden Gespräche mit internen und externen Fachleuten geführt. Die folgenden (fiktiven) Aussagen sollen Ihnen als Grundlage für die AHP-Paarvergleiche dienen:</p>
+<section id="statements-from-expert-interviews" class="level2" data-number="3.3">
+<h2 data-number="3.3" class="anchored" data-anchor-id="statements-from-expert-interviews"><span class="header-section-number">3.3</span> Statements from expert interviews</h2>
+<p>Interviews were conducted in advance with internal and external experts. The following (fictitious) statements are intended to serve as the basis for the AHP pairwise comparisons:</p>
 <blockquote class="blockquote">
-<p><strong>Leiter Supply Chain:</strong> »Ohne klaren Kostenvorteil bekommen wir keinen Hub genehmigt. Aber die Lieferzeit ist für unsere Distributoren fast genauso wichtig – bei Trendfarben verlieren wir sonst die Saison.«</p>
+<p><strong>Head of Supply Chain:</strong> “Without a clear cost advantage, we won’t get a hub approved. But delivery time is almost as important for our distributors – otherwise we lose the season for trend colours.”</p>
 </blockquote>
 <blockquote class="blockquote">
-<p><strong>Head of International Sales:</strong> »Für mich zählt, wo das Volumen der Zukunft liegt. Mexiko, Peru und Chile sind die Wachstumstreiber. Ein Hub, der diese Märkte nicht schnell erreicht, bringt uns wenig.«</p>
+<p><strong>Head of International Sales:</strong> “What matters to me is where the volume of the future lies. Mexico, Peru and Chile are the growth drivers. A hub that doesn’t reach these markets quickly is of little use to us.”</p>
 </blockquote>
 <blockquote class="blockquote">
-<p><strong>Regulatory Affairs:</strong> »Unterschätzen Sie nicht die Registrierung und Kennzeichnung. Ein Hub in einer Freihandelszone mit Re-Export-Erfahrung spart uns enorm viel Aufwand – das ist aber eher Voraussetzung als Differenzierungsmerkmal.«</p>
+<p><strong>Regulatory Affairs:</strong> “Don’t underestimate registration and labelling. A hub in a free trade zone with re-export experience saves us an enormous amount of effort – but that’s more of a prerequisite than a differentiator.”</p>
 </blockquote>
 <blockquote class="blockquote">
-<p><strong>Externer 3PL-Berater:</strong> »Politische Stabilität ist ein Filter: Wenn ein Land nicht stabil ist, investiert man dort keinen Hub, egal wie gut der Hafen ist. Unter den stabilen Ländern ist sie dann aber nicht mehr so entscheidend wie Infrastruktur und Kosten.«</p>
+<p><strong>External 3PL consultant:</strong> “Political stability is a filter: if a country isn’t stable, you don’t invest in a hub there, no matter how good the port is. Among the stable countries, however, it is no longer as decisive as infrastructure and costs.”</p>
 </blockquote>
 <blockquote class="blockquote">
-<p><strong>CFO:</strong> »Wir haben mit einem Hub im Nahen Osten gute Erfahrungen gemacht – aber dort stimmte auch die Hafen- und 3PL-Infrastruktur. Das ist für mich das zweitwichtigste Kriterium nach den Kosten.«</p>
+<p><strong>CFO:</strong> “We’ve had good experiences with a hub in the Middle East – but the port and 3PL infrastructure there was also right. For me, that’s the second most important criterion after costs.”</p>
 </blockquote>
 </section>
-<section id="frei-verfügbare-länderindikatoren-eigene-recherche" class="level2" data-number="3.4">
-<h2 data-number="3.4" class="anchored" data-anchor-id="frei-verfügbare-länderindikatoren-eigene-recherche"><span class="header-section-number">3.4</span> Frei verfügbare Länderindikatoren (eigene Recherche)</h2>
-<p>Zur Operationalisierung der qualitativen Kriterien nutzen Sie <strong>reale, frei verfügbare Daten</strong>, zum Beispiel:</p>
+<section id="freely-available-country-indicators-own-research" class="level2" data-number="3.4">
+<h2 data-number="3.4" class="anchored" data-anchor-id="freely-available-country-indicators-own-research"><span class="header-section-number">3.4</span> Freely available country indicators (own research)</h2>
+<p>To operationalise the qualitative criteria, use <strong>real, freely available data</strong>, for example:</p>
 <table class="caption-top table">
 <thead>
 <tr class="header">
-<th>Kriterium</th>
-<th>Mögliche Indikatoren</th>
-<th>Quelle</th>
+<th>Criterion</th>
+<th>Possible indicators</th>
+<th>Source</th>
 </tr>
 </thead>
 <tbody>
 <tr class="odd">
-<td>Logistische Leistungsfähigkeit</td>
-<td>Logistics Performance Index (LPI) 2023, Gesamt- und Teilscores</td>
-<td>Weltbank, <a href="https://lpi.worldbank.org" class="uri">https://lpi.worldbank.org</a></td>
+<td>Logistics performance</td>
+<td>Logistics Performance Index (LPI) 2023, overall and sub-scores</td>
+<td>World Bank, <a href="https://lpi.worldbank.org" class="uri">https://lpi.worldbank.org</a></td>
 </tr>
 <tr class="even">
-<td>Politische und wirtschaftliche Stabilität</td>
+<td>Political and economic stability</td>
 <td>Worldwide Governance Indicators: <em>Political Stability and Absence of Violence</em>, <em>Rule of Law</em></td>
-<td>Weltbank, <a href="https://www.worldbank.org/en/publication/worldwide-governance-indicators" class="uri">https://www.worldbank.org/en/publication/worldwide-governance-indicators</a></td>
+<td>World Bank, <a href="https://www.worldbank.org/en/publication/worldwide-governance-indicators" class="uri">https://www.worldbank.org/en/publication/worldwide-governance-indicators</a></td>
 </tr>
 <tr class="odd">
-<td>Hafenleistung</td>
-<td>Containerumschlag (TEU) der wichtigsten Häfen</td>
+<td>Port performance</td>
+<td>Container throughput (TEU) of the main ports</td>
 <td>CEPAL/ECLAC Port Activity Report</td>
 </tr>
 <tr class="even">
-<td>Regulatorik</td>
-<td>Zollabwicklung (LPI-Teilscore <em>Customs</em>), Regeln der Freihandelszone</td>
-<td>LPI, Websites der Freizonen</td>
+<td>Regulation</td>
+<td>Customs clearance (LPI sub-score <em>Customs</em>), rules of the free trade zone</td>
+<td>LPI, websites of the free zones</td>
 </tr>
 <tr class="odd">
-<td>Marktgeschwindigkeit</td>
-<td>Transitzeiten, Anzahl direkter Liniendienste</td>
-<td>Fahrpläne der Reedereien, Tabelle oben</td>
+<td>Speed to market</td>
+<td>Transit times, number of direct liner services</td>
+<td>Shipping lines’ schedules, table above</td>
 </tr>
 </tbody>
 </table>
 </section>
 </section>
-<section id="aufgaben" class="level1" data-number="4">
-<h1 data-number="4"><span class="header-section-number">4</span> Aufgaben</h1>
-<section id="teil-a-bewertungsmodell-und-mindestanforderungen" class="level2" data-number="4.1">
-<h2 data-number="4.1" class="anchored" data-anchor-id="teil-a-bewertungsmodell-und-mindestanforderungen"><span class="header-section-number">4.1</span> Teil A – Bewertungsmodell und Mindestanforderungen</h2>
-<p><strong>A1.</strong> Definieren Sie ein hierarchisches Zielsystem mit <strong>fünf bis sieben Kriterien</strong> und ordnen Sie jedes Kriterium einer Ebene zu: Mindestanforderung (K.-o.-Kriterium), gewichtetes Bewertungskriterium oder Risiko- bzw. Sensitivitätsfaktor.</p>
-<p><strong>A2.</strong> Legen Sie für die Mindestanforderungen Kriterien/Messgrößen und legen Sie Schwellenwerte fest (z. B. »WGI Political Stability &gt; −0,5«), recherchieren Sie die Werte für die fünf Hub-Länder und sortieren Sie Alternativen gegebenenfalls aus.</p>
+<section id="tasks" class="level1" data-number="4">
+<h1 data-number="4"><span class="header-section-number">4</span> Tasks</h1>
+<section id="part-a-evaluation-model-and-minimum-requirements" class="level2" data-number="4.1">
+<h2 data-number="4.1" class="anchored" data-anchor-id="part-a-evaluation-model-and-minimum-requirements"><span class="header-section-number">4.1</span> Part A – Evaluation model and minimum requirements</h2>
+<p><strong>A1.</strong> Define a hierarchical system of objectives with <strong>five to seven criteria</strong> and assign each criterion to a level: minimum requirement (knock-out criterion), weighted evaluation criterion, or risk/sensitivity factor.</p>
+<p><strong>A2.</strong> For the minimum requirements, define criteria/measures and set threshold values (e.g. “WGI Political Stability &gt; −0.5”), research the values for the five hub countries and eliminate alternatives where necessary.</p>
 </section>
-<section id="teil-b-kriteriengewichtung-mit-ahp" class="level2" data-number="4.2">
-<h2 data-number="4.2" class="anchored" data-anchor-id="teil-b-kriteriengewichtung-mit-ahp"><span class="header-section-number">4.2</span> Teil B – Kriteriengewichtung mit AHP</h2>
-<p><strong>B1.</strong> Leiten Sie aus den Experteninterviews eine Paarvergleichsmatrix der gewichteten Kriterien auf der AHP-Skala ab. Dokumentieren Sie, auf welche Aussage Sie sich bei jedem Vergleich stützen.</p>
-<p><strong>B2.</strong> Berechnen Sie den Prioritätsvektor sowie Konsistenzindex (CI) und Konsistenzverhältnis (CR). Ist Ihre Matrix hinreichend konsistent (CR &lt; 0,1)? Falls nicht, passen Sie die inkonsistentesten Urteile begründet an.</p>
+<section id="part-b-criteria-weighting-with-ahp" class="level2" data-number="4.2">
+<h2 data-number="4.2" class="anchored" data-anchor-id="part-b-criteria-weighting-with-ahp"><span class="header-section-number">4.2</span> Part B – Criteria weighting with AHP</h2>
+<p><strong>B1.</strong> Derive a pairwise comparison matrix of the weighted criteria on the AHP scale from the expert interviews. Document which statement you rely on for each comparison.</p>
+<p><strong>B2.</strong> Calculate the priority vector as well as the consistency index (CI) and consistency ratio (CR). Is your matrix sufficiently consistent (CR &lt; 0.1)? If not, adjust the most inconsistent judgements with justification.</p>
 </section>
-<section id="teil-c-steiner-weber-modell" class="level2" data-number="4.3">
-<h2 data-number="4.3" class="anchored" data-anchor-id="teil-c-steiner-weber-modell"><span class="header-section-number">4.3</span> Teil C – Steiner-Weber-Modell</h2>
-<p><strong>C1.</strong> Bestimmen Sie den nachfragegewichteten optimalen Standort für die Prognosen <strong>2027 und 2032</strong>: zuerst den Schwerpunkt (Center of Gravity), dann das Optimum mit dem <strong>Weiszfeld-Algorithmus</strong>. Rechnen Sie die geografischen Koordinaten vorher in ein metrisches Koordinatensystem um (siehe Startercode) und begründen Sie, warum das notwendig ist.</p>
-<p><strong>C2.</strong> Stellen Sie Märkte, Hub-Kandidaten und optimale Punkte auf einer Karte dar. Berechnen Sie für jeden Hub-Kandidaten die <strong>gewichtete Distanz</strong> zu allen Märkten und die jährlichen Weiterverteilungskosten. Wie groß ist der »Preis« der Beschränkung auf reale Hafenstandorte gegenüber dem kontinuierlichen Optimum?</p>
-<p><strong>C3.</strong> Wählen Sie einen Standort aus und bestimmen Sie die erwarteten Distributionskosten. Ergibt sich eine Verbesserung im Vergleich zum Status quo?</p>
+<section id="part-c-steinerweber-model" class="level2" data-number="4.3">
+<h2 data-number="4.3" class="anchored" data-anchor-id="part-c-steinerweber-model"><span class="header-section-number">4.3</span> Part C – Steiner–Weber model</h2>
+<p><strong>C1.</strong> Determine the demand-weighted optimal location for the <strong>2027 and 2032</strong> forecasts: first the centre of gravity, then the optimum using the <strong>Weiszfeld algorithm</strong>. First convert the geographical coordinates into a metric coordinate system (see starter code) and explain why this is necessary.</p>
+<p><strong>C2.</strong> Show markets, hub candidates and optimal points on a map. For each hub candidate, calculate the <strong>weighted distance</strong> to all markets and the annual onward distribution costs. How large is the “price” of restricting the choice to real port locations compared with the continuous optimum?</p>
+<p><strong>C3.</strong> Select a location and determine the expected distribution costs. Is there an improvement compared with the status quo?</p>
 </section>
-<section id="teil-d-empfehlung-und-reflexion" class="level2" data-number="4.4">
-<h2 data-number="4.4" class="anchored" data-anchor-id="teil-d-empfehlung-und-reflexion"><span class="header-section-number">4.4</span> Teil D – Empfehlung und Reflexion</h2>
-<p><strong>D1. Gesamtbewertung.</strong> Bewerten Sie die verbleibenden Hub-Kandidaten und den <strong>Status quo</strong> auf allen gewichteten Kriterien (Punktbewertung 1–5 auf Basis der recherchierten Indikatoren und Ihrer Ergebnisse aus Teil C) und berechnen Sie die Gesamtbewertung.</p>
-<p><strong>D2. Sensitivität.</strong> Prüfen Sie die Robustheit Ihrer Rangfolge in mindestens zwei Szenarien: Variation des Kostengewichts um ± 50 %, Wegfall des mexikanischen Marktes (Belieferung über das Joint Venture vor Ort) oder Eintritt der Prognose 2032 zu nur 60 %.</p>
-<p><strong>D3. Empfehlung.</strong> Formulieren Sie eine Standortempfehlung für die Geschäftsführung mit den wesentlichen Risiken.</p>
-<p><strong>D4. Reflexion.</strong> Beantworten Sie in der Präsentation die folgenden Fragen. Sie bilden den Ausgangspunkt der anschließenden Diskussion:</p>
+<section id="part-d-recommendation-and-reflection" class="level2" data-number="4.4">
+<h2 data-number="4.4" class="anchored" data-anchor-id="part-d-recommendation-and-reflection"><span class="header-section-number">4.4</span> Part D – Recommendation and reflection</h2>
+<p><strong>D1. Overall evaluation.</strong> Evaluate the remaining hub candidates and the <strong>status quo</strong> on all weighted criteria (scores 1–5 based on the researched indicators and your results from Part C) and calculate the overall score.</p>
+<p><strong>D2. Sensitivity.</strong> Test the robustness of your ranking in at least two scenarios: varying the cost weight by ± 50%, loss of the Mexican market (supply via the local joint venture), or the 2032 forecast materialising at only 60%.</p>
+<p><strong>D3. Recommendation.</strong> Formulate a location recommendation for management, including the main risks.</p>
+<p><strong>D4. Reflection.</strong> Answer the following questions in your presentation. They form the starting point for the subsequent discussion:</p>
 <ol type="1">
-<li>Wie stark hängt Ihr Ergebnis von den subjektiven Paarvergleichen ab? Hätte eine andere Gruppe mit denselben Interviews eine andere Empfehlung abgeleitet, und wäre das ein Problem?</li>
-<li>Was sagt ein Steiner-Weber-Optimum aus, das im Meer oder in den Anden liegt? In welchen Situationen ist ein kontinuierliches Modell trotzdem nützlich?</li>
-<li>Welche Kriterien ließen sich gut, welche kaum mit öffentlichen Indikatoren messen? Wie beeinflusst diese Asymmetrie das Ergebnis?</li>
-<li>K.-o.-Kriterien schließen aus, eine gewichtete Summe gleicht aus. Welche Kriterien sollten Ihrer Meinung nach nicht kompensierbar sein, und warum?</li>
-<li>Wie würden die Vertriebsleitung in Lateinamerika und die Zentrale in Deutschland die Kriterien vermutlich unterschiedlich gewichten? Wie sollte ein international tätiges Unternehmen mit solchen Perspektivunterschieden umgehen?</li>
+<li>How strongly does your result depend on the subjective pairwise comparisons? Would another group have derived a different recommendation from the same interviews, and would that be a problem?</li>
+<li>What does a Steiner–Weber optimum that lies in the sea or in the Andes tell us? In which situations is a continuous model nevertheless useful?</li>
+<li>Which criteria could be measured well with public indicators, and which hardly at all? How does this asymmetry affect the result?</li>
+<li>Knock-out criteria exclude, a weighted sum compensates. Which criteria, in your opinion, should not be compensable, and why?</li>
+<li>How would sales management in Latin America and headquarters in Germany probably weight the criteria differently? How should an internationally operating company deal with such differences in perspective?</li>
 </ol>
 </section>
 </section>
-<section id="anhang-r-startercode" class="level1" data-number="5">
-<h1 data-number="5"><span class="header-section-number">5</span> Anhang: R-Startercode</h1>
-<p>Die Funktionen <code>ahp_priority_vector()</code>, <code>ahp_consistency()</code>, <code>center_of_gravity()</code>, <code>weiszfeld()</code> und <code>haversine()</code> stehen in <code>R/scm_functions.R</code> zur Verfügung.</p>
+<section id="appendix-r-starter-code" class="level1" data-number="5">
+<h1 data-number="5"><span class="header-section-number">5</span> Appendix: R starter code</h1>
+<p>The functions <code>ahp_priority_vector()</code>, <code>ahp_consistency()</code>, <code>center_of_gravity()</code>, <code>weiszfeld()</code> and <code>haversine()</code> are available in <code>R/scm_functions.R</code>.</p>
 <div class="cell">
 <details open class="code-fold">
 <summary>Code</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">source</span>(<span class="st">&quot;../R/scm_functions.R&quot;</span>)</span>
 <span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="co"># --- AHP: Beispielmatrix (Kriterien K1..K3) – durch eigene Urteile ersetzen</span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="co"># --- AHP: example matrix (criteria K1..K3) – replace with your own judgements</span></span>
 <span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>A <span class="ot">&lt;-</span> <span class="fu">matrix</span>(<span class="fu">c</span>(<span class="dv">1</span>,   <span class="dv">2</span>,   <span class="dv">3</span>,</span>
 <span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>              <span class="dv">1</span><span class="sc">/</span><span class="dv">2</span>, <span class="dv">1</span>,   <span class="dv">2</span>,</span>
 <span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>              <span class="dv">1</span><span class="sc">/</span><span class="dv">3</span>, <span class="dv">1</span><span class="sc">/</span><span class="dv">2</span>, <span class="dv">1</span>), <span class="at">nrow =</span> <span class="dv">3</span>, <span class="at">byrow =</span> <span class="cn">TRUE</span>)</span>
 <span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>w <span class="ot">&lt;-</span> <span class="fu">ahp_priority_vector</span>(A)</span>
 <span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a><span class="fu">ahp_consistency</span>(A, w)</span>
 <span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a><span class="co"># --- Projektion in km (äquidistant, Referenzbreite phi0)</span></span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a><span class="co"># --- Projection in km (equidistant, reference latitude phi0)</span></span>
 <span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>R_erde <span class="ot">&lt;-</span> <span class="dv">6371</span></span>
 <span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a>phi0   <span class="ot">&lt;-</span> <span class="fu">mean</span>(maerkte<span class="sc">$</span>lat) <span class="sc">*</span> pi <span class="sc">/</span> <span class="dv">180</span></span>
 <span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a>proj <span class="ot">&lt;-</span> <span class="cf">function</span>(lat, lon) <span class="fu">data.frame</span>(</span>
@@ -2706,16 +2706,16 @@ vertical-align: -.125em;
 <span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a>cog <span class="ot">&lt;-</span> <span class="fu">center_of_gravity</span>(coords)</span>
 <span id="cb3-19"><a href="#cb3-19" aria-hidden="true" tabindex="-1"></a>ws  <span class="ot">&lt;-</span> <span class="fu">weiszfeld</span>(coords, <span class="at">max_iter =</span> <span class="dv">500</span>)</span>
 <span id="cb3-20"><a href="#cb3-20" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-21"><a href="#cb3-21" aria-hidden="true" tabindex="-1"></a><span class="co"># Rückprojektion in Breite/Länge</span></span>
+<span id="cb3-21"><a href="#cb3-21" aria-hidden="true" tabindex="-1"></a><span class="co"># Back-projection to latitude/longitude</span></span>
 <span id="cb3-22"><a href="#cb3-22" aria-hidden="true" tabindex="-1"></a><span class="fu">c</span>(<span class="at">lat =</span> ws<span class="sc">$</span>y <span class="sc">/</span> R_erde <span class="sc">*</span> <span class="dv">180</span> <span class="sc">/</span> pi,</span>
 <span id="cb3-23"><a href="#cb3-23" aria-hidden="true" tabindex="-1"></a>  <span class="at">lon =</span> ws<span class="sc">$</span>x <span class="sc">/</span> (R_erde <span class="sc">*</span> <span class="fu">cos</span>(phi0)) <span class="sc">*</span> <span class="dv">180</span> <span class="sc">/</span> pi)</span>
 <span id="cb3-24"><a href="#cb3-24" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-25"><a href="#cb3-25" aria-hidden="true" tabindex="-1"></a><span class="co"># --- Gewichtete Haversine-Distanz je Hub (Mio. Einheiten * km)</span></span>
+<span id="cb3-25"><a href="#cb3-25" aria-hidden="true" tabindex="-1"></a><span class="co"># --- Weighted haversine distance per hub (million units * km)</span></span>
 <span id="cb3-26"><a href="#cb3-26" aria-hidden="true" tabindex="-1"></a>wd <span class="ot">&lt;-</span> <span class="fu">sapply</span>(<span class="fu">seq_len</span>(<span class="fu">nrow</span>(hubs)), <span class="cf">function</span>(h)</span>
 <span id="cb3-27"><a href="#cb3-27" aria-hidden="true" tabindex="-1"></a>  <span class="fu">sum</span>(maerkte<span class="sc">$</span>p2032 <span class="sc">*</span> <span class="fu">haversine</span>(hubs<span class="sc">$</span>lat[h], hubs<span class="sc">$</span>lon[h],</span>
 <span id="cb3-28"><a href="#cb3-28" aria-hidden="true" tabindex="-1"></a>                                maerkte<span class="sc">$</span>lat, maerkte<span class="sc">$</span>lon)))</span>
 <span id="cb3-29"><a href="#cb3-29" aria-hidden="true" tabindex="-1"></a><span class="fu">names</span>(wd) <span class="ot">&lt;-</span> hubs<span class="sc">$</span>hub</span>
-<span id="cb3-30"><a href="#cb3-30" aria-hidden="true" tabindex="-1"></a>wd</span></code></pre></div><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb3-30"><a href="#cb3-30" aria-hidden="true" tabindex="-1"></a>wd</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
 </div>
 </section>
@@ -2747,12 +2747,12 @@ vertical-align: -.125em;
       // flash "checked"
       button.classList.add('code-copy-button-checked');
       var currentTitle = button.getAttribute("title");
-      button.setAttribute("title", "Kopiert");
+      button.setAttribute("title", "Copied!");
       let tooltip;
       if (window.bootstrap) {
         button.setAttribute("data-bs-toggle", "tooltip");
         button.setAttribute("data-bs-placement", "left");
-        button.setAttribute("data-bs-title", "Kopiert");
+        button.setAttribute("data-bs-title", "Copied!");
         tooltip = new bootstrap.Tooltip(button, 
           { trigger: "manual", 
             customClass: "code-copy-button-tooltip",

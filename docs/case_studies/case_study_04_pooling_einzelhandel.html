@@ -1,14 +1,14 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml" lang="de" xml:lang="de"><head>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
 
 <meta charset="utf-8">
 <meta name="generator" content="quarto-1.9.38">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
-<meta name="author" content="Supply Chain Management – Gruppenarbeit">
+<meta name="author" content="Supply Chain Management – Group Work">
 
-<title>Fallstudie 4: Risk Pooling im E-Commerce</title>
+<title>Case Study 4: Risk Pooling in E-Commerce</title>
 <style>
 
 code{white-space: pre-wrap;}
@@ -2344,25 +2344,25 @@ window.Quarto = {
 <div id="quarto-content" class="page-columns page-rows-contents page-layout-article">
 <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
   <nav id="TOC" role="doc-toc" class="toc-active">
-    <h2 id="toc-title">Inhaltsverzeichnis</h2>
+    <h2 id="toc-title">Table of contents</h2>
    
   <ul class="collapse">
-  <li><a href="#lernziele" id="toc-lernziele" class="nav-link active" data-scroll-target="#lernziele"><span class="header-section-number">1</span> Lernziele</a></li>
-  <li><a href="#ausgangslage" id="toc-ausgangslage" class="nav-link" data-scroll-target="#ausgangslage"><span class="header-section-number">2</span> Ausgangslage</a></li>
-  <li><a href="#daten" id="toc-daten" class="nav-link" data-scroll-target="#daten"><span class="header-section-number">3</span> Daten</a>
+  <li><a href="#learning-objectives" id="toc-learning-objectives" class="nav-link active" data-scroll-target="#learning-objectives"><span class="header-section-number">1</span> Learning objectives</a></li>
+  <li><a href="#initial-situation" id="toc-initial-situation" class="nav-link" data-scroll-target="#initial-situation"><span class="header-section-number">2</span> Initial situation</a></li>
+  <li><a href="#data" id="toc-data" class="nav-link" data-scroll-target="#data"><span class="header-section-number">3</span> Data</a>
   <ul class="collapse">
-  <li><a href="#datensatz" id="toc-datensatz" class="nav-link" data-scroll-target="#datensatz"><span class="header-section-number">3.1</span> Datensatz</a></li>
-  <li><a href="#planungsparameter" id="toc-planungsparameter" class="nav-link" data-scroll-target="#planungsparameter"><span class="header-section-number">3.2</span> Planungsparameter</a></li>
+  <li><a href="#dataset" id="toc-dataset" class="nav-link" data-scroll-target="#dataset"><span class="header-section-number">3.1</span> Dataset</a></li>
+  <li><a href="#planning-parameters" id="toc-planning-parameters" class="nav-link" data-scroll-target="#planning-parameters"><span class="header-section-number">3.2</span> Planning parameters</a></li>
   </ul></li>
-  <li><a href="#aufgaben" id="toc-aufgaben" class="nav-link" data-scroll-target="#aufgaben"><span class="header-section-number">4</span> Aufgaben</a>
+  <li><a href="#tasks" id="toc-tasks" class="nav-link" data-scroll-target="#tasks"><span class="header-section-number">4</span> Tasks</a>
   <ul class="collapse">
-  <li><a href="#teil-a-datenaufbereitung-und-exploration" id="toc-teil-a-datenaufbereitung-und-exploration" class="nav-link" data-scroll-target="#teil-a-datenaufbereitung-und-exploration"><span class="header-section-number">4.1</span> Teil A – Datenaufbereitung und Exploration</a></li>
-  <li><a href="#teil-b-standort-pooling" id="toc-teil-b-standort-pooling" class="nav-link" data-scroll-target="#teil-b-standort-pooling"><span class="header-section-number">4.2</span> Teil B – Standort-Pooling</a></li>
-  <li><a href="#teil-c-produkt-pooling-und-selektive-bevorratung" id="toc-teil-c-produkt-pooling-und-selektive-bevorratung" class="nav-link" data-scroll-target="#teil-c-produkt-pooling-und-selektive-bevorratung"><span class="header-section-number">4.3</span> Teil C – Produkt-Pooling und selektive Bevorratung</a></li>
-  <li><a href="#teil-d-empfehlung-und-reflexion" id="toc-teil-d-empfehlung-und-reflexion" class="nav-link" data-scroll-target="#teil-d-empfehlung-und-reflexion"><span class="header-section-number">4.4</span> Teil D – Empfehlung und Reflexion</a></li>
+  <li><a href="#part-a-data-preparation-and-exploration" id="toc-part-a-data-preparation-and-exploration" class="nav-link" data-scroll-target="#part-a-data-preparation-and-exploration"><span class="header-section-number">4.1</span> Part A – Data preparation and exploration</a></li>
+  <li><a href="#part-b-location-pooling" id="toc-part-b-location-pooling" class="nav-link" data-scroll-target="#part-b-location-pooling"><span class="header-section-number">4.2</span> Part B – Location pooling</a></li>
+  <li><a href="#part-c-product-pooling-and-selective-stocking" id="toc-part-c-product-pooling-and-selective-stocking" class="nav-link" data-scroll-target="#part-c-product-pooling-and-selective-stocking"><span class="header-section-number">4.3</span> Part C – Product pooling and selective stocking</a></li>
+  <li><a href="#part-d-recommendation-and-reflection" id="toc-part-d-recommendation-and-reflection" class="nav-link" data-scroll-target="#part-d-recommendation-and-reflection"><span class="header-section-number">4.4</span> Part D – Recommendation and reflection</a></li>
   </ul></li>
-  <li><a href="#literatur" id="toc-literatur" class="nav-link" data-scroll-target="#literatur"><span class="header-section-number">5</span> Literatur</a></li>
-  <li><a href="#anhang-r-startercode" id="toc-anhang-r-startercode" class="nav-link" data-scroll-target="#anhang-r-startercode"><span class="header-section-number">6</span> Anhang: R-Startercode</a></li>
+  <li><a href="#literature" id="toc-literature" class="nav-link" data-scroll-target="#literature"><span class="header-section-number">5</span> Literature</a></li>
+  <li><a href="#appendix-r-starter-code" id="toc-appendix-r-starter-code" class="nav-link" data-scroll-target="#appendix-r-starter-code"><span class="header-section-number">6</span> Appendix: R starter code</a></li>
   </ul>
 </nav>
 </div>
@@ -2370,8 +2370,8 @@ window.Quarto = {
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title">Fallstudie 4: Risk Pooling im E-Commerce</h1>
-<p class="subtitle lead">Zentral- oder Regionallager für einen brasilianischen Online-Marktplatz (Olist-Daten)</p>
+<h1 class="title">Case Study 4: Risk Pooling in E-Commerce</h1>
+<p class="subtitle lead">Central or regional warehouses for a Brazilian online marketplace (Olist data)</p>
 </div>
 
 
@@ -2379,9 +2379,9 @@ window.Quarto = {
 <div class="quarto-title-meta">
 
     <div>
-    <div class="quarto-title-meta-heading">Autor:in</div>
+    <div class="quarto-title-meta-heading">Author</div>
     <div class="quarto-title-meta-contents">
-             <p>Supply Chain Management – Gruppenarbeit </p>
+             <p>Supply Chain Management – Group Work </p>
           </div>
   </div>
     
@@ -2400,7 +2400,7 @@ window.Quarto = {
 <i class="callout-icon"></i>
 </div>
 <div class="callout-title-container flex-fill">
-<span class="screen-reader-only">Hinweis</span>Steckbrief
+<span class="screen-reader-only">Note</span>Overview
 </div>
 </div>
 <div class="callout-body-container callout-body">
@@ -2411,57 +2411,57 @@ window.Quarto = {
 </colgroup>
 <tbody>
 <tr class="odd">
-<td><strong>Thema</strong></td>
-<td>Standort- und Produkt-Pooling, Zentralisierung von Beständen</td>
+<td><strong>Topic</strong></td>
+<td>Location and product pooling, centralisation of inventories</td>
 </tr>
 <tr class="even">
-<td><strong>Vorlesungsbezug</strong></td>
-<td>Kapitel 6 des Readers: Sicherheitsbestand, Servicegrad, Quadratwurzelgesetz, Einfluss der Korrelation</td>
+<td><strong>Link to the lecture</strong></td>
+<td>Chapter 6 of the course reader: safety stock, service level, square-root law, influence of correlation</td>
 </tr>
 <tr class="odd">
-<td><strong>Typ</strong></td>
-<td>Datenbasierte Fallstudie mit <strong>realen Bestelldaten</strong> (<em>Brazilian E-Commerce Public Dataset by Olist</em>, Kaggle)</td>
+<td><strong>Type</strong></td>
+<td>Data-based case study with <strong>real order data</strong> (<em>Brazilian E-Commerce Public Dataset by Olist</em>, Kaggle)</td>
 </tr>
 <tr class="even">
-<td><strong>Gruppengröße</strong></td>
-<td>3–6 Personen</td>
+<td><strong>Group size</strong></td>
+<td>3–6 people</td>
 </tr>
 <tr class="odd">
-<td><strong>Ergebnis</strong></td>
-<td>Präsentation (30 Min.) + Diskussion (15 Min.), Foliensatz (PDF) und reproduzierbarer R-/Quarto-Code</td>
+<td><strong>Deliverable</strong></td>
+<td>Presentation (30 min) + discussion (15 min), slide deck (PDF) and reproducible R/Quarto code</td>
 </tr>
 </tbody>
 </table>
 </div>
 </div>
-<section id="lernziele" class="level1" data-number="1">
-<h1 data-number="1"><span class="header-section-number">1</span> Lernziele</h1>
-<p>Nach Bearbeitung der Fallstudie können Sie</p>
+<section id="learning-objectives" class="level1" data-number="1">
+<h1 data-number="1"><span class="header-section-number">1</span> Learning objectives</h1>
+<p>After working through this case study, you will be able to</p>
 <ul>
-<li>aus realen Bestelldaten die für die Bestandsplanung relevanten Kenngrößen (Mittelwert, Prognosefehler, Korrelation) ableiten,</li>
-<li>Sicherheitsbestände für zentrale, regionale und hybride Lagerstrukturen berechnen,</li>
-<li>das <strong>Quadratwurzelgesetz</strong> empirisch überprüfen und Abweichungen durch Korrelationen und ungleich große Regionen erklären,</li>
-<li>Standort-Pooling und Produkt-Pooling unterscheiden und</li>
-<li>den Pooling-Vorteil gegen Transportkosten und Lieferzeiten abwägen.</li>
+<li>derive the key figures relevant to inventory planning (mean, forecast error, correlation) from real order data,</li>
+<li>calculate safety stocks for central, regional and hybrid warehouse structures,</li>
+<li>test the <strong>square-root law</strong> empirically and explain deviations through correlations and regions of unequal size,</li>
+<li>distinguish between location pooling and product pooling, and</li>
+<li>weigh the pooling advantage against transport costs and delivery times.</li>
 </ul>
 </section>
-<section id="ausgangslage" class="level1" data-number="2">
-<h1 data-number="2"><span class="header-section-number">2</span> Ausgangslage</h1>
-<p><strong>Olist</strong> ist ein brasilianischer Online-Marktplatz, über den kleine und mittlere Händler ihre Produkte auf großen Verkaufsplattformen anbieten. Bisher versenden die Händler selbst, die meisten davon aus dem Bundesstaat São Paulo. Kundinnen und Kunden im Norden und Nordosten Brasiliens warten deshalb oft zwei bis drei Wochen auf ihre Bestellung und zahlen deutlich höhere Frachtkosten.</p>
-<p>Das Management prüft daher den Aufbau eines eigenen <strong>Fulfillment-Netzes</strong>: Die Händler lagern ihre Ware bei Olist ein, und Olist übernimmt Lagerung und Versand. Für die umsatzstärksten Produktkategorien stehen drei Strukturen zur Diskussion:</p>
+<section id="initial-situation" class="level1" data-number="2">
+<h1 data-number="2"><span class="header-section-number">2</span> Initial situation</h1>
+<p><strong>Olist</strong> is a Brazilian online marketplace through which small and medium-sized merchants offer their products on large sales platforms. So far, the merchants ship themselves, most of them from the state of São Paulo. Customers in the north and north-east of Brazil therefore often wait two to three weeks for their order and pay significantly higher freight costs.</p>
+<p>Management is therefore considering setting up its own <strong>fulfilment network</strong>: the merchants store their goods with Olist, and Olist takes over storage and shipping. For the product categories with the highest revenue, three structures are under discussion:</p>
 <ul>
-<li><strong>Struktur Z (zentral):</strong> ein Fulfillment-Center in Cajamar (Großraum São Paulo) beliefert ganz Brasilien.</li>
-<li><strong>Struktur R (regional):</strong> fünf Regionallager, je eines pro Großregion: Cajamar (Sudeste), Curitiba (Sul), Goiânia (Centro-Oeste), Recife (Nordeste) und Belém (Norte).</li>
-<li><strong>Struktur H (hybrid):</strong> zwei Lager: Cajamar für Sudeste, Sul und Centro-Oeste sowie Recife für Nordeste und Norte.</li>
+<li><strong>Structure Z (central):</strong> one fulfilment centre in Cajamar (greater São Paulo area) supplies all of Brazil.</li>
+<li><strong>Structure R (regional):</strong> five regional warehouses, one per macro-region: Cajamar (Sudeste), Curitiba (Sul), Goiânia (Centro-Oeste), Recife (Nordeste) and Belém (Norte).</li>
+<li><strong>Structure H (hybrid):</strong> two warehouses: Cajamar for Sudeste, Sul and Centro-Oeste, and Recife for Nordeste and Norte.</li>
 </ul>
-<p>Die Brasilien-Perspektive macht den Fall besonders lehrreich: Die Regionen unterscheiden sich stark in Größe, Kaufkraft und Erreichbarkeit, und die Nachfrage ist sehr ungleich verteilt.</p>
+<p>The Brazilian perspective makes the case particularly instructive: the regions differ greatly in size, purchasing power and accessibility, and demand is very unevenly distributed.</p>
 </section>
-<section id="daten" class="level1" data-number="3">
-<h1 data-number="3"><span class="header-section-number">3</span> Daten</h1>
-<section id="datensatz" class="level2" data-number="3.1">
-<h2 data-number="3.1" class="anchored" data-anchor-id="datensatz"><span class="header-section-number">3.1</span> Datensatz</h2>
-<p><strong>Brazilian E-Commerce Public Dataset by Olist</strong> (Kaggle, Lizenz CC BY-NC-SA 4.0, kein Wettbewerb): <a href="https://www.kaggle.com/datasets/olistbr/brazilian-ecommerce" class="uri">https://www.kaggle.com/datasets/olistbr/brazilian-ecommerce</a></p>
-<p>Der Datensatz enthält rund 100.000 echte, anonymisierte Bestellungen aus den Jahren 2016 bis 2018. Für die Fallstudie benötigen Sie fünf der neun Tabellen:</p>
+<section id="data" class="level1" data-number="3">
+<h1 data-number="3"><span class="header-section-number">3</span> Data</h1>
+<section id="dataset" class="level2" data-number="3.1">
+<h2 data-number="3.1" class="anchored" data-anchor-id="dataset"><span class="header-section-number">3.1</span> Dataset</h2>
+<p><strong>Brazilian E-Commerce Public Dataset by Olist</strong> (Kaggle, licence CC BY-NC-SA 4.0, not a competition): <a href="https://www.kaggle.com/datasets/olistbr/brazilian-ecommerce" class="uri">https://www.kaggle.com/datasets/olistbr/brazilian-ecommerce</a></p>
+<p>The dataset contains around 100,000 real, anonymised orders from 2016 to 2018. For the case study you need five of the nine tables:</p>
 <table class="caption-top table">
 <colgroup>
 <col style="width: 50%">
@@ -2469,8 +2469,8 @@ window.Quarto = {
 </colgroup>
 <thead>
 <tr class="header">
-<th>Datei</th>
-<th>Relevante Spalten</th>
+<th>File</th>
+<th>Relevant columns</th>
 </tr>
 </thead>
 <tbody>
@@ -2480,44 +2480,44 @@ window.Quarto = {
 </tr>
 <tr class="even">
 <td><code>olist_order_items_dataset.csv</code></td>
-<td><code>order_id</code>, <code>product_id</code>, <code>seller_id</code>, <code>price</code>, <code>freight_value</code> (eine Zeile je Artikel)</td>
+<td><code>order_id</code>, <code>product_id</code>, <code>seller_id</code>, <code>price</code>, <code>freight_value</code> (one row per item)</td>
 </tr>
 <tr class="odd">
 <td><code>olist_customers_dataset.csv</code></td>
-<td><code>customer_id</code>, <code>customer_state</code> (Bundesstaat, z. B. <code>SP</code>, <code>BA</code>)</td>
+<td><code>customer_id</code>, <code>customer_state</code> (state, e.g. <code>SP</code>, <code>BA</code>)</td>
 </tr>
 <tr class="even">
 <td><code>olist_products_dataset.csv</code></td>
-<td><code>product_id</code>, <code>product_category_name</code> (portugiesisch)</td>
+<td><code>product_id</code>, <code>product_category_name</code> (Portuguese)</td>
 </tr>
 <tr class="odd">
 <td><code>product_category_name_translation.csv</code></td>
-<td>Übersetzung der Kategorienamen ins Englische</td>
+<td>Translation of the category names into English</td>
 </tr>
 </tbody>
 </table>
-<p>Die Zuordnung der 27 Bundesstaaten zu den fünf Großregionen ist im Startercode enthalten.</p>
+<p>The assignment of the 27 states to the five macro-regions is included in the starter code.</p>
 <div class="callout callout-style-default callout-important callout-titled">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
 <div class="callout-title-container flex-fill">
-<span class="screen-reader-only">Wichtig</span>Hinweise zur Datenaufbereitung
+<span class="screen-reader-only">Important</span>Notes on data preparation
 </div>
 </div>
 <div class="callout-body-container callout-body">
 <ul>
-<li>Verwenden Sie als Nachfrage die <strong>Anzahl bestellter Artikel</strong> (Zeilen in <code>order_items</code>) je Woche, Region und Produktkategorie. Schließen Sie stornierte und nicht verfügbare Bestellungen aus.</li>
-<li>Die Daten sind erst ab Anfang 2017 vollständig und enden im August 2018. Beschränken Sie die Analyse auf die Wochen vom <strong>02.01.2017 bis 20.08.2018</strong> (86 Wochen).</li>
-<li>Das Geschäft wächst 2017 stark, und im November gibt es einen deutlichen Ausschlag (Black Friday). Rohe Standardabweichungen sind daher kein geeignetes Maß für die Unsicherheit.</li>
-<li>Konzentrieren Sie sich auf die <strong>10 größten Produktkategorien</strong>.</li>
+<li>Use the <strong>number of items ordered</strong> (rows in <code>order_items</code>) per week, region and product category as demand. Exclude cancelled and unavailable orders.</li>
+<li>The data are only complete from the beginning of 2017 and end in August 2018. Restrict the analysis to the weeks from <strong>2 Jan 2017 to 20 Aug 2018</strong> (86 weeks).</li>
+<li>The business grows strongly in 2017, and there is a clear spike in November (Black Friday). Raw standard deviations are therefore not a suitable measure of uncertainty.</li>
+<li>Concentrate on the <strong>10 largest product categories</strong>.</li>
 </ul>
 </div>
 </div>
 </section>
-<section id="planungsparameter" class="level2" data-number="3.2">
-<h2 data-number="3.2" class="anchored" data-anchor-id="planungsparameter"><span class="header-section-number">3.2</span> Planungsparameter</h2>
+<section id="planning-parameters" class="level2" data-number="3.2">
+<h2 data-number="3.2" class="anchored" data-anchor-id="planning-parameters"><span class="header-section-number">3.2</span> Planning parameters</h2>
 <table class="caption-top table">
 <colgroup>
 <col style="width: 50%">
@@ -2526,99 +2526,99 @@ window.Quarto = {
 <thead>
 <tr class="header">
 <th>Parameter</th>
-<th>Wert</th>
+<th>Value</th>
 </tr>
 </thead>
 <tbody>
 <tr class="odd">
-<td>Hochrechnung</td>
-<td>Der Datensatz ist ein Ausschnitt des Geschäfts. Rechnen Sie Mengen mit dem Faktor <strong>50</strong> auf das geplante Fulfillment-Volumen hoch. Unterstellen Sie dabei, dass der Variationskoeffizient der Prognosefehler gleich bleibt.</td>
+<td>Scaling up</td>
+<td>The dataset is an extract of the business. Scale quantities up to the planned fulfilment volume using a factor of <strong>50</strong>. Assume that the coefficient of variation of the forecast errors remains the same.</td>
 </tr>
 <tr class="even">
-<td>Zielservicegrad (α)</td>
-<td>95 %</td>
+<td>Target service level (α)</td>
+<td>95%</td>
 </tr>
 <tr class="odd">
-<td>Wiederbeschaffungszeit Händler → Lager</td>
-<td>2 Wochen (Recife und Belém: 3 Wochen)</td>
+<td>Replenishment lead time merchant → warehouse</td>
+<td>2 weeks (Recife and Belém: 3 weeks)</td>
 </tr>
 <tr class="even">
-<td>Warenwert</td>
-<td>60 % des Verkaufspreises (<code>price</code>)</td>
+<td>Value of goods</td>
+<td>60% of the selling price (<code>price</code>)</td>
 </tr>
 <tr class="odd">
-<td>Lagerhaltungskostensatz</td>
-<td>25 % p. a. vom Warenwert</td>
+<td>Inventory holding cost rate</td>
+<td>25% p.a. of the value of goods</td>
 </tr>
 <tr class="even">
-<td>Fracht zum Kunden</td>
-<td>Zentrale Belieferung: durchschnittliche <code>freight_value</code> der jeweiligen Region laut Daten. Belieferung aus einem Lager in der eigenen Region: Frachtniveau der Region Sudeste.</td>
+<td>Freight to the customer</td>
+<td>Central supply: average <code>freight_value</code> of the respective region according to the data. Supply from a warehouse in the customer’s own region: freight level of the Sudeste region.</td>
 </tr>
 <tr class="odd">
-<td>Nachschub in ein Regionallager</td>
-<td>4 BRL je Artikel (Komplettladungen ab São Paulo)</td>
+<td>Replenishment of a regional warehouse</td>
+<td>BRL 4 per item (full truckloads from São Paulo)</td>
 </tr>
 <tr class="even">
-<td>Fixkosten je Lager (anteilig für die betrachteten Kategorien)</td>
-<td>Cajamar: 2,0 Mio. BRL/Jahr, jedes weitere Lager: 0,9 Mio. BRL/Jahr</td>
+<td>Fixed costs per warehouse (pro rata for the categories considered)</td>
+<td>Cajamar: BRL 2.0 million/year, each additional warehouse: BRL 0.9 million/year</td>
 </tr>
 </tbody>
 </table>
 </section>
 </section>
-<section id="aufgaben" class="level1" data-number="4">
-<h1 data-number="4"><span class="header-section-number">4</span> Aufgaben</h1>
-<section id="teil-a-datenaufbereitung-und-exploration" class="level2" data-number="4.1">
-<h2 data-number="4.1" class="anchored" data-anchor-id="teil-a-datenaufbereitung-und-exploration"><span class="header-section-number">4.1</span> Teil A – Datenaufbereitung und Exploration</h2>
-<p><strong>A1.</strong> Verknüpfen Sie die Tabellen und erzeugen Sie für die 10 größten Kategorien die wöchentliche Artikelnachfrage je Region. Beschreiben Sie die Verteilung der Nachfrage auf die Regionen, den Trend und Sondereffekte. Stellen Sie außerdem die tatsächlichen Lieferzeiten (Bestellung bis Zustellung) und Frachtkosten je Region dar.</p>
-<p><strong>A2.</strong> Bestimmen Sie je Kategorie und Region die Prognosefehler einer einfachen Prognose, z. B. gleitender Durchschnitt der letzten 8 Wochen. Begründen Sie, warum für den Sicherheitsbestand der Prognosefehler und nicht die Rohstreuung maßgeblich ist.</p>
+<section id="tasks" class="level1" data-number="4">
+<h1 data-number="4"><span class="header-section-number">4</span> Tasks</h1>
+<section id="part-a-data-preparation-and-exploration" class="level2" data-number="4.1">
+<h2 data-number="4.1" class="anchored" data-anchor-id="part-a-data-preparation-and-exploration"><span class="header-section-number">4.1</span> Part A – Data preparation and exploration</h2>
+<p><strong>A1.</strong> Join the tables and generate the weekly item demand per region for the 10 largest categories. Describe the distribution of demand across the regions, the trend and special effects. Also present the actual delivery times (order to delivery) and freight costs per region.</p>
+<p><strong>A2.</strong> For each category and region, determine the forecast errors of a simple forecast, e.g. a moving average of the last 8 weeks. Explain why the forecast error and not the raw variability is decisive for the safety stock.</p>
 </section>
-<section id="teil-b-standort-pooling" class="level2" data-number="4.2">
-<h2 data-number="4.2" class="anchored" data-anchor-id="teil-b-standort-pooling"><span class="header-section-number">4.2</span> Teil B – Standort-Pooling</h2>
-<p><strong>B1.</strong> Berechnen Sie je Kategorie den Sicherheitsbestand <span class="math inline">\(SB = z_\alpha\,\sigma\sqrt{L}\)</span> in den Strukturen Z, R und H, und zwar (a) unter der Annahme <strong>unabhängiger</strong> regionaler Nachfragen (Quadratwurzelgesetz; beachten Sie die ungleich großen Regionen) und (b) mit der <strong>empirischen Kovarianzmatrix</strong> der Prognosefehler, <span class="math inline">\(\sigma_{\text{pool}} = \sqrt{\mathbf 1^\top \Sigma\,\mathbf 1}\)</span>.</p>
-<p><strong>B2.</strong> Vergleichen Sie (a) und (b). Warum fällt der Pooling-Effekt deutlich kleiner aus, als das Quadratwurzelgesetz mit <span class="math inline">\(\sqrt{5}\)</span> verspricht? Unterscheiden Sie zwischen dem Einfluss der Korrelation und dem der ungleichen Regionsgrößen.</p>
-<p><strong>B3.</strong> Vergleichen Sie die jährlichen Gesamtkosten der drei Strukturen: Lagerhaltungskosten der Sicherheitsbestände, Fracht zum Kunden, Nachschub und Fixkosten. Welche Struktur ist am günstigsten? Ab welchen Fixkosten je Regionallager kippt die Entscheidung (Break-even)?</p>
+<section id="part-b-location-pooling" class="level2" data-number="4.2">
+<h2 data-number="4.2" class="anchored" data-anchor-id="part-b-location-pooling"><span class="header-section-number">4.2</span> Part B – Location pooling</h2>
+<p><strong>B1.</strong> For each category, calculate the safety stock <span class="math inline">\(SB = z_\alpha\,\sigma\sqrt{L}\)</span> in structures Z, R and H, namely (a) assuming <strong>independent</strong> regional demands (square-root law; note the regions of unequal size) and (b) using the <strong>empirical covariance matrix</strong> of the forecast errors, <span class="math inline">\(\sigma_{\text{pool}} = \sqrt{\mathbf 1^\top \Sigma\,\mathbf 1}\)</span>.</p>
+<p><strong>B2.</strong> Compare (a) and (b). Why is the pooling effect considerably smaller than the square-root law with <span class="math inline">\(\sqrt{5}\)</span> promises? Distinguish between the influence of correlation and that of unequal region sizes.</p>
+<p><strong>B3.</strong> Compare the annual total costs of the three structures: holding costs of the safety stocks, freight to the customer, replenishment and fixed costs. Which structure is the cheapest? At what fixed costs per regional warehouse does the decision tip (break-even)?</p>
 </section>
-<section id="teil-c-produkt-pooling-und-selektive-bevorratung" class="level2" data-number="4.3">
-<h2 data-number="4.3" class="anchored" data-anchor-id="teil-c-produkt-pooling-und-selektive-bevorratung"><span class="header-section-number">4.3</span> Teil C – Produkt-Pooling und selektive Bevorratung</h2>
-<p><strong>C1.</strong> Vergleichen Sie den Variationskoeffizienten der Prognosefehler einer einzelnen Kategorie mit dem aller 10 Kategorien zusammen. Nutzen Sie das Ergebnis für eine <strong>selektive Bevorratung</strong>: Welche Kategorien sollten in Recife (Struktur H) vorrätig sein, und welche sollten nur zentral in Cajamar gelagert werden? Berücksichtigen Sie Volumen, Variabilität, Warenwert und Frachtkosten.</p>
+<section id="part-c-product-pooling-and-selective-stocking" class="level2" data-number="4.3">
+<h2 data-number="4.3" class="anchored" data-anchor-id="part-c-product-pooling-and-selective-stocking"><span class="header-section-number">4.3</span> Part C – Product pooling and selective stocking</h2>
+<p><strong>C1.</strong> Compare the coefficient of variation of the forecast errors of a single category with that of all 10 categories combined. Use the result for <strong>selective stocking</strong>: Which categories should be stocked in Recife (structure H), and which should only be stored centrally in Cajamar? Take volume, variability, value of goods and freight costs into account.</p>
 </section>
-<section id="teil-d-empfehlung-und-reflexion" class="level2" data-number="4.4">
-<h2 data-number="4.4" class="anchored" data-anchor-id="teil-d-empfehlung-und-reflexion"><span class="header-section-number">4.4</span> Teil D – Empfehlung und Reflexion</h2>
-<p><strong>D1. Empfehlung.</strong> Formulieren Sie eine Empfehlung an das Olist-Management. Berücksichtigen Sie dabei neben den Kosten auch die Lieferzeit als Wettbewerbsfaktor.</p>
-<p><strong>D2. Reflexion.</strong> Beantworten Sie in der Präsentation die folgenden Fragen. Sie bilden den Ausgangspunkt der anschließenden Diskussion:</p>
+<section id="part-d-recommendation-and-reflection" class="level2" data-number="4.4">
+<h2 data-number="4.4" class="anchored" data-anchor-id="part-d-recommendation-and-reflection"><span class="header-section-number">4.4</span> Part D – Recommendation and reflection</h2>
+<p><strong>D1. Recommendation.</strong> Formulate a recommendation to Olist’s management. In addition to costs, take delivery time into account as a competitive factor.</p>
+<p><strong>D2. Reflection.</strong> Answer the following questions in your presentation. They form the starting point for the subsequent discussion:</p>
 <ol type="1">
-<li>Wie gut hat das Quadratwurzelgesetz die realen Daten beschrieben? Was lernen Sie daraus über die Anwendung von Lehrbuchformeln auf reale Daten?</li>
-<li>In diesem Fall ist der Pooling-Vorteil vermutlich klein im Vergleich zu Fracht und Lieferzeit. Was bedeutet das für die Rolle von Bestandsargumenten bei Netzwerkentscheidungen?</li>
-<li>Welche Entscheidungen bei der Datenaufbereitung (Zeitraum, Kategorien, Prognosemethode) und welche Annahmen (Hochrechnungsfaktor, gleichbleibender Variationskoeffizient) beeinflussen Ihr Ergebnis am stärksten?</li>
-<li>Die Daten zeigen Bestellungen, nicht die Nachfrage, die bei kürzeren Lieferzeiten entstanden wäre. Wie könnte ein Regionallager im Nordosten die Nachfrage selbst verändern, und warum fehlt dieser Effekt in Ihrer Rechnung?</li>
-<li>Welche Besonderheiten eines großen Schwellenlandes wie Brasilien (Infrastruktur, Steuern zwischen Bundesstaaten, Kaufkraftunterschiede) spielen für die Standortfrage eine Rolle, die das Pooling-Modell nicht abbildet?</li>
+<li>How well did the square-root law describe the real data? What do you learn from this about applying textbook formulas to real data?</li>
+<li>In this case, the pooling advantage is probably small compared with freight and delivery time. What does this mean for the role of inventory arguments in network decisions?</li>
+<li>Which data preparation decisions (time period, categories, forecasting method) and which assumptions (scaling factor, constant coefficient of variation) have the strongest influence on your result?</li>
+<li>The data show orders, not the demand that would have arisen with shorter delivery times. How could a regional warehouse in the north-east change demand itself, and why is this effect missing from your calculation?</li>
+<li>Which characteristics of a large emerging economy such as Brazil (infrastructure, taxes between states, differences in purchasing power) play a role in the location question that the pooling model does not capture?</li>
 </ol>
 </section>
 </section>
-<section id="literatur" class="level1" data-number="5">
-<h1 data-number="5"><span class="header-section-number">5</span> Literatur</h1>
+<section id="literature" class="level1" data-number="5">
+<h1 data-number="5"><span class="header-section-number">5</span> Literature</h1>
 <ul>
 <li>Olist (2018): <em>Brazilian E-Commerce Public Dataset by Olist</em>. Kaggle, <a href="https://www.kaggle.com/datasets/olistbr/brazilian-ecommerce" class="uri">https://www.kaggle.com/datasets/olistbr/brazilian-ecommerce</a>.</li>
 <li>Eppen, G. D. (1979): Effects of Centralization on Expected Costs in a Multi-Location Newsboy Problem. <em>Management Science</em> 25(5), 498–501.</li>
-<li>Reader zur Vorlesung, Kapitel 6.</li>
+<li>Course reader for the lecture, Chapter 6.</li>
 </ul>
 </section>
-<section id="anhang-r-startercode" class="level1" data-number="6">
-<h1 data-number="6"><span class="header-section-number">6</span> Anhang: R-Startercode</h1>
+<section id="appendix-r-starter-code" class="level1" data-number="6">
+<h1 data-number="6"><span class="header-section-number">6</span> Appendix: R starter code</h1>
 <div class="cell">
 <details open class="code-fold">
 <summary>Code</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">source</span>(<span class="st">&quot;../R/scm_functions.R&quot;</span>)   <span class="co"># pooling_safety_stock()</span></span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>pfad   <span class="ot">&lt;-</span> <span class="st">&quot;olist/&quot;</span>   <span class="co"># Ordner mit den entpackten CSV-Dateien</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>pfad   <span class="ot">&lt;-</span> <span class="st">&quot;olist/&quot;</span>   <span class="co"># folder containing the unzipped CSV files</span></span>
 <span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>orders <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(<span class="fu">paste0</span>(pfad, <span class="st">&quot;olist_orders_dataset.csv&quot;</span>))</span>
 <span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>items  <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(<span class="fu">paste0</span>(pfad, <span class="st">&quot;olist_order_items_dataset.csv&quot;</span>))</span>
 <span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>cust   <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(<span class="fu">paste0</span>(pfad, <span class="st">&quot;olist_customers_dataset.csv&quot;</span>))</span>
 <span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>prod   <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(<span class="fu">paste0</span>(pfad, <span class="st">&quot;olist_products_dataset.csv&quot;</span>))</span>
 <span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>transl <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(<span class="fu">paste0</span>(pfad, <span class="st">&quot;product_category_name_translation.csv&quot;</span>))</span>
-<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a><span class="fu">names</span>(transl)[<span class="dv">1</span>] <span class="ot">&lt;-</span> <span class="st">&quot;product_category_name&quot;</span>   <span class="co"># entfernt ggf. ein BOM-Zeichen</span></span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a><span class="fu">names</span>(transl)[<span class="dv">1</span>] <span class="ot">&lt;-</span> <span class="st">&quot;product_category_name&quot;</span>   <span class="co"># removes a BOM character if present</span></span>
 <span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>regionen <span class="ot">&lt;-</span> <span class="fu">tibble</span>(</span>
 <span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>  <span class="at">customer_state =</span> <span class="fu">c</span>(<span class="st">&quot;AC&quot;</span>,<span class="st">&quot;AP&quot;</span>,<span class="st">&quot;AM&quot;</span>,<span class="st">&quot;PA&quot;</span>,<span class="st">&quot;RO&quot;</span>,<span class="st">&quot;RR&quot;</span>,<span class="st">&quot;TO&quot;</span>,</span>
@@ -2648,7 +2648,7 @@ window.Quarto = {
 <span id="cb1-37"><a href="#cb1-37" aria-hidden="true" tabindex="-1"></a>  <span class="fu">count</span>(kategorie, region, woche, <span class="at">name =</span> <span class="st">&quot;menge&quot;</span>) <span class="sc">|&gt;</span></span>
 <span id="cb1-38"><a href="#cb1-38" aria-hidden="true" tabindex="-1"></a>  <span class="fu">complete</span>(kategorie, region, woche, <span class="at">fill =</span> <span class="fu">list</span>(<span class="at">menge =</span> <span class="dv">0</span>))</span>
 <span id="cb1-39"><a href="#cb1-39" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-40"><a href="#cb1-40" aria-hidden="true" tabindex="-1"></a><span class="co"># Beispiel: Prognosefehler (gleitender Durchschnitt über 8 Wochen) für eine Kategorie</span></span>
+<span id="cb1-40"><a href="#cb1-40" aria-hidden="true" tabindex="-1"></a><span class="co"># Example: forecast errors (moving average over 8 weeks) for one category</span></span>
 <span id="cb1-41"><a href="#cb1-41" aria-hidden="true" tabindex="-1"></a>fehler <span class="ot">&lt;-</span> wochen <span class="sc">|&gt;</span></span>
 <span id="cb1-42"><a href="#cb1-42" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(kategorie <span class="sc">==</span> <span class="st">&quot;health_beauty&quot;</span>) <span class="sc">|&gt;</span></span>
 <span id="cb1-43"><a href="#cb1-43" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(region) <span class="sc">|&gt;</span> <span class="fu">arrange</span>(woche) <span class="sc">|&gt;</span></span>
@@ -2661,7 +2661,7 @@ window.Quarto = {
 <span id="cb1-50"><a href="#cb1-50" aria-hidden="true" tabindex="-1"></a>Sigma <span class="ot">&lt;-</span> <span class="fu">cov</span>(<span class="fu">as.matrix</span>(fehler[, <span class="sc">-</span><span class="dv">1</span>]))</span>
 <span id="cb1-51"><a href="#cb1-51" aria-hidden="true" tabindex="-1"></a>z <span class="ot">&lt;-</span> <span class="fu">qnorm</span>(<span class="fl">0.95</span>); L <span class="ot">&lt;-</span> <span class="dv">2</span></span>
 <span id="cb1-52"><a href="#cb1-52" aria-hidden="true" tabindex="-1"></a><span class="fu">c</span>(<span class="at">SB_regional =</span> <span class="fu">sum</span>(z <span class="sc">*</span> <span class="fu">sqrt</span>(<span class="fu">diag</span>(Sigma)) <span class="sc">*</span> <span class="fu">sqrt</span>(L)),</span>
-<span id="cb1-53"><a href="#cb1-53" aria-hidden="true" tabindex="-1"></a>  <span class="at">SB_zentral  =</span> z <span class="sc">*</span> <span class="fu">sqrt</span>(<span class="fu">sum</span>(Sigma)) <span class="sc">*</span> <span class="fu">sqrt</span>(L))</span></code></pre></div><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb1-53"><a href="#cb1-53" aria-hidden="true" tabindex="-1"></a>  <span class="at">SB_zentral  =</span> z <span class="sc">*</span> <span class="fu">sqrt</span>(<span class="fu">sum</span>(Sigma)) <span class="sc">*</span> <span class="fu">sqrt</span>(L))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
 </div>
 </section>
@@ -2693,12 +2693,12 @@ window.Quarto = {
       // flash "checked"
       button.classList.add('code-copy-button-checked');
       var currentTitle = button.getAttribute("title");
-      button.setAttribute("title", "Kopiert");
+      button.setAttribute("title", "Copied!");
       let tooltip;
       if (window.bootstrap) {
         button.setAttribute("data-bs-toggle", "tooltip");
         button.setAttribute("data-bs-placement", "left");
-        button.setAttribute("data-bs-title", "Kopiert");
+        button.setAttribute("data-bs-title", "Copied!");
         tooltip = new bootstrap.Tooltip(button, 
           { trigger: "manual", 
             customClass: "code-copy-button-tooltip",

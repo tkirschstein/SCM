@@ -1,14 +1,14 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml" lang="de" xml:lang="de"><head>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
 
 <meta charset="utf-8">
 <meta name="generator" content="quarto-1.9.38">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
-<meta name="author" content="Supply Chain Management – Gruppenarbeit">
+<meta name="author" content="Supply Chain Management – Group Work">
 
-<title>Fallstudie 5: Das Newsvendor-Modell in der Praxis</title>
+<title>Case Study 5: The Newsvendor Model in Practice</title>
 <style>
 
 code{white-space: pre-wrap;}
@@ -2344,24 +2344,24 @@ window.Quarto = {
 <div id="quarto-content" class="page-columns page-rows-contents page-layout-article">
 <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
   <nav id="TOC" role="doc-toc" class="toc-active">
-    <h2 id="toc-title">Inhaltsverzeichnis</h2>
+    <h2 id="toc-title">Table of contents</h2>
    
   <ul class="collapse">
-  <li><a href="#lernziele" id="toc-lernziele" class="nav-link active" data-scroll-target="#lernziele"><span class="header-section-number">1</span> Lernziele</a></li>
-  <li><a href="#ausgangslage" id="toc-ausgangslage" class="nav-link" data-scroll-target="#ausgangslage"><span class="header-section-number">2</span> Ausgangslage</a></li>
-  <li><a href="#daten" id="toc-daten" class="nav-link" data-scroll-target="#daten"><span class="header-section-number">3</span> Daten</a>
+  <li><a href="#learning-objectives" id="toc-learning-objectives" class="nav-link active" data-scroll-target="#learning-objectives"><span class="header-section-number">1</span> Learning objectives</a></li>
+  <li><a href="#initial-situation" id="toc-initial-situation" class="nav-link" data-scroll-target="#initial-situation"><span class="header-section-number">2</span> Initial situation</a></li>
+  <li><a href="#data" id="toc-data" class="nav-link" data-scroll-target="#data"><span class="header-section-number">3</span> Data</a>
   <ul class="collapse">
-  <li><a href="#datensatz" id="toc-datensatz" class="nav-link" data-scroll-target="#datensatz"><span class="header-section-number">3.1</span> Datensatz</a></li>
-  <li><a href="#kostenannahmen" id="toc-kostenannahmen" class="nav-link" data-scroll-target="#kostenannahmen"><span class="header-section-number">3.2</span> Kostenannahmen</a></li>
+  <li><a href="#dataset" id="toc-dataset" class="nav-link" data-scroll-target="#dataset"><span class="header-section-number">3.1</span> Dataset</a></li>
+  <li><a href="#cost-assumptions" id="toc-cost-assumptions" class="nav-link" data-scroll-target="#cost-assumptions"><span class="header-section-number">3.2</span> Cost assumptions</a></li>
   </ul></li>
-  <li><a href="#aufgaben" id="toc-aufgaben" class="nav-link" data-scroll-target="#aufgaben"><span class="header-section-number">4</span> Aufgaben</a>
+  <li><a href="#tasks" id="toc-tasks" class="nav-link" data-scroll-target="#tasks"><span class="header-section-number">4</span> Tasks</a>
   <ul class="collapse">
-  <li><a href="#teil-a-von-kassenbons-zur-nachfragezeitreihe" id="toc-teil-a-von-kassenbons-zur-nachfragezeitreihe" class="nav-link" data-scroll-target="#teil-a-von-kassenbons-zur-nachfragezeitreihe"><span class="header-section-number">4.1</span> Teil A – Von Kassenbons zur Nachfragezeitreihe</a></li>
-  <li><a href="#teil-b-klassisches-newsvendor-modell" id="toc-teil-b-klassisches-newsvendor-modell" class="nav-link" data-scroll-target="#teil-b-klassisches-newsvendor-modell"><span class="header-section-number">4.2</span> Teil B – Klassisches Newsvendor-Modell</a></li>
-  <li><a href="#teil-c-backtest" id="toc-teil-c-backtest" class="nav-link" data-scroll-target="#teil-c-backtest"><span class="header-section-number">4.3</span> Teil C – Backtest</a></li>
-  <li><a href="#teil-d-empfehlung-und-reflexion" id="toc-teil-d-empfehlung-und-reflexion" class="nav-link" data-scroll-target="#teil-d-empfehlung-und-reflexion"><span class="header-section-number">4.4</span> Teil D – Empfehlung und Reflexion</a></li>
+  <li><a href="#part-a-from-receipts-to-a-demand-time-series" id="toc-part-a-from-receipts-to-a-demand-time-series" class="nav-link" data-scroll-target="#part-a-from-receipts-to-a-demand-time-series"><span class="header-section-number">4.1</span> Part A – From receipts to a demand time series</a></li>
+  <li><a href="#part-b-classic-newsvendor-model" id="toc-part-b-classic-newsvendor-model" class="nav-link" data-scroll-target="#part-b-classic-newsvendor-model"><span class="header-section-number">4.2</span> Part B – Classic newsvendor model</a></li>
+  <li><a href="#part-c-backtest" id="toc-part-c-backtest" class="nav-link" data-scroll-target="#part-c-backtest"><span class="header-section-number">4.3</span> Part C – Backtest</a></li>
+  <li><a href="#part-d-recommendation-and-reflection" id="toc-part-d-recommendation-and-reflection" class="nav-link" data-scroll-target="#part-d-recommendation-and-reflection"><span class="header-section-number">4.4</span> Part D – Recommendation and reflection</a></li>
   </ul></li>
-  <li><a href="#anhang-r-startercode" id="toc-anhang-r-startercode" class="nav-link" data-scroll-target="#anhang-r-startercode"><span class="header-section-number">5</span> Anhang: R-Startercode</a></li>
+  <li><a href="#appendix-r-starter-code" id="toc-appendix-r-starter-code" class="nav-link" data-scroll-target="#appendix-r-starter-code"><span class="header-section-number">5</span> Appendix: R starter code</a></li>
   </ul>
 </nav>
 </div>
@@ -2369,8 +2369,8 @@ window.Quarto = {
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title">Fallstudie 5: Das Newsvendor-Modell in der Praxis</h1>
-<p class="subtitle lead">Tägliche Produktionsplanung einer französischen Bäckerei</p>
+<h1 class="title">Case Study 5: The Newsvendor Model in Practice</h1>
+<p class="subtitle lead">Daily production planning at a French bakery</p>
 </div>
 
 
@@ -2378,9 +2378,9 @@ window.Quarto = {
 <div class="quarto-title-meta">
 
     <div>
-    <div class="quarto-title-meta-heading">Autor:in</div>
+    <div class="quarto-title-meta-heading">Author</div>
     <div class="quarto-title-meta-contents">
-             <p>Supply Chain Management – Gruppenarbeit </p>
+             <p>Supply Chain Management – Group Work </p>
           </div>
   </div>
     
@@ -2399,7 +2399,7 @@ window.Quarto = {
 <i class="callout-icon"></i>
 </div>
 <div class="callout-title-container flex-fill">
-<span class="screen-reader-only">Hinweis</span>Steckbrief
+<span class="screen-reader-only">Note</span>Overview
 </div>
 </div>
 <div class="callout-body-container callout-body">
@@ -2410,52 +2410,52 @@ window.Quarto = {
 </colgroup>
 <tbody>
 <tr class="odd">
-<td><strong>Thema</strong></td>
-<td>Einperiodige Bestandsplanung bei unsicherer Nachfrage für verderbliche Ware</td>
+<td><strong>Topic</strong></td>
+<td>Single-period inventory planning under uncertain demand for perishable goods</td>
 </tr>
 <tr class="even">
-<td><strong>Vorlesungsbezug</strong></td>
-<td>Kapitel 7 des Readers: Newsvendor-Modell, kritisches Verhältnis, Unter- und Überbestandskosten, erwarteter Gewinn</td>
+<td><strong>Link to the lecture</strong></td>
+<td>Chapter 7 of the course reader: newsvendor model, critical ratio, underage and overage costs, expected profit</td>
 </tr>
 <tr class="odd">
-<td><strong>Typ</strong></td>
-<td>Datenbasierte Fallstudie mit <strong>realen Kassendaten</strong> einer französischen Bäckerei (Kaggle)</td>
+<td><strong>Type</strong></td>
+<td>Data-based case study with <strong>real point-of-sale data</strong> from a French bakery (Kaggle)</td>
 </tr>
 <tr class="even">
-<td><strong>Gruppengröße</strong></td>
-<td>3–6 Personen</td>
+<td><strong>Group size</strong></td>
+<td>3–6 people</td>
 </tr>
 <tr class="odd">
-<td><strong>Ergebnis</strong></td>
-<td>Präsentation (30 Min.) + Diskussion (15 Min.), Foliensatz (PDF) und reproduzierbarer R-/Quarto-Code</td>
+<td><strong>Deliverable</strong></td>
+<td>Presentation (30 min) + discussion (15 min), slide deck (PDF) and reproducible R/Quarto code</td>
 </tr>
 </tbody>
 </table>
 </div>
 </div>
-<section id="lernziele" class="level1" data-number="1">
-<h1 data-number="1"><span class="header-section-number">1</span> Lernziele</h1>
-<p>Nach Bearbeitung der Fallstudie können Sie</p>
+<section id="learning-objectives" class="level1" data-number="1">
+<h1 data-number="1"><span class="header-section-number">1</span> Learning objectives</h1>
+<p>After working through this case study, you will be able to</p>
 <ul>
-<li>aus Kassenbon-Daten tägliche Nachfragezeitreihen je Artikel erzeugen,</li>
-<li>die Parameter des Newsvendor-Modells (Preis, Kosten, Restwert, Nachfrageverteilung) aus realen Daten und plausiblen Annahmen ableiten,</li>
-<li>die optimale Produktionsmenge mit <strong>Normalverteilung</strong> und <strong>empirischer Verteilung</strong> bestimmen,</li>
-<li>Nachfragesegmente (Wochentag, Saison) berücksichtigen und verschiedene Planungsregeln in einem <strong>Backtest</strong> vergleichen,</li>
-<li>das Problem <strong>zensierter Nachfrage</strong> (Ausverkauf) erkennen und</li>
-<li>ökonomische und ökologische Ziele (Lebensmittelabfall) gegeneinander abwägen.</li>
+<li>generate daily demand time series per item from receipt data,</li>
+<li>derive the parameters of the newsvendor model (price, costs, salvage value, demand distribution) from real data and plausible assumptions,</li>
+<li>determine the optimal production quantity using the <strong>normal distribution</strong> and the <strong>empirical distribution</strong>,</li>
+<li>take demand segments (weekday, season) into account and compare different planning rules in a <strong>backtest</strong>,</li>
+<li>recognise the problem of <strong>censored demand</strong> (sell-outs), and</li>
+<li>weigh economic and ecological objectives (food waste) against each other.</li>
 </ul>
 </section>
-<section id="ausgangslage" class="level1" data-number="2">
-<h1 data-number="2"><span class="header-section-number">2</span> Ausgangslage</h1>
-<p>Eine familiengeführte Bäckerei in Frankreich backt jeden Morgen Baguettes, Croissants, Pains au chocolat und weitere Backwaren. Die Ware wird am selben Tag verkauft; was abends übrig bleibt, kann nicht mehr regulär verkauft werden. Es wird gespendet, als Tierfutter abgegeben oder günstig über eine App gegen Lebensmittelverschwendung angeboten. Ist die Ware dagegen früh ausverkauft, gehen Umsätze verloren, und Stammkundschaft wandert zur Konkurrenz ab.</p>
-<p>Die Backmengen legt bisher die Inhaberin nach Erfahrung fest, meist als feste Menge pro Wochentag. Sie möchte wissen, ob eine datenbasierte Planung den Gewinn steigern und gleichzeitig die Abfallmenge senken kann. Dafür stellt sie ihre Kassendaten von Januar 2021 bis September 2022 zur Verfügung.</p>
+<section id="initial-situation" class="level1" data-number="2">
+<h1 data-number="2"><span class="header-section-number">2</span> Initial situation</h1>
+<p>A family-run bakery in France bakes baguettes, croissants, pains au chocolat and other baked goods every morning. The goods are sold on the same day; whatever is left over in the evening can no longer be sold at the regular price. It is donated, given away as animal feed or offered cheaply via an app against food waste. If, on the other hand, the goods sell out early, sales are lost and regular customers go to the competition.</p>
+<p>So far, the owner has set the baking quantities based on experience, usually as a fixed quantity per weekday. She would like to know whether data-based planning can increase profit and at the same time reduce the amount of waste. For this purpose, she provides her point-of-sale data from January 2021 to September 2022.</p>
 </section>
-<section id="daten" class="level1" data-number="3">
-<h1 data-number="3"><span class="header-section-number">3</span> Daten</h1>
-<section id="datensatz" class="level2" data-number="3.1">
-<h2 data-number="3.1" class="anchored" data-anchor-id="datensatz"><span class="header-section-number">3.1</span> Datensatz</h2>
+<section id="data" class="level1" data-number="3">
+<h1 data-number="3"><span class="header-section-number">3</span> Data</h1>
+<section id="dataset" class="level2" data-number="3.1">
+<h2 data-number="3.1" class="anchored" data-anchor-id="dataset"><span class="header-section-number">3.1</span> Dataset</h2>
 <p><strong>French bakery daily sales</strong> (Kaggle): <a href="https://www.kaggle.com/datasets/matthieugimbert/french-bakery-daily-sales" class="uri">https://www.kaggle.com/datasets/matthieugimbert/french-bakery-daily-sales</a></p>
-<p>Die Datei <code>Bakery sales.csv</code> enthält rund 234.000 Kassenpositionen vom 01.01.2021 bis 30.09.2022 mit folgenden Spalten:</p>
+<p>The file <code>Bakery sales.csv</code> contains around 234,000 sales line items from 1 Jan 2021 to 30 Sep 2022 with the following columns:</p>
 <table class="caption-top table">
 <colgroup>
 <col style="width: 50%">
@@ -2463,30 +2463,30 @@ window.Quarto = {
 </colgroup>
 <thead>
 <tr class="header">
-<th>Spalte</th>
-<th>Bedeutung</th>
+<th>Column</th>
+<th>Meaning</th>
 </tr>
 </thead>
 <tbody>
 <tr class="odd">
 <td><code>date</code>, <code>time</code></td>
-<td>Datum und Uhrzeit des Verkaufs</td>
+<td>Date and time of sale</td>
 </tr>
 <tr class="even">
 <td><code>ticket_number</code></td>
-<td>Bonnummer (ein Bon kann mehrere Positionen enthalten)</td>
+<td>Receipt number (one receipt can contain several line items)</td>
 </tr>
 <tr class="odd">
 <td><code>article</code></td>
-<td>Artikelbezeichnung (z. B. <code>TRADITIONAL BAGUETTE</code>, <code>CROISSANT</code>, <code>PAIN AU CHOCOLAT</code>, <code>BAGUETTE</code>, <code>COUPE</code>, <code>BANETTE</code>)</td>
+<td>Item name (e.g. <code>TRADITIONAL BAGUETTE</code>, <code>CROISSANT</code>, <code>PAIN AU CHOCOLAT</code>, <code>BAGUETTE</code>, <code>COUPE</code>, <code>BANETTE</code>)</td>
 </tr>
 <tr class="even">
 <td><code>Quantity</code></td>
-<td>Menge (Achtung: auch negative Werte, d. h. Stornos und Rückgaben)</td>
+<td>Quantity (note: also negative values, i.e. cancellations and returns)</td>
 </tr>
 <tr class="odd">
 <td><code>unit_price</code></td>
-<td>Stückpreis als Text, z. B. <code>&quot;1,20 €&quot;</code> (Dezimalkomma und Währungszeichen entfernen)</td>
+<td>Unit price as text, e.g. <code>&quot;1,20 €&quot;</code> (remove decimal comma and currency symbol)</td>
 </tr>
 </tbody>
 </table>
@@ -2496,22 +2496,22 @@ window.Quarto = {
 <i class="callout-icon"></i>
 </div>
 <div class="callout-title-container flex-fill">
-<span class="screen-reader-only">Wichtig</span>Hinweise zur Datenaufbereitung
+<span class="screen-reader-only">Important</span>Notes on data preparation
 </div>
 </div>
 <div class="callout-body-container callout-body">
 <ul>
-<li>Bereinigen Sie <code>unit_price</code> und prüfen Sie Artikel mit leerem oder Platzhalternamen.</li>
-<li>Behandeln Sie negative Mengen begründet (z. B. Saldierung mit dem Verkauf desselben Bons).</li>
-<li>Prüfen Sie, an welchen Tagen die Bäckerei geschlossen ist (Ruhetage, Urlaub). Solche Tage sind keine Nachfrage von 0.</li>
-<li>Die Preise ändern sich im Zeitverlauf (Inflation 2022). Verwenden Sie für jeden Zeitraum den jeweils gültigen Preis.</li>
+<li>Clean <code>unit_price</code> and check items with empty or placeholder names.</li>
+<li>Handle negative quantities in a justified way (e.g. netting against the sale on the same receipt).</li>
+<li>Check on which days the bakery is closed (rest days, holidays). Such days do not represent a demand of 0.</li>
+<li>Prices change over time (inflation in 2022). For each period, use the price valid at that time.</li>
 </ul>
 </div>
 </div>
 </section>
-<section id="kostenannahmen" class="level2" data-number="3.2">
-<h2 data-number="3.2" class="anchored" data-anchor-id="kostenannahmen"><span class="header-section-number">3.2</span> Kostenannahmen</h2>
-<p>Die Bäckerei hat die variablen Herstellkosten (Rohstoffe, Energie, variabler Lohnanteil) wie folgt geschätzt:</p>
+<section id="cost-assumptions" class="level2" data-number="3.2">
+<h2 data-number="3.2" class="anchored" data-anchor-id="cost-assumptions"><span class="header-section-number">3.2</span> Cost assumptions</h2>
+<p>The bakery has estimated the variable production costs (raw materials, energy, variable labour share) as follows:</p>
 <table class="caption-top table">
 <colgroup>
 <col style="width: 20%">
@@ -2521,76 +2521,76 @@ window.Quarto = {
 </colgroup>
 <thead>
 <tr class="header">
-<th>Artikel</th>
-<th style="text-align: right;">Variable Kosten 2021 [€/Stück]</th>
-<th style="text-align: right;">Variable Kosten 2022 [€/Stück]</th>
-<th style="text-align: right;">Restwert [€/Stück]</th>
+<th>Item</th>
+<th style="text-align: right;">Variable costs 2021 [€/unit]</th>
+<th style="text-align: right;">Variable costs 2022 [€/unit]</th>
+<th style="text-align: right;">Salvage value [€/unit]</th>
 </tr>
 </thead>
 <tbody>
 <tr class="odd">
 <td>TRADITIONAL BAGUETTE</td>
-<td style="text-align: right;">0,40</td>
-<td style="text-align: right;">0,48</td>
-<td style="text-align: right;">0,10 (Paniermehl, Tierfutter)</td>
+<td style="text-align: right;">0.40</td>
+<td style="text-align: right;">0.48</td>
+<td style="text-align: right;">0.10 (breadcrumbs, animal feed)</td>
 </tr>
 <tr class="even">
 <td>CROISSANT</td>
-<td style="text-align: right;">0,38</td>
-<td style="text-align: right;">0,45</td>
-<td style="text-align: right;">0,30 (Verkauf über App zum Abend)</td>
+<td style="text-align: right;">0.38</td>
+<td style="text-align: right;">0.45</td>
+<td style="text-align: right;">0.30 (sale via app in the evening)</td>
 </tr>
 <tr class="odd">
 <td>PAIN AU CHOCOLAT</td>
-<td style="text-align: right;">0,42</td>
-<td style="text-align: right;">0,50</td>
-<td style="text-align: right;">0,30 (Verkauf über App zum Abend)</td>
+<td style="text-align: right;">0.42</td>
+<td style="text-align: right;">0.50</td>
+<td style="text-align: right;">0.30 (sale via app in the evening)</td>
 </tr>
 </tbody>
 </table>
-<p>Die Verkaufspreise entnehmen Sie den Daten. Für einen weiteren Artikel Ihrer Wahl treffen Sie eigene begründete Annahmen.</p>
+<p>Take the selling prices from the data. For one further item of your choice, make your own justified assumptions.</p>
 </section>
 </section>
-<section id="aufgaben" class="level1" data-number="4">
-<h1 data-number="4"><span class="header-section-number">4</span> Aufgaben</h1>
-<section id="teil-a-von-kassenbons-zur-nachfragezeitreihe" class="level2" data-number="4.1">
-<h2 data-number="4.1" class="anchored" data-anchor-id="teil-a-von-kassenbons-zur-nachfragezeitreihe"><span class="header-section-number">4.1</span> Teil A – Von Kassenbons zur Nachfragezeitreihe</h2>
-<p><strong>A1.</strong> Bereiten Sie die Daten auf und erzeugen Sie für die drei Artikel der Kostentabelle eine tägliche Absatzzeitreihe. Dokumentieren Sie alle Bereinigungsschritte.</p>
-<p><strong>A2.</strong> Analysieren Sie Wochentagseffekte, Saisonalität und Trend und prüfen Sie die Verteilung der Tagesnachfrage (Histogramm, QQ-Plot). Welche Segmentierung, z. B. nach Wochentag, halten Sie für sinnvoll, und ist die Normalverteilungsannahme gerechtfertigt?</p>
+<section id="tasks" class="level1" data-number="4">
+<h1 data-number="4"><span class="header-section-number">4</span> Tasks</h1>
+<section id="part-a-from-receipts-to-a-demand-time-series" class="level2" data-number="4.1">
+<h2 data-number="4.1" class="anchored" data-anchor-id="part-a-from-receipts-to-a-demand-time-series"><span class="header-section-number">4.1</span> Part A – From receipts to a demand time series</h2>
+<p><strong>A1.</strong> Prepare the data and generate a daily sales time series for the three items in the cost table. Document all cleaning steps.</p>
+<p><strong>A2.</strong> Analyse weekday effects, seasonality and trend, and examine the distribution of daily demand (histogram, QQ plot). Which segmentation, e.g. by weekday, do you consider sensible, and is the normal distribution assumption justified?</p>
 </section>
-<section id="teil-b-klassisches-newsvendor-modell" class="level2" data-number="4.2">
-<h2 data-number="4.2" class="anchored" data-anchor-id="teil-b-klassisches-newsvendor-modell"><span class="header-section-number">4.2</span> Teil B – Klassisches Newsvendor-Modell</h2>
-<p><strong>B1.</strong> Bestimmen Sie für die TRADITIONAL BAGUETTE mit den Daten von 2021 die Unterbestandskosten <span class="math inline">\(c^u\)</span>, die Überbestandskosten <span class="math inline">\(c^o\)</span> und das kritische Verhältnis <span class="math inline">\(CR = c^u/(c^u+c^o)\)</span>.</p>
-<p><strong>B2.</strong> Berechnen Sie die optimale Backmenge <span class="math inline">\(q^*\)</span> und den erwarteten Gewinn (a) unter Normalverteilungsannahme für alle Tage gemeinsam (<code>newsvendor_normal()</code>), (b) unter Normalverteilungsannahme je Wochentag und (c) mit dem empirischen CR-Quantil je Wochentag.</p>
-<p><strong>B3.</strong> Wiederholen Sie die Rechnung für das Croissant. Warum unterscheidet sich der optimale Servicegrad so stark von dem der Baguette?</p>
+<section id="part-b-classic-newsvendor-model" class="level2" data-number="4.2">
+<h2 data-number="4.2" class="anchored" data-anchor-id="part-b-classic-newsvendor-model"><span class="header-section-number">4.2</span> Part B – Classic newsvendor model</h2>
+<p><strong>B1.</strong> For the TRADITIONAL BAGUETTE, using the 2021 data, determine the underage cost <span class="math inline">\(c^u\)</span>, the overage cost <span class="math inline">\(c^o\)</span> and the critical ratio <span class="math inline">\(CR = c^u/(c^u+c^o)\)</span>.</p>
+<p><strong>B2.</strong> Calculate the optimal baking quantity <span class="math inline">\(q^*\)</span> and the expected profit (a) assuming a normal distribution for all days together (<code>newsvendor_normal()</code>), (b) assuming a normal distribution per weekday and (c) using the empirical CR quantile per weekday.</p>
+<p><strong>B3.</strong> Repeat the calculation for the croissant. Why does the optimal service level differ so strongly from that of the baguette?</p>
 </section>
-<section id="teil-c-backtest" class="level2" data-number="4.3">
-<h2 data-number="4.3" class="anchored" data-anchor-id="teil-c-backtest"><span class="header-section-number">4.3</span> Teil C – Backtest</h2>
-<p><strong>C1.</strong> Kalibrieren Sie die folgenden Planungsregeln mit den Daten von <strong>2021</strong> und testen Sie sie auf <strong>Januar bis September 2022</strong>:</p>
+<section id="part-c-backtest" class="level2" data-number="4.3">
+<h2 data-number="4.3" class="anchored" data-anchor-id="part-c-backtest"><span class="header-section-number">4.3</span> Part C – Backtest</h2>
+<p><strong>C1.</strong> Calibrate the following planning rules with the <strong>2021</strong> data and test them on <strong>January to September 2022</strong>:</p>
 <ol type="1">
-<li><strong>Erfahrungsregel:</strong> feste Menge je Wochentag = Mittelwert 2021 + 10 %,</li>
-<li>Newsvendor normalverteilt je Wochentag (B2b),</li>
-<li>Newsvendor empirisch je Wochentag (B2c).</li>
+<li><strong>Rule of thumb:</strong> fixed quantity per weekday = 2021 mean + 10%,</li>
+<li>Newsvendor with normal distribution per weekday (B2b),</li>
+<li>Newsvendor with empirical distribution per weekday (B2c).</li>
 </ol>
-<p>Berechnen Sie für jede Regel den realisierten Gewinn, die Fehlmengen, die Abfallmenge und den erreichten α-Servicegrad. Optional: Entwickeln Sie eine eigene, bessere Regel.</p>
+<p>For each rule, calculate the realised profit, the shortages, the amount of waste and the α service level achieved. Optional: develop your own, better rule.</p>
 </section>
-<section id="teil-d-empfehlung-und-reflexion" class="level2" data-number="4.4">
-<h2 data-number="4.4" class="anchored" data-anchor-id="teil-d-empfehlung-und-reflexion"><span class="header-section-number">4.4</span> Teil D – Empfehlung und Reflexion</h2>
-<p><strong>D1. Zensierte Nachfrage.</strong> Die Kassendaten zeigen <strong>Verkäufe, nicht Nachfrage</strong>. Entwickeln Sie einen einfachen Indikator für Ausverkaufstage (z. B. Uhrzeit des letzten Verkaufs) und schätzen Sie, wie häufig Zensierung auftritt und in welche Richtung sie Ihr <span class="math inline">\(q^*\)</span> verzerrt.</p>
-<p><strong>D2. Nachhaltigkeit.</strong> Bestimmen Sie die gewinnmaximale Backmenge, wenn höchstens <strong>5 %</strong> der Produktion übrig bleiben dürfen, und quantifizieren Sie den entgangenen Gewinn gegenüber dem unbeschränkten Optimum.</p>
-<p><strong>D3. Empfehlung.</strong> Formulieren Sie eine praxistaugliche Empfehlung für die Inhaberin, z. B. als Tabelle »Backmenge je Wochentag«.</p>
-<p><strong>D4. Reflexion.</strong> Beantworten Sie in der Präsentation die folgenden Fragen. Sie bilden den Ausgangspunkt der anschließenden Diskussion:</p>
+<section id="part-d-recommendation-and-reflection" class="level2" data-number="4.4">
+<h2 data-number="4.4" class="anchored" data-anchor-id="part-d-recommendation-and-reflection"><span class="header-section-number">4.4</span> Part D – Recommendation and reflection</h2>
+<p><strong>D1. Censored demand.</strong> The point-of-sale data show <strong>sales, not demand</strong>. Develop a simple indicator for sell-out days (e.g. time of the last sale) and estimate how often censoring occurs and in which direction it biases your <span class="math inline">\(q^*\)</span>.</p>
+<p><strong>D2. Sustainability.</strong> Determine the profit-maximising baking quantity if at most <strong>5%</strong> of production may be left over, and quantify the profit forgone compared with the unconstrained optimum.</p>
+<p><strong>D3. Recommendation.</strong> Formulate a practical recommendation for the owner, e.g. as a table “baking quantity per weekday”.</p>
+<p><strong>D4. Reflection.</strong> Answer the following questions in your presentation. They form the starting point for the subsequent discussion:</p>
 <ol type="1">
-<li>Warum schneidet das Newsvendor-Modell im Backtest besser oder schlechter ab als die Erfahrungsregel? Welches Wissen steckt in der »Erfahrung« der Inhaberin, das das Modell nicht kennt?</li>
-<li>Die Kosten und Restwerte sind Annahmen und stammen nicht aus den Daten. Wie stark hängt Ihre Empfehlung davon ab?</li>
-<li>Was bedeutet es für datengetriebene Entscheidungen allgemein, dass oft nur beobachtet wird, was verkauft wurde, und nicht, was nachgefragt wurde?</li>
-<li>Gewinn oder weniger Lebensmittelabfall: Wie sollte ein Unternehmen diesen Zielkonflikt entscheiden, und wer sollte die »Kosten der Nachhaltigkeit« tragen?</li>
-<li>Wären Ihre Ergebnisse auf eine Bäckerei in einem anderen Land übertragbar, etwa mit breiterem Sortiment und anderen Einkaufsgewohnheiten?</li>
+<li>Why does the newsvendor model perform better or worse than the rule of thumb in the backtest? What knowledge is contained in the owner’s “experience” that the model does not know?</li>
+<li>The costs and salvage values are assumptions and do not come from the data. How strongly does your recommendation depend on them?</li>
+<li>What does it mean for data-driven decisions in general that often only what was sold is observed, and not what was demanded?</li>
+<li>Profit or less food waste: How should a company decide this trade-off, and who should bear the “costs of sustainability”?</li>
+<li>Would your results be transferable to a bakery in another country, for example with a broader range and different shopping habits?</li>
 </ol>
 </section>
 </section>
-<section id="anhang-r-startercode" class="level1" data-number="5">
-<h1 data-number="5"><span class="header-section-number">5</span> Anhang: R-Startercode</h1>
+<section id="appendix-r-starter-code" class="level1" data-number="5">
+<h1 data-number="5"><span class="header-section-number">5</span> Appendix: R starter code</h1>
 <div class="cell">
 <details open class="code-fold">
 <summary>Code</summary>
@@ -2613,17 +2613,17 @@ window.Quarto = {
 <span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">wochentag =</span> lubridate<span class="sc">::</span><span class="fu">wday</span>(date, <span class="at">label =</span> <span class="cn">TRUE</span>, <span class="at">week_start =</span> <span class="dv">1</span>),</span>
 <span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a>         <span class="at">jahr      =</span> lubridate<span class="sc">::</span><span class="fu">year</span>(date))</span>
 <span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a><span class="co"># Beispiel: Newsvendor für die Baguette 2021 (alle Tage)</span></span>
+<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a><span class="co"># Example: newsvendor for the baguette 2021 (all days)</span></span>
 <span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a>b21 <span class="ot">&lt;-</span> tagesabsatz <span class="sc">|&gt;</span> <span class="fu">filter</span>(article <span class="sc">==</span> <span class="st">&quot;TRADITIONAL BAGUETTE&quot;</span>, jahr <span class="sc">==</span> <span class="dv">2021</span>)</span>
 <span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a><span class="fu">newsvendor_normal</span>(<span class="at">mu =</span> <span class="fu">mean</span>(b21<span class="sc">$</span>menge), <span class="at">sigma =</span> <span class="fu">sd</span>(b21<span class="sc">$</span>menge),</span>
 <span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a>                  <span class="at">p =</span> <span class="fu">median</span>(b21<span class="sc">$</span>preis), <span class="at">c =</span> <span class="fl">0.40</span>, <span class="at">s =</span> <span class="fl">0.10</span>)</span>
 <span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a><span class="co"># Empirisches Quantil</span></span>
+<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a><span class="co"># Empirical quantile</span></span>
 <span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a>CR <span class="ot">&lt;-</span> (<span class="fu">median</span>(b21<span class="sc">$</span>preis) <span class="sc">-</span> <span class="fl">0.40</span>) <span class="sc">/</span> (<span class="fu">median</span>(b21<span class="sc">$</span>preis) <span class="sc">-</span> <span class="fl">0.10</span>)</span>
 <span id="cb1-27"><a href="#cb1-27" aria-hidden="true" tabindex="-1"></a><span class="fu">quantile</span>(b21<span class="sc">$</span>menge, CR, <span class="at">type =</span> <span class="dv">1</span>)</span>
 <span id="cb1-28"><a href="#cb1-28" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-29"><a href="#cb1-29" aria-hidden="true" tabindex="-1"></a><span class="co"># Realisierter Gewinn einer Menge q bei Nachfrage D</span></span>
-<span id="cb1-30"><a href="#cb1-30" aria-hidden="true" tabindex="-1"></a>gewinn <span class="ot">&lt;-</span> <span class="cf">function</span>(q, D, p, c, s) p <span class="sc">*</span> <span class="fu">pmin</span>(q, D) <span class="sc">+</span> s <span class="sc">*</span> <span class="fu">pmax</span>(q <span class="sc">-</span> D, <span class="dv">0</span>) <span class="sc">-</span> c <span class="sc">*</span> q</span></code></pre></div><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb1-29"><a href="#cb1-29" aria-hidden="true" tabindex="-1"></a><span class="co"># Realised profit of a quantity q given demand D</span></span>
+<span id="cb1-30"><a href="#cb1-30" aria-hidden="true" tabindex="-1"></a>gewinn <span class="ot">&lt;-</span> <span class="cf">function</span>(q, D, p, c, s) p <span class="sc">*</span> <span class="fu">pmin</span>(q, D) <span class="sc">+</span> s <span class="sc">*</span> <span class="fu">pmax</span>(q <span class="sc">-</span> D, <span class="dv">0</span>) <span class="sc">-</span> c <span class="sc">*</span> q</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
 </div>
 </section>
@@ -2655,12 +2655,12 @@ window.Quarto = {
       // flash "checked"
       button.classList.add('code-copy-button-checked');
       var currentTitle = button.getAttribute("title");
-      button.setAttribute("title", "Kopiert");
+      button.setAttribute("title", "Copied!");
       let tooltip;
       if (window.bootstrap) {
         button.setAttribute("data-bs-toggle", "tooltip");
         button.setAttribute("data-bs-placement", "left");
-        button.setAttribute("data-bs-title", "Kopiert");
+        button.setAttribute("data-bs-title", "Copied!");
         tooltip = new bootstrap.Tooltip(button, 
           { trigger: "manual", 
             customClass: "code-copy-button-tooltip",

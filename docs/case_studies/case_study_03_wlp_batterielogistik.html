@@ -1,14 +1,14 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml" lang="de" xml:lang="de"><head>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
 
 <meta charset="utf-8">
 <meta name="generator" content="quarto-1.9.38">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
-<meta name="author" content="Supply Chain Management – Gruppenarbeit">
+<meta name="author" content="Supply Chain Management – Group Work">
 
-<title>Fallstudie 3: Diskrete Standort- und Netzwerkplanung</title>
+<title>Case Study 3: Discrete Facility Location and Network Planning</title>
 <style>
 
 code{white-space: pre-wrap;}
@@ -2344,25 +2344,25 @@ window.Quarto = {
 <div id="quarto-content" class="page-columns page-rows-contents page-layout-article">
 <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
   <nav id="TOC" role="doc-toc" class="toc-active">
-    <h2 id="toc-title">Inhaltsverzeichnis</h2>
+    <h2 id="toc-title">Table of contents</h2>
    
   <ul class="collapse">
-  <li><a href="#lernziele" id="toc-lernziele" class="nav-link active" data-scroll-target="#lernziele"><span class="header-section-number">1</span> Lernziele</a></li>
-  <li><a href="#ausgangslage" id="toc-ausgangslage" class="nav-link" data-scroll-target="#ausgangslage"><span class="header-section-number">2</span> Ausgangslage</a></li>
-  <li><a href="#daten" id="toc-daten" class="nav-link" data-scroll-target="#daten"><span class="header-section-number">3</span> Daten</a>
+  <li><a href="#learning-objectives" id="toc-learning-objectives" class="nav-link active" data-scroll-target="#learning-objectives"><span class="header-section-number">1</span> Learning objectives</a></li>
+  <li><a href="#initial-situation" id="toc-initial-situation" class="nav-link" data-scroll-target="#initial-situation"><span class="header-section-number">2</span> Initial situation</a></li>
+  <li><a href="#data" id="toc-data" class="nav-link" data-scroll-target="#data"><span class="header-section-number">3</span> Data</a>
   <ul class="collapse">
-  <li><a href="#werke-senken-und-jahresbedarf" id="toc-werke-senken-und-jahresbedarf" class="nav-link" data-scroll-target="#werke-senken-und-jahresbedarf"><span class="header-section-number">3.1</span> Werke (Senken) und Jahresbedarf</a></li>
-  <li><a href="#quellen" id="toc-quellen" class="nav-link" data-scroll-target="#quellen"><span class="header-section-number">3.2</span> Quellen</a></li>
-  <li><a href="#standortkandidaten" id="toc-standortkandidaten" class="nav-link" data-scroll-target="#standortkandidaten"><span class="header-section-number">3.3</span> Standortkandidaten</a></li>
+  <li><a href="#plants-sinks-and-annual-demand" id="toc-plants-sinks-and-annual-demand" class="nav-link" data-scroll-target="#plants-sinks-and-annual-demand"><span class="header-section-number">3.1</span> Plants (sinks) and annual demand</a></li>
+  <li><a href="#sources" id="toc-sources" class="nav-link" data-scroll-target="#sources"><span class="header-section-number">3.2</span> Sources</a></li>
+  <li><a href="#candidate-locations" id="toc-candidate-locations" class="nav-link" data-scroll-target="#candidate-locations"><span class="header-section-number">3.3</span> Candidate locations</a></li>
   </ul></li>
-  <li><a href="#aufgaben" id="toc-aufgaben" class="nav-link" data-scroll-target="#aufgaben"><span class="header-section-number">4</span> Aufgaben</a>
+  <li><a href="#tasks" id="toc-tasks" class="nav-link" data-scroll-target="#tasks"><span class="header-section-number">4</span> Tasks</a>
   <ul class="collapse">
-  <li><a href="#teil-a-datenaufbereitung" id="toc-teil-a-datenaufbereitung" class="nav-link" data-scroll-target="#teil-a-datenaufbereitung"><span class="header-section-number">4.1</span> Teil A – Datenaufbereitung</a></li>
-  <li><a href="#teil-b-unkapazitiertes-wlp-bedarf-2027" id="toc-teil-b-unkapazitiertes-wlp-bedarf-2027" class="nav-link" data-scroll-target="#teil-b-unkapazitiertes-wlp-bedarf-2027"><span class="header-section-number">4.2</span> Teil B – Unkapazitiertes WLP (Bedarf 2027)</a></li>
-  <li><a href="#teil-c-kapazitiertes-wlp-und-transportproblem" id="toc-teil-c-kapazitiertes-wlp-und-transportproblem" class="nav-link" data-scroll-target="#teil-c-kapazitiertes-wlp-und-transportproblem"><span class="header-section-number">4.3</span> Teil C – Kapazitiertes WLP und Transportproblem</a></li>
-  <li><a href="#teil-d-szenarien-empfehlung-und-reflexion" id="toc-teil-d-szenarien-empfehlung-und-reflexion" class="nav-link" data-scroll-target="#teil-d-szenarien-empfehlung-und-reflexion"><span class="header-section-number">4.4</span> Teil D – Szenarien, Empfehlung und Reflexion</a></li>
+  <li><a href="#part-a-data-preparation" id="toc-part-a-data-preparation" class="nav-link" data-scroll-target="#part-a-data-preparation"><span class="header-section-number">4.1</span> Part A – Data preparation</a></li>
+  <li><a href="#part-b-uncapacitated-wlp-demand-2027" id="toc-part-b-uncapacitated-wlp-demand-2027" class="nav-link" data-scroll-target="#part-b-uncapacitated-wlp-demand-2027"><span class="header-section-number">4.2</span> Part B – Uncapacitated WLP (demand 2027)</a></li>
+  <li><a href="#part-c-capacitated-wlp-and-transportation-problem" id="toc-part-c-capacitated-wlp-and-transportation-problem" class="nav-link" data-scroll-target="#part-c-capacitated-wlp-and-transportation-problem"><span class="header-section-number">4.3</span> Part C – Capacitated WLP and transportation problem</a></li>
+  <li><a href="#part-d-scenarios-recommendation-and-reflection" id="toc-part-d-scenarios-recommendation-and-reflection" class="nav-link" data-scroll-target="#part-d-scenarios-recommendation-and-reflection"><span class="header-section-number">4.4</span> Part D – Scenarios, recommendation and reflection</a></li>
   </ul></li>
-  <li><a href="#anhang-r-startercode" id="toc-anhang-r-startercode" class="nav-link" data-scroll-target="#anhang-r-startercode"><span class="header-section-number">5</span> Anhang: R-Startercode</a></li>
+  <li><a href="#appendix-r-starter-code" id="toc-appendix-r-starter-code" class="nav-link" data-scroll-target="#appendix-r-starter-code"><span class="header-section-number">5</span> Appendix: R starter code</a></li>
   </ul>
 </nav>
 </div>
@@ -2370,8 +2370,8 @@ window.Quarto = {
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title">Fallstudie 3: Diskrete Standort- und Netzwerkplanung</h1>
-<p class="subtitle lead">Batterielogistik für die Automobilindustrie in Norddeutschland und Benelux</p>
+<h1 class="title">Case Study 3: Discrete Facility Location and Network Planning</h1>
+<p class="subtitle lead">Battery logistics for the automotive industry in northern Germany and Benelux</p>
 </div>
 
 
@@ -2379,9 +2379,9 @@ window.Quarto = {
 <div class="quarto-title-meta">
 
     <div>
-    <div class="quarto-title-meta-heading">Autor:in</div>
+    <div class="quarto-title-meta-heading">Author</div>
     <div class="quarto-title-meta-contents">
-             <p>Supply Chain Management – Gruppenarbeit </p>
+             <p>Supply Chain Management – Group Work </p>
           </div>
   </div>
     
@@ -2400,7 +2400,7 @@ window.Quarto = {
 <i class="callout-icon"></i>
 </div>
 <div class="callout-title-container flex-fill">
-<span class="screen-reader-only">Hinweis</span>Steckbrief
+<span class="screen-reader-only">Note</span>Overview
 </div>
 </div>
 <div class="callout-body-container callout-body">
@@ -2411,59 +2411,59 @@ window.Quarto = {
 </colgroup>
 <tbody>
 <tr class="odd">
-<td><strong>Thema</strong></td>
-<td>Netzwerkdesign mit dem Warehouse Location Problem (WLP)</td>
+<td><strong>Topic</strong></td>
+<td>Network design with the warehouse location problem (WLP)</td>
 </tr>
 <tr class="even">
-<td><strong>Vorlesungsbezug</strong></td>
-<td>Kapitel 5 des Readers: unkapazitiertes und kapazitiertes WLP als MILP, Add-/Drop-Heuristik</td>
+<td><strong>Link to the lecture</strong></td>
+<td>Chapter 5 of the course reader: uncapacitated and capacitated WLP as a MILP, add/drop heuristic</td>
 </tr>
 <tr class="odd">
-<td><strong>Typ</strong></td>
-<td>Datenbasierte Fallstudie: realistische Werks- und Standortkoordinaten, Mengen und Kosten realitätsnah geschätzt</td>
+<td><strong>Type</strong></td>
+<td>Data-based case study: realistic plant and site coordinates, quantities and costs estimated realistically</td>
 </tr>
 <tr class="even">
-<td><strong>Gruppengröße</strong></td>
-<td>3–6 Personen</td>
+<td><strong>Group size</strong></td>
+<td>3–6 people</td>
 </tr>
 <tr class="odd">
-<td><strong>Ergebnis</strong></td>
-<td>Präsentation (30 Min.) + Diskussion (15 Min.), Foliensatz (PDF) und reproduzierbarer R-/Quarto-Code</td>
+<td><strong>Deliverable</strong></td>
+<td>Presentation (30 min) + discussion (15 min), slide deck (PDF) and reproducible R/Quarto code</td>
 </tr>
 </tbody>
 </table>
 </div>
 </div>
-<section id="lernziele" class="level1" data-number="1">
-<h1 data-number="1"><span class="header-section-number">1</span> Lernziele</h1>
-<p>Nach Bearbeitung der Fallstudie können Sie</p>
+<section id="learning-objectives" class="level1" data-number="1">
+<h1 data-number="1"><span class="header-section-number">1</span> Learning objectives</h1>
+<p>After working through this case study, you will be able to</p>
 <ul>
-<li>aus Geodaten eine Transportkostenmatrix aufbauen,</li>
-<li>ein <strong>unkapazitiertes (UFLP) und ein kapazitiertes WLP (CFLP)</strong> als gemischt-ganzzahliges lineares Programm formulieren und in R lösen,</li>
-<li>Konstruktions- und Verbesserungsheuristiken (Add, Drop) anwenden und ihre Lösungsqualität gegenüber dem Optimum bewerten,</li>
-<li>für ein gegebenes Netz die Belieferung als <strong>Transportproblem</strong> planen ,</li>
-<li>Netzwerkentscheidungen unter unsicheren Zukunftsszenarien robust gestalten.</li>
+<li>build a transport cost matrix from geodata,</li>
+<li>formulate an <strong>uncapacitated (UFLP) and a capacitated WLP (CFLP)</strong> as a mixed-integer linear programme and solve them in R,</li>
+<li>apply construction and improvement heuristics (add, drop) and evaluate their solution quality against the optimum,</li>
+<li>plan the supply for a given network as a <strong>transportation problem</strong>,</li>
+<li>design network decisions robustly under uncertain future scenarios.</li>
 </ul>
 </section>
-<section id="ausgangslage" class="level1" data-number="2">
-<h1 data-number="2"><span class="header-section-number">2</span> Ausgangslage</h1>
-<p>Die <strong>NordCell Logistics GmbH</strong> (fiktiv) ist ein auf Gefahrgut spezialisierter Kontraktlogistiker. Sie hat den Zuschlag erhalten, Lithium-Ionen-Batteriemodule für zehn Fahrzeugwerke in Norddeutschland, NRW, Hessen und Benelux zu lagern, zu sequenzieren und <em>just in sequence</em> anzuliefern. Die Module kommen aus zwei Quellen:</p>
+<section id="initial-situation" class="level1" data-number="2">
+<h1 data-number="2"><span class="header-section-number">2</span> Initial situation</h1>
+<p><strong>NordCell Logistics GmbH</strong> (fictitious) is a contract logistics provider specialising in dangerous goods. It has won the contract to store, sequence and deliver <em>just in sequence</em> lithium-ion battery modules for ten vehicle plants in northern Germany, North Rhine-Westphalia, Hesse and Benelux. The modules come from two sources:</p>
 <ul>
-<li><strong>Importe aus Asien</strong> über den Containerhafen <strong>Hamburg</strong> (60 % der Menge),</li>
-<li>die <strong>Zellfabrik in Salzgitter</strong> (40 % der Menge).</li>
+<li><strong>imports from Asia</strong> via the container port of <strong>Hamburg</strong> (60% of the volume),</li>
+<li>the <strong>cell factory in Salzgitter</strong> (40% of the volume).</li>
 </ul>
-<p>Lithium-Ionen-Batterien sind Gefahrgut der Klasse 9 (UN 3480/3481). Die Lager benötigen daher Brandabschnitte, Sprinkler- und Löschwasserrückhaltesysteme, eine Quarantänezone für beschädigte Module und behördliche Genehmigungen, was die <strong>Fixkosten</strong> eines Standorts erheblich erhöht. NordCell hat acht potenzielle Lagerstandorte in Gewerbe- und Logistikparks identifiziert und muss entscheiden,</p>
+<p>Lithium-ion batteries are class 9 dangerous goods (UN 3480/3481). The warehouses therefore require fire compartments, sprinkler and firewater retention systems, a quarantine zone for damaged modules and official permits, which considerably increases the <strong>fixed costs</strong> of a site. NordCell has identified eight potential warehouse locations in industrial and logistics parks and must decide</p>
 <ol type="1">
-<li><strong>welche Lager eröffnet/umgerüstet werden</strong> (strategische Entscheidung, Vertragslaufzeit 7-12 Jahre),</li>
-<li><strong>welches Werk aus welchem Lager beliefert wird</strong> (taktische Planung, jährlich),</li>
-<li>wie robust dieses Netz gegenüber der unsicheren Hochlaufentwicklung der Elektromobilität ist.</li>
+<li><strong>which warehouses to open/convert</strong> (strategic decision, contract term 7–12 years),</li>
+<li><strong>which plant is supplied from which warehouse</strong> (tactical planning, annually),</li>
+<li>how robust this network is to the uncertain ramp-up of electric mobility.</li>
 </ol>
 </section>
-<section id="daten" class="level1" data-number="3">
-<h1 data-number="3"><span class="header-section-number">3</span> Daten</h1>
-<p>Die Werksstandorte orientieren sich an realen Fahrzeugwerken. Die <strong>Mengen und Kosten sind fiktiv</strong>, aber in ihrer Größenordnung realitätsnah (1 MWh ≈ 6–7 t Batteriemodule inklusive Verpackung).</p>
-<section id="werke-senken-und-jahresbedarf" class="level2" data-number="3.1">
-<h2 data-number="3.1" class="anchored" data-anchor-id="werke-senken-und-jahresbedarf"><span class="header-section-number">3.1</span> Werke (Senken) und Jahresbedarf</h2>
+<section id="data" class="level1" data-number="3">
+<h1 data-number="3"><span class="header-section-number">3</span> Data</h1>
+<p>The plant locations are based on real vehicle plants. The <strong>quantities and costs are fictitious</strong>, but realistic in order of magnitude (1 MWh ≈ 6–7 t of battery modules including packaging).</p>
+<section id="plants-sinks-and-annual-demand" class="level2" data-number="3.1">
+<h2 data-number="3.1" class="anchored" data-anchor-id="plants-sinks-and-annual-demand"><span class="header-section-number">3.1</span> Plants (sinks) and annual demand</h2>
 <div class="cell">
 <details open class="code-fold">
 <summary>Code</summary>
@@ -2477,118 +2477,118 @@ window.Quarto = {
 <span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">d2027 =</span> <span class="fu">c</span>(<span class="dv">28000</span>, <span class="dv">22000</span>, <span class="dv">18500</span>, <span class="dv">12000</span>, <span class="dv">25000</span>, <span class="dv">20000</span>, <span class="dv">15000</span>, <span class="dv">30000</span>, <span class="dv">14000</span>, <span class="dv">11000</span>),</span>
 <span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>  <span class="at">d2030 =</span> <span class="fu">c</span>(<span class="dv">42000</span>, <span class="dv">26000</span>, <span class="dv">28000</span>, <span class="dv">12000</span>, <span class="dv">31000</span>, <span class="dv">27000</span>, <span class="dv">21000</span>, <span class="dv">36000</span>, <span class="dv">17000</span>,  <span class="dv">6000</span>)</span>
 <span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>knitr<span class="sc">::</span><span class="fu">kable</span>(werke, <span class="at">format.args =</span> <span class="fu">list</span>(<span class="at">big.mark =</span> <span class="st">&quot;.&quot;</span>, <span class="at">decimal.mark =</span> <span class="st">&quot;,&quot;</span>),</span>
-<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>             <span class="at">col.names =</span> <span class="fu">c</span>(<span class="st">&quot;#&quot;</span>, <span class="st">&quot;Werk&quot;</span>, <span class="st">&quot;Breite&quot;</span>, <span class="st">&quot;Länge&quot;</span>,</span>
-<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>                           <span class="st">&quot;Bedarf 2027 [MWh/a]&quot;</span>, <span class="st">&quot;Szenario 2030 [MWh/a]&quot;</span>))</span></code></pre></div><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>knitr<span class="sc">::</span><span class="fu">kable</span>(werke, <span class="at">format.args =</span> <span class="fu">list</span>(<span class="at">big.mark =</span> <span class="st">&quot;,&quot;</span>, <span class="at">decimal.mark =</span> <span class="st">&quot;.&quot;</span>),</span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>             <span class="at">col.names =</span> <span class="fu">c</span>(<span class="st">&quot;#&quot;</span>, <span class="st">&quot;Plant&quot;</span>, <span class="st">&quot;Latitude&quot;</span>, <span class="st">&quot;Longitude&quot;</span>,</span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>                           <span class="st">&quot;Demand 2027 [MWh/yr]&quot;</span>, <span class="st">&quot;Scenario 2030 [MWh/yr]&quot;</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
 <div class="cell-output-display">
 <table class="caption-top table table-sm table-striped small">
 <colgroup>
 <col style="width: 3%">
+<col style="width: 24%">
+<col style="width: 10%">
+<col style="width: 11%">
+<col style="width: 24%">
 <col style="width: 26%">
-<col style="width: 8%">
-<col style="width: 8%">
-<col style="width: 25%">
-<col style="width: 27%">
 </colgroup>
 <thead>
 <tr class="header">
 <th style="text-align: right;">#</th>
-<th style="text-align: left;">Werk</th>
-<th style="text-align: right;">Breite</th>
-<th style="text-align: right;">Länge</th>
-<th style="text-align: right;">Bedarf 2027 [MWh/a]</th>
-<th style="text-align: right;">Szenario 2030 [MWh/a]</th>
+<th style="text-align: left;">Plant</th>
+<th style="text-align: right;">Latitude</th>
+<th style="text-align: right;">Longitude</th>
+<th style="text-align: right;">Demand 2027 [MWh/yr]</th>
+<th style="text-align: right;">Scenario 2030 [MWh/yr]</th>
 </tr>
 </thead>
 <tbody>
 <tr class="odd">
 <td style="text-align: right;">1</td>
 <td style="text-align: left;">VW Wolfsburg</td>
-<td style="text-align: right;">52,432</td>
-<td style="text-align: right;">10,787</td>
-<td style="text-align: right;">28.000</td>
-<td style="text-align: right;">42.000</td>
+<td style="text-align: right;">52.432</td>
+<td style="text-align: right;">10.787</td>
+<td style="text-align: right;">28,000</td>
+<td style="text-align: right;">42,000</td>
 </tr>
 <tr class="even">
 <td style="text-align: right;">2</td>
 <td style="text-align: left;">VW Hannover</td>
-<td style="text-align: right;">52,380</td>
-<td style="text-align: right;">9,746</td>
-<td style="text-align: right;">22.000</td>
-<td style="text-align: right;">26.000</td>
+<td style="text-align: right;">52.380</td>
+<td style="text-align: right;">9.746</td>
+<td style="text-align: right;">22,000</td>
+<td style="text-align: right;">26,000</td>
 </tr>
 <tr class="odd">
 <td style="text-align: right;">3</td>
 <td style="text-align: left;">VW Emden</td>
-<td style="text-align: right;">53,365</td>
-<td style="text-align: right;">7,213</td>
-<td style="text-align: right;">18.500</td>
-<td style="text-align: right;">28.000</td>
+<td style="text-align: right;">53.365</td>
+<td style="text-align: right;">7.213</td>
+<td style="text-align: right;">18,500</td>
+<td style="text-align: right;">28,000</td>
 </tr>
 <tr class="even">
 <td style="text-align: right;">4</td>
 <td style="text-align: left;">VW Osnabrück</td>
-<td style="text-align: right;">52,279</td>
-<td style="text-align: right;">8,047</td>
-<td style="text-align: right;">12.000</td>
-<td style="text-align: right;">12.000</td>
+<td style="text-align: right;">52.279</td>
+<td style="text-align: right;">8.047</td>
+<td style="text-align: right;">12,000</td>
+<td style="text-align: right;">12,000</td>
 </tr>
 <tr class="odd">
 <td style="text-align: right;">5</td>
 <td style="text-align: left;">Mercedes-Benz Bremen</td>
-<td style="text-align: right;">53,075</td>
-<td style="text-align: right;">8,808</td>
-<td style="text-align: right;">25.000</td>
-<td style="text-align: right;">31.000</td>
+<td style="text-align: right;">53.075</td>
+<td style="text-align: right;">8.808</td>
+<td style="text-align: right;">25,000</td>
+<td style="text-align: right;">31,000</td>
 </tr>
 <tr class="even">
 <td style="text-align: right;">6</td>
 <td style="text-align: left;">Ford Köln</td>
-<td style="text-align: right;">50,950</td>
-<td style="text-align: right;">6,900</td>
-<td style="text-align: right;">20.000</td>
-<td style="text-align: right;">27.000</td>
+<td style="text-align: right;">50.950</td>
+<td style="text-align: right;">6.900</td>
+<td style="text-align: right;">20,000</td>
+<td style="text-align: right;">27,000</td>
 </tr>
 <tr class="odd">
 <td style="text-align: right;">7</td>
 <td style="text-align: left;">Opel Rüsselsheim</td>
-<td style="text-align: right;">49,993</td>
-<td style="text-align: right;">8,422</td>
-<td style="text-align: right;">15.000</td>
-<td style="text-align: right;">21.000</td>
+<td style="text-align: right;">49.993</td>
+<td style="text-align: right;">8.422</td>
+<td style="text-align: right;">15,000</td>
+<td style="text-align: right;">21,000</td>
 </tr>
 <tr class="even">
 <td style="text-align: right;">8</td>
 <td style="text-align: left;">Volvo Cars Gent</td>
-<td style="text-align: right;">51,054</td>
-<td style="text-align: right;">3,717</td>
-<td style="text-align: right;">30.000</td>
-<td style="text-align: right;">36.000</td>
+<td style="text-align: right;">51.054</td>
+<td style="text-align: right;">3.717</td>
+<td style="text-align: right;">30,000</td>
+<td style="text-align: right;">36,000</td>
 </tr>
 <tr class="odd">
 <td style="text-align: right;">9</td>
 <td style="text-align: left;">Volvo Trucks Gent</td>
-<td style="text-align: right;">51,040</td>
-<td style="text-align: right;">3,730</td>
-<td style="text-align: right;">14.000</td>
-<td style="text-align: right;">17.000</td>
+<td style="text-align: right;">51.040</td>
+<td style="text-align: right;">3.730</td>
+<td style="text-align: right;">14,000</td>
+<td style="text-align: right;">17,000</td>
 </tr>
 <tr class="even">
 <td style="text-align: right;">10</td>
 <td style="text-align: left;">VDL Nedcar Born</td>
-<td style="text-align: right;">51,030</td>
-<td style="text-align: right;">5,867</td>
-<td style="text-align: right;">11.000</td>
-<td style="text-align: right;">6.000</td>
+<td style="text-align: right;">51.030</td>
+<td style="text-align: right;">5.867</td>
+<td style="text-align: right;">11,000</td>
+<td style="text-align: right;">6,000</td>
 </tr>
 </tbody>
 </table>
 </div>
 </div>
 </section>
-<section id="quellen" class="level2" data-number="3.2">
-<h2 data-number="3.2" class="anchored" data-anchor-id="quellen"><span class="header-section-number">3.2</span> Quellen</h2>
+<section id="sources" class="level2" data-number="3.2">
+<h2 data-number="3.2" class="anchored" data-anchor-id="sources"><span class="header-section-number">3.2</span> Sources</h2>
 <div class="cell">
 <details open class="code-fold">
 <summary>Code</summary>
@@ -2598,16 +2598,16 @@ window.Quarto = {
 <span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">lon    =</span> <span class="fu">c</span>( <span class="fl">9.970</span>, <span class="fl">10.400</span>),</span>
 <span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">anteil =</span> <span class="fu">c</span>(<span class="fl">0.60</span>, <span class="fl">0.40</span>)</span>
 <span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>knitr<span class="sc">::</span><span class="fu">kable</span>(quellen, <span class="at">col.names =</span> <span class="fu">c</span>(<span class="st">&quot;Quelle&quot;</span>, <span class="st">&quot;Breite&quot;</span>, <span class="st">&quot;Länge&quot;</span>, <span class="st">&quot;Mengenanteil&quot;</span>))</span></code></pre></div><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>knitr<span class="sc">::</span><span class="fu">kable</span>(quellen, <span class="at">col.names =</span> <span class="fu">c</span>(<span class="st">&quot;Source&quot;</span>, <span class="st">&quot;Latitude&quot;</span>, <span class="st">&quot;Longitude&quot;</span>, <span class="st">&quot;Volume share&quot;</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
 <div class="cell-output-display">
 <table class="caption-top table table-sm table-striped small">
 <thead>
 <tr class="header">
-<th style="text-align: left;">Quelle</th>
-<th style="text-align: right;">Breite</th>
-<th style="text-align: right;">Länge</th>
-<th style="text-align: right;">Mengenanteil</th>
+<th style="text-align: left;">Source</th>
+<th style="text-align: right;">Latitude</th>
+<th style="text-align: right;">Longitude</th>
+<th style="text-align: right;">Volume share</th>
 </tr>
 </thead>
 <tbody>
@@ -2628,8 +2628,8 @@ window.Quarto = {
 </div>
 </div>
 </section>
-<section id="standortkandidaten" class="level2" data-number="3.3">
-<h2 data-number="3.3" class="anchored" data-anchor-id="standortkandidaten"><span class="header-section-number">3.3</span> Standortkandidaten</h2>
+<section id="candidate-locations" class="level2" data-number="3.3">
+<h2 data-number="3.3" class="anchored" data-anchor-id="candidate-locations"><span class="header-section-number">3.3</span> Candidate locations</h2>
 <div class="cell">
 <details open class="code-fold">
 <summary>Code</summary>
@@ -2639,97 +2639,97 @@ window.Quarto = {
 <span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>           <span class="st">&quot;Venlo (NL)&quot;</span>, <span class="st">&quot;Bremen GVZ&quot;</span>, <span class="st">&quot;Gent Hafen (BE)&quot;</span>),</span>
 <span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">lat  =</span> <span class="fu">c</span>(<span class="fl">51.906</span>, <span class="fl">50.804</span>, <span class="fl">51.660</span>, <span class="fl">52.320</span>, <span class="fl">52.438</span>, <span class="fl">51.370</span>, <span class="fl">53.050</span>, <span class="fl">51.100</span>),</span>
 <span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">lon  =</span> <span class="fu">c</span>( <span class="fl">8.383</span>,  <span class="fl">6.493</span>,  <span class="fl">6.965</span>, <span class="fl">10.230</span>,  <span class="fl">9.737</span>,  <span class="fl">6.170</span>,  <span class="fl">8.700</span>,  <span class="fl">3.780</span>),</span>
-<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">fix  =</span> <span class="fu">c</span>(<span class="dv">2400</span>, <span class="dv">2600</span>, <span class="dv">2500</span>, <span class="dv">2300</span>, <span class="dv">2700</span>, <span class="dv">2800</span>, <span class="dv">2600</span>, <span class="dv">3000</span>),   <span class="co"># T€/Jahr</span></span>
-<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">kap  =</span> <span class="fu">c</span>(<span class="dv">90</span>, <span class="dv">110</span>, <span class="dv">80</span>, <span class="dv">70</span>, <span class="dv">100</span>, <span class="dv">120</span>, <span class="dv">90</span>, <span class="dv">80</span>) <span class="sc">*</span> <span class="dv">1000</span>           <span class="co"># MWh/Jahr</span></span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">fix  =</span> <span class="fu">c</span>(<span class="dv">2400</span>, <span class="dv">2600</span>, <span class="dv">2500</span>, <span class="dv">2300</span>, <span class="dv">2700</span>, <span class="dv">2800</span>, <span class="dv">2600</span>, <span class="dv">3000</span>),   <span class="co"># thousand €/year</span></span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">kap  =</span> <span class="fu">c</span>(<span class="dv">90</span>, <span class="dv">110</span>, <span class="dv">80</span>, <span class="dv">70</span>, <span class="dv">100</span>, <span class="dv">120</span>, <span class="dv">90</span>, <span class="dv">80</span>) <span class="sc">*</span> <span class="dv">1000</span>           <span class="co"># MWh/year</span></span>
 <span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>knitr<span class="sc">::</span><span class="fu">kable</span>(lager, <span class="at">format.args =</span> <span class="fu">list</span>(<span class="at">big.mark =</span> <span class="st">&quot;.&quot;</span>, <span class="at">decimal.mark =</span> <span class="st">&quot;,&quot;</span>),</span>
-<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>             <span class="at">col.names =</span> <span class="fu">c</span>(<span class="st">&quot;#&quot;</span>, <span class="st">&quot;Standort&quot;</span>, <span class="st">&quot;Breite&quot;</span>, <span class="st">&quot;Länge&quot;</span>,</span>
-<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a>                           <span class="st">&quot;Fixkosten [T€/a]&quot;</span>, <span class="st">&quot;Kapazität [MWh/a]&quot;</span>))</span></code></pre></div><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>knitr<span class="sc">::</span><span class="fu">kable</span>(lager, <span class="at">format.args =</span> <span class="fu">list</span>(<span class="at">big.mark =</span> <span class="st">&quot;,&quot;</span>, <span class="at">decimal.mark =</span> <span class="st">&quot;.&quot;</span>),</span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>             <span class="at">col.names =</span> <span class="fu">c</span>(<span class="st">&quot;#&quot;</span>, <span class="st">&quot;Location&quot;</span>, <span class="st">&quot;Latitude&quot;</span>, <span class="st">&quot;Longitude&quot;</span>,</span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a>                           <span class="st">&quot;Fixed costs [thousand €/yr]&quot;</span>, <span class="st">&quot;Capacity [MWh/yr]&quot;</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
 <div class="cell-output-display">
 <table class="caption-top table table-sm table-striped small">
 <colgroup>
-<col style="width: 4%">
-<col style="width: 23%">
+<col style="width: 3%">
+<col style="width: 19%">
 <col style="width: 10%">
-<col style="width: 10%">
-<col style="width: 25%">
-<col style="width: 26%">
+<col style="width: 11%">
+<col style="width: 33%">
+<col style="width: 21%">
 </colgroup>
 <thead>
 <tr class="header">
 <th style="text-align: right;">#</th>
-<th style="text-align: left;">Standort</th>
-<th style="text-align: right;">Breite</th>
-<th style="text-align: right;">Länge</th>
-<th style="text-align: right;">Fixkosten [T€/a]</th>
-<th style="text-align: right;">Kapazität [MWh/a]</th>
+<th style="text-align: left;">Location</th>
+<th style="text-align: right;">Latitude</th>
+<th style="text-align: right;">Longitude</th>
+<th style="text-align: right;">Fixed costs [thousand €/yr]</th>
+<th style="text-align: right;">Capacity [MWh/yr]</th>
 </tr>
 </thead>
 <tbody>
 <tr class="odd">
 <td style="text-align: right;">1</td>
 <td style="text-align: left;">Gütersloh</td>
-<td style="text-align: right;">51,906</td>
-<td style="text-align: right;">8,383</td>
-<td style="text-align: right;">2.400</td>
-<td style="text-align: right;">90.000</td>
+<td style="text-align: right;">51.906</td>
+<td style="text-align: right;">8.383</td>
+<td style="text-align: right;">2,400</td>
+<td style="text-align: right;">90,000</td>
 </tr>
 <tr class="even">
 <td style="text-align: right;">2</td>
 <td style="text-align: left;">Düren</td>
-<td style="text-align: right;">50,804</td>
-<td style="text-align: right;">6,493</td>
-<td style="text-align: right;">2.600</td>
-<td style="text-align: right;">110.000</td>
+<td style="text-align: right;">50.804</td>
+<td style="text-align: right;">6.493</td>
+<td style="text-align: right;">2,600</td>
+<td style="text-align: right;">110,000</td>
 </tr>
 <tr class="odd">
 <td style="text-align: right;">3</td>
 <td style="text-align: left;">Dorsten/Marl</td>
-<td style="text-align: right;">51,660</td>
-<td style="text-align: right;">6,965</td>
-<td style="text-align: right;">2.500</td>
-<td style="text-align: right;">80.000</td>
+<td style="text-align: right;">51.660</td>
+<td style="text-align: right;">6.965</td>
+<td style="text-align: right;">2,500</td>
+<td style="text-align: right;">80,000</td>
 </tr>
 <tr class="even">
 <td style="text-align: right;">4</td>
 <td style="text-align: left;">Peine</td>
-<td style="text-align: right;">52,320</td>
-<td style="text-align: right;">10,230</td>
-<td style="text-align: right;">2.300</td>
-<td style="text-align: right;">70.000</td>
+<td style="text-align: right;">52.320</td>
+<td style="text-align: right;">10.230</td>
+<td style="text-align: right;">2,300</td>
+<td style="text-align: right;">70,000</td>
 </tr>
 <tr class="odd">
 <td style="text-align: right;">5</td>
 <td style="text-align: left;">Langenhagen</td>
-<td style="text-align: right;">52,438</td>
-<td style="text-align: right;">9,737</td>
-<td style="text-align: right;">2.700</td>
-<td style="text-align: right;">100.000</td>
+<td style="text-align: right;">52.438</td>
+<td style="text-align: right;">9.737</td>
+<td style="text-align: right;">2,700</td>
+<td style="text-align: right;">100,000</td>
 </tr>
 <tr class="even">
 <td style="text-align: right;">6</td>
 <td style="text-align: left;">Venlo (NL)</td>
-<td style="text-align: right;">51,370</td>
-<td style="text-align: right;">6,170</td>
-<td style="text-align: right;">2.800</td>
-<td style="text-align: right;">120.000</td>
+<td style="text-align: right;">51.370</td>
+<td style="text-align: right;">6.170</td>
+<td style="text-align: right;">2,800</td>
+<td style="text-align: right;">120,000</td>
 </tr>
 <tr class="odd">
 <td style="text-align: right;">7</td>
 <td style="text-align: left;">Bremen GVZ</td>
-<td style="text-align: right;">53,050</td>
-<td style="text-align: right;">8,700</td>
-<td style="text-align: right;">2.600</td>
-<td style="text-align: right;">90.000</td>
+<td style="text-align: right;">53.050</td>
+<td style="text-align: right;">8.700</td>
+<td style="text-align: right;">2,600</td>
+<td style="text-align: right;">90,000</td>
 </tr>
 <tr class="even">
 <td style="text-align: right;">8</td>
 <td style="text-align: left;">Gent Hafen (BE)</td>
-<td style="text-align: right;">51,100</td>
-<td style="text-align: right;">3,780</td>
-<td style="text-align: right;">3.000</td>
-<td style="text-align: right;">80.000</td>
+<td style="text-align: right;">51.100</td>
+<td style="text-align: right;">3.780</td>
+<td style="text-align: right;">3,000</td>
+<td style="text-align: right;">80,000</td>
 </tr>
 </tbody>
 </table>
@@ -2737,40 +2737,40 @@ window.Quarto = {
 </div>
 </section>
 </section>
-<section id="aufgaben" class="level1" data-number="4">
-<h1 data-number="4"><span class="header-section-number">4</span> Aufgaben</h1>
-<section id="teil-a-datenaufbereitung" class="level2" data-number="4.1">
-<h2 data-number="4.1" class="anchored" data-anchor-id="teil-a-datenaufbereitung"><span class="header-section-number">4.1</span> Teil A – Datenaufbereitung</h2>
-<p><strong>A1.</strong> Ermitteln Sie Transportkostensätze für dei Batteriesysteme (in €/MWh<span class="math inline">\(\cdot\)</span>km). Welche Annahmen liegen dabei zu grunde?</p>
-<p><strong>A2.</strong> Stellen Sie Quellen, Lagerkandidaten und Werke auf einer Karte dar und berechnen Sie die Transportdistanzen, Transportkostenmatrix <span class="math inline">\(c_{ij}\)</span> (€/MWh) sowie die jährlichen Transportkosten. Vergleichen Sie für zwei Relationen die Haversine-Distanz × 1,2 mit der Straßendistanz eines Routenplaners.</p>
+<section id="tasks" class="level1" data-number="4">
+<h1 data-number="4"><span class="header-section-number">4</span> Tasks</h1>
+<section id="part-a-data-preparation" class="level2" data-number="4.1">
+<h2 data-number="4.1" class="anchored" data-anchor-id="part-a-data-preparation"><span class="header-section-number">4.1</span> Part A – Data preparation</h2>
+<p><strong>A1.</strong> Determine transport cost rates for the battery systems (in €/MWh<span class="math inline">\(\cdot\)</span>km). Which assumptions underlie them?</p>
+<p><strong>A2.</strong> Show sources, warehouse candidates and plants on a map and calculate the transport distances, the transport cost matrix <span class="math inline">\(c_{ij}\)</span> (€/MWh) and the annual transport costs. For two routes, compare the haversine distance × 1.2 with the road distance from a route planner.</p>
 </section>
-<section id="teil-b-unkapazitiertes-wlp-bedarf-2027" class="level2" data-number="4.2">
-<h2 data-number="4.2" class="anchored" data-anchor-id="teil-b-unkapazitiertes-wlp-bedarf-2027"><span class="header-section-number">4.2</span> Teil B – Unkapazitiertes WLP (Bedarf 2027)</h2>
-<p><strong>B1.</strong> Lösen Sie das Problem mit der <strong>Add- oder Drop-Heuristik</strong> (<code>add_heuristic_wlp()</code>, <code>drop_heuristic_wlp()</code>) und exakt mit <code>ompr</code> + GLPK. Wie weit liegt die Heuristik vom Optimum entfernt?</p>
-<p><strong>B2.</strong> Adaptieren Sie das MILP und bestimmen Sie die optimalen Gesamtkosten bei fest vorgegebener Anzahl offener Lager (<span class="math inline">\(\sum_i y_i = k\)</span>, <span class="math inline">\(k = 1, \dots, 4\)</span>). Welche Standorte werden jeweils eröffnet und welche Gesamtkosten ergeben sich?</p>
+<section id="part-b-uncapacitated-wlp-demand-2027" class="level2" data-number="4.2">
+<h2 data-number="4.2" class="anchored" data-anchor-id="part-b-uncapacitated-wlp-demand-2027"><span class="header-section-number">4.2</span> Part B – Uncapacitated WLP (demand 2027)</h2>
+<p><strong>B1.</strong> Solve the problem with the <strong>add or drop heuristic</strong> (<code>add_heuristic_wlp()</code>, <code>drop_heuristic_wlp()</code>) and exactly with <code>ompr</code> + GLPK. How far is the heuristic from the optimum?</p>
+<p><strong>B2.</strong> Adapt the MILP and determine the optimal total costs for a fixed number of open warehouses (<span class="math inline">\(\sum_i y_i = k\)</span>, <span class="math inline">\(k = 1, \dots, 4\)</span>). Which locations are opened in each case and what total costs result?</p>
 </section>
-<section id="teil-c-kapazitiertes-wlp-und-transportproblem" class="level2" data-number="4.3">
-<h2 data-number="4.3" class="anchored" data-anchor-id="teil-c-kapazitiertes-wlp-und-transportproblem"><span class="header-section-number">4.3</span> Teil C – Kapazitiertes WLP und Transportproblem</h2>
-<p><strong>C1.</strong> Erweitern Sie das Modell um die Lagerkapazitäten (CFLP). Wie ändert sich die Lösung?</p>
-<p><strong>C2.</strong> Fixieren Sie die Lagerentscheidung aus C1 und lösen Sie das <strong>Umladeproblem</strong> für 2027. D. h. bestimmen Sie die transportkosten-optimalen Liefermengen von Quellen -&gt; Lager -&gt; Werke.</p>
+<section id="part-c-capacitated-wlp-and-transportation-problem" class="level2" data-number="4.3">
+<h2 data-number="4.3" class="anchored" data-anchor-id="part-c-capacitated-wlp-and-transportation-problem"><span class="header-section-number">4.3</span> Part C – Capacitated WLP and transportation problem</h2>
+<p><strong>C1.</strong> Extend the model to include the warehouse capacities (CFLP). How does the solution change?</p>
+<p><strong>C2.</strong> Fix the warehouse decision from C1 and solve the <strong>transshipment problem</strong> for 2027, i.e. determine the transport-cost-optimal delivery quantities from sources -&gt; warehouses -&gt; plants.</p>
 </section>
-<section id="teil-d-szenarien-empfehlung-und-reflexion" class="level2" data-number="4.4">
-<h2 data-number="4.4" class="anchored" data-anchor-id="teil-d-szenarien-empfehlung-und-reflexion"><span class="header-section-number">4.4</span> Teil D – Szenarien, Empfehlung und Reflexion</h2>
-<p><strong>D1. Szenario 2030.</strong> Lösen Sie das CFLP für das Szenario 2030. Ist das Netz aus 2027 noch zulässig bzw. optimal? Bestimmen Sie ein Netz, das für <strong>beide Szenarien</strong> gut ist, z. B. durch Minimierung der erwarteten Kosten (50 % / 50 %) oder des maximalen Bedauerns (<em>Minimax-Regret</em>).</p>
-<p><strong>D2. Sensitivität.</strong> Untersuchen Sie eine weitere Sensitivität: CO₂-Preis von 150 €/t, Wegfall der Zellfabrik Salzgitter oder Schließung des Werks VDL Nedcar Born.</p>
-<p><strong>D3. Empfehlung.</strong> Formulieren Sie eine Netzempfehlung für NordCell mit Kosten, Standorten, Risiken und Ausbauoptionen.</p>
-<p><strong>D4. Reflexion.</strong> Beantworten Sie in der Präsentation die folgenden Fragen. Sie bilden den Ausgangspunkt der anschließenden Diskussion:</p>
+<section id="part-d-scenarios-recommendation-and-reflection" class="level2" data-number="4.4">
+<h2 data-number="4.4" class="anchored" data-anchor-id="part-d-scenarios-recommendation-and-reflection"><span class="header-section-number">4.4</span> Part D – Scenarios, recommendation and reflection</h2>
+<p><strong>D1. Scenario 2030.</strong> Solve the CFLP for the 2030 scenario. Is the 2027 network still feasible or optimal? Determine a network that performs well in <strong>both scenarios</strong>, e.g. by minimising expected costs (50% / 50%) or maximum regret (<em>minimax regret</em>).</p>
+<p><strong>D2. Sensitivity.</strong> Examine one further sensitivity: a CO₂ price of €150/t, loss of the Salzgitter cell factory, or closure of the VDL Nedcar Born plant.</p>
+<p><strong>D3. Recommendation.</strong> Formulate a network recommendation for NordCell covering costs, locations, risks and expansion options.</p>
+<p><strong>D4. Reflection.</strong> Answer the following questions in your presentation. They form the starting point for the subsequent discussion:</p>
 <ol type="1">
-<li>Die Kostenfunktion ist in der Nähe des Optimums flach. Was bedeutet das für die Aussagekraft des Optimums, und welche Rolle sollten qualitative Kriterien (vgl. Fallstudie 2) bei der endgültigen Auswahl spielen?</li>
-<li>Welche Modellannahme halten Sie für die kritischste (Luftlinie × Umwegfaktor, lineare Transportkosten, deterministische Nachfrage, geschätzte Fixkosten), und wie könnte sie Ihre Empfehlung verändern?</li>
-<li>Wann würden Sie in der Praxis eine Heuristik statt eines exakten Verfahrens einsetzen?</li>
-<li>Welche nicht modellierten Faktoren könnten die Entscheidung kippen, z. B. Genehmigungsverfahren für Gefahrgutlager, Arbeitsmarkt oder grenzüberschreitende Regulierung zwischen Deutschland, den Niederlanden und Belgien?</li>
-<li>Wie würden Sie das Ergebnis einer Geschäftsführung ohne Optimierungskenntnisse vermitteln, damit sie dem Modell vertraut, ohne es blind zu übernehmen?</li>
+<li>The cost function is flat near the optimum. What does this mean for the significance of the optimum, and what role should qualitative criteria (cf. Case Study 2) play in the final selection?</li>
+<li>Which model assumption do you consider the most critical (straight-line distance × detour factor, linear transport costs, deterministic demand, estimated fixed costs), and how could it change your recommendation?</li>
+<li>When would you use a heuristic instead of an exact method in practice?</li>
+<li>Which factors not modelled could tip the decision, e.g. permit procedures for dangerous goods warehouses, the labour market, or cross-border regulation between Germany, the Netherlands and Belgium?</li>
+<li>How would you communicate the result to a management team without knowledge of optimisation so that they trust the model without adopting it blindly?</li>
 </ol>
 </section>
 </section>
-<section id="anhang-r-startercode" class="level1" data-number="5">
-<h1 data-number="5"><span class="header-section-number">5</span> Anhang: R-Startercode</h1>
+<section id="appendix-r-starter-code" class="level1" data-number="5">
+<h1 data-number="5"><span class="header-section-number">5</span> Appendix: R starter code</h1>
 <div class="cell">
 <details open class="code-fold">
 <summary>Code</summary>
@@ -2778,19 +2778,19 @@ window.Quarto = {
 <span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ompr); <span class="fu">library</span>(ompr.roi); <span class="fu">library</span>(ROI.plugin.glpk); <span class="fu">library</span>(dplyr)</span>
 <span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>uf <span class="ot">&lt;-</span> <span class="fl">1.2</span></span>
-<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Inbound-Kosten je MWh für jedes Lager (gewichtet über die Quellen)</span></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Inbound costs per MWh for each warehouse (weighted over the sources)</span></span>
 <span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>c_in <span class="ot">&lt;-</span> <span class="fu">sapply</span>(<span class="fu">seq_len</span>(<span class="fu">nrow</span>(lager)), <span class="cf">function</span>(i)</span>
 <span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">sum</span>(quellen<span class="sc">$</span>anteil <span class="sc">*</span> <span class="fl">0.25</span> <span class="sc">*</span> uf <span class="sc">*</span></span>
 <span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>        <span class="fu">haversine</span>(lager<span class="sc">$</span>lat[i], lager<span class="sc">$</span>lon[i], quellen<span class="sc">$</span>lat, quellen<span class="sc">$</span>lon)))</span>
 <span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a><span class="co"># Outbound-Kosten je MWh (Lager x Werk)</span></span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a><span class="co"># Outbound costs per MWh (warehouse x plant)</span></span>
 <span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a>c_out <span class="ot">&lt;-</span> <span class="fu">outer</span>(<span class="fu">seq_len</span>(<span class="fu">nrow</span>(lager)), <span class="fu">seq_len</span>(<span class="fu">nrow</span>(werke)), <span class="fu">Vectorize</span>(<span class="cf">function</span>(i, j)</span>
 <span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a>  <span class="fl">0.45</span> <span class="sc">*</span> uf <span class="sc">*</span> <span class="fu">haversine</span>(lager<span class="sc">$</span>lat[i], lager<span class="sc">$</span>lon[i], werke<span class="sc">$</span>lat[j], werke<span class="sc">$</span>lon[j])))</span>
 <span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a>C <span class="ot">&lt;-</span> c_in <span class="sc">+</span> c_out                       <span class="co"># €/MWh, Matrix 8 x 10</span></span>
+<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a>C <span class="ot">&lt;-</span> c_in <span class="sc">+</span> c_out                       <span class="co"># €/MWh, matrix 8 x 10</span></span>
 <span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a><span class="fu">dimnames</span>(C) <span class="ot">&lt;-</span> <span class="fu">list</span>(lager<span class="sc">$</span>ort, werke<span class="sc">$</span>werk)</span>
 <span id="cb4-16"><a href="#cb4-16" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-17"><a href="#cb4-17" aria-hidden="true" tabindex="-1"></a><span class="co"># Unkapazitiertes WLP (Kosten in T€)</span></span>
+<span id="cb4-17"><a href="#cb4-17" aria-hidden="true" tabindex="-1"></a><span class="co"># Uncapacitated WLP (costs in thousand €)</span></span>
 <span id="cb4-18"><a href="#cb4-18" aria-hidden="true" tabindex="-1"></a>d  <span class="ot">&lt;-</span> werke<span class="sc">$</span>d2027</span>
 <span id="cb4-19"><a href="#cb4-19" aria-hidden="true" tabindex="-1"></a>f  <span class="ot">&lt;-</span> lager<span class="sc">$</span>fix</span>
 <span id="cb4-20"><a href="#cb4-20" aria-hidden="true" tabindex="-1"></a>nI <span class="ot">&lt;-</span> <span class="fu">nrow</span>(lager); nJ <span class="ot">&lt;-</span> <span class="fu">nrow</span>(werke)</span>
@@ -2807,7 +2807,7 @@ window.Quarto = {
 <span id="cb4-31"><a href="#cb4-31" aria-hidden="true" tabindex="-1"></a><span class="fu">objective_value</span>(res)</span>
 <span id="cb4-32"><a href="#cb4-32" aria-hidden="true" tabindex="-1"></a><span class="fu">get_solution</span>(res, y[i]) <span class="sc">|&gt;</span> <span class="fu">filter</span>(value <span class="sc">&gt;</span> <span class="fl">0.5</span>)</span>
 <span id="cb4-33"><a href="#cb4-33" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-34"><a href="#cb4-34" aria-hidden="true" tabindex="-1"></a><span class="co"># CFLP: zusätzlich  sum_j d[j] * x[i,j] &lt;= kap[i] * y[i]</span></span></code></pre></div><button title="In die Zwischenablage kopieren" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb4-34"><a href="#cb4-34" aria-hidden="true" tabindex="-1"></a><span class="co"># CFLP: additionally  sum_j d[j] * x[i,j] &lt;= kap[i] * y[i]</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
 </div>
 </section>
@@ -2839,12 +2839,12 @@ window.Quarto = {
       // flash "checked"
       button.classList.add('code-copy-button-checked');
       var currentTitle = button.getAttribute("title");
-      button.setAttribute("title", "Kopiert");
+      button.setAttribute("title", "Copied!");
       let tooltip;
       if (window.bootstrap) {
         button.setAttribute("data-bs-toggle", "tooltip");
         button.setAttribute("data-bs-placement", "left");
-        button.setAttribute("data-bs-title", "Kopiert");
+        button.setAttribute("data-bs-title", "Copied!");
         tooltip = new bootstrap.Tooltip(button, 
           { trigger: "manual", 
             customClass: "code-copy-button-tooltip",
