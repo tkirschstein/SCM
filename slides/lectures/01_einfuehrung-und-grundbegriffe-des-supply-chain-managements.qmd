@@ -21,13 +21,10 @@ library(plotly)
 
 ## Course organisation {#slide-2}
 
-Lecturer: Prof. Dr. Thomas Kirschstein (HS RheinMain + Fraunhofer)
-
-Documents + materials: StudIP , ILIAS
-
-Exercises: integrated into the lectures
-
-Exam: together with Distribution & BBA course
+- Lecturers: Prof. Dr. Matthias Kalverkamp & Prof. Dr. Thomas Kirschstein
+- Documents + materials: https://github.com/tkirschstein/SCM
+- Case studies: 6 case studies in group work 3-6 persons
+- Exam: reflection report
 
 ## Literature {#slide-3}
 
