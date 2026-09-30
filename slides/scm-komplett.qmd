@@ -1,7 +1,7 @@
 ---
 title: "Supply Chain Management"
 subtitle: "Winter semester 2026/27"
-author: "Thomas Kirschstein"
+author: "Matthias Kalverkamp & Thomas Kirschstein"
 
 execute:
   cache: false
