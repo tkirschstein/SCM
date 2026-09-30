@@ -1,8 +1,8 @@
 ---
-title: "Fallstudie 2: Qualitative und kontinuierliche Standortplanung"
-subtitle: "Ein Distributionshub für Lateinamerika – AHP und Steiner-Weber-Modell"
-author: "Supply Chain Management – Gruppenarbeit"
-lang: de
+title: "Case Study 2: Qualitative and Continuous Facility Location Planning"
+subtitle: "A distribution hub for Latin America – AHP and the Steiner–Weber model"
+author: "Supply Chain Management – Group Work"
+lang: en
 format:
   html:
     theme: cosmo
@@ -18,44 +18,46 @@ execute:
 ---
 
 ::: {.callout-note}
-## Steckbrief
+
+## Overview
 
 | | |
 |---|---|
-| **Thema** | Standortwahl für einen internationalen Distributionshub |
-| **Vorlesungsbezug** | Kapitel 4 des Readers: Nutzwertanalyse, AHP, Steiner-Weber-Modell (Center of Gravity, Weiszfeld) |
-| **Typ** | Datenbasierte Fallstudie: Prognosedaten und Kostenparameter (vorgegeben) + frei verfügbare Länderindikatoren (eigene Recherche) |
-| **Gruppengröße** | 3–6 Personen |
-| **Ergebnis** | Präsentation (30 Min.) + Diskussion (15 Min.), Foliensatz (PDF) und reproduzierbarer R-/Quarto-Code |
+| **Topic** | Location choice for an international distribution hub |
+| **Link to the lecture** | Chapter 4 of the course reader: scoring model (utility analysis), AHP, Steiner–Weber model (centre of gravity, Weiszfeld) |
+| **Type** | Data-based case study: forecast data and cost parameters (given) + freely available country indicators (own research) |
+| **Group size** | 3–6 people |
+| **Deliverable** | Presentation (30 min) + discussion (15 min), slide deck (PDF) and reproducible R/Quarto code |
 :::
 
-# Lernziele
+# Learning objectives
 
-Nach Bearbeitung der Fallstudie können Sie
+After working through this case study, you will be able to
 
-- ein mehrstufiges Standortbewertungsmodell aufbauen, das Mindestanforderungen (K.-o.-Kriterien), gewichtete Kriterien und eine Sensitivitätsanalyse umfasst,
-- Kriteriengewichte mit dem **Analytic Hierarchy Process (AHP)** herleiten und die Konsistenz der Urteile prüfen,
-- qualitative Kriterien mit frei verfügbaren Indikatoren (z. B. Weltbank-Daten) operationalisieren,
-- den nachfrageoptimalen Standort mit dem **Steiner-Weber-Modell** auf realen Koordinaten bestimmen und seine Grenzen kritisch reflektieren,
-- quantitative und qualitative Bewertungen zu einer begründeten Standortempfehlung verbinden.
+- build a multi-level location evaluation model comprising minimum requirements (knock-out criteria), weighted criteria and a sensitivity analysis,
+- derive criteria weights using the **Analytic Hierarchy Process (AHP)** and check the consistency of the judgements,
+- operationalise qualitative criteria with freely available indicators (e.g. World Bank data),
+- determine the demand-optimal location with the **Steiner–Weber model** on real coordinates and critically reflect on its limitations,
+- combine quantitative and qualitative evaluations into a well-founded location recommendation.
 
-# Ausgangslage
+# Initial situation
 
-Die **Luminé Cosmetics GmbH** (fiktiv) ist ein mittelständischer Hersteller von Farbkosmetik mit Sitz in Hessen. Das Sortiment umfasst Lippenstifte, Mascara, Lidschatten und Nagellack und zeichnet sich durch viele Varianten, kurze Produktlebenszyklen und niedrige Stückpreise aus. Der Vertrieb ins Ausland läuft über **Distributoren**, die die Ware heute *ab Werk* (EXW) im zentralen Distributionszentrum in Hessen abholen. Transport, Verzollung und Weiterverteilung liegen damit vollständig beim Distributor.
+**Luminé Cosmetics GmbH** (fictitious) is a medium-sized manufacturer of colour cosmetics based in Hesse. Its range includes lipsticks, mascara, eyeshadow and nail polish and is characterised by many variants, short product life cycles and low unit prices. Sales abroad are handled by **distributors**, who currently collect the goods *ex works* (EXW) at the central distribution centre in Hesse. Transport, customs clearance and onward distribution are therefore entirely the distributor's responsibility.
 
-Lateinamerika ist der am schnellsten wachsende Absatzmarkt. Die Distributoren klagen jedoch über lange Lieferzeiten (Seefracht ab Europa plus Konsolidierung plus Verzollung: 6–10 Wochen), hohe Sicherheitsbestände und landesspezifische Etikettierungspflichten. Die Geschäftsführung prüft daher, ob ein **regionaler Distributionshub in Lateinamerika** aufgebaut werden soll. Der Hub soll Warenströme aus Europa bündeln, länderspezifisch etikettieren (Labeling) und die Distributoren der Region beliefern.
+Latin America is the fastest-growing sales market. However, the distributors complain about long delivery times (sea freight from Europe plus consolidation plus customs clearance: 6–10 weeks), high safety stocks and country-specific labelling requirements. Management is therefore considering whether to set up a **regional distribution hub in Latin America**. The hub would consolidate flows of goods from Europe, apply country-specific labels (labelling) and supply the distributors in the region.
 
 
 ::: {.callout-tip}
-## Leitfrage
-*Sollte Luminé einen regionalen Hub in Lateinamerika errichten, und wenn ja, an welchem Standort?*
+
+## Guiding question
+*Should Luminé set up a regional hub in Latin America and, if so, at which location?*
 :::
 
-# Daten
+# Data
 
-## Absatzprognose nach Ländern
+## Sales forecast by country
 
-Die Prognose des Vertriebs (in Mio. Verkaufseinheiten pro Jahr) ist nach Zielmärkten aufgeschlüsselt. Als Koordinaten dient jeweils der wichtigste Distributionsstandort (in der Regel die größte Stadt bzw. der Sitz des Distributors).
+The sales department's forecast (in million sales units per year) is broken down by target market. The coordinates used are those of the most important distribution location in each case (usually the largest city or the distributor's headquarters).
 
 ```{r}
 #| label: daten-maerkte
@@ -72,14 +74,14 @@ maerkte <- data.frame(
   p2032 = c(30.0, 19.0, 17.0, 16.0, 10.0, 4.0, 3.5, 3.0, 2.5, 2.0, 2.0)
 )
 knitr::kable(maerkte, digits = 2,
-             col.names = c("Land", "Stadt", "Breite", "Länge",
+             col.names = c("Country", "City", "Latitude", "Longitude",
                            "2027", "2029", "2032"),
-             caption = "Absatzprognose in Mio. Einheiten/Jahr")
+             caption = "Sales forecast in million units/year")
 ```
 
-## Standortalternativen
+## Location alternatives
 
-Vorausgewählt wurden fünf Hafenstandorte, die jeweils über eine Freihandels- bzw. Sonderwirtschaftszone verfügen. Hinzu kommt der Status quo, also die zentrale Versorgung aus Deutschland. Die Kostenangaben sind Richtwerte, die ein Logistikberater für einen 3PL-Betrieb auf Basis von Angeboten geschätzt hat.
+Five port locations have been pre-selected, each of which has a free trade zone or special economic zone. In addition, there is the status quo, i.e. central supply from Germany. The cost figures are guide values estimated by a logistics consultant for a 3PL operation on the basis of quotations.
 
 ```{r}
 #| label: daten-hubs
@@ -87,107 +89,107 @@ hubs <- data.frame(
   hub   = c("Colón", "Cartagena", "Puerto Limón/Moín", "Veracruz", "Callao"),
   land  = c("Panama", "Kolumbien", "Costa Rica", "Mexiko", "Peru"),
   zone  = c("Zona Libre de Colón", "Zona Franca Cartagena",
-            "Zona Franca Limón", "Recinto Fiscalizado Estratégico", "ZED Callao (in Aufbau)"),
+            "Zona Franca Limón", "Recinto Fiscalizado Estratégico", "ZED Callao (under construction)"),
   lat   = c(9.36, 10.39, 10.00, 19.17, -12.05),
   lon   = c(-79.90, -75.51, -83.03, -96.13, -77.15),
-  fix_musd     = c(2.4, 1.9, 1.7, 2.1, 1.8),  # Fixkosten Hub (Mio. USD/Jahr)
-  handling_usd = c(0.050, 0.045, 0.048, 0.042, 0.046),  # Handling inkl. Labeling je Einheit
-  see_tage     = c(18, 17, 19, 20, 28)   # Seefracht-Transitzeit ab Rotterdam/Hamburg (Tage)
+  fix_musd     = c(2.4, 1.9, 1.7, 2.1, 1.8),  # fixed costs of hub (million USD/year)
+  handling_usd = c(0.050, 0.045, 0.048, 0.042, 0.046),  # handling incl. labelling per unit
+  see_tage     = c(18, 17, 19, 20, 28)   # sea freight transit time from Rotterdam/Hamburg (days)
 )
 knitr::kable(hubs, digits = 3,
-             col.names = c("Hub", "Land", "Zone", "Breite", "Länge",
-                           "Fixkosten [Mio. USD/a]", "Handling [USD/Einh.]",
-                           "Seefracht [Tage]"))
+             col.names = c("Hub", "Country", "Zone", "Latitude", "Longitude",
+                           "Fixed costs [million USD/yr]", "Handling [USD/unit]",
+                           "Sea freight [days]"))
 ```
 
-**Weitere Kostenparameter (Richtwerte):**
+**Further cost parameters (guide values):**
 
-- Seefracht Europa → Hub: ca. 2.800 USD je 40'-Container, ca. 40.000 Einheiten je Container (für alle Häfen der Karibikküste gleich; Callao +35 %).
-- Weiterverteilung Hub → Markt (Feeder-Schiff/Lkw, inkl. Zollabwicklung): **0,03 USD je 1.000 Einheiten und km** (Luftlinie, Haversine-Distanz) zuzüglich 25 % Umwegfaktor.
-- Unterstellen Sie für die Wirtschaftlichkeitsbetrachtung Direktverschiffung je Land mit durchschnittlich 45 % Containerauslastung (Kleinmengen, LCL-Zuschläge) und ein Handling in Deutschland von 0,08 USD/Einheit, ohne länderspezifisches Labeling vor Ort.
-- **Status quo**: Die Distributoren tragen die Transportkosten. Allerdings gewährt Luminé Cosmetics den Distributoren einen Rabatt auf den Abverkaufspreis, dessen Höhe von Land zu Land unterschiedlich ist. Dabei gilt je weiter das Land/der Markt von Deutschland entfernt ist, desto größer der Rabatt. Gehen Sie davon aus, dass der Rabatt bei 5 % für mittelamerikanische Länder und 10 % für südamerikanische Länder beträgt. Der durchschnittliche Warenwert beträgt 1 €/Einheit.
+- Sea freight Europe → hub: approx. USD 2,800 per 40' container, approx. 40,000 units per container (the same for all ports on the Caribbean coast; Callao +35%).
+- Onward distribution hub → market (feeder ship/truck, incl. customs handling): **USD 0.03 per 1,000 units and km** (straight-line, haversine distance) plus a 25% detour factor.
+- For the economic assessment of the status quo, assume direct shipping to each country with an average container utilisation of 45% (small quantities, LCL surcharges) and handling in Germany of USD 0.08/unit, without country-specific labelling on site.
+- **Status quo**: The distributors bear the transport costs. However, Luminé Cosmetics grants the distributors a discount on the selling price, the level of which differs from country to country. The further the country/market is from Germany, the larger the discount. Assume that the discount is 5% for Central American countries and 10% for South American countries. The average value of goods is €1/unit.
 
-## Aussagen aus Experteninterviews
+## Statements from expert interviews
 
-Im Vorfeld wurden Gespräche mit internen und externen Fachleuten geführt. Die folgenden (fiktiven) Aussagen sollen Ihnen als Grundlage für die AHP-Paarvergleiche dienen:
+Interviews were conducted in advance with internal and external experts. The following (fictitious) statements are intended to serve as the basis for the AHP pairwise comparisons:
 
-> **Leiter Supply Chain:** »Ohne klaren Kostenvorteil bekommen wir keinen Hub genehmigt. Aber die Lieferzeit ist für unsere Distributoren fast genauso wichtig – bei Trendfarben verlieren wir sonst die Saison.«
+> **Head of Supply Chain:** “Without a clear cost advantage, we won't get a hub approved. But delivery time is almost as important for our distributors – otherwise we lose the season for trend colours.”
 
-> **Head of International Sales:** »Für mich zählt, wo das Volumen der Zukunft liegt. Mexiko, Peru und Chile sind die Wachstumstreiber. Ein Hub, der diese Märkte nicht schnell erreicht, bringt uns wenig.«
+> **Head of International Sales:** “What matters to me is where the volume of the future lies. Mexico, Peru and Chile are the growth drivers. A hub that doesn't reach these markets quickly is of little use to us.”
 
-> **Regulatory Affairs:** »Unterschätzen Sie nicht die Registrierung und Kennzeichnung. Ein Hub in einer Freihandelszone mit Re-Export-Erfahrung spart uns enorm viel Aufwand – das ist aber eher Voraussetzung als Differenzierungsmerkmal.«
+> **Regulatory Affairs:** “Don't underestimate registration and labelling. A hub in a free trade zone with re-export experience saves us an enormous amount of effort – but that's more of a prerequisite than a differentiator.”
 
-> **Externer 3PL-Berater:** »Politische Stabilität ist ein Filter: Wenn ein Land nicht stabil ist, investiert man dort keinen Hub, egal wie gut der Hafen ist. Unter den stabilen Ländern ist sie dann aber nicht mehr so entscheidend wie Infrastruktur und Kosten.«
+> **External 3PL consultant:** “Political stability is a filter: if a country isn't stable, you don't invest in a hub there, no matter how good the port is. Among the stable countries, however, it is no longer as decisive as infrastructure and costs.”
 
-> **CFO:** »Wir haben mit einem Hub im Nahen Osten gute Erfahrungen gemacht – aber dort stimmte auch die Hafen- und 3PL-Infrastruktur. Das ist für mich das zweitwichtigste Kriterium nach den Kosten.«
+> **CFO:** “We've had good experiences with a hub in the Middle East – but the port and 3PL infrastructure there was also right. For me, that's the second most important criterion after costs.”
 
-## Frei verfügbare Länderindikatoren (eigene Recherche)
+## Freely available country indicators (own research)
 
-Zur Operationalisierung der qualitativen Kriterien nutzen Sie **reale, frei verfügbare Daten**, zum Beispiel:
+To operationalise the qualitative criteria, use **real, freely available data**, for example:
 
-| Kriterium | Mögliche Indikatoren | Quelle |
+| Criterion | Possible indicators | Source |
 |---|---|---|
-| Logistische Leistungsfähigkeit | Logistics Performance Index (LPI) 2023, Gesamt- und Teilscores | Weltbank, <https://lpi.worldbank.org> |
-| Politische und wirtschaftliche Stabilität | Worldwide Governance Indicators: *Political Stability and Absence of Violence*, *Rule of Law* | Weltbank, <https://www.worldbank.org/en/publication/worldwide-governance-indicators> |
-| Hafenleistung | Containerumschlag (TEU) der wichtigsten Häfen | CEPAL/ECLAC Port Activity Report |
-| Regulatorik | Zollabwicklung (LPI-Teilscore *Customs*), Regeln der Freihandelszone | LPI, Websites der Freizonen |
-| Marktgeschwindigkeit | Transitzeiten, Anzahl direkter Liniendienste | Fahrpläne der Reedereien, Tabelle oben |
+| Logistics performance | Logistics Performance Index (LPI) 2023, overall and sub-scores | World Bank, <https://lpi.worldbank.org> |
+| Political and economic stability | Worldwide Governance Indicators: *Political Stability and Absence of Violence*, *Rule of Law* | World Bank, <https://www.worldbank.org/en/publication/worldwide-governance-indicators> |
+| Port performance | Container throughput (TEU) of the main ports | CEPAL/ECLAC Port Activity Report |
+| Regulation | Customs clearance (LPI sub-score *Customs*), rules of the free trade zone | LPI, websites of the free zones |
+| Speed to market | Transit times, number of direct liner services | Shipping lines' schedules, table above |
 
-# Aufgaben
+# Tasks
 
-## Teil A – Bewertungsmodell und Mindestanforderungen
+## Part A – Evaluation model and minimum requirements
 
-**A1.** Definieren Sie ein hierarchisches Zielsystem mit **fünf bis sieben Kriterien** und ordnen Sie jedes Kriterium einer Ebene zu: Mindestanforderung (K.-o.-Kriterium), gewichtetes Bewertungskriterium oder Risiko- bzw. Sensitivitätsfaktor. 
+**A1.** Define a hierarchical system of objectives with **five to seven criteria** and assign each criterion to a level: minimum requirement (knock-out criterion), weighted evaluation criterion, or risk/sensitivity factor.
 
-**A2.** Legen Sie für die Mindestanforderungen Kriterien/Messgrößen und legen Sie Schwellenwerte fest (z. B. »WGI Political Stability > −0,5«), recherchieren Sie die Werte für die fünf Hub-Länder und sortieren Sie Alternativen gegebenenfalls aus.
+**A2.** For the minimum requirements, define criteria/measures and set threshold values (e.g. “WGI Political Stability > −0.5”), research the values for the five hub countries and eliminate alternatives where necessary.
 
-## Teil B – Kriteriengewichtung mit AHP
+## Part B – Criteria weighting with AHP
 
-**B1.** Leiten Sie aus den Experteninterviews eine Paarvergleichsmatrix der gewichteten Kriterien auf der AHP-Skala ab. Dokumentieren Sie, auf welche Aussage Sie sich bei jedem Vergleich stützen.
+**B1.** Derive a pairwise comparison matrix of the weighted criteria on the AHP scale from the expert interviews. Document which statement you rely on for each comparison.
 
-**B2.** Berechnen Sie den Prioritätsvektor sowie Konsistenzindex (CI) und Konsistenzverhältnis (CR). Ist Ihre Matrix hinreichend konsistent (CR < 0,1)? Falls nicht, passen Sie die inkonsistentesten Urteile begründet an.
+**B2.** Calculate the priority vector as well as the consistency index (CI) and consistency ratio (CR). Is your matrix sufficiently consistent (CR < 0.1)? If not, adjust the most inconsistent judgements with justification.
 
-## Teil C – Steiner-Weber-Modell
+## Part C – Steiner–Weber model
 
-**C1.** Bestimmen Sie den nachfragegewichteten optimalen Standort für die Prognosen **2027 und 2032**: zuerst den Schwerpunkt (Center of Gravity), dann das Optimum mit dem **Weiszfeld-Algorithmus**. Rechnen Sie die geografischen Koordinaten vorher in ein metrisches Koordinatensystem um (siehe Startercode) und begründen Sie, warum das notwendig ist.
+**C1.** Determine the demand-weighted optimal location for the **2027 and 2032** forecasts: first the centre of gravity, then the optimum using the **Weiszfeld algorithm**. First convert the geographical coordinates into a metric coordinate system (see starter code) and explain why this is necessary.
 
-**C2.** Stellen Sie Märkte, Hub-Kandidaten und optimale Punkte auf einer Karte dar. Berechnen Sie für jeden Hub-Kandidaten die **gewichtete Distanz** zu allen Märkten und die jährlichen Weiterverteilungskosten. Wie groß ist der »Preis« der Beschränkung auf reale Hafenstandorte gegenüber dem kontinuierlichen Optimum?
+**C2.** Show markets, hub candidates and optimal points on a map. For each hub candidate, calculate the **weighted distance** to all markets and the annual onward distribution costs. How large is the “price” of restricting the choice to real port locations compared with the continuous optimum?
 
-**C3.** Wählen Sie einen Standort aus und bestimmen Sie die erwarteten Distributionskosten. Ergibt sich eine Verbesserung im Vergleich zum Status quo?
+**C3.** Select a location and determine the expected distribution costs. Is there an improvement compared with the status quo?
 
-## Teil D – Empfehlung und Reflexion
+## Part D – Recommendation and reflection
 
-**D1. Gesamtbewertung.** Bewerten Sie die verbleibenden Hub-Kandidaten und den **Status quo** auf allen gewichteten Kriterien (Punktbewertung 1–5 auf Basis der recherchierten Indikatoren und Ihrer Ergebnisse aus Teil C) und berechnen Sie die Gesamtbewertung.
+**D1. Overall evaluation.** Evaluate the remaining hub candidates and the **status quo** on all weighted criteria (scores 1–5 based on the researched indicators and your results from Part C) and calculate the overall score.
 
-**D2. Sensitivität.** Prüfen Sie die Robustheit Ihrer Rangfolge in mindestens zwei Szenarien: Variation des Kostengewichts um ± 50 %, Wegfall des mexikanischen Marktes (Belieferung über das Joint Venture vor Ort) oder Eintritt der Prognose 2032 zu nur 60 %.
+**D2. Sensitivity.** Test the robustness of your ranking in at least two scenarios: varying the cost weight by ± 50%, loss of the Mexican market (supply via the local joint venture), or the 2032 forecast materialising at only 60%.
 
-**D3. Empfehlung.** Formulieren Sie eine Standortempfehlung für die Geschäftsführung mit den wesentlichen Risiken.
+**D3. Recommendation.** Formulate a location recommendation for management, including the main risks.
 
-**D4. Reflexion.** Beantworten Sie in der Präsentation die folgenden Fragen. Sie bilden den Ausgangspunkt der anschließenden Diskussion:
+**D4. Reflection.** Answer the following questions in your presentation. They form the starting point for the subsequent discussion:
 
-1. Wie stark hängt Ihr Ergebnis von den subjektiven Paarvergleichen ab? Hätte eine andere Gruppe mit denselben Interviews eine andere Empfehlung abgeleitet, und wäre das ein Problem?
-2. Was sagt ein Steiner-Weber-Optimum aus, das im Meer oder in den Anden liegt? In welchen Situationen ist ein kontinuierliches Modell trotzdem nützlich?
-3. Welche Kriterien ließen sich gut, welche kaum mit öffentlichen Indikatoren messen? Wie beeinflusst diese Asymmetrie das Ergebnis?
-4. K.-o.-Kriterien schließen aus, eine gewichtete Summe gleicht aus. Welche Kriterien sollten Ihrer Meinung nach nicht kompensierbar sein, und warum?
-5. Wie würden die Vertriebsleitung in Lateinamerika und die Zentrale in Deutschland die Kriterien vermutlich unterschiedlich gewichten? Wie sollte ein international tätiges Unternehmen mit solchen Perspektivunterschieden umgehen?
+1. How strongly does your result depend on the subjective pairwise comparisons? Would another group have derived a different recommendation from the same interviews, and would that be a problem?
+2. What does a Steiner–Weber optimum that lies in the sea or in the Andes tell us? In which situations is a continuous model nevertheless useful?
+3. Which criteria could be measured well with public indicators, and which hardly at all? How does this asymmetry affect the result?
+4. Knock-out criteria exclude, a weighted sum compensates. Which criteria, in your opinion, should not be compensable, and why?
+5. How would sales management in Latin America and headquarters in Germany probably weight the criteria differently? How should an internationally operating company deal with such differences in perspective?
 
-# Anhang: R-Startercode
+# Appendix: R starter code
 
-Die Funktionen `ahp_priority_vector()`, `ahp_consistency()`, `center_of_gravity()`, `weiszfeld()` und `haversine()` stehen in `R/scm_functions.R` zur Verfügung.
+The functions `ahp_priority_vector()`, `ahp_consistency()`, `center_of_gravity()`, `weiszfeld()` and `haversine()` are available in `R/scm_functions.R`.
 
 ```{r}
 #| label: starter
 #| eval: false
 source("../R/scm_functions.R")
 
-# --- AHP: Beispielmatrix (Kriterien K1..K3) – durch eigene Urteile ersetzen
+# --- AHP: example matrix (criteria K1..K3) – replace with your own judgements
 A <- matrix(c(1,   2,   3,
               1/2, 1,   2,
               1/3, 1/2, 1), nrow = 3, byrow = TRUE)
 w <- ahp_priority_vector(A)
 ahp_consistency(A, w)
 
-# --- Projektion in km (äquidistant, Referenzbreite phi0)
+# --- Projection in km (equidistant, reference latitude phi0)
 R_erde <- 6371
 phi0   <- mean(maerkte$lat) * pi / 180
 proj <- function(lat, lon) data.frame(
@@ -198,11 +200,11 @@ coords <- cbind(proj(maerkte$lat, maerkte$lon), demand = maerkte$p2032)
 cog <- center_of_gravity(coords)
 ws  <- weiszfeld(coords, max_iter = 500)
 
-# Rückprojektion in Breite/Länge
+# Back-projection to latitude/longitude
 c(lat = ws$y / R_erde * 180 / pi,
   lon = ws$x / (R_erde * cos(phi0)) * 180 / pi)
 
-# --- Gewichtete Haversine-Distanz je Hub (Mio. Einheiten * km)
+# --- Weighted haversine distance per hub (million units * km)
 wd <- sapply(seq_len(nrow(hubs)), function(h)
   sum(maerkte$p2032 * haversine(hubs$lat[h], hubs$lon[h],
                                 maerkte$lat, maerkte$lon)))

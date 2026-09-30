@@ -3,7 +3,7 @@ execute:
   cache: true
 ---
 
-# Grundlagen des SCM - Ziele & Zielkonflikte
+# Fundamentals of SCM - Objectives & Trade-offs
 
 
 ```{r}
@@ -11,7 +11,7 @@ execute:
 #| warning: false
 #| message: false
 
-# Funktionen aus scm_functions.R einbinden
+# Load functions from scm_functions.R
 source("../R/scm_functions.R")
 
 library(tidyverse)
@@ -23,89 +23,90 @@ library(plotly)
 ```
 
 
-## Grundlagen des Supply Chain Managements {#slide-30}
+## Fundamentals of Supply Chain Management {#slide-30}
 
-- Aufgaben, Begriffe und Konzepte
-- **Ziele & Zielkonflikte**
-- Kosten & Management
+- Tasks, terms and concepts
+- **Objectives & trade-offs**
+- Costs & management
 
-## Lernziele {#learning-objectives-strategic-fit}
+## Learning objectives {#learning-objectives-strategic-fit}
 
-Nach dieser Einheit können Sie …
+After this unit you will be able to …
 
-- Wertschöpfungsprozesse und die zentralen Treiber einer Supply Chain **strukturieren**,
-- die Begriffe Reaktionsfähigkeit und Effizienz **erläutern**,
-- die implizierte Unsicherheit eines Marktes und die Reaktionsfähigkeit einer Supply Chain **gegenüberstellen**,
-- den Strategic Fit einer Supply-Chain-Konfiguration **beurteilen**.
+- **structure** value creation processes and the key drivers of a supply chain,
+- **explain** the terms responsiveness and efficiency,
+- **contrast** the implied uncertainty of a market with the responsiveness of a supply chain,
+- **assess** the strategic fit of a supply chain configuration.
 
-**Literatur zur Vertiefung**
+**Further reading**
 
-- **Strategic Fit, Supply-Chain-Treiber und implizierte Unsicherheit:** [@chopra2025supply, Kapitel 2–3].
-- **Abstimmung von Nachfrage und operativer Leistungsfähigkeit:** [@cachon2024matching, Kapitel 1–3].
-- **Supply-Chain-Strategie und wertorientierte Logistik:** [@christopher2023logistics, Kapitel 2–4].
+- **Strategic fit, supply chain drivers and implied uncertainty:** [@chopra2025supply, Chapters 2–3].
+- **Matching supply with demand and operational capability:** [@cachon2024matching, Chapters 1–3].
+- **Supply chain strategy and value-oriented logistics:** [@christopher2023logistics, Chapters 2–4].
 
-## Wertschöpfung als Prozess {#slide-31}
+## Value creation as a process {#slide-31}
 
 ![](images/clipboard-2707534972.png){width="1500"}
 
 :::::: columns
 ::: {.column width="69%"}
-***Beschaffung*** ist der Prozess zum Einkauf und Bereit-stellung von Rohstoffen, Komponenten und Dienst-leistungen von externen Partnern, die für die Produktion von Waren und Dienstleistungen erforderlich sind.
+***Procurement*** is the process of purchasing and providing raw materials, components and services from external partners that are required for the production of goods and services.
 
-***Produktion*** ist ein zielgerichteter Prozess der Kombination von Gütern und Dienstleistungen in höherwertige Produkte.
+***Production*** is a purposeful process of combining goods and services into higher-value products.
 
-***Distribution*** umfasst die physische Verteilung von Waren vom Hersteller zum Endkunden und umfasst Lagerhaltung, Transport und Logistik von Fertigprodukten.
+***Distribution*** covers the physical distribution of goods from the manufacturer to the end customer and includes warehousing, transport and logistics of finished products.
 
-***Absatz*** ist der Prozess des Verkaufs der Endprodukte an den Konsumenten oder Handelspartner.
+***Sales*** is the process of selling the end products to consumers or trading partners.
 :::
 
 :::: {.column width="30%"}
-::: {.fragment .fade-up}
-![](images/image31.png)
-[@chopra2025supply, Kapitel 1.5]
-
-:::
 ::::
 ::::::
 
-## Strategische Fertigung {#slide-32}
+## Strategic manufacturing {#slide-32}
 
 ::: slide-subtitle
-Entkopplungspunkt & Fertigungsstrategien
+Decoupling point & manufacturing strategies
 :::
 
 ![](images/clipboard-1974239309.png)
 
-## Strategische Fertigung {#slide-33}
+## Strategic manufacturing {#slide-33}
 
 ::: slide-subtitle
-Denken in Zyklen
+Thinking in cycles
 :::
 
 :::::: columns
 :::: {.column width="50%"}
 
-**Kundenbestellzyklus**: Verarbeitung von externen Kundenbedarfen
+**Customer order cycle**: processing of external customer demand
 
-**Distributions-/Versorgungszyklus**: Umwandlung von Kundenbedarfen in interne Bedarfe an Fertigprodukten
+**Distribution/replenishment cycle**: conversion of customer demand into internal demand for finished products
 
-**Produktionszyklus**: Umwandlung von internen Bedarfen in Produktions-bedarfe von Zwischenprodukten und Rohstoffen
+**Production cycle**: conversion of internal demand into production requirements for intermediate products and raw materials
 
-**Beschaffungszyklus**: Gestaltung von Bestell-/Versorgungsprozessen für Rohstoffe und Dienstleistungen, die extern bezogen werden müssen
+**Procurement cycle**: design of ordering/supply processes for raw materials and services that have to be sourced externally
 
 ::::
 
 ::: {.column width="50%"}
-![](images/image32.png){width="707"}
+```{r}
+#| echo: false
+#| fig-width: 9
+#| fig-height: 6.6
+#| out-width: "100%"
+plot_order_cycles_model(base_size = 13)
+```
 
-[@kummer2018grundzuge, S. 45]
+[@kummer2018grundzuge, p. 45]
 :::
 ::::::
 
-## Strategische Fertigung {#slide-34}
+## Strategic manufacturing {#slide-34}
 
 ::: slide-subtitle
-Entkopplung von Zyklen
+Decoupling of cycles
 :::
 
 ::::::: columns
@@ -114,7 +115,7 @@ Entkopplung von Zyklen
 
 ![](images/image33.png){width="690"}
 
-*Beispiele*: Lebensmitteleinzelhandel, Drogerien, ...
+*Examples*: grocery retail, drugstores, ...
 ::::
 
 :::: {.column width="50%"}
@@ -123,23 +124,23 @@ Entkopplung von Zyklen
 
 ![](images/image34.png){width="600"}
 
-*Beispiele*: Gebäude, Flugzeuge, Gemälde
+*Examples*: buildings, aircraft, paintings
 ::::
-::::::: 
+:::::::
 [@chopra2025supply]
 
 
-## Strategische Ziele
+## Strategic objectives
 ::: slide-subtitle
-Kundenzufriedenheit -- Kundenerwartungen erfüllen
+Customer satisfaction -- meeting customer expectations
 :::
 
 ![](images/clipboard-1284723232.png){width="391"}
 
-## Strategische Ziele {#slide-36}
+## Strategic objectives {#slide-36}
 
 ::: slide-subtitle
-Kundenzufriedenheit & Unsicherheit
+Customer satisfaction & uncertainty
 :::
 
 ```{tikz}
@@ -156,19 +157,19 @@ Kundenzufriedenheit & Unsicherheit
   font=\Large
 ]
 
-% Farben
+% Colours
 \definecolor{boxblue}{RGB}{201,230,242}
 \definecolor{linegray}{RGB}{90,90,90}
 \definecolor{fillgray}{RGB}{245,245,245}
 
-% Oberer Baum
+% Upper tree
 \node[
   draw=linegray,
   thick,
   fill=fillgray,
   minimum width=3.1cm,
   minimum height=0.9cm
-] (dim) at (8.1,7.1) {Dimensionen};
+] (dim) at (8.1,7.1) {Dimensions};
 
 \node[
   draw=linegray,
@@ -176,7 +177,7 @@ Kundenzufriedenheit & Unsicherheit
   fill=fillgray,
   minimum width=2.3cm,
   minimum height=0.9cm
-] (kosten) at (2.4,5.3) {Kosten};
+] (kosten) at (2.4,5.3) {Costs};
 
 \node[
   draw=linegray,
@@ -184,7 +185,7 @@ Kundenzufriedenheit & Unsicherheit
   fill=fillgray,
   minimum width=2.3cm,
   minimum height=0.9cm
-] (quali) at (5.0,5.3) {Qualität};
+] (quali) at (5.0,5.3) {Quality};
 
 \node[
   draw=linegray,
@@ -192,7 +193,7 @@ Kundenzufriedenheit & Unsicherheit
   fill=fillgray,
   minimum width=2.3cm,
   minimum height=0.9cm
-] (zeit) at (7.6,5.3) {Zeit};
+] (zeit) at (7.6,5.3) {Time};
 
 \node[
   draw=linegray,
@@ -201,7 +202,7 @@ Kundenzufriedenheit & Unsicherheit
   minimum width=2.3cm,
   minimum height=0.9cm,
   align=center
-] (zuver) at (10.2,5.3) {Zuverlässig-\\keit};
+] (zuver) at (10.2,5.3) {Reliabil-\\ity};
 
 \node[
   draw=linegray,
@@ -210,9 +211,9 @@ Kundenzufriedenheit & Unsicherheit
   minimum width=2.3cm,
   minimum height=0.9cm,
   align=center
-] (zug) at (12.8,5.3) {Zugänglich-\\keit};
+] (zug) at (12.8,5.3) {Accessi-\\bility};
 
-% Verbindung Dimensionen -> fünf Dimensionen
+% Connection dimensions -> five dimensions
 \coordinate (junction) at (8.1,6.45);
 
 \draw[linegray, thick] (dim.south) -- (junction);
@@ -222,7 +223,7 @@ Kundenzufriedenheit & Unsicherheit
   \draw[linegray, thick] (\n.north) -- (\n.north |- junction);
 }
 
-% Servicedimensionen
+% Service dimensions
 \node[
   draw=linegray,
   thick,
@@ -236,7 +237,7 @@ Kundenzufriedenheit & Unsicherheit
   minimum width=7.3cm,
   minimum height=0.95cm,
   align=center
-] (service) at (10.1,3.7) {Servicedimensionen};
+] (service) at (10.1,3.7) {Service dimensions};
 
 \draw[linegray, thick] (zeit.south) -- ++(0,-0.35) -| (service.north);
 \draw[linegray, thick] (zuver.south) -- ++(0,-0.18) |- (service.north);
@@ -248,14 +249,14 @@ Kundenzufriedenheit & Unsicherheit
 
 :::::::::::: columns
 ::: {.column width="40%"}
-**Kunden und Supply-Chain-Unsicherheit**
+**Customers and supply chain uncertainty**
 
-- Nachfragemenge je Kundenauftrag
-- Lieferzeit, die von Kunden akzeptiert wird
-- Erwartete Produktvielfalt
-- Erwartete Lieferbereitschaft
-- Preis/Zahlungsbereitschaft
-- Innovationsgrad der Produkte
+- Quantity demanded per customer order
+- Lead time accepted by customers
+- Expected product variety
+- Expected service level
+- Price/willingness to pay
+- Degree of product innovation
 :::
 
 :::::::::: {.column width="60%"}
@@ -264,9 +265,10 @@ Kundenzufriedenheit & Unsicherheit
 
 :::: {.fragment .fade-up}
 ::: callout-note
-## Nachfrageunsicherheit
 
-Unsicherheit der Nachfrage nach einem Produkt
+## Demand uncertainty
+
+Uncertainty of the demand for a product
 :::
 ::::
 
@@ -275,33 +277,34 @@ Unsicherheit der Nachfrage nach einem Produkt
 
 :::: {.fragment .fade-up}
 ::: callout-note
-## Implizierte Nachfrageunsicherheit
 
-Unsicherheit desjenigen Nachfragesegments, das durch die Supply Chain bedient werden soll basierend auf den definierten Nachfrageattributen
+## Implied demand uncertainty
+
+Uncertainty of the demand segment that the supply chain is intended to serve, based on the defined demand attributes
 :::
 ::::
 :::::::::
 ::::::::::::
 
-## Umgang mit Unsicherheit {#slide-37}
+## Dealing with uncertainty {#slide-37}
 
 ::: slide-subtitle
-Kundenbedürfnisse & implizierte Unsicherheit
+Customer needs & implied uncertainty
 :::
 
-| Kundenbedürfnisse | Verursacht implizite Unsicherheit da ... |
+| Customer needs | Causes implied uncertainty because ... |
 |:-------------------------------|:---------------------------------------|
-| (max.) Nachfragemengen steigen | Erhöhte Spannweite des Bedarfs größere Varianz / Schwankung der Nachfragemengen verursacht |
-| Lieferzeit sinkt | Weniger Zeit bleibt um auf Nachfrageschwankungen zu reagieren |
-| Anzahl angebotener Produkte erhöht | Nachfrage der einzelnen Produkte schwieriger zu prognostizieren |
-| Lieferbereitschaftsgrad erhöht sich | Nachfragespitzen müssen nun abgefedert werden |
-| Innovationsgrad erhöht sich | Nachfrage neuer Produkte in der Regel unbekannt oder schwer zu prognostizieren |
-| Anzahl der Vertriebskanäle steigt | Nachfrage der einzelnen Vertriebskanäle schwieriger zu prognostizieren |
+| (Max.) demand quantities increase | Wider range of demand causes greater variance / fluctuation of demand quantities |
+| Lead time decreases | Less time remains to react to demand fluctuations |
+| Number of products offered increases | Demand for individual products is harder to forecast |
+| Required service level increases | Demand peaks now have to be absorbed |
+| Degree of innovation increases | Demand for new products is usually unknown or hard to forecast |
+| Number of sales channels increases | Demand per sales channel is harder to forecast |
 
-## Umgang mit Unsicherheit {#slide-38}
+## Dealing with uncertainty {#slide-38}
 
 ::: slide-subtitle
-Rollen & Risikoallokation in Supply Chain
+Roles & risk allocation in the supply chain
 :::
 
 ::: {.r-stretch .tikz-slide}
@@ -310,7 +313,7 @@ Rollen & Risikoallokation in Supply Chain
 %| fig-height: 5
 %| fig-align: center
 
-% Farben
+% Colours
 \definecolor{boxblue}{RGB}{201,230,242}
 \definecolor{linegray}{RGB}{90,90,90}
 \definecolor{fillgray}{RGB}{245,245,245}
@@ -344,9 +347,9 @@ Rollen & Risikoallokation in Supply Chain
 
 \useasboundingbox (-1.45,-1.60) rectangle (12.5,5);
 
-\node[box, minimum width=2.5cm] (sup1) at (0,3) {Lieferant};
-\node[box, minimum width=2.5cm, anchor=west] (man1) at (1.25,3) {Produzent};
-\node[box, minimum width=5cm, anchor=west] (ret1) at (3.75,3) {Händler};
+\node[box, minimum width=2.5cm] (sup1) at (0,3) {Supplier};
+\node[box, minimum width=2.5cm, anchor=west] (man1) at (1.25,3) {Manufacturer};
+\node[box, minimum width=5cm, anchor=west] (ret1) at (3.75,3) {Retailer};
 \node[chainlabel] at (9.0,3) {Supply Chain I};
 
 \node[
@@ -363,12 +366,12 @@ Rollen & Risikoallokation in Supply Chain
   minimum height=0.95cm,
   align=center
 ] at (3.75,1.85)
-{gesamte implizierte Unsicherheit der Supply Chain};
+{total implied uncertainty of the supply chain};
 
 
-\node[box, minimum width=2.5cm] (sup2) at (0,0.75) {Lieferant};
-\node[box, minimum width=5cm, anchor=west] (man2) at (1.25,0.75) {Produzent};
-\node[box, minimum width=2.5cm, anchor=west] (ret2) at (6.25,0.75) {Händler};
+\node[box, minimum width=2.5cm] (sup2) at (0,0.75) {Supplier};
+\node[box, minimum width=5cm, anchor=west] (man2) at (1.25,0.75) {Manufacturer};
+\node[box, minimum width=2.5cm, anchor=west] (ret2) at (6.25,0.75) {Retailer};
 \node[chainlabel] at (9.0,0.75) {Supply Chain II};
 
 
@@ -377,35 +380,36 @@ Rollen & Risikoallokation in Supply Chain
 :::
 
 ::: {.small-text}
-[@chopra2025supply, S. 57]
+[@chopra2025supply, p. 57]
 :::
 
-## Umgang mit Unsicherheit {#slide-39}
+## Dealing with uncertainty {#slide-39}
 
 ::: slide-subtitle
-Reaktionsfähigkeit / responsiveness
+Responsiveness
 :::
 
 :::::::::: columns
 :::::: {.column width="50%"}
 ::: callout-note
-## Reaktionsfähigkeit
 
-ist die Fähigkeit einer Supply Chain mit Nachfrageunsicherheit umzugehen
+## Responsiveness
+
+is the ability of a supply chain to deal with demand uncertainty
 :::
 
 ::: vspace-2
 :::
 
-*Reaktionsfähigkiet kann u.a. erreicht werden durch*:
+*Responsiveness can be achieved, among other things, through*:
 
 ::: {.small-text}
-- Hohe Lagerbestände
-- Kurze Reaktions -/ Lieferzeiten
-- Hohe Produktvielfalt
-- Kurze Entwicklungszyklen neuer Produkte
-- Hohe Bereitschaftsgrade
-- Reduktion von Versorgungsunsicherheiten
+- High inventory levels
+- Short response/lead times
+- High product variety
+- Short development cycles for new products
+- High service levels
+- Reduction of supply uncertainties
 :::
 
 ::::::
@@ -432,86 +436,87 @@ ist die Fähigkeit einer Supply Chain mit Nachfrageunsicherheit umzugehen
   }
 ]
 
-% Zeichenfläche eng um die Grafik legen
+% Fit drawing area tightly around the graphic
 \useasboundingbox (-2,-1.50) rectangle (8,6.35);
 
-% Achsen
+% Axes
 \draw[axis] (0,0) -- (6.75,0);
 \draw[axis] (0,0) -- (0,5.85);
 
-% X-Achse: Nachfrageunsicherheit
-\node[anchor=north west] at (0,-0.25) {niedrig};
-\node[anchor=north] at (3.35,-0.65) {\textbf{Nachfrageunsicherheit}};
-\node[anchor=north east] at (6.75,-0.25) {hoch};
+% x-axis: demand uncertainty
+\node[anchor=north west] at (0,-0.25) {low};
+\node[anchor=north] at (3.35,-0.65) {\textbf{Demand uncertainty}};
+\node[anchor=north east] at (6.75,-0.25) {high};
 
-% Y-Achse: Supply-Chain-Optimierungsziel
+% y-axis: supply chain optimisation objective
 \node[
   rotate=90,
   anchor=south,
   align=center
-] at (-0.95,2.90) {\textbf{Supply-Chain-Optimierungsziel}};
+] at (-0.95,2.90) {\textbf{Supply chain optimisation objective}};
 
 \node[
   rotate=90,
   anchor=south
-] at (-0.45,1.00) {Effizienz};
+] at (-0.45,1.00) {Efficiency};
 
 \node[
   rotate=90,
   anchor=south
-] at (-0.45,4.60) {Reaktionsfähigkeit};
+] at (-0.45,4.60) {Responsiveness};
 
-% Diagonaler Strategic-Fit-Pfeil
+% Diagonal strategic fit arrow
 \draw[fitarrow] (0.75,0.85) -- (6.10,5.65);
 
-% Beschriftung des Pfeils
+% Arrow label
 \node[
   rotate=42,
   text=black,
 ] at (3.35,3.40) {Strategic Fit};
 
-% Produkt-/Marktbeispiele
+% Product/market examples
 \node[
   anchor=west,
   align=left,
   text=black!80
-] at (0.38,1.18) {Etablierte\\Grundstoffe};
+] at (0.38,1.18) {Established\\commodities};
 
 \node[
   anchor=west,
   align=left,
   text=black!80
-] at (4.62,5.18) {Neues Produkt in\\neuem Markt};
+] at (4.62,5.18) {New product in\\new market};
 
 \end{tikzpicture}
 ```
 :::
 
-[@chopra2025supply, S. 56]
+[@chopra2025supply, p. 56]
 
 ::::
 :::::
 ::::::::::
 
-## Strategische Ziele {#slide-40}
+## Strategic objectives {#slide-40}
 
 ::: slide-subtitle
-Reaktionsfähigkeit vs. Effizienz
+Responsiveness vs. efficiency
 :::
 
 ::::::::::: columns
 ::::::: {.column width="50%"}
 ::: callout-note
-## Reaktionsfähigkeit
 
-Die Reaktionsfähigkeit einer Supply Chain ist die Fähigkeit einer Supply Chain mit Nachfrageunsicherheit umzugehen
+## Responsiveness
+
+The responsiveness of a supply chain is the ability of a supply chain to deal with demand uncertainty
 :::
 
 ::: vspace-2
 :::
 
 :::: {.fragment .fade-up}
-**Strategische Treiber**
+**Strategic drivers**
 
 ```{tikz}
 %| fig-width: 9
@@ -531,14 +536,14 @@ Die Reaktionsfähigkeit einer Supply Chain ist die Fähigkeit einer Supply Chain
   }
 ]
 
-% Zeichenfläche auf die tatsächlichen Inhalte begrenzen
+% Limit drawing area to the actual content
 \useasboundingbox (-1.25,0) rectangle (10.25,1.5);
 
-\node[box, fill=black!20, minimum width=4cm, minimum height=1.5cm] at (0,0.75) {Produktion};
-\node[box, fill=black!20, minimum width=4cm, minimum height=1.5cm] at (2.25,0.75) {Logistik};
-\node[box, fill=black!20, minimum width=4cm, minimum height=1.5cm] at (4.5,0.75) {Struktur};
-\node[box, fill=black!20, minimum width=4cm, minimum height=1.5cm] at (6.75,0.75) {Preis};
-\node[box, fill=black!20, minimum width=4cm, minimum height=1.5cm] at (9,0.75) {Infrastruktur};
+\node[box, fill=black!20, minimum width=4cm, minimum height=1.5cm] at (0,0.75) {Production};
+\node[box, fill=black!20, minimum width=4cm, minimum height=1.5cm] at (2.25,0.75) {Logistics};
+\node[box, fill=black!20, minimum width=4cm, minimum height=1.5cm] at (4.5,0.75) {Structure};
+\node[box, fill=black!20, minimum width=4cm, minimum height=1.5cm] at (6.75,0.75) {Price};
+\node[box, fill=black!20, minimum width=4cm, minimum height=1.5cm] at (9,0.75) {Infrastructure};
 
 \end{tikzpicture}
 ```
@@ -546,16 +551,17 @@ Die Reaktionsfähigkeit einer Supply Chain ist die Fähigkeit einer Supply Chain
 ::: vspace-2
 :::
 
-$\rightarrow$ Reaktionsfähigkeit verursacht Kosten!
+$\rightarrow$ Responsiveness causes costs!
 ::::
 :::::::
 
 ::::: {.column width="50%"}
 :::: {.fragment .fade-up}
 ::: callout-note
-## Effizienz
 
-Effizienz einer Supply Chain ist das Inverse der Gesamtkosten einer Supply Chain, d.h. aller Kosten eines Produkts von
+## Efficiency
+
+The efficiency of a supply chain is the inverse of the total costs of a supply chain, i.e. of all costs of a product from
 :::
 
 ```{tikz}
@@ -573,24 +579,24 @@ Effizienz einer Supply Chain ist das Inverse der Gesamtkosten einer Supply Chain
   frontier/.style={line width=1.0pt}
 ]
 
-% Zeichenfläche auf die tatsächlichen Inhalte begrenzen
+% Limit drawing area to the actual content
 \useasboundingbox (-1.5,-1) rectangle (10,6.7);
 
-% Achsen
+% Axes
 \draw[axis] (0,0) -- (7.40,0);
 \draw[axis] (0,0) -- (0,6.00);
 
-% Kostenachse
-\node[anchor=south] at (0,6.05) {Kosten};
-\node[anchor=east] at (-0.15,5.15) {niedrig};
-\node[anchor=east] at (-0.15,0.28) {hoch};
+% Cost axis
+\node[anchor=south] at (0,6.05) {Costs};
+\node[anchor=east] at (-0.15,5.15) {low};
+\node[anchor=east] at (-0.15,0.28) {high};
 
-% Reaktionsfähigkeitsachse
-\node[anchor=west] at (7.55,0) {Reaktionsfähigkeit};
-\node[anchor=north west] at (0.15,-0.20) {niedrig};
-\node[anchor=north] at (6.05,-0.20) {hoch};
+% Responsiveness axis
+\node[anchor=west] at (7.55,0) {Responsiveness};
+\node[anchor=north west] at (0.15,-0.20) {low};
+\node[anchor=north] at (6.05,-0.20) {high};
 
-% Kosten-Reaktionsfähigkeits-Grenze
+% Cost-responsiveness frontier
 \draw[frontier]
   (0.02,5.10)
   .. controls (2.40,5.05) and (5.95,3.95) ..
@@ -603,10 +609,10 @@ Effizienz einer Supply Chain ist das Inverse der Gesamtkosten einer Supply Chain
 :::::::::::
 
 
-## Strategisches Management {#slide-41}
+## Strategic management {#slide-41}
 
 ::: slide-subtitle
-Supply Chain Treiber
+Supply chain drivers
 :::
 
 ::: {.r-stretch .tikz-slide}
@@ -651,30 +657,30 @@ Supply Chain Treiber
   }
 ]
 
-% Enger Exportbereich ohne große Leerflächen
+% Tight export area without large empty spaces
 \useasboundingbox (0.1,-0.70) rectangle (12.35,3.05);
 
-% Primärziel
-\node[header, minimum width=2.30cm] (goal) at (5.80,2.45) {Primärziel};
+% Primary objective
+\node[header, minimum width=2.30cm] (goal) at (5.80,2.45) {Primary objective};
 
-% Zielkonflikt: Effizienz versus Reaktionsfähigkeit
-\node[font=\LARGE, anchor=east] at (1.65,1.48) {Effizienz};
-\node[font=\LARGE, anchor=west] at (10.00,1.48) {Reaktionsfähigkeit};
+% Trade-off: efficiency versus responsiveness
+\node[font=\LARGE, anchor=east] at (1.65,1.48) {Efficiency};
+\node[font=\LARGE, anchor=west] at (10.00,1.48) {Responsiveness};
 
 \draw[<->, line width=0.85pt, draw=black!70]
   (2.05,1.43) -- (9.65,1.43);
 
-% Verbindung vom Primärziel zur Zielachse
+% Connection from primary objective to objective axis
 \draw[arrow] (goal.south) -- (5.80,1.45);
 
-% Kopfboxen der Treiber
-\node[driver] (production)  at (0.95,0.20) {Produktion};
-\node[driver] (logistics)   at (3.45,0.20) {Logistik};
-\node[driver] (structure)   at (5.95,0.20) {Struktur};
-\node[driver] (price)       at (8.45,0.20) {Preis};
+% Header boxes of the drivers
+\node[driver] (production)  at (0.95,0.20) {Production};
+\node[driver] (logistics)   at (3.45,0.20) {Logistics};
+\node[driver] (structure)   at (5.95,0.20) {Structure};
+\node[driver] (price)       at (8.45,0.20) {Price};
 \node[driver] (information) at (10.95,0.20) {Information};
 
-% Verbindungen: Zielachse zu Treibern
+% Connections: objective axis to drivers
 \draw[arrow] (5.80,1.43) -- (production.north);
 \draw[arrow] (5.80,1.43) -- (logistics.north);
 \draw[arrow] (5.80,1.43) -- (structure.north);
@@ -688,76 +694,75 @@ Supply Chain Treiber
 
 ::::: columns
 ::: {.column width="20%"}
-- Produktions-  technologie
-- Produktportfolio
-- Fertigungstiefe
+- Production technology
+- Product portfolio
+- Vertical integration
 :::
 
 ::: {.column width="20%"}
-- Transportmodi
-- Lagerkapazitäten
-- Sicherheits- bestände
+- Transport modes
+- Storage capacities
+- Safety stocks
 :::
 
 ::: {.column width="20%"}
-- Lieferanten- auswahl
-- Standort- kapazitäten
-- Stufen & Verbindungen
+- Supplier selection
+- Facility capacities
+- Stages & links
 :::
 
 ::: {.column width="20%"}
-- Preisgestaltung
-- Nachfrage- steuerung
-- Rabattierung
+- Pricing
+- Demand management
+- Discounting
 :::
 
 ::: {.column width="20%"}
-- Informations-teilung
-- System- integration
-- Kollaborative Prognose & Planung
+- Information sharing
+- System integration
+- Collaborative forecasting & planning
 :::
 :::::
 
 
-## Strategisches Management
+## Strategic management
 
 ::: slide-subtitle
-Teilstrategien
+Sub-strategies
 :::
 
 ::: {.smaller-text}
-|   | **Effiziente Supply Chains** | **Reaktive Supply Chains** |
+|   | **Efficient supply chains** | **Responsive supply chains** |
 |--------------|:-----------------------|:-----------------------|
-| **Primärziel** | Nachfragebefriedigung zu niedrigsten Kosten | Schnellstmögliche Nachfragebefriedigung |
-| **Produkt-Design-Strategie** | Geringe Produktvielfalt , Konzentation auf einfaches Design und hohe Durchsätze | Modulare Produktentwicklung und Postponement |
-| **Preisstrategie** | Niedrige Preise und Margen da Kunden preissensitiv | Höhere Preise mit höherer Marge, da Kunden wenig preissensitiv |
-| **Fertigungsstrategie** | Hohe Maschinenauslastung | Freie Kapazitäten um kurzfristig Produktionsmengen ausweiten zu können |
-| **Lagerstrategie** | Minimierung von (Sicherheits-)Beständen | Einrichtung von Sicherheitsbeständen zur Absicherung von Nachfrageschwankungen |
-| **Versorgungsstrategie** | Reduziere Zykluszeiten solange Kosten nicht steigen | Reduziere Zykluszeiten auch wenn Kosten steigen |
-| **Beschaffungsstrategie** | Lieferantenauswahl nach Kosten und Verlässlichkeit | Lieferantenauswahl nach Reaktionsfähigkeit, Geschwindigkeit, Flexibilität und Qualität |
+| **Primary objective** | Meet demand at the lowest cost | Meet demand as quickly as possible |
+| **Product design strategy** | Low product variety, focus on simple design and high throughput | Modular product development and postponement |
+| **Pricing strategy** | Low prices and margins since customers are price-sensitive | Higher prices with higher margins, since customers are not very price-sensitive |
+| **Manufacturing strategy** | High machine utilisation | Spare capacity to be able to expand production quantities at short notice |
+| **Inventory strategy** | Minimise (safety) stocks | Build up safety stocks to buffer demand fluctuations |
+| **Lead time strategy** | Reduce cycle times as long as costs do not increase | Reduce cycle times even if costs increase |
+| **Procurement strategy** | Supplier selection based on cost and reliability | Supplier selection based on responsiveness, speed, flexibility and quality |
 
 :::
 
-## Strategisches Management {#slide-42}
+## Strategic management {#slide-42}
 
 ::: slide-subtitle
-Normstrategien & SCM
+Generic strategies & SCM
 :::
 
 ::: vspace-2
 :::
 
-<!-- | Definition Strategie (nach Gabler Wirtschaftslexikon) | -->
+<!-- | Definition of strategy (according to Gabler Wirtschaftslexikon) | -->
 <!-- |:-----------------------------------------------------------------------| -->
-<!-- | Strategie ist die grundsätzliche, langfristige Verhaltensweise (Maßnahmenkombination) der Unternehmung und relevanter Teilbereiche gegenüber ihrer Umwelt zur Verwirklichung der langfristigen Ziele. | -->
+<!-- | Strategy is the fundamental, long-term behaviour (combination of measures) of the company and relevant sub-units towards their environment in order to achieve long-term objectives. | -->
 ::: {.small-text}
 
-| **Normstrategie** | **Vorteil** | **Wettbewerbsbasis** | **Beitrag des SCM** |
+| **Generic strategy** | **Advantage** | **Basis of competition** | **Contribution of SCM** |
 |:-----------------|:-----------------|:-----------------|:-----------------|
-| Kostenführer | Kosteneffiziente Produktion anstoßen | Niedrigste Preise in der Produktkategorie | Effiziente kostengünstige Infrastruktur |
-| Innovationsführer | Marktstärke nutzen und singuläre Technologie einsetzen | Begehrte und innovative Produkte generieren | Kurze Time- to -Market sichern, Volumen steigern |
-| Serviceführer | Service auf Kunden konsequent zuschneiden | Erwartungen kundenspezifisch erfüllen | Kundenorientierte Entwicklung ermöglichen |
-| Qualitätsführer | Sichere und zuverlässige Produkte herstellen | Singuläre Produkteigenschaften | Verlässliche SC, Quality Assurance |
-| Nachhaltigkeitsführer | Nachhaltige Produkte und Prozesse | Nachhaltigkeitserwartungen der Kunden erfüllen | CO2-Neutralität, Energie- und Ressourcen-Schonung |
+| Cost leader | Drive cost-efficient production | Lowest prices in the product category | Efficient, low-cost infrastructure |
+| Innovation leader | Exploit market strength and deploy unique technology | Generate sought-after and innovative products | Secure short time-to-market, increase volume |
+| Service leader | Tailor service consistently to customers | Meet customer-specific expectations | Enable customer-oriented development |
+| Quality leader | Manufacture safe and reliable products | Unique product features | Reliable SC, quality assurance |
+| Sustainability leader | Sustainable products and processes | Meet customers' sustainability expectations | CO2 neutrality, conservation of energy and resources |
 :::
-

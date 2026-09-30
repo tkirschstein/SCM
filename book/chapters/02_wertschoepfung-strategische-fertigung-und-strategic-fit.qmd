@@ -1,4 +1,4 @@
-# Wertschöpfung, strategische Fertigung und Strategic Fit {#sec-strategic-fit}
+# Value Creation, Strategic Manufacturing and Strategic Fit {#sec-strategic-fit}
 
 ```{r}
 #| echo: false
@@ -6,132 +6,145 @@
 #| message: false
 #| label: ch2-setup
 
-# Funktionen aus scm_functions.R einbinden (u. a. dupont_roi(), Farbpalette cols)
+# Load functions from scm_functions.R (incl. dupont_roi(), colour palette cols)
 source("../R/scm_functions.R")
 
-library(tidyverse)   # dplyr, ggplot2, tibble usw.
-library(knitr)       # kable() für Tabellen
+library(tidyverse)   # dplyr, ggplot2, tibble etc.
+library(knitr)       # kable() for tables
 ```
 
 ::: {.lernziele}
-**Lernziele**
+**Learning objectives**
 
-- Sie können den Wertschöpfungsprozess einer Supply Chain in die Stufen Beschaffung, Produktion, Distribution und Absatz **strukturieren**.
-- Sie können die strategische Fertigungsentscheidung (Make-or-Buy) und die Lage des Entkopplungspunkts (Make-to-stock vs. Make-to-order) **erläutern**.
-- Sie können implizierte Nachfrageunsicherheit und die Reaktionsfähigkeit einer Supply Chain **gegenüberstellen**.
-- Sie können den Strategic Fit einer Supply-Chain-Konfiguration anhand von Wettbewerbsstrategie und implizierter Unsicherheit **beurteilen**.
-- Sie können in R eigene Funktionen schreiben, Kontrollfluss mit `if`/`else` einsetzen und Tabellen mit `mutate()`, `filter()` und `select()` auswerten.
+- You can **structure** the value-creation process of a supply chain into the stages of procurement, production, distribution and sales.
+- You can **explain** the strategic manufacturing decision (make or buy) and the position of the decoupling point (make-to-stock vs. make-to-order).
+- You can **contrast** implied demand uncertainty with the responsiveness of a supply chain.
+- You can **assess** the strategic fit of a supply chain configuration on the basis of competitive strategy and implied uncertainty.
+- You can write your own functions in R, use control flow with `if`/`else` and analyse tables with `mutate()`, `filter()` and `select()`.
 :::
 
-## Einleitung
+## Introduction
 
-Im ersten Kapitel wurde eine Supply Chain als Netzwerk von Akteuren beschrieben, die Material-, Informations- und Finanzflüsse austauschen, um ein Produkt vom Rohstoff bis zum Endkunden zu bringen. Diese Definition beantwortet jedoch noch nicht die Frage, *warum* eine Supply Chain überhaupt existiert und *wie* sie so gestaltet werden sollte, dass sie zum Geschäftsmodell eines Unternehmens passt. Genau hier setzt dieses Kapitel an: Zunächst wird der Wertschöpfungsprozess als Kette aufeinander aufbauender Aktivitäten eingeführt, die aus Vorleistungen einen Kundennutzen erzeugen. Anschließend wird die strategische Fertigungsentscheidung betrachtet, also die Frage, welche Wertschöpfungsstufen ein Unternehmen selbst durchführt (**Make**) und welche es von Dritten bezieht (**Buy**), sowie an welcher Stelle der Kette Produktion auf konkrete Kundenaufträge trifft. Den Abschluss bildet das zentrale Konzept des Kapitels: der **Strategic Fit** nach @chopra2025supply — die Forderung, dass die Wettbewerbsstrategie eines Unternehmens und die Strategie seiner Supply Chain konsistent aufeinander abgestimmt sein müssen.
+In the first chapter, a supply chain was described as a network of actors who exchange material, information and financial flows in order to bring a product from the raw material to the end customer. However, this definition does not yet answer the question of *why* a supply chain exists at all and *how* it should be designed so that it fits a company's business model. This is precisely where this chapter comes in: first, the value-creation process is introduced as a chain of successive activities that generate customer benefit from inputs. Next, the strategic manufacturing decision is considered, i.e. the question of which value-creation stages a company performs itself (**make**) and which it sources from third parties (**buy**), and at which point in the chain production meets specific customer orders. The chapter concludes with its central concept: **strategic fit** according to @chopra2025supply — the requirement that a company's competitive strategy and its supply chain strategy must be consistently aligned with each other.
 
-Diese drei Bausteine hängen eng zusammen: Erst wenn man die Wertschöpfungskette kennt, kann man entscheiden, welche Stufen intern und welche extern erbracht werden. Und erst wenn man weiß, wie eine Supply Chain aufgebaut ist, kann man beurteilen, ob sie zur Unsicherheit des bedienten Marktes passt.
+These three building blocks are closely interrelated: only when the value chain is known can one decide which stages are performed internally and which externally. And only when one knows how a supply chain is structured can one judge whether it matches the uncertainty of the market being served.
 
-## Wertschöpfung als Prozess
+## Value creation as a process
 
-Eine Supply Chain lässt sich als eine Abfolge von **wertschöpfenden Aktivitäten** verstehen, die Vorprodukte und Dienstleistungen Schritt für Schritt in ein Produkt überführen, für das ein Kunde bereit ist zu zahlen. Diese Kette lässt sich grob in vier aufeinanderfolgende Prozessphasen gliedern:
+A supply chain can be understood as a sequence of **value-adding activities** that transform intermediate products and services step by step into a product for which a customer is willing to pay. This chain can be roughly divided into four successive process phases:
 
 ::: {.definition}
-**Definition: Wertschöpfungsprozess**
+**Definition: Value-creation process**
 
-Die **Beschaffung** ist der Prozess zum Einkauf und zur Bereitstellung von Rohstoffen, Komponenten und Dienstleistungen von externen Partnern, die für die Produktion von Waren und Dienstleistungen erforderlich sind.
+**Procurement** is the process of purchasing and providing raw materials, components and services from external partners that are required for the production of goods and services.
 
-Die **Produktion** ist ein zielgerichteter Prozess der Kombination von Gütern und Dienstleistungen zu höherwertigen Produkten.
+**Production** is a purposeful process of combining goods and services into higher-value products.
 
-Die **Distribution** umfasst die physische Verteilung von Waren vom Hersteller zum Endkunden, insbesondere Lagerhaltung, Transport und Logistik von Fertigprodukten.
+**Distribution** comprises the physical movement of goods from the manufacturer to the end customer, in particular warehousing, transport and logistics of finished products.
 
-Der **Absatz** ist der Prozess des Verkaufs der Endprodukte an Konsumenten oder Handelspartner.
+**Sales** is the process of selling the end products to consumers or trading partners.
 :::
 
-Diese vier Phasen sind analytisch, nicht organisatorisch zu verstehen: In der Praxis überlappen sie sich, laufen teilweise parallel und werden häufig von unterschiedlichen Unternehmen entlang der Kette übernommen. Ein Automobilzulieferer etwa betreibt gleichzeitig Beschaffung (Rohstahl, Elektronikkomponenten), Produktion (Fertigung von Baugruppen) und Distribution (Anlieferung "just-in-sequence" an den OEM) — sein Absatz ist zugleich die Beschaffung des nächsten Kettenglieds. Wertschöpfung ist also kein Merkmal eines einzelnen Unternehmens, sondern eine Eigenschaft der gesamten Kette: Jede Stufe nimmt Inputs entgegen, veredelt sie und gibt sie an die nächste Stufe weiter, wobei mit jedem Schritt der Wert aus Sicht des Endkunden steigt (siehe @chopra2025supply, Kapitel 1.5).
+These four phases are to be understood analytically, not organisationally: in practice, they overlap, sometimes run in parallel and are often carried out by different companies along the chain. An automotive supplier, for example, simultaneously carries out procurement (raw steel, electronic components), production (manufacture of assemblies) and distribution (“just-in-sequence” delivery to the OEM) — its sales are at the same time the procurement of the next link in the chain. Value creation is therefore not a feature of a single company but a property of the entire chain: each stage receives inputs, refines them and passes them on to the next stage, with the value from the end customer's perspective increasing with each step (see @chopra2025supply, Chapter 1.5).
 
-Diese Kettenperspektive ist die Grundlage für die strategische Fertigungsentscheidung, mit der sich der nächste Abschnitt beschäftigt: Für jede Wertschöpfungsstufe muss ein Unternehmen entscheiden, ob es sie selbst betreibt oder extern vergibt.
+This chain perspective is the basis for the strategic manufacturing decision, which is the subject of the next section: for each value-creation stage, a company must decide whether to operate it itself or to outsource it.
 
-## Strategische Fertigung: Make-or-Buy
+## Strategic manufacturing: make or buy
 
-Die **strategische Fertigungsentscheidung** — im angelsächsischen Sprachraum als *make-or-buy decision* bezeichnet — betrifft die Frage, welche Wertschöpfungsstufen ein Unternehmen selbst ausführt und welche es an externe Partner auslagert (Fremdbezug). Diese Entscheidung ist strategisch, weil sie nicht kurzfristig revidierbar ist: Eigene Fertigungskapazitäten erfordern Investitionen in Anlagen, Personal und Know-how, während Fremdbezug Abhängigkeiten von Lieferanten und einen Verlust an direkter Kontrolle über Qualität und Lieferfähigkeit mit sich bringt.
+The **strategic manufacturing decision** — known in English as the *make-or-buy decision* — concerns the question of which value-creation stages a company performs itself and which it outsources to external partners (external sourcing). This decision is strategic because it cannot be reversed in the short term: in-house production capacities require investment in facilities, personnel and know-how, while external sourcing entails dependence on suppliers and a loss of direct control over quality and delivery capability.
 
-Klassische Kriterien für die Make-or-Buy-Entscheidung sind unter anderem:
+Classic criteria for the make-or-buy decision include:
 
-- **Kernkompetenz**: Aktivitäten, die einen Wettbewerbsvorteil begründen (z. B. proprietäre Fertigungstechnologie), werden eher intern (Make) gehalten; standardisierte Commodity-Prozesse eignen sich eher für Fremdbezug (Buy).
-- **Kosten**: Skaleneffekte externer Spezialanbieter können die Fremdvergabe günstiger machen als die eigene, kleinvolumigere Fertigung.
-- **Kapitalbindung und Flexibilität**: Eigene Anlagen binden Kapital und erhöhen Fixkosten; Fremdbezug verschiebt Kosten in variable Bestandteile und erhöht die Flexibilität bei Nachfrageschwankungen.
-- **Risiko und Kontrolle**: Eigene Fertigung sichert Kontrolle über Qualität, Termine und geistiges Eigentum, erhöht aber das unternehmerische Risiko (z. B. Auslastungsrisiko).
+- **Core competence**: activities that underpin a competitive advantage (e.g. proprietary manufacturing technology) tend to be kept in-house (make); standardised commodity processes are more suitable for external sourcing (buy).
+- **Costs**: economies of scale of specialised external providers can make outsourcing cheaper than one's own lower-volume production.
+- **Tied-up capital and flexibility**: in-house facilities tie up capital and increase fixed costs; external sourcing shifts costs into variable components and increases flexibility in the face of demand fluctuations.
+- **Risk and control**: in-house production secures control over quality, deadlines and intellectual property, but increases entrepreneurial risk (e.g. capacity utilisation risk).
 
-Eng mit der Make-or-Buy-Frage verknüpft ist die Frage, *wo* innerhalb der Wertschöpfungskette die Produktion auf den konkreten Kundenauftrag trifft — der sogenannte **Entkopplungspunkt** (auch *Customer Order Decoupling Point*, CODP). Er markiert die Stelle, ab der ein Produkt kundenauftragsspezifisch wird, während vorgelagerte Stufen auf Basis von Prognosen (anonym, auf Lager) produzieren.
+Closely linked to the make-or-buy question is the question of *where* within the value chain production meets the specific customer order — the so-called **decoupling point** (also *customer order decoupling point*, CODP). It marks the point from which a product becomes specific to a customer order, while upstream stages produce on the basis of forecasts (anonymously, for stock).
 
-### Denken in Zyklen
+### Thinking in cycles
 
-Eine hilfreiche Systematik zur Analyse der Wertschöpfungskette bietet die Betrachtung in vier **Prozesszyklen**, die jeweils zwei benachbarte Stufen der Kette verbinden (vgl. @kummer2018grundzuge, S. 45):
+A helpful framework for analysing the value chain is to view it in terms of four **process cycles**, each linking two adjacent stages of the chain (cf. @kummer2018grundzuge, p. 45):
 
-1. **Kundenbestellzyklus**: Verarbeitung externer Kundenbedarfe (zwischen Kunde und Händler).
-2. **Distributions-/Versorgungszyklus**: Umwandlung von Kundenbedarfen in interne Bedarfe an Fertigprodukten (zwischen Händler und Produzent).
-3. **Produktionszyklus**: Umwandlung interner Bedarfe in Produktionsbedarfe von Zwischenprodukten und Rohstoffen (innerhalb der Produktion).
-4. **Beschaffungszyklus**: Gestaltung von Bestell- und Versorgungsprozessen für extern zu beziehende Rohstoffe und Dienstleistungen (zwischen Produzent und Lieferant).
+1. **Customer order cycle**: processing external customer demands (between customer and retailer).
+2. **Replenishment cycle**: converting customer demands into internal demands for finished products (between retailer and manufacturer).
+3. **Manufacturing cycle**: converting internal demands into production requirements for intermediate products and raw materials (within production).
+4. **Procurement cycle**: designing ordering and supply processes for raw materials and services to be sourced externally (between manufacturer and supplier).
 
-Jeder dieser Zyklen kann entweder **kundenauftragsgetrieben** ("pull", ausgelöst durch einen konkreten Bedarf) oder **prognosegetrieben** ("push", ausgelöst durch eine Vorhersage) ablaufen. Die Grenze zwischen Push- und Pull-Bereich der Kette ist genau der Entkopplungspunkt. Je weiter dieser Punkt stromaufwärts (in Richtung Rohstoffe) liegt, desto größer ist der Anteil der Kette, der erst nach Auftragseingang aktiv wird — und desto geringer das Risiko, für einen anonymen Markt auf Vorrat zu produzieren. Allerdings steigt damit in der Regel auch die Lieferzeit, die der Kunde in Kauf nehmen muss.
+Within the company, these cycles are realised by managerial activities. @fig-order-cycles shows how a customer inquiry (1) propagates upstream: sales passes a requirement on to production (2), production passes it on to procurement (3), and procurement finally sends an inquiry to the suppliers (4). External managerial activities (inquiry, offer, order, order confirmation, invoice) link the company with its suppliers and customers, while internal managerial activities (requirements, queries, reports) link the functional areas with each other.
 
-### Make-to-stock vs. Make-to-order
+```{r}
+#| label: fig-order-cycles
+#| echo: false
+#| fig-cap: "External and internal managerial activities along the order-processing cycles (after @kummer2018grundzuge, p. 45)"
+#| fig-width: 9
+#| fig-height: 6.6
+#| out-width: "85%"
+#| fig-align: center
+plot_order_cycles_model()
+```
 
-Zwei Grenzfälle der Entkopplung sind in der Praxis besonders bekannt:
+Each of these cycles can be either **customer-order-driven** (“pull”, triggered by a specific demand) or **forecast-driven** (“push”, triggered by a prediction). The boundary between the push and pull sections of the chain is precisely the decoupling point. The further upstream (towards raw materials) this point lies, the larger the share of the chain that only becomes active after an order has been received — and the lower the risk of producing for stock for an anonymous market. However, this usually also increases the delivery time the customer has to accept.
 
-Bei **Make-to-stock** (MTS, Lagerfertigung) liegt der Entkopplungspunkt ganz am Ende der Kette: Fertigprodukte werden anonym auf Basis von Absatzprognosen produziert und in einem Fertigwarenlager bereitgehalten. Der Kunde kauft aus dem Bestand und erhält die Ware sofort oder nach sehr kurzer Lieferzeit. Typische Beispiele sind der Lebensmitteleinzelhandel oder Drogerien: Hier ist die Produktvielfalt vergleichsweise gering standardisiert, die Nachfrage recht gut prognostizierbar, und Kunden erwarten sofortige Verfügbarkeit.
+### Make-to-stock vs. make-to-order
 
-Bei **Make-to-order** (MTO, Auftragsfertigung) liegt der Entkopplungspunkt hingegen ganz am Anfang der Kette: Die Produktion beginnt erst, wenn ein konkreter Kundenauftrag vorliegt. Typische Beispiele sind Gebäude, Flugzeuge oder Gemälde — hochgradig individualisierte, seltene und margenstarke Güter, bei denen Lagerfertigung entweder unmöglich (weil jedes Produkt einzigartig ist) oder wirtschaftlich unsinnig wäre (zu hohe Kapitalbindung für ein Flugzeug "auf Vorrat"). Der Kunde akzeptiert hier eine deutlich längere Lieferzeit als Preis für Individualisierung (vgl. @chopra2025supply).
+Two limiting cases of decoupling are particularly well known in practice:
 
-Zwischen diesen Polen liegen hybride Strategien wie *Assemble-to-order* (Endmontage erst nach Auftragseingang, z. B. bei individuell konfigurierten PCs oder Fahrzeugen) — hier werden Komponenten prognosebasiert vorproduziert, die Endkonfiguration erfolgt jedoch kundenauftragsspezifisch. Die Wahl des Entkopplungspunkts ist damit selbst eine strategische Fertigungsentscheidung, die eng mit der im folgenden Abschnitt behandelten Frage nach Reaktionsfähigkeit und Effizienz verknüpft ist.
+With **make-to-stock** (MTS), the decoupling point lies at the very end of the chain: finished products are produced anonymously on the basis of sales forecasts and held in a finished-goods warehouse. The customer buys from stock and receives the goods immediately or after a very short delivery time. Typical examples are food retail or drugstores: here, product variety is relatively standardised, demand is fairly predictable, and customers expect immediate availability.
+
+With **make-to-order** (MTO), by contrast, the decoupling point lies at the very beginning of the chain: production only begins once a specific customer order has been received. Typical examples are buildings, aircraft or paintings — highly individualised, rare, high-margin goods for which make-to-stock would be either impossible (because each product is unique) or economically unreasonable (too much tied-up capital for an aircraft “in stock”). Here, the customer accepts a considerably longer delivery time as the price of individualisation (cf. @chopra2025supply).
+
+Between these poles lie hybrid strategies such as *assemble-to-order* (final assembly only after receipt of the order, e.g. for individually configured PCs or vehicles) — here, components are pre-produced on the basis of forecasts, but the final configuration is specific to the customer order. The choice of decoupling point is thus itself a strategic manufacturing decision, closely linked to the question of responsiveness and efficiency discussed in the following section.
 
 ::: {.r-exkurs}
-**R-Exkurs: Eigene Funktionen definieren**
+**R aside: Defining your own functions**
 
-In Kapitel [-@sec-einfuehrung] haben Sie mit Vektoren, `data.frame`/`tibble` und Basisfunktionen wie `mean()` oder `sum()` gearbeitet. Häufig möchte man eine Berechnung, die mehrfach benötigt wird, nicht jedes Mal neu ausschreiben, sondern in einer **eigenen Funktion** kapseln. Eine Funktion wird mit dem Schlüsselwort `function()` definiert; ihr Rumpf steht in geschweiften Klammern `{ }`, und der letzte ausgewertete Ausdruck (oder ein expliziter `return()`-Aufruf) ist der Rückgabewert.
+In Chapter [-@sec-einfuehrung] you worked with vectors, `data.frame`/`tibble` and basic functions such as `mean()` or `sum()`. Often, you do not want to write out a calculation that is needed several times over and over again, but rather encapsulate it in **your own function**. A function is defined with the keyword `function()`; its body is placed in curly brackets `{ }`, and the last evaluated expression (or an explicit `return()` call) is the return value.
 
-Als Beispiel: Eine einfache Faustregel für die Make-or-Buy-Entscheidung lautet, eine Aktivität dann intern zu fertigen (Make), wenn die eigenen Herstellkosten je Einheit niedriger sind als der Angebotspreis eines externen Zulieferers zuzüglich Beschaffungskosten. Wir bilden das als Funktion ab:
+As an example: a simple rule of thumb for the make-or-buy decision is to produce an activity in-house (make) if one's own production costs per unit are lower than an external supplier's offer price plus procurement costs. We represent this as a function:
 
 ```{r}
 #| label: ch2-make-or-buy-funktion
 
-# Funktion: vergleicht interne Herstellkosten mit externem Bezugspreis
+# Function: compares internal production costs with the external purchase price
 make_or_buy <- function(kosten_intern, preis_extern, beschaffungskosten = 0) {
 
-  # Gesamtkosten des Fremdbezugs: Einkaufspreis plus Beschaffungsnebenkosten
+  # Total cost of external sourcing: purchase price plus incidental procurement costs
   kosten_extern_gesamt <- preis_extern + beschaffungskosten
 
-  # Rückgabewert: character-Skalar mit der Empfehlung
-  kosten_extern_gesamt  # letzter Ausdruck wird NICHT automatisch zurückgegeben,
-  # da wir noch eine Entscheidung treffen wollen - siehe unten
+  # Return value: character scalar with the recommendation
+  kosten_extern_gesamt  # the last expression is NOT automatically returned as a recommendation,
+  # since we still want to make a decision - see below
 }
 ```
 
-Im obigen Entwurf wird nur der externe Gesamtpreis berechnet, aber noch keine Entscheidung getroffen. Dafür benötigen wir Kontrollfluss mit `if`/`else`, der im nächsten Exkurs eingeführt wird.
+The draft above only calculates the total external price but does not yet make a decision. For that, we need control flow with `if`/`else`, which is introduced in the next aside.
 :::
 
 ::: {.r-exkurs}
-**R-Exkurs: Kontrollfluss mit `if`/`else`**
+**R aside: Control flow with `if`/`else`**
 
-Mit `if (Bedingung) { ... } else { ... }` lässt sich der Programmablauf verzweigen: Ist die Bedingung `TRUE`, wird der erste Block ausgeführt, sonst der `else`-Block. Wir erweitern die Funktion `make_or_buy()` aus dem vorherigen Exkurs um eine echte Entscheidungslogik:
+With `if (condition) { ... } else { ... }`, the program flow can be branched: if the condition is `TRUE`, the first block is executed, otherwise the `else` block. We extend the function `make_or_buy()` from the previous aside with genuine decision logic:
 
 ```{r}
 #| label: ch2-make-or-buy-if
 
-# Erweiterte Funktion mit Entscheidungslogik über if/else
+# Extended function with decision logic via if/else
 make_or_buy <- function(kosten_intern, preis_extern, beschaffungskosten = 0) {
 
-  # Gesamtkosten des Fremdbezugs berechnen
+  # Calculate total cost of external sourcing
   kosten_extern_gesamt <- preis_extern + beschaffungskosten
 
-  # Entscheidungsregel: Make, wenn intern guenstiger als extern
+  # Decision rule: make if internal is cheaper than external
   if (kosten_intern < kosten_extern_gesamt) {
-    entscheidung <- "Make (Eigenfertigung)"
+    entscheidung <- "Make (in-house production)"
   } else if (kosten_intern > kosten_extern_gesamt) {
-    entscheidung <- "Buy (Fremdbezug)"
+    entscheidung <- "Buy (external sourcing)"
   } else {
-    entscheidung <- "Indifferent - weitere Kriterien pruefen"
+    entscheidung <- "Indifferent - check further criteria"
   }
 
-  # Rueckgabe als benannte Liste: Zahlen und Empfehlung zusammen
+  # Return as a named list: figures and recommendation together
   list(
     kosten_intern = kosten_intern,
     kosten_extern_gesamt = kosten_extern_gesamt,
@@ -139,285 +152,285 @@ make_or_buy <- function(kosten_intern, preis_extern, beschaffungskosten = 0) {
   )
 }
 
-# Beispielaufruf: Bauteil kostet intern 18.50 EUR,
-# ein Zulieferer bietet es fuer 15 EUR zzgl. 2 EUR Beschaffungskosten an
+# Example call: a component costs EUR 18.50 in-house,
+# a supplier offers it for EUR 15 plus EUR 2 procurement costs
 make_or_buy(kosten_intern = 18.50, preis_extern = 15, beschaffungskosten = 2)
 ```
 
-Wichtig: Eine solche Kostenfaustregel greift zu kurz, wenn Kernkompetenz, Kapazitätsrisiko oder strategische Abhängigkeit im Vordergrund stehen — sie ist ein erster quantitativer Anhaltspunkt, kein vollständiges Entscheidungsmodell.
+Important: such a cost rule of thumb falls short when core competence, capacity risk or strategic dependence are the main concern — it is an initial quantitative guide, not a complete decision model.
 :::
 
-## Strategische Ziele: Kundenzufriedenheit unter Unsicherheit
+## Strategic objectives: customer satisfaction under uncertainty
 
-Jede Supply Chain wird letztlich daran gemessen, wie gut sie Kundenerwartungen erfüllt — und Kundenerwartungen sind vielschichtig. Sie lassen sich entlang von fünf Dimensionen beschreiben:
+Every supply chain is ultimately measured by how well it meets customer expectations — and customer expectations are multifaceted. They can be described along five dimensions:
 
-- **Kosten**: der Preis, den der Kunde für die Leistung insgesamt zu zahlen bereit ist (einschließlich Liefer- und Nebenkosten),
-- **Qualität**: die Übereinstimmung des Produkts mit den zugesagten Eigenschaften — bei Lebensmitteln etwa Frische und Hygiene,
-- **Zeit**: die Lieferzeit zwischen Bestellung und Verfügbarkeit bzw. bei Handelsware die sofortige Verfügbarkeit im Regal,
-- **Zuverlässigkeit**: die Verlässlichkeit, mit der Zusagen zu Menge, Termin und Qualität eingehalten werden,
-- **Zugänglichkeit**: wie leicht der Kunde an das Produkt gelangt (Zahl und Lage der Verkaufsstellen, Öffnungszeiten, Vertriebskanäle).
+- **Cost**: the price the customer is willing to pay for the service as a whole (including delivery and incidental costs),
+- **Quality**: the conformity of the product with the promised properties — for food, for example, freshness and hygiene,
+- **Time**: the delivery time between order and availability or, for merchandise, immediate availability on the shelf,
+- **Reliability**: the dependability with which commitments on quantity, date and quality are met,
+- **Accessibility**: how easily the customer can obtain the product (number and location of points of sale, opening hours, sales channels).
 
-Die Dimensionen Zeit und Zuverlässigkeit werden in den Folien als **Servicedimensionen** hervorgehoben: Sie werden nicht durch das Produkt selbst, sondern durch die Supply Chain erbracht und hängen unmittelbar mit der **Kunden- und Supply-Chain-Unsicherheit** zusammen. Ein Produkt kann qualitativ hervorragend und günstig sein — ist es nicht rechtzeitig und verlässlich verfügbar, verfehlt die Supply Chain dennoch die Kundenerwartung. Diese Unsicherheit äußert sich unter anderem in:
+The dimensions of time and reliability are highlighted on the slides as **service dimensions**: they are delivered not by the product itself but by the supply chain, and are directly related to **customer and supply chain uncertainty**. A product may be of excellent quality and inexpensive — if it is not available on time and reliably, the supply chain still fails to meet customer expectations. This uncertainty manifests itself, among other things, in:
 
-- der Nachfragemenge je Kundenauftrag,
-- der vom Kunden akzeptierten Lieferzeit,
-- der erwarteten Produktvielfalt,
-- der erwarteten Lieferbereitschaft,
-- der Preis- bzw. Zahlungsbereitschaft und
-- dem Innovationsgrad der Produkte.
+- the quantity demanded per customer order,
+- the delivery time accepted by the customer,
+- the expected product variety,
+- the expected service level,
+- the price level or willingness to pay, and
+- the degree of product innovation.
 
-Um diese Unsicherheit zu strukturieren, unterscheidet man zwei eng verwandte, aber nicht identische Begriffe:
+To structure this uncertainty, two closely related but not identical terms are distinguished:
 
 ::: {.definition}
-**Definition: Nachfrageunsicherheit und implizierte Nachfrageunsicherheit**
+**Definition: Demand uncertainty and implied demand uncertainty**
 
-Die **Nachfrageunsicherheit** ist die Unsicherheit über die tatsächliche Nachfrage nach einem Produkt am Gesamtmarkt.
+**Demand uncertainty** is the uncertainty about the actual demand for a product in the market as a whole.
 
-Die **implizierte Nachfrageunsicherheit** ist die Unsicherheit desjenigen Nachfragesegments, das durch *eine konkrete* Supply Chain bedient werden soll, basierend auf den von dieser Supply Chain adressierten Nachfrageattributen (z. B. Lieferzeit, Produktvielfalt, Servicelevel).
+**Implied demand uncertainty** is the uncertainty of the demand segment that is to be served by *a specific* supply chain, based on the demand attributes addressed by that supply chain (e.g. delivery time, product variety, service level).
 :::
 
-Der Unterschied ist wichtig: Ein und dasselbe Produkt kann über verschiedene Supply Chains vertrieben werden, die jeweils unterschiedliche Nachfrageattribute bedienen — und damit unterschiedlichen *implizierten* Unsicherheiten ausgesetzt sind, obwohl die zugrunde liegende Marktnachfrage identisch ist. Ein Beispiel: Ein Hersteller kann dasselbe Produkt über einen Onlineshop mit garantierter 24-Stunden-Lieferung und über den stationären Handel mit mehrwöchiger Vorbestellzeit vertreiben. Der Onlinekanal hat eine deutlich höhere implizierte Unsicherheit, weil er kurzfristig auf individuelle Bestellungen reagieren muss, während der stationäre Kanal durch die lange Vorlaufzeit Nachfrageschwankungen besser ausgleichen kann.
+The difference is important: one and the same product can be sold through different supply chains, each serving different demand attributes — and thus exposed to different *implied* uncertainties, even though the underlying market demand is identical. An example: a manufacturer can sell the same product through an online shop with guaranteed 24-hour delivery and through bricks-and-mortar retail with a pre-order time of several weeks. The online channel has a considerably higher implied uncertainty because it must respond at short notice to individual orders, whereas the bricks-and-mortar channel can better absorb demand fluctuations thanks to the long lead time.
 
-Die folgende Tabelle systematisiert, wie unterschiedliche Kundenbedürfnisse die implizierte Unsicherheit einer Supply Chain erhöhen:
+The following table systematises how different customer needs increase the implied uncertainty of a supply chain:
 
-| Kundenbedürfnis ändert sich ... | ... wodurch die implizierte Unsicherheit steigt, weil ... |
+| Customer need changes ... | ... which increases implied uncertainty because ... |
 |:---|:---|
-| (maximale) Nachfragemenge steigt | die Spannweite des Bedarfs zunimmt und eine größere Varianz der Nachfragemengen entsteht |
-| Lieferzeit sinkt | weniger Zeit bleibt, um auf Nachfrageschwankungen zu reagieren |
-| Anzahl angebotener Produkte steigt | die Nachfrage der einzelnen Produkte schwieriger zu prognostizieren ist |
-| Lieferbereitschaftsgrad steigt | Nachfragespitzen zuverlässig abgefedert werden müssen |
-| Innovationsgrad steigt | die Nachfrage neuer Produkte in der Regel unbekannt oder schwer zu prognostizieren ist |
-| Anzahl der Vertriebskanäle steigt | die Nachfrage der einzelnen Kanäle schwieriger zu prognostizieren ist |
+| (maximum) quantity demanded increases | the range of demand widens and a greater variance in demand quantities arises |
+| delivery time decreases | less time remains to react to demand fluctuations |
+| number of products offered increases | demand for the individual products is harder to forecast |
+| required service level increases | demand peaks must be reliably absorbed |
+| degree of innovation increases | demand for new products is usually unknown or difficult to forecast |
+| number of sales channels increases | demand in the individual channels is harder to forecast |
 
-Diese implizierte Unsicherheit ist nicht gleichmäßig über die Supply Chain verteilt: Je nachdem, wo Lager- und Kapazitätspuffer positioniert sind, tragen unterschiedliche Akteure einen unterschiedlichen Anteil der **gesamten implizierten Unsicherheit der Supply Chain**. In einer Kette, in der der Händler große Sicherheitsbestände hält, ist der Produzent von kurzfristigen Nachfrageschwankungen weitgehend abgeschirmt; verschiebt sich diese Pufferfunktion Richtung Produzent, trägt dieser einen größeren Anteil der Unsicherheit (vgl. @chopra2025supply, S. 57).
+This implied uncertainty is not evenly distributed across the supply chain: depending on where inventory and capacity buffers are positioned, different actors bear a different share of the **total implied uncertainty of the supply chain**. In a chain in which the retailer holds large safety stocks, the manufacturer is largely shielded from short-term demand fluctuations; if this buffering function shifts towards the manufacturer, the manufacturer bears a larger share of the uncertainty (cf. @chopra2025supply, p. 57).
 
-Die Folien veranschaulichen dies mit zwei Ketten, die **dieselbe gesamte implizierte Unsicherheit** bewältigen müssen, sie aber unterschiedlich aufteilen. In *Supply Chain I* übernimmt der Händler den größten Teil: Er hält ein breites Sortiment vorrätig und puffert Nachfrageschwankungen über Bestände ab, sodass Produzent und Lieferant mit einer vergleichsweise stabilen Nachfrage planen können und sich auf Effizienz konzentrieren dürfen. In *Supply Chain II* übernimmt der Produzent den größten Teil — etwa weil er kundenindividuell fertigt (Make-to-order) und der Händler nur noch als Verkaufs- und Auslieferungspunkt fungiert. Daraus folgt eine wichtige Präzisierung des Strategic-Fit-Gedankens: Nicht jede Stufe einer Kette muss gleich reaktionsfähig sein. Entscheidend ist, dass die Stufe, die einen großen Anteil der Unsicherheit trägt, reaktionsfähig ausgelegt ist, während Stufen, die durch vor- oder nachgelagerte Puffer abgeschirmt werden, effizient arbeiten können. Ein Frischehersteller wie die SushiFresh GmbH, die uns ab Kapitel [-@sec-logistikkosten] begleitet, kann diese Unsicherheit übrigens kaum an den Handel weiterreichen: Sushi-Boxen sind nicht lagerfähig, sodass die Mengenentscheidung jeden Morgen beim Hersteller neu getroffen werden muss (vgl. das Newsvendor-Modell in Kapitel [-@sec-newsvendor]).
+The slides illustrate this with two chains that have to cope with **the same total implied uncertainty** but divide it differently. In *Supply Chain I*, the retailer absorbs the largest share: it keeps a broad assortment in stock and buffers demand fluctuations with inventory, so that the manufacturer and supplier can plan with comparatively stable demand and concentrate on efficiency. In *Supply Chain II*, the manufacturer absorbs the largest share — for example because it produces to individual customer specifications (make-to-order) and the retailer acts only as a point of sale and delivery. This leads to an important refinement of the strategic fit idea: not every stage of a chain needs to be equally responsive. What matters is that the stage bearing a large share of the uncertainty is designed to be responsive, while stages shielded by upstream or downstream buffers can operate efficiently. Incidentally, a fresh-food producer such as SushiFresh GmbH, which will accompany us from Chapter [-@sec-logistikkosten] onwards, can hardly pass this uncertainty on to retailers: sushi boxes cannot be stored, so the quantity decision has to be made anew by the manufacturer every morning (cf. the newsvendor model in Chapter [-@sec-newsvendor]).
 
 ::: {.r-exkurs}
-**R-Exkurs: `dplyr`-Grundverben — `mutate()`, `filter()`, `select()`**
+**R aside: Basic `dplyr` verbs — `mutate()`, `filter()`, `select()`**
 
-Aus Kapitel [-@sec-einfuehrung] kennen Sie bereits `tibble()` zur Erstellung von Datentabellen. Das Paket `dplyr` (Teil des `tidyverse`) stellt einige wenige, gut kombinierbare "Verben" bereit, um solche Tabellen zu transformieren:
+From Chapter [-@sec-einfuehrung] you already know `tibble()` for creating data tables. The `dplyr` package (part of the `tidyverse`) provides a small number of easily combinable “verbs” for transforming such tables:
 
-- `mutate()` erzeugt neue Spalten (oder verändert bestehende),
-- `filter()` behält nur Zeilen, die eine Bedingung erfüllen,
-- `select()` wählt eine Teilmenge der Spalten aus.
+- `mutate()` creates new columns (or modifies existing ones),
+- `filter()` keeps only rows that satisfy a condition,
+- `select()` selects a subset of the columns.
 
-Wir bauen eine kleine Beispieltabelle mit Wertschöpfungsstufen, ihren Kosten je Einheit und dem erzielten Verkaufspreis, und berechnen daraus Marge und Marginalität:
+We build a small example table with value-creation stages, their costs per unit and the selling price achieved, and use it to calculate margin and relative margin:
 
 ```{r}
 #| label: ch2-dplyr-wertschoepfung
 
-# Kleine Beispieltabelle: vier Wertschoepfungsstufen einer Supply Chain
+# Small example table: four value-creation stages of a supply chain
 wertschoepfung <- tibble(
-  stufe = c("Beschaffung", "Produktion", "Distribution", "Absatz"),
-  kosten_je_einheit = c(12.0, 8.5, 3.0, 1.5),   # EUR je Stueck, kumulativ zurechenbar
-  preis_je_einheit  = c(15.0, 24.0, 27.5, 32.0) # kumulierter Verkaufs-/Verrechnungspreis
+  stufe = c("Procurement", "Production", "Distribution", "Sales"),
+  kosten_je_einheit = c(12.0, 8.5, 3.0, 1.5),   # EUR per unit, cumulatively attributable
+  preis_je_einheit  = c(15.0, 24.0, 27.5, 32.0) # cumulative selling/transfer price
 )
 
 wertschoepfung_erweitert <- wertschoepfung |>
-  # neue Spalte: absolute Marge je Stufe
+  # new column: absolute margin per stage
   mutate(marge_absolut = preis_je_einheit - kosten_je_einheit) |>
-  # neue Spalte: relative Marge (Marge bezogen auf den Preis)
+  # new column: relative margin (margin relative to price)
   mutate(marge_relativ = marge_absolut / preis_je_einheit)
 
 wertschoepfung_erweitert
 ```
 
-`filter()` reduziert die Tabelle auf Zeilen, die eine logische Bedingung erfüllen — etwa alle Stufen mit einer relativen Marge über 30 %:
+`filter()` reduces the table to rows that satisfy a logical condition — for example, all stages with a relative margin above 30%:
 
 ```{r}
 #| label: ch2-dplyr-filter
 
-# Nur Stufen mit relativer Marge > 0.30 behalten
+# Keep only stages with relative margin > 0.30
 wertschoepfung_erweitert |>
   filter(marge_relativ > 0.30)
 ```
 
-`select()` wiederum wählt gezielt Spalten aus, etwa wenn nur Stufenname und relative Marge interessieren:
+`select()`, in turn, selects specific columns, for example when only the stage name and relative margin are of interest:
 
 ```{r}
 #| label: ch2-dplyr-select
 
-# Nur die Spalten 'stufe' und 'marge_relativ' behalten
+# Keep only the columns 'stufe' and 'marge_relativ'
 wertschoepfung_erweitert |>
   select(stufe, marge_relativ)
 ```
 
-Der Pipe-Operator `|>` (aus Kapitel [-@sec-einfuehrung] bereits bekannt) verkettet diese Schritte lesbar von links nach rechts: "Nimm die Tabelle, dann erzeuge neue Spalten, dann filtere, dann wähle Spalten aus." Diese drei Verben — zusammen mit `arrange()` (Sortieren) und `summarise()` (Aggregieren), die in späteren Kapiteln folgen — bilden das Rückgrat der Datenanalyse mit `dplyr`.
+The pipe operator `|>` (already familiar from Chapter [-@sec-einfuehrung]) chains these steps together legibly from left to right: “Take the table, then create new columns, then filter, then select columns.” These three verbs — together with `arrange()` (sorting) and `summarise()` (aggregating), which follow in later chapters — form the backbone of data analysis with `dplyr`.
 :::
 
-## Reaktionsfähigkeit und Effizienz
+## Responsiveness and efficiency
 
-Nachdem die implizierte Unsicherheit als Eigenschaft der Nachfrageseite eingeführt wurde, stellt sich die Frage, wie eine Supply Chain darauf reagieren sollte. Hier kommen zwei gegensätzliche strategische Grundausrichtungen ins Spiel:
+Having introduced implied uncertainty as a property of the demand side, the question arises as to how a supply chain should respond to it. This is where two opposing basic strategic orientations come into play:
 
 ::: {.definition}
-**Definition: Reaktionsfähigkeit und Effizienz**
+**Definition: Responsiveness and efficiency**
 
-Die **Reaktionsfähigkeit** (*responsiveness*) einer Supply Chain ist ihre Fähigkeit, mit Nachfrageunsicherheit umzugehen — etwa durch schnelle Reaktion auf Nachfrageschwankungen, kurze Lieferzeiten oder hohe Produktvielfalt.
+The **responsiveness** of a supply chain is its ability to deal with demand uncertainty — for example through rapid response to demand fluctuations, short delivery times or high product variety.
 
-Die **Effizienz** einer Supply Chain ist das Inverse ihrer Gesamtkosten, das heißt aller Kosten, die anfallen, um ein Produkt von der Rohstoffgewinnung bis zum Endkunden zu bringen.
+The **efficiency** of a supply chain is the inverse of its total costs, i.e. all costs incurred in bringing a product from the extraction of raw materials to the end customer.
 :::
 
-Reaktionsfähigkeit lässt sich unter anderem erreichen durch hohe Lagerbestände, kurze Reaktions- und Lieferzeiten, hohe Produktvielfalt, kurze Entwicklungszyklen neuer Produkte, hohe Lieferbereitschaftsgrade und die Reduktion von Versorgungsunsicherheiten. Jede dieser Maßnahmen verursacht jedoch zusätzliche Kosten: Höhere Lagerbestände binden Kapital, kurze Lieferzeiten erfordern Kapazitätsreserven, und eine hohe Produktvielfalt erschwert Skaleneffekte in der Fertigung. Reaktionsfähigkeit und Effizienz stehen deshalb in einem grundsätzlichen **Zielkonflikt** (*trade-off*): Jede zusätzliche Einheit an Reaktionsfähigkeit ist nur zu höheren Kosten zu haben, und umgekehrt lässt sich Kosteneffizienz meist nur auf Kosten von Reaktionsfähigkeit erhöhen.
+Responsiveness can be achieved, among other things, through high inventory levels, short response and delivery times, high product variety, short development cycles for new products, high service levels and the reduction of supply uncertainties. However, each of these measures entails additional costs: higher inventory ties up capital, short delivery times require capacity reserves, and high product variety makes economies of scale in production harder to achieve. Responsiveness and efficiency are therefore in a fundamental **trade-off (goal conflict)**: each additional unit of responsiveness can only be obtained at higher cost, and conversely, cost efficiency can usually only be increased at the expense of responsiveness.
 
-Formal lässt sich dieser Zusammenhang als **Kosten-Reaktionsfähigkeits-Grenze** (*efficient frontier*) darstellen: Für ein gegebenes Prozessdesign existiert eine Menge von Kombinationen aus Reaktionsfähigkeit und Kosten, die mit den verfügbaren Ressourcen bestmöglich erreichbar sind. Punkte auf dieser Grenze sind effizient in dem Sinne, dass keine Kombination aus Reaktionsfähigkeit und Kosten erreichbar ist, die gleichzeitig reaktionsfähiger *und* günstiger wäre. Nur durch Investitionen in bessere Prozesse, Technologien oder Informationssysteme lässt sich die gesamte Grenze nach außen verschieben — nicht aber ein einzelner Punkt darauf ohne Kompromiss verbessern.
+Formally, this relationship can be represented as a **cost–responsiveness efficient frontier**: for a given process design, there is a set of combinations of responsiveness and cost that can best be achieved with the available resources. Points on this frontier are efficient in the sense that no combination of responsiveness and cost can be achieved that would be both more responsive *and* cheaper. Only through investment in better processes, technologies or information systems can the entire frontier be shifted outwards — but no single point on it can be improved without a compromise.
 
-Dieser Trade-off wird von fünf **strategischen Treibern** (*supply chain drivers*) operationalisiert, über die ein Unternehmen die Position seiner Supply Chain auf dem Kontinuum zwischen Effizienz und Reaktionsfähigkeit aktiv gestalten kann:
+This trade-off is operationalised by five **strategic supply chain drivers**, through which a company can actively shape the position of its supply chain on the continuum between efficiency and responsiveness:
 
-| Treiber | Typische Stellhebel |
+| Driver | Typical levers |
 |:---|:---|
-| **Produktion** | Produktionstechnologie, Produktportfolio, Fertigungstiefe |
-| **Logistik** | Transportmodi, Lagerkapazitäten, Sicherheitsbestände |
-| **Struktur** | Lieferantenauswahl, Standortkapazitäten, Stufen und Verbindungen der Kette |
-| **Preis** | Preisgestaltung, Nachfragesteuerung, Rabattierung |
-| **Information** | Informationsteilung, Systemintegration, kollaborative Prognose und Planung |
+| **Production** | production technology, product portfolio, vertical integration |
+| **Logistics** | transport modes, warehouse capacities, safety stocks |
+| **Structure** | supplier selection, site capacities, stages and links of the chain |
+| **Price** | pricing, demand management, discounting |
+| **Information** | information sharing, system integration, collaborative forecasting and planning |
 
-Jeder dieser Treiber kann auf einer Skala zwischen "kostenoptimiert" und "reaktionsoptimiert" konfiguriert werden. Ein Unternehmen, das etwa hohe Maschinenauslastung anstrebt (Produktionstreiber Richtung Effizienz), minimale Sicherheitsbestände hält (Logistiktreiber Richtung Effizienz) und Lieferanten primär nach Kosten auswählt (Struktur Richtung Effizienz), positioniert seine gesamte Supply Chain deutlich auf der Effizienzseite des Spektrums — und umgekehrt.
+Each of these drivers can be configured on a scale between “cost-optimised” and “response-optimised”. A company that, for example, aims for high machine utilisation (production driver towards efficiency), holds minimal safety stocks (logistics driver towards efficiency) and selects suppliers primarily on the basis of cost (structure towards efficiency) positions its entire supply chain clearly on the efficiency side of the spectrum — and vice versa.
 
-## Strategic Fit
+## Strategic fit
 
-Damit sind alle Bausteine vorhanden, um das zentrale Konzept dieses Kapitels einzuführen: den **Strategic Fit**.
+All the building blocks are now in place to introduce the central concept of this chapter: **strategic fit**.
 
 ::: {.definition}
-**Definition: Strategic Fit**
+**Definition: Strategic fit**
 
-**Strategic Fit** bezeichnet die konsistente Abstimmung zwischen der Wettbewerbsstrategie eines Unternehmens (was der Kunde erwarten kann) und seiner Supply-Chain-Strategie (wie die Supply Chain konfiguriert ist), sodass die implizierte Unsicherheit, die die Supply Chain bewältigen muss, mit dem Grad an Reaktionsfähigkeit übereinstimmt, für den die Supply Chain ausgelegt ist [@chopra2025supply, S. 56].
+**Strategic fit** refers to the consistent alignment between a company's competitive strategy (what the customer can expect) and its supply chain strategy (how the supply chain is configured), such that the implied uncertainty the supply chain has to cope with matches the degree of responsiveness for which the supply chain is designed [@chopra2025supply, p. 56].
 :::
 
-Grafisch lässt sich Strategic Fit als Diagonale in einem Koordinatensystem darstellen, dessen horizontale Achse die Nachfrageunsicherheit (von niedrig bis hoch) und dessen vertikale Achse das Supply-Chain-Optimierungsziel (von Effizienz bis Reaktionsfähigkeit) abbildet. Produkte mit niedriger Nachfrageunsicherheit — etwa etablierte Grundstoffe wie Salz oder Grundnahrungsmittel — werden am besten von einer primär auf **Effizienz** ausgelegten Supply Chain bedient: Die Nachfrage ist gut prognostizierbar, sodass Kosteneinsparungen durch hohe Auslastung, geringe Bestände und lange Produktionsläufe kaum durch Fehlmengen oder Überbestände erkauft werden. Produkte mit hoher Nachfrageunsicherheit — etwa ein neues Produkt in einem neuen Markt — erfordern hingegen eine primär auf **Reaktionsfähigkeit** ausgelegte Supply Chain: Da sich die Nachfrage kaum verlässlich prognostizieren lässt, muss die Kette flexibel auf tatsächliche Bestellungen reagieren können, auch wenn dies höhere Kosten verursacht.
+Graphically, strategic fit can be represented as a diagonal in a coordinate system whose horizontal axis shows demand uncertainty (from low to high) and whose vertical axis shows the supply chain optimisation objective (from efficiency to responsiveness). Products with low demand uncertainty — such as established basic commodities like salt or staple foods — are best served by a supply chain designed primarily for **efficiency**: demand is easy to forecast, so cost savings through high utilisation, low inventory and long production runs are hardly bought at the price of shortages or overstocks. Products with high demand uncertainty — such as a new product in a new market — by contrast require a supply chain designed primarily for **responsiveness**: since demand can hardly be forecast reliably, the chain must be able to respond flexibly to actual orders, even if this entails higher costs.
 
-Strategic Fit ist erreicht, wenn eine Supply-Chain-Konfiguration nahe dieser Diagonalen liegt. Abweichungen von der Diagonalen sind strategisch riskant, aber in unterschiedliche Richtungen problematisch:
+Strategic fit is achieved when a supply chain configuration lies close to this diagonal. Deviations from the diagonal are strategically risky, but problematic in different directions:
 
-- Eine **zu effiziente** Supply Chain für ein Produkt mit hoher Nachfrageunsicherheit führt zu Fehlmengen, verpassten Verkaufschancen und unzufriedenen Kunden, weil die Kette nicht schnell genug auf Nachfrageschwankungen reagieren kann.
-- Eine **zu reaktionsfähige** (und damit teure) Supply Chain für ein Produkt mit niedriger Nachfrageunsicherheit verursacht unnötige Kosten, die im Wettbewerb um preissensitive Kunden nicht wettgemacht werden können.
+- A supply chain that is **too efficient** for a product with high demand uncertainty leads to shortages, missed sales opportunities and dissatisfied customers, because the chain cannot respond quickly enough to demand fluctuations.
+- A supply chain that is **too responsive** (and therefore expensive) for a product with low demand uncertainty causes unnecessary costs that cannot be recouped in competition for price-sensitive customers.
 
 ::: {.vertiefung}
-**Theorie-Vertiefung: Funktionale und innovative Produkte nach Fisher**
+**In depth (theory): Functional and innovative products according to Fisher**
 
-Der Strategic-Fit-Gedanke geht wesentlich auf @fisher1997right zurück. Fisher unterscheidet **funktionale Produkte** — Güter des Grundbedarfs mit langen Lebenszyklen, stabiler, gut prognostizierbarer Nachfrage und geringen Margen (z. B. Grundnahrungsmittel, Standardverbrauchsgüter) — von **innovativen Produkten** mit kurzen Lebenszyklen, hoher Variantenvielfalt, schwer prognostizierbarer Nachfrage und hohen Margen (z. B. Mode, Unterhaltungselektronik). Seine zentrale These lautet, dass beide Produkttypen **unterschiedliche Supply Chains** erfordern: Funktionale Produkte gehören in eine *physisch effiziente* Kette, deren Aufgabe es ist, die gut vorhersagbare Nachfrage zu minimalen Kosten zu bedienen. Innovative Produkte gehören in eine *marktreaktionsfähige* Kette, deren Aufgabe es ist, Angebot und Nachfrage auch bei großer Prognoseunsicherheit rasch in Einklang zu bringen.
+The idea of strategic fit goes back essentially to @fisher1997right. Fisher distinguishes **functional products** — goods satisfying basic needs with long life cycles, stable, easily predictable demand and low margins (e.g. staple foods, standard consumer goods) — from **innovative products** with short life cycles, high variety, demand that is difficult to forecast and high margins (e.g. fashion, consumer electronics). His central thesis is that the two product types require **different supply chains**: functional products belong in a *physically efficient* chain, whose task is to serve predictable demand at minimum cost. Innovative products belong in a *market-responsive* chain, whose task is to match supply and demand quickly even under high forecast uncertainty.
 
-Die ökonomische Begründung liegt in den Kosten der beiden möglichen Fehler: Bei funktionalen Produkten sind die Margen klein, sodass jeder zusätzliche Euro an Bestand oder Kapazitätsreserve den Gewinn unmittelbar schmälert — Effizienz lohnt sich. Bei innovativen Produkten sind die Margen hoch, sodass eine verpasste Verkaufschance (Fehlmenge) sehr teuer ist, während übrig gebliebene Ware am Saisonende oft nur mit hohem Abschlag abgesetzt werden kann. Hier lohnt es sich, in Reaktionsfähigkeit zu investieren. Genau diese Abwägung zwischen den Kosten einer Fehlmenge und den Kosten eines Überbestands wird in Kapitel [-@sec-newsvendor] mit dem Newsvendor-Modell formal gefasst: Das dort hergeleitete kritische Verhältnis $c^u/(c^u+c^o)$ steigt mit der Marge und begründet damit quantitativ, warum margenstarke Produkte höhere Servicegrade und mehr Puffer rechtfertigen.
+The economic rationale lies in the costs of the two possible errors: with functional products, margins are small, so every additional euro of inventory or capacity reserve directly reduces profit — efficiency pays off. With innovative products, margins are high, so a missed sales opportunity (shortage) is very expensive, while goods left over at the end of the season can often only be sold at a steep discount. Here, it pays to invest in responsiveness. Precisely this trade-off between the costs of a shortage and the costs of overstock is formalised in Chapter [-@sec-newsvendor] with the newsvendor model: the critical ratio $c^u/(c^u+c^o)$ derived there increases with the margin and thus justifies quantitatively why high-margin products warrant higher service levels and more buffers.
 
-Chopra und Meindl verallgemeinern Fishers Zweiteilung zum Kontinuum der implizierten Unsicherheit, weil nicht nur das Produkt, sondern auch die bedienten Kundenanforderungen (Lieferzeit, Servicegrad, Kanäle) die Unsicherheit bestimmen [@chopra2025supply]. Dasselbe Produkt kann deshalb je nach Marktsegment eine effiziente oder eine reaktionsfähige Kette erfordern.
+Chopra and Meindl generalise Fisher's dichotomy into the continuum of implied uncertainty, because not only the product but also the customer requirements being served (delivery time, service level, channels) determine the uncertainty [@chopra2025supply]. The same product may therefore require an efficient or a responsive chain depending on the market segment.
 :::
 
-Die praktische Konsequenz: Supply-Chain-Design ist kein universelles Optimierungsproblem mit einer einzigen "besten" Lösung, sondern muss stets im Kontext der bedienten Nachfrage und der Wettbewerbsstrategie des Unternehmens beurteilt werden. Zwei Unternehmen mit identischem Produkt, aber unterschiedlicher Wettbewerbspositionierung (etwa Kostenführer vs. Serviceführer), sollten folgerichtig auch unterschiedliche Supply-Chain-Strategien verfolgen.
+The practical consequence: supply chain design is not a universal optimisation problem with a single “best” solution, but must always be assessed in the context of the demand being served and the company's competitive strategy. Two companies with an identical product but different competitive positioning (such as cost leader vs. service leader) should consequently also pursue different supply chain strategies.
 
-### Effiziente vs. reaktive Teilstrategien
+### Efficient vs. responsive sub-strategies
 
-Der Strategic-Fit-Gedanke lässt sich bis auf die Ebene konkreter Teilstrategien herunterbrechen. Die folgende Tabelle stellt typische Ausprägungen effizienter und reaktiver Supply Chains gegenüber:
+The idea of strategic fit can be broken down to the level of concrete sub-strategies. The following table contrasts typical characteristics of efficient and responsive supply chains:
 
-| Dimension | Effiziente Supply Chain | Reaktive Supply Chain |
+| Dimension | Efficient supply chain | Responsive supply chain |
 |:---|:---|:---|
-| **Primärziel** | Nachfragebefriedigung zu niedrigsten Kosten | Schnellstmögliche Nachfragebefriedigung |
-| **Produkt-Design-Strategie** | Geringe Produktvielfalt, einfaches Design, hohe Durchsätze | Modulare Produktentwicklung und Postponement |
-| **Preisstrategie** | Niedrige Preise und Margen (preissensitive Kunden) | Höhere Preise und Margen (wenig preissensitive Kunden) |
-| **Fertigungsstrategie** | Hohe Maschinenauslastung | Freie Kapazitäten für kurzfristige Mengenausweitung |
-| **Lagerstrategie** | Minimierung von (Sicherheits-)Beständen | Sicherheitsbestände zur Absicherung von Nachfrageschwankungen |
-| **Versorgungsstrategie** | Zykluszeiten nur reduzieren, wenn Kosten nicht steigen | Zykluszeiten reduzieren, auch wenn Kosten steigen |
-| **Beschaffungsstrategie** | Lieferantenauswahl nach Kosten und Verlässlichkeit | Lieferantenauswahl nach Reaktionsfähigkeit, Geschwindigkeit, Flexibilität, Qualität |
+| **Primary goal** | Meet demand at the lowest cost | Respond quickly to demand |
+| **Product design strategy** | Low product variety, simple design, high throughput | Modular product development and postponement |
+| **Pricing strategy** | Low prices and margins (price-sensitive customers) | Higher prices and margins (less price-sensitive customers) |
+| **Manufacturing strategy** | High machine utilisation | Spare capacity for short-term volume increases |
+| **Inventory strategy** | Minimise (safety) stocks | Safety stocks to buffer demand fluctuations |
+| **Lead-time strategy** | Reduce cycle times only if costs do not increase | Reduce cycle times even if costs increase |
+| **Supplier strategy** | Select suppliers based on cost and reliability | Select suppliers based on responsiveness, speed, flexibility, quality |
 
-Diese Tabelle macht deutlich, dass Strategic Fit keine abstrakte Größe ist, sondern sich in sehr konkreten operativen Entscheidungen niederschlägt — von der Lieferantenauswahl über die Bestandspolitik bis zur Produktarchitektur. Ein Unternehmen, das etwa Postponement betreibt (die endgültige Produktkonfiguration möglichst lange hinauszögert, siehe die Diskussion des Entkopplungspunkts weiter oben), verschiebt seine Supply Chain aktiv in Richtung Reaktionsfähigkeit.
+This table makes it clear that strategic fit is not an abstract quantity but is reflected in very concrete operational decisions — from supplier selection and inventory policy to product architecture. A company that practises postponement, for example (delaying the final product configuration for as long as possible, see the discussion of the decoupling point above), actively shifts its supply chain towards responsiveness.
 
-### Normstrategien und der Beitrag des SCM
+### Generic strategies and the contribution of SCM
 
-Auf einer höheren Abstraktionsebene lässt sich Strategic Fit auch mit klassischen wettbewerbsstrategischen **Normstrategien** verknüpfen. Für jede Normstrategie lässt sich ein spezifischer Beitrag formulieren, den das Supply Chain Management zur Umsetzung dieser Strategie leisten muss:
+At a higher level of abstraction, strategic fit can also be linked to classic **generic competitive strategies**. For each generic strategy, a specific contribution can be formulated that supply chain management must make to implement that strategy:
 
-| Normstrategie | Strategischer Vorteil | Wettbewerbsbasis | Beitrag des SCM |
+| Generic strategy | Strategic advantage | Basis of competition | Contribution of SCM |
 |:---|:---|:---|:---|
-| Kostenführer | Kosteneffiziente Produktion | Niedrigste Preise in der Produktkategorie | Effiziente, kostengünstige Infrastruktur |
-| Innovationsführer | Marktstärke und singuläre Technologie | Begehrte, innovative Produkte | Kurze Time-to-Market, Volumensteigerung |
-| Serviceführer | Konsequente Kundenorientierung | Kundenspezifische Erwartungserfüllung | Kundenorientierte Entwicklung ermöglichen |
-| Qualitätsführer | Sichere, zuverlässige Produkte | Singuläre Produkteigenschaften | Verlässliche Supply Chain, Quality Assurance |
-| Nachhaltigkeitsführer | Nachhaltige Produkte und Prozesse | Erfüllung von Nachhaltigkeitserwartungen | CO2-Neutralität, Ressourcenschonung |
+| Cost leader | Cost-efficient production | Lowest prices in the product category | Efficient, low-cost infrastructure |
+| Innovation leader | Market strength and unique technology | Sought-after, innovative products | Short time-to-market, volume ramp-up |
+| Service leader | Consistent customer orientation | Meeting customer-specific expectations | Enable customer-oriented development |
+| Quality leader | Safe, reliable products | Unique product features | Reliable supply chain, quality assurance |
+| Sustainability leader | Sustainable products and processes | Meeting sustainability expectations | CO2 neutrality, resource conservation |
 
-Auch hier zeigt sich derselbe Grundgedanke: Ein Kostenführer benötigt eine primär effiziente Supply Chain, während ein Service- oder Innovationsführer eine primär reaktionsfähige Supply Chain benötigt — unabhängig davon, ob es sich um dasselbe Produkt handelt. Strategic Fit ist damit weniger eine Eigenschaft des Produkts selbst als eine Eigenschaft der Passung zwischen Marktversprechen und Kettenkonfiguration.
+The same basic idea emerges here too: a cost leader needs a primarily efficient supply chain, whereas a service or innovation leader needs a primarily responsive supply chain — regardless of whether the product is the same. Strategic fit is thus less a property of the product itself than a property of the match between the market promise and the chain configuration.
 
-### Strategic Fit und die Fertigungsentscheidung
+### Strategic fit and the manufacturing decision
 
-Die eingangs behandelte Make-or-Buy-Entscheidung lässt sich nun in den Strategic-Fit-Rahmen einordnen. Eine rein kostenbasierte Fertigungsentscheidung (wie im ersten R-Exkurs dieses Kapitels) berücksichtigt nur eine Dimension — die Effizienz —, blendet aber die Auswirkung auf die Reaktionsfähigkeit der gesamten Kette aus. Ein Beispiel: Die Auslagerung der Fertigung an einen kostengünstigen, aber weit entfernten Lieferanten mag die Herstellkosten senken, verlängert aber typischerweise die Wiederbeschaffungszeit und reduziert damit die Fähigkeit, kurzfristig auf Nachfrageschwankungen zu reagieren. Für ein Produkt mit niedriger Nachfrageunsicherheit (Effizienzseite der Diagonalen) kann das strategisch sinnvoll sein; für ein Produkt mit hoher Nachfrageunsicherheit (Reaktionsfähigkeitsseite) verschlechtert dieselbe Entscheidung den Strategic Fit.
+The make-or-buy decision discussed at the beginning can now be placed within the strategic fit framework. A purely cost-based manufacturing decision (as in the first R aside of this chapter) takes only one dimension into account — efficiency — but ignores the effect on the responsiveness of the entire chain. An example: outsourcing production to a low-cost but distant supplier may reduce production costs, but typically lengthens the replenishment lead time and thus reduces the ability to respond to short-term demand fluctuations. For a product with low demand uncertainty (efficiency side of the diagonal), this may make strategic sense; for a product with high demand uncertainty (responsiveness side), the same decision worsens strategic fit.
 
-Ein Analysewerkzeug, das dabei hilft, die *finanzielle* Wirkung solcher Fertigungsentscheidungen zu quantifizieren, ist der **DuPont-Kennzahlenbaum**. Er zerlegt die Gesamtkapitalrentabilität (*Return on Investment*, ROI) multiplikativ in Umsatzrentabilität (*Return on Sales*, ROS) und Kapitalumschlag:
+An analytical tool that helps to quantify the *financial* effect of such manufacturing decisions is the **DuPont system of financial ratios**. It breaks down the return on investment (ROI) multiplicatively into return on sales (ROS) and asset turnover:
 
 $$
-\text{ROI} = \text{ROS} \times \text{Kapitalumschlag} = \frac{\text{Gewinn}}{\text{Umsatz}} \times \frac{\text{Umsatz}}{\text{Gesamtvermögen}}
+\text{ROI} = \text{ROS} \times \text{Asset turnover} = \frac{\text{Profit}}{\text{Revenue}} \times \frac{\text{Revenue}}{\text{Total assets}}
 $$
 
-Eine Make-Entscheidung erhöht typischerweise das gebundene Kapital (eigene Anlagen, höhere Bestände an Rohstoffen und Zwischenprodukten) und senkt damit tendenziell den Kapitalumschlag, kann aber über geringere Stückkosten die Umsatzrentabilität verbessern. Eine Buy-Entscheidung wirkt tendenziell umgekehrt: geringere Kapitalbindung, aber oft geringere Marge durch den Einkaufspreis des Zulieferers. Der DuPont-Baum macht diesen Zielkonflikt zwischen ROS und Kapitalumschlag explizit und erlaubt, unterschiedliche Fertigungsszenarien konsistent zu vergleichen.
+A make decision typically increases tied-up capital (own facilities, higher inventories of raw materials and intermediate products) and thus tends to lower asset turnover, but can improve return on sales through lower unit costs. A buy decision tends to have the opposite effect: less tied-up capital, but often a lower margin due to the supplier's purchase price. The DuPont tree makes this trade-off between ROS and asset turnover explicit and allows different manufacturing scenarios to be compared consistently.
 
 ::: {.r-exkurs}
-**R-Exkurs: Fallbeispiel mit `dupont_roi()`, `if`/`else` und `dplyr`**
+**R aside: Case example with `dupont_roi()`, `if`/`else` and `dplyr`**
 
-Die Funktion `dupont_roi()` aus `R/scm_functions.R` berechnet den vollständigen DuPont-Kennzahlenbaum aus Umsatz, Kosten und Bilanzpositionen. Wir nutzen sie, um zwei Fertigungsszenarien zu vergleichen: **Make** (Eigenfertigung, höhere Kapitalbindung, geringere variable Kosten) gegenüber **Buy** (Fremdbezug, geringere Kapitalbindung, höhere variable Kosten):
+The function `dupont_roi()` from `R/scm_functions.R` calculates the complete DuPont tree from revenue, costs and balance sheet items. We use it to compare two manufacturing scenarios: **make** (in-house production, more tied-up capital, lower variable costs) versus **buy** (external sourcing, less tied-up capital, higher variable costs):
 
 ```{r}
 #| label: ch2-dupont-szenarien
 
-# Szenario "Make": Eigenfertigung mit hoeherer Kapitalbindung
+# Scenario "Make": in-house production with more tied-up capital
 make_szenario <- dupont_roi(
-  revenue      = 11000,  # Umsatz in Tsd. EUR
-  mat_cost     = 5500,   # Materialkosten (guenstiger durch Eigenfertigung)
-  pers_cost    = 4950,   # Personalkosten (hoeher: eigene Fertigungskapazitaet)
-  fixed_assets = 3500,   # hoehere Anlagenbindung durch eigene Maschinen
+  revenue      = 11000,  # revenue in EUR thousands
+  mat_cost     = 5500,   # material costs (lower thanks to in-house production)
+  pers_cost    = 4950,   # personnel costs (higher: own production capacity)
+  fixed_assets = 3500,   # more capital tied up in own machinery
   cash         = 500,
-  inventory    = 3300,   # hoehere Bestaende an Rohstoffen/Zwischenprodukten
+  inventory    = 3300,   # higher inventories of raw materials/intermediate products
   receivables  = 1075
 )
 
-# Szenario "Buy": Fremdbezug mit geringerer Kapitalbindung
+# Scenario "Buy": external sourcing with less tied-up capital
 buy_szenario <- dupont_roi(
-  revenue      = 11000,  # gleicher Umsatz zum Vergleich
-  mat_cost     = 6800,   # hoehere Materialkosten durch Einkaufspreis des Zulieferers
-  pers_cost    = 3200,   # geringere Personalkosten (keine eigene Fertigung)
-  fixed_assets = 1200,   # kaum eigene Anlagen
+  revenue      = 11000,  # same revenue for comparison
+  mat_cost     = 6800,   # higher material costs due to the supplier's purchase price
+  pers_cost    = 3200,   # lower personnel costs (no in-house production)
+  fixed_assets = 1200,   # hardly any own facilities
   cash         = 500,
-  inventory    = 1100,   # geringere Bestaende
+  inventory    = 1100,   # lower inventories
   receivables  = 1075
 )
 
-# Vergleichstabelle bauen: relevante Kennzahlen beider Szenarien
+# Build comparison table: relevant ratios for both scenarios
 vergleich <- tibble(
   szenario = c("Make", "Buy"),
   ros            = c(make_szenario$ros, buy_szenario$ros),
   asset_turnover = c(make_szenario$asset_turnover, buy_szenario$asset_turnover),
   roi            = c(make_szenario$roi, buy_szenario$roi)
 ) |>
-  # Prozentwerte fuer bessere Lesbarkeit ergaenzen
+  # Add percentage values for better readability
   mutate(roi_prozent = round(roi * 100, 1))
 
 vergleich
 ```
 
-Auf Basis dieser Kennzahlen lässt sich mit `if`/`else` eine einfache Entscheidungsregel formulieren, die zusätzlich zur reinen ROI-Höhe auch die strategische Positionierung (Effizienz vs. Reaktionsfähigkeit) berücksichtigt:
+On the basis of these ratios, a simple decision rule can be formulated with `if`/`else` that takes into account not only the level of ROI but also the strategic positioning (efficiency vs. responsiveness):
 
 ```{r}
 #| label: ch2-dupont-entscheidung
 
-# Funktion: empfiehlt Make oder Buy je nach ROI-Differenz und
-# strategischer Ausrichtung (reaktionsfaehig vs. effizient)
+# Function: recommends make or buy depending on the ROI difference and
+# strategic orientation ("reaktionsfaehig" = responsive vs. "effizient" = efficient)
 empfehle_fertigung <- function(roi_make, roi_buy, strategie = "effizient") {
 
-  # Differenz der Kapitalrentabilitaeten
+  # Difference in returns on investment
   roi_differenz <- roi_make - roi_buy
 
-  # Wenn ROI-Differenz sehr gering ist, gibt die Strategie den Ausschlag
+  # If the ROI difference is very small, the strategy is decisive
   if (abs(roi_differenz) < 0.01) {
     if (strategie == "reaktionsfaehig") {
-      return("Buy - bei aehnlichem ROI flexiblere Kapazitaet bevorzugen")
+      return("Buy - with similar ROI, prefer more flexible capacity")
     } else {
-      return("Make - bei aehnlichem ROI hoehere Kontrolle/Effizienz nutzen")
+      return("Make - with similar ROI, use greater control/efficiency")
     }
   }
 
-  # Ansonsten: hoeherer ROI entscheidet
+  # Otherwise: the higher ROI decides
   if (roi_differenz > 0) {
-    "Make - deutlich hoehere Kapitalrentabilitaet"
+    "Make - considerably higher return on investment"
   } else {
-    "Buy - deutlich hoehere Kapitalrentabilitaet"
+    "Buy - considerably higher return on investment"
   }
 }
 
-# Anwendung auf unser Zahlenbeispiel
+# Application to our numerical example
 empfehle_fertigung(
   roi_make  = make_szenario$roi,
   roi_buy   = buy_szenario$roi,
@@ -425,26 +438,26 @@ empfehle_fertigung(
 )
 ```
 
-Dieses kleine Beispiel verdeutlicht, wie sich eigene Funktionen, Kontrollfluss und `dplyr`-Verben kombinieren lassen, um eine strategische Fragestellung — hier die Make-or-Buy-Entscheidung im Licht des Strategic Fit — nachvollziehbar und wiederverwendbar zu quantifizieren. In der Praxis wären weitere Kriterien (Kapazitätsrisiko, Abhängigkeit von Lieferanten, Auswirkung auf die Lieferzeit) zu ergänzen, bevor eine solche Empfehlung tragfähig ist.
+This small example illustrates how your own functions, control flow and `dplyr` verbs can be combined to quantify a strategic question — here, the make-or-buy decision in the light of strategic fit — in a transparent and reusable way. In practice, further criteria (capacity risk, dependence on suppliers, effect on delivery time) would have to be added before such a recommendation is robust.
 :::
 
-## Zusammenfassung
+## Summary
 
-Dieses Kapitel hat die Wertschöpfungskette als Abfolge von Beschaffung, Produktion, Distribution und Absatz eingeführt und gezeigt, wie sich diese Kette in vier Prozesszyklen (Kundenbestellung, Distribution, Produktion, Beschaffung) gliedern lässt, die jeweils durch den Entkopplungspunkt in einen prognosegetriebenen und einen auftragsgetriebenen Teil zerfallen. Darauf aufbauend wurde die strategische Fertigungsentscheidung (Make-or-Buy) sowie die Positionierung zwischen Make-to-stock und Make-to-order diskutiert.
+This chapter has introduced the value chain as a sequence of procurement, production, distribution and sales and has shown how this chain can be divided into four process cycles (customer order, replenishment, manufacturing, procurement), each of which is split by the decoupling point into a forecast-driven and an order-driven part. Building on this, the strategic manufacturing decision (make or buy) and the positioning between make-to-stock and make-to-order were discussed.
 
-Im zweiten Teil des Kapitels stand das Konzept des **Strategic Fit** im Mittelpunkt: die Forderung, dass die Reaktionsfähigkeit einer Supply Chain mit der implizierten Unsicherheit des bedienten Marktes übereinstimmen muss. Effizienz und Reaktionsfähigkeit wurden dabei als gegensätzliche, aber gleichermaßen legitime strategische Grundausrichtungen eingeführt, die über fünf Treiber — Produktion, Logistik, Struktur, Preis und Information — operationalisiert werden können. Der DuPont-Kennzahlenbaum wurde als quantitatives Werkzeug vorgestellt, um die finanzielle Wirkung unterschiedlicher Fertigungsentscheidungen (Make vs. Buy) vergleichbar zu machen.
+The second part of the chapter focused on the concept of **strategic fit**: the requirement that the responsiveness of a supply chain must match the implied uncertainty of the market being served. Efficiency and responsiveness were introduced as opposing but equally legitimate basic strategic orientations, which can be operationalised through five drivers — production, logistics, structure, price and information. The DuPont system of financial ratios was presented as a quantitative tool for making the financial impact of different manufacturing decisions (make vs. buy) comparable.
 
-In R haben Sie in diesem Kapitel gelernt, eigene Funktionen mit `function() { ... }` zu definieren, mit `if`/`else` bedingte Logik zu implementieren und mit den `dplyr`-Grundverben `mutate()`, `filter()` und `select()` Tabellen gezielt zu transformieren und auszuwerten — Werkzeuge, die in den folgenden Kapiteln bei der Modellierung von Standortentscheidungen, Bestandspolitiken und dem Bullwhip-Effekt regelmäßig wiederkehren werden.
+In R, you have learnt in this chapter to define your own functions with `function() { ... }`, to implement conditional logic with `if`/`else` and to transform and analyse tables in a targeted way with the basic `dplyr` verbs `mutate()`, `filter()` and `select()` — tools that will recur regularly in the following chapters when modelling location decisions, inventory policies and the bullwhip effect.
 
 ::: {.kontrollfragen}
-**Kontrollfragen**
+**Review questions**
 
-1. Nennen und erläutern Sie die vier Phasen des Wertschöpfungsprozesses einer Supply Chain.
-2. Was versteht man unter dem Entkopplungspunkt (Customer Order Decoupling Point), und wie unterscheiden sich Make-to-stock und Make-to-order hinsichtlich seiner Lage?
-3. Nennen Sie drei Kriterien, die bei einer Make-or-Buy-Entscheidung neben den reinen Herstell- bzw. Bezugskosten zu berücksichtigen sind.
-4. Erläutern Sie den Unterschied zwischen Nachfrageunsicherheit und implizierter Nachfrageunsicherheit anhand eines eigenen Beispiels.
-5. Definieren Sie Reaktionsfähigkeit und Effizienz einer Supply Chain und erklären Sie, warum zwischen beiden ein Zielkonflikt besteht.
-6. Was besagt das Konzept des Strategic Fit, und wie lässt es sich grafisch anhand von Nachfrageunsicherheit und Supply-Chain-Optimierungsziel darstellen?
-7. Nennen Sie die fünf strategischen Treiber, über die eine Supply Chain zwischen Effizienz und Reaktionsfähigkeit positioniert werden kann, und je ein Beispiel für einen Stellhebel je Treiber.
-8. Wie verändert sich die für einen Kostenführer sinnvolle Supply-Chain-Konfiguration im Vergleich zu einem Serviceführer, und warum?
+1. Name and explain the four phases of the value-creation process of a supply chain.
+2. What is meant by the decoupling point (customer order decoupling point), and how do make-to-stock and make-to-order differ with regard to its position?
+3. Name three criteria that must be taken into account in a make-or-buy decision in addition to the pure production or purchase costs.
+4. Explain the difference between demand uncertainty and implied demand uncertainty using an example of your own.
+5. Define the responsiveness and efficiency of a supply chain and explain why there is a trade-off between the two.
+6. What does the concept of strategic fit state, and how can it be represented graphically using demand uncertainty and the supply chain optimisation objective?
+7. Name the five strategic drivers through which a supply chain can be positioned between efficiency and responsiveness, and give one example of a lever for each driver.
+8. How does the appropriate supply chain configuration for a cost leader differ from that for a service leader, and why?
 :::

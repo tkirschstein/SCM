@@ -1,4 +1,4 @@
-# Der Bullwhip-Effekt und das Beergame {#sec-bullwhip}
+# The Bullwhip Effect and the Beer Game {#sec-bullwhip}
 
 ```{r ch8-setup}
 #| include: false
@@ -9,76 +9,76 @@ library(ggplot2)
 library(knitr)
 library(kableExtra)
 
-# Funktionen aus scm_functions.R einbinden (u. a. simuliere_tS())
+# Load functions from scm_functions.R (including simuliere_tS())
 source("../R/scm_functions.R")
 
-# Farben für die Grafiken dieses Kapitels
+# Colours for the graphs in this chapter
 farbe_nachfrage  <- "#1F4E79"
 farbe_bestellung <- "#C00000"
 farbe_bestand    <- "#70AD47"
 ```
 
 ::: {.lernziele}
-**Lernziele**
+**Learning objectives**
 
-- den Bullwhip-Effekt definieren und an einem durchgehenden Beispiel erklären
-- die Bestandsgrößen einer mehrstufigen Lieferkette (physischer Bestand, Nettobestand, disponibler Bestand) auf eine konkrete Bestellsituation anwenden
-- das Varianzverhältnis als Maß für den Bullwhip-Effekt berechnen und interpretieren
-- die vier klassischen Ursachen des Bullwhip-Effekts unterscheiden und Beispielen zuordnen
-- das Beergame als didaktisches Simulationsspiel einordnen und mit einer eigenen R-Simulation nachvollziehen
-- Zeitreihen in R als Vektoren begreifen und mit `diff()` sowie `dplyr::lag()` analysieren
-- eine mehrstufige Lieferkette in einer eigenen Simulationsschleife in R abbilden und gefacettet visualisieren
-- Gegenmaßnahmen gegen den Bullwhip-Effekt (Informationsaustausch, VMI, CPFR, kürzere Wiederbeschaffungszeiten) beurteilen
+- define the bullwhip effect and explain it using a running example
+- apply the inventory measures of a multi-echelon supply chain (on-hand inventory, net inventory, inventory position) to a concrete ordering situation
+- calculate and interpret the variance ratio as a measure of the bullwhip effect
+- distinguish the four classic causes of the bullwhip effect and assign examples to them
+- classify the Beer Game as a didactic simulation game and reproduce it with your own R simulation
+- understand time series in R as vectors and analyse them with `diff()` and `dplyr::lag()`
+- model a multi-echelon supply chain in your own simulation loop in R and visualise it with facets
+- assess countermeasures against the bullwhip effect (information sharing, VMI, CPFR, shorter replenishment lead times)
 :::
 
-## Von der einzelnen Stufe zur Kette
+## From the single stage to the chain
 
-In den vorangegangenen Kapiteln haben wir Unsicherheit stets aus der Perspektive **einer einzelnen** Stufe einer Supply Chain betrachtet: Ein Händler oder Produzent kennt (näherungsweise) die Verteilung der Nachfrage, bildet daraus einen Sicherheitsbestand und legt einen Ziellagerbestand fest, der einen gewünschten Servicegrad realisiert. Das Pooling-Prinzip und das Newsvendor-Modell beantworten damit die Frage: *Wie viel sollte eine Stufe bevorraten, wenn sie mit unsicherer Nachfrage konfrontiert ist?*
+In the preceding chapters we always considered uncertainty from the perspective of **a single** stage of a supply chain: a retailer or producer knows (approximately) the distribution of demand, derives a safety stock from it and sets an order-up-to level that achieves a desired service level. The pooling principle and the newsvendor model thus answer the question: *How much should a stage keep in stock when it is confronted with uncertain demand?*
 
-In der Realität ist aber praktisch jede Stufe einer Supply Chain gleichzeitig Kunde einer vorgelagerten und Lieferant einer nachgelagerten Stufe. Die "Nachfrage", mit der sich ein Großhändler auseinandersetzen muss, ist nicht die Nachfrage der Endkonsumenten, sondern die **Bestellmenge des Einzelhändlers** – und diese Bestellmenge ist selbst bereits das Ergebnis einer Bestandsentscheidung, die auf einer geschätzten, unsicheren Nachfrage beruht. Jede Stufe filtert, interpretiert und verstärkt damit die Information, die sie an die nächste Stufe weitergibt. Genau dieses Phänomen der stufenweisen Verstärkung von Nachfrageschwankungen entlang einer Lieferkette ist Gegenstand dieses – abschließenden – Kapitels: der **Bullwhip-Effekt** (deutsch gelegentlich auch *Peitscheneffekt*).
+In reality, however, practically every stage of a supply chain is simultaneously the customer of an upstream stage and the supplier of a downstream stage. The "demand" a wholesaler has to deal with is not the demand of end consumers but the **order quantity of the retailer** – and this order quantity is itself already the result of an inventory decision based on an estimated, uncertain demand. Each stage thus filters, interprets and amplifies the information it passes on to the next stage. Precisely this phenomenon of the stage-by-stage amplification of demand fluctuations along a supply chain is the subject of this – final – chapter: the **bullwhip effect** (occasionally also called the *Peitscheneffekt*, “whip effect”, in German).
 
-Wir nähern uns dem Thema wie gewohnt über ein durchgehendes Fallbeispiel, leiten daraus eine formale Definition und ein Messkonzept ab, ordnen die Ursachen und Folgen des Effekts ein und lernen mit dem **Beergame** ein klassisches Lehrspiel kennen, das wir anschließend selbst in R nachbauen. Am Ende steht ein Überblick über Gegenmaßnahmen, die in der Praxis eingesetzt werden, um die Peitsche zu "entschärfen".
+As usual, we approach the topic through a running case example, derive a formal definition and a measurement concept from it, classify the causes and consequences of the effect and get to know the **Beer Game**, a classic teaching game that we then rebuild ourselves in R. At the end there is an overview of countermeasures used in practice to "defuse" the whip.
 
-## Fallbeispiel: die SushiFresh-Supply-Chain
+## Case example: the SushiFresh supply chain
 
-Wir greifen erneut die **SushiFresh GmbH** aus den vorigen Kapiteln auf: den regionalen Hersteller frischer Sushi-Boxen mit einer Zentralküche in **Raunheim** (vgl. die Standortanalyse in Kapitel [-@sec-standort-2] und die Pooling-Argumente in Kapitel [-@sec-unsicherheit-pooling]), der sechs Supermarkt-Filialen im Rhein-Main-Gebiet beliefert – darunter die bereits aus den Kapiteln [-@sec-unsicherheit-pooling] und [-@sec-newsvendor] bekannte, besonders nachfragestarke Filiale **Frankfurt** ($\mu=280$, $\sigma=55$ Sushi-Boxen pro Tag). Für die Produktion ist SushiFresh auf die tägliche Lieferung frischer Fischfilets angewiesen, die der Fischgroßhändler **Nord-Fisch KG** liefert. Nord-Fisch beschafft Rohfisch, produziert daraus Filets und lagert diese, um schnell liefern zu können. Die Kette ist also dreistufig; Bestellungen fließen stromaufwärts, Lieferungen stromabwärts:
+We return once more to **SushiFresh GmbH** from the previous chapters: the regional producer of fresh sushi boxes with a central kitchen in **Raunheim** (cf. the location analysis in Chapter [-@sec-standort-2] and the pooling arguments in Chapter [-@sec-unsicherheit-pooling]), which supplies six supermarket stores in the Rhine-Main area – among them the particularly high-demand **Frankfurt** store already familiar from Chapters [-@sec-unsicherheit-pooling] and [-@sec-newsvendor] ($\mu=280$, $\sigma=55$ sushi boxes per day). For production, SushiFresh depends on the daily delivery of fresh fish fillets supplied by the fish wholesaler **Nord-Fisch KG**. Nord-Fisch procures raw fish, produces fillets from it and stores them in order to be able to deliver quickly. The chain thus has three stages; orders flow upstream, deliveries downstream:
 
 $$
-\text{Supermarkt-Filialen}
+\text{Supermarket stores}
 \;\longleftrightarrow\;
 \text{SushiFresh GmbH}
 \;\longleftrightarrow\;
 \text{Nord-Fisch KG}
 $$
 
-Die **Filialen** beobachten die Endkundennachfrage (z. B. Frankfurt: $\mu=280$, $\sigma=55$) und bestellen täglich Sushi-Boxen bei SushiFresh. **SushiFresh** erhält diese Bestellungen als seine Nachfrage, bestellt Fisch bei Nord-Fisch und hält einen Vorrat an Fischfilets. **Nord-Fisch** wiederum sieht nur die Bestellungen von SushiFresh. SushiFresh und Nord-Fisch halten beide einen (Sicherheits-)Bestand an Fischfilets, um Fehlmengen zu vermeiden – die zentrale Frage lautet also: Wie hoch sollte dieser Bestand sein, und wie wirken die Bestellentscheidungen auf die vorgelagerte Stufe?
+The **stores** observe end-customer demand (e.g. Frankfurt: $\mu=280$, $\sigma=55$) and order sushi boxes from SushiFresh every day. **SushiFresh** receives these orders as its demand, orders fish from Nord-Fisch and holds a stock of fish fillets. **Nord-Fisch** in turn sees only the orders from SushiFresh. SushiFresh and Nord-Fisch both hold a (safety) stock of fish fillets to avoid shortages – so the central question is: How high should this stock be, and how do the ordering decisions affect the upstream stage?
 
-Jede Stufe beobachtet nur die Bestellungen der ihr unmittelbar nachgelagerten Stufe und muss daraus – ohne Einblick in die tatsächliche Endkundennachfrage – ihre eigene Bestellentscheidung ableiten. Damit wir diese Entscheidung formal fassen können, benötigen wir drei Bestandsgrößen, die in jeder Periode $t$ fortgeschrieben werden:
+Each stage observes only the orders of the stage immediately downstream of it and must derive its own ordering decision from these – without insight into actual end-customer demand. To be able to capture this decision formally, we need three inventory measures that are updated in every period $t$:
 
-- der **physische Bestand** $i_t$: die tatsächlich im Lager verfügbare Menge, $i_t = \max(0,\, i_{t-1} + q_{t-l} - d_t)$
-- der **Nettobestand** $n_t$: der physische Bestand abzüglich offener Fehlmengen (Backorders), $n_t = i_{t-1} + q_{t-l} - d_t$
-- der **disponible Bestand** $p_t$: der Nettobestand zuzüglich aller bereits ausgelösten, aber noch nicht eingetroffenen Bestellungen (der sogenannten *Pipeline*), $p_t = n_t + \sum_{\tau=t-l+1}^{t-1} q_\tau$
+- the **on-hand inventory** $i_t$: the quantity actually available in the warehouse, $i_t = \max(0,\, i_{t-1} + q_{t-l} - d_t)$
+- the **net inventory** $n_t$: on-hand inventory minus open shortages (backorders), $n_t = i_{t-1} + q_{t-l} - d_t$
+- the **inventory position** $p_t$: net inventory plus all orders already placed but not yet received (the so-called *pipeline*), $p_t = n_t + \sum_{\tau=t-l+1}^{t-1} q_\tau$
 
-Dabei bezeichnet $d_t$ den Bedarf in Periode $t$, $q_t$ die Bestellmenge und $l$ die **Wiederbeschaffungszeit** (WBZ) in Perioden. Legt eine Stufe einen Ziellagerbestand (**Order-up-to-Level**) $S$ fest, ergibt sich die Bestellmenge als Auffüllung des disponiblen Bestands auf $S$:
+Here $d_t$ denotes the demand in period $t$, $q_t$ the order quantity and $l$ the **replenishment lead time** in periods. If a stage sets an order-up-to level $S$, the order quantity results from topping up the inventory position to $S$:
 
 $$ q_t = \max\bigl(0,\; S - p_t\bigr) $$
 
-Der Ziellagerbestand selbst setzt sich – wie im Kapitel zum Newsvendor-Modell hergeleitet – aus einem Grundbedarf über die **Schutzperiode** $l+1$ (die Zeit von einer Bestellentscheidung bis zur nächsten möglichen Reaktion auf eine neue Lieferung) und einem Sicherheitsbestand zusammen:
+The order-up-to level itself is composed – as derived in the chapter on the newsvendor model – of a base demand over the **protection period** $l+1$ (the time from one ordering decision until the next possible reaction to a new delivery) and a safety stock:
 
 $$ S = \mu \cdot (l+1) + z_\alpha \cdot \sigma \cdot \sqrt{l+1} $$
 
-Hierbei sind $\mu$ und $\sigma$ die erwartete Nachfrage pro Periode und ihre Standardabweichung, die in der Praxis aus vergangenen Bedarfen **geschätzt** werden müssen, und $z_\alpha$ das Quantil der Standardnormalverteilung zum gewünschten Servicegrad $\alpha$.
+Here $\mu$ and $\sigma$ are the expected demand per period and its standard deviation, which in practice have to be **estimated** from past demand, and $z_\alpha$ is the quantile of the standard normal distribution for the desired service level $\alpha$.
 
-Genau an dieser Schätzung setzt der Bullwhip-Effekt an. Simulieren wir SushiFresh GmbH für zwölf Tage mit der moderat schwankenden Sushi-Boxen-Nachfrage der Filiale Frankfurt ($\mu=280$, $\sigma=55$), einer Wiederbeschaffungszeit von zwei Tagen (ein Tag Vorlauf für die Fischanlieferung durch Nord-Fisch KG, ein weiterer Tag für Produktion und Auslieferung an die Filiale) und einem – zunächst fest vorgegebenen – Ziellagerbestand von $S=990$, können wir die Funktion `simuliere_tS()` aus `R/scm_functions.R` nutzen, die diese Fortschreibung von physischem, Netto- und disponiblem Bestand automatisiert:
+It is precisely this estimation that the bullwhip effect hinges on. If we simulate SushiFresh GmbH for twelve days with the moderately fluctuating sushi box demand of the Frankfurt store ($\mu=280$, $\sigma=55$), a replenishment lead time of two days (one day of lead time for the fish delivery by Nord-Fisch KG, another day for production and delivery to the store) and an – initially fixed – order-up-to level of $S=990$, we can use the function `simuliere_tS()` from `R/scm_functions.R`, which automates this updating of on-hand inventory, net inventory and inventory position:
 
 ```{r ch8-sushi-sim}
-# Beobachtete Sushi-Boxen-Nachfrage der Filiale Frankfurt (Stueck je Tag,
-# mu = 280, sigma = 55 - vgl. Newsvendor- und Pooling-Kapitel)
+# Observed sushi box demand of the Frankfurt store (units per day,
+# mu = 280, sigma = 55 - cf. newsvendor and pooling chapters)
 nachfrage <- c(234, 256, 344, 410, 278, 322, 212, 256, 278, 234, 256, 278)
 
-# Simulation einer (t,S)-Bestandspolitik bei SushiFresh GmbH: taegliche
-# Bestellentscheidung (t=1), fester Ziellagerbestand S = 990,
-# Anfangsbestand 990, Wiederbeschaffungszeit 2 Tage
+# Simulation of a (t,S) inventory policy at SushiFresh GmbH: daily
+# ordering decision (t=1), fixed order-up-to level S = 990,
+# initial inventory 990, replenishment lead time 2 days
 sushi_sim <- simuliere_tS(
   bedarf         = nachfrage,
   t              = 1,
@@ -90,128 +90,130 @@ sushi_sim <- simuliere_tS(
 sushi_sim |>
   select(Periode, Bedarf, Nettobestand, Disponibler_Bestand_vor_Bestellung, Bestellmenge) |>
   kable(digits = 1, align = "r",
-        caption = "Simulierte Bestands- und Bestellentwicklung von SushiFresh GmbH (Filiale Frankfurt)")
+        col.names = c("Period", "Demand", "Net inventory",
+                      "Inventory position before order", "Order quantity"),
+        caption = "Simulated inventory and order development of SushiFresh GmbH (Frankfurt store)")
 ```
 
-Obwohl der Ziellagerbestand $S=990$ über alle zwölf Tage konstant bleibt, folgt die Bestellmenge exakt dem Verlauf der Nachfrage, nur um die Wiederbeschaffungszeit versetzt: Weil zwischen Bestellung und Lieferung zwei Tage liegen, wirkt sich jede Bedarfsabweichung erst mit Verzögerung – dafür aber vollständig – auf den disponiblen Bestand und damit auf die nächste Bestellung aus. Diesen Zusammenhang können wir direkt an den Standardabweichungen ablesen:
+Although the order-up-to level $S=990$ remains constant over all twelve days, the order quantity follows the course of demand exactly, merely shifted by the replenishment lead time: because there are two days between order and delivery, every deviation in demand affects the inventory position – and thus the next order – only with a delay, but in full. We can read this relationship directly from the standard deviations:
 
 ```{r ch8-sushi-vergleich}
 sd_nachfrage  <- sd(sushi_sim$Bedarf)
 sd_bestellung <- sd(sushi_sim$Bestellmenge)
 
 tibble(
-  Größe             = c("Nachfrage d[t]", "Bestellmenge q[t]"),
-  Standardabweichung = round(c(sd_nachfrage, sd_bestellung), 2)
+  Measure              = c("Demand d[t]", "Order quantity q[t]"),
+  `Standard deviation` = round(c(sd_nachfrage, sd_bestellung), 2)
 ) |>
   kable(align = "lr")
 ```
 
 ::: {.definition}
-**Definition: Bullwhip-Effekt**
+**Definition: bullwhip effect**
 
-Der **Bullwhip-Effekt** (auch *Peitscheneffekt* oder *Forrester-Effekt*) liegt vor, wenn die Variabilität der Bestellungen einer Stufe einer Supply Chain größer ist als die Variabilität der Nachfrage, mit der diese Stufe konfrontiert ist – und diese Verstärkung sich mit jeder weiteren vorgelagerten Stufe fortsetzt bzw. verschärft [@cachon2024matching]. Formal gilt häufig
+The **bullwhip effect** (also *whip effect* or *Forrester effect*) is present when the variability of the orders of one stage of a supply chain is greater than the variability of the demand this stage faces – and this amplification continues or intensifies with each further upstream stage [@cachon2024matching]. Formally, the following often holds:
 
 $$
 \operatorname{Var}(d_t) \;<\; \operatorname{Var}\!\bigl(q_t^{\,i}\bigr) \;<\; \operatorname{Var}\!\bigl(q_t^{\,i+1}\bigr) \;<\; \operatorname{Var}\!\bigl(q_t^{\,i+2}\bigr) \;<\; \dots
 $$
 
-wobei $q_t^{\,i}$ die Bestellmenge der $i$-ten Stufe (von den Endkunden aus gezählt) in Periode $t$ bezeichnet.
+where $q_t^{\,i}$ denotes the order quantity of the $i$-th stage (counted from the end customers) in period $t$.
 :::
 
-Die Vorlesung zitiert die Definition von @cachon2024matching im Original: "The bullwhip effect is present in a supply chain if the variability of demand at one level of the supply chain is greater than the variability of demand at the next downstream level in the supply chain, where variability is measured with the coefficient of variation." Wichtig ist der Zusatz zum **Variationskoeffizienten** $VK = \sigma/\mu$: Er macht Stufen vergleichbar, auf denen in unterschiedlichen Einheiten oder Größenordnungen gerechnet wird (z. B. Sushi-Boxen bei der Filiale, Kilogramm Fisch beim Großhändler). Die typischen Verläufe zeigt die folgende, schematische Abbildung: Die Endkundennachfrage steigt einmalig von 4 auf 6 Einheiten; die Bestellungen des Einzelhandels schwingen darauf über, die des Großhandels noch stärker und länger, bevor sich alle Stufen auf dem neuen Niveau einpendeln.
+The lecture quotes the original definition by @cachon2024matching: "The bullwhip effect is present in a supply chain if the variability of demand at one level of the supply chain is greater than the variability of demand at the next downstream level in the supply chain, where variability is measured with the coefficient of variation." The addition regarding the **coefficient of variation** $CV = \sigma/\mu$ is important: it makes stages comparable that work in different units or orders of magnitude (e.g. sushi boxes at the store, kilograms of fish at the wholesaler). The typical patterns are shown in the following schematic figure: end-customer demand rises once from 4 to 6 units; retail orders overshoot in response, wholesale orders even more strongly and for longer, before all stages settle at the new level.
 
 ```{r ch8-typische-verlaeufe}
-#| fig-cap: "Schematischer Verlauf: Aufschaukeln eines einmaligen Nachfragesprungs über zwei Stufen"
+#| fig-cap: "Schematic pattern: amplification of a one-off demand step across two stages"
 
 verlauf <- tibble(
   Periode = 1:30,
-  Endkundennachfrage = c(rep(4, 5), rep(6, 25)),
-  `Bestellung Einzelhandel` = c(rep(4, 4), 6, 8, 9, 8, 7, 6, 5, 4, 4, 5, 6, 7, 7, 6,
+  `End-customer demand` = c(rep(4, 5), rep(6, 25)),
+  `Retailer orders` = c(rep(4, 4), 6, 8, 9, 8, 7, 6, 5, 4, 4, 5, 6, 7, 7, 6,
                                 5, 5, 5, 5, 6, 6, 6, 6, 6, 6, 6, 6),
-  `Bestellung Großhandel` = c(rep(4, 5), 5, 8, 11, 13, 12, 10, 8, 6, 4, 3, 3, 4, 5,
+  `Wholesaler orders` = c(rep(4, 5), 5, 8, 11, 13, 12, 10, 8, 6, 4, 3, 3, 4, 5,
                               7, 8, 8, 7, 6, 5, 5, 5, 6, 6, 6, 6)
 ) |>
   pivot_longer(-Periode, names_to = "Reihe", values_to = "Menge")
 
 ggplot(verlauf, aes(Periode, Menge, colour = Reihe)) +
   geom_line(linewidth = 1) + geom_point(size = 1.5) +
-  scale_colour_manual(values = c("Endkundennachfrage" = "#1F4E79",
-                                 "Bestellung Einzelhandel" = "#ED7D31",
-                                 "Bestellung Großhandel" = "#C00000")) +
-  labs(y = "Menge", colour = NULL) +
+  scale_colour_manual(values = c("End-customer demand" = "#1F4E79",
+                                 "Retailer orders" = "#ED7D31",
+                                 "Wholesaler orders" = "#C00000")) +
+  labs(x = "Period", y = "Quantity", colour = NULL) +
   theme_minimal() + theme(legend.position = "bottom")
 ```
 
-Die Folgen stromaufwärts sind ein "Aufschaukeln" der Bestellmengen, eine steigende Volatilität der Bestände und häufigere Fehlmengen – obwohl sich die Endkundennachfrage nur ein einziges Mal und nur moderat verändert hat.
+The consequences upstream are an "escalation" of order quantities, increasing volatility of inventories and more frequent shortages – although end-customer demand has changed only once and only moderately.
 
-Der Grund für diese Verstärkung liegt bereits in der Struktur der Bestellregel: Die Bestellmenge $q_t = S - p_t$ setzt sich aus mehreren Bestandteilen zusammen, die sich **nicht** eins zu eins in der tatsächlichen Nachfrage widerspiegeln,
+The reason for this amplification already lies in the structure of the ordering rule: the order quantity $q_t = S - p_t$ is made up of several components that are **not** reflected one-to-one in actual demand,
 
 $$
-q_t = \underbrace{\hat{\mu}\cdot(l+1)}_{\text{erwarteter Bedarf}} \;+\; \underbrace{(n_{t-1}^{\text{Soll}} - n_{t-1})}_{\text{Bestandskorrektur}} \;+\; \underbrace{z_\alpha\,\hat\sigma\sqrt{l+1}}_{\text{Sicherheitsbestandskorrektur}},
+q_t = \underbrace{\hat{\mu}\cdot(l+1)}_{\text{expected demand}} \;+\; \underbrace{(n_{t-1}^{\text{target}} - n_{t-1})}_{\text{inventory correction}} \;+\; \underbrace{z_\alpha\,\hat\sigma\sqrt{l+1}}_{\text{safety stock correction}},
 $$
 
-und für eine vorgelagerte Stufe ist nicht erkennbar, ob eine höhere Bestellmenge eine dauerhafte Verschiebung der Endkundennachfrage anzeigt oder nur eine kurzfristige Bestandskorrektur ist. Diese Mehrdeutigkeit erschwert die eigene Prognose der vorgelagerten Stufe – ihr Prognosefehler $\hat\sigma$ steigt, und mit ihm (über den obigen Term) auch ihre eigene Bestellmengen-Varianz. Der Effekt pflanzt sich damit von Stufe zu Stufe fort und wird typischerweise **größer**, je weiter man sich von den Endkunden entfernt.
+and for an upstream stage it is not apparent whether a higher order quantity indicates a lasting shift in end-customer demand or is merely a short-term inventory correction. This ambiguity makes the upstream stage's own forecast more difficult – its forecast error $\hat\sigma$ rises, and with it (via the term above) its own order quantity variance. The effect thus propagates from stage to stage and typically becomes **larger** the further one moves away from the end customers.
 
-## R-Exkurs: Zeitreihen als Vektoren und die Funktion `diff()`
+## R aside: time series as vectors and the function `diff()`
 
 ::: {.r-exkurs}
-**R-Exkurs: Zeitreihen und `diff()`**
+**R aside: time series and `diff()`**
 
-Eine **Zeitreihe** ist in R zunächst nichts Besonderes: ein einfacher numerischer Vektor, dessen Reihenfolge der zeitlichen Abfolge der Beobachtungen entspricht. Der Vektor `nachfrage` aus dem Sushi-Boxen-Beispiel enthält zwölf Werte für zwölf Tage – mehr braucht R zunächst nicht, um mit einer Zeitreihe zu arbeiten.
+A **time series** is initially nothing special in R: a simple numeric vector whose order corresponds to the chronological sequence of the observations. The vector `nachfrage` from the sushi box example contains twelve values for twelve days – R initially needs nothing more to work with a time series.
 
-Eine sehr häufige Frage bei Zeitreihen lautet: *Wie stark verändert sich die Größe von einer Periode zur nächsten?* Dafür bietet R die Funktion `diff()`, die für einen Vektor `x` der Länge $n$ einen neuen Vektor der Länge $n-1$ zurückgibt, dessen $t$-tes Element $x_{t+1} - x_t$ ist:
+A very common question with time series is: *How much does the quantity change from one period to the next?* For this, R offers the function `diff()`, which for a vector `x` of length $n$ returns a new vector of length $n-1$ whose $t$-th element is $x_{t+1} - x_t$:
 
 ```{r ch8-diff-demo}
-# diff() berechnet die Veränderung von einer Periode zur naechsten:
+# diff() calculates the change from one period to the next:
 # diff(x)[t] = x[t+1] - x[t]
 veraenderung_nachfrage <- diff(nachfrage)
 veraenderung_nachfrage
 
-# ein Wert weniger als im Ausgangsvektor, da fuer Periode 1
-# kein Vorperiodenwert existiert
+# one value fewer than in the original vector, since no previous-period
+# value exists for period 1
 length(nachfrage)
 length(veraenderung_nachfrage)
 
-# mittlere absolute Veraenderung als einfaches Volatilitaetsmass:
-# vergleicht man dies fuer Nachfrage und Bestellmenge im ersten,
-# einfachen Fallbeispiel mit konstantem S
+# mean absolute change as a simple measure of volatility:
+# comparing this for demand and order quantity in the first,
+# simple case example with constant S
 mean(abs(diff(nachfrage)))
 mean(abs(diff(sushi_sim$Bestellmenge)))
 ```
 
-Die mittlere absolute Periodenveränderung von Bestellmenge und Nachfrage ist in diesem ersten, einfachen Fallbeispiel **identisch** – kein Zufall, sondern eine direkte Folge der Bestellregel: Bei täglicher Überprüfung ($t=1$) und **konstantem** Ziellagerbestand $S$ gilt exakt $q_t = d_t$ (nur um die Wiederbeschaffungszeit zeitversetzt geliefert), denn jede Bestellung füllt die Bestandsposition wieder genau auf das in der Vorperiode verbrauchte Niveau auf. Eine Verstärkung entsteht erst, sobald der Ziellagerbestand selbst – wie in der Praxis üblich – aus rollierend geschätzten Nachfrageparametern neu berechnet wird; genau das bilden wir weiter unten in der mehrstufigen Simulation nach. `diff()` lässt sich zudem mit dem Argument `lag` auf größere Zeitabstände (`diff(x, lag = 2)`) oder mit `differences` auf mehrfache Differenzenbildung erweitern – darauf gehen wir hier aber nicht weiter ein.
+The mean absolute period-to-period change of order quantity and demand is **identical** in this first, simple case example – not a coincidence but a direct consequence of the ordering rule: with daily review ($t=1$) and a **constant** order-up-to level $S$, exactly $q_t = d_t$ holds (only delivered with a delay of the replenishment lead time), because each order tops the inventory position back up by exactly the amount consumed in the previous period. Amplification only arises as soon as the order-up-to level itself – as is usual in practice – is recalculated from rolling estimates of the demand parameters; this is exactly what we reproduce further below in the multi-echelon simulation. `diff()` can also be extended with the argument `lag` to larger time intervals (`diff(x, lag = 2)`) or with `differences` to repeated differencing – but we will not go into this further here.
 :::
 
-## Messung des Bullwhip-Effekts: das Varianzverhältnis
+## Measuring the bullwhip effect: the variance ratio
 
-Um den Bullwhip-Effekt nicht nur qualitativ zu beschreiben, sondern zu quantifizieren, wird in der Literatur meist das **Varianzverhältnis** (*bullwhip ratio*) verwendet:
+In order not only to describe the bullwhip effect qualitatively but to quantify it, the literature mostly uses the **variance ratio** (*bullwhip ratio*):
 
 $$
 B \;=\; \frac{\operatorname{Var}(q_t)}{\operatorname{Var}(d_t)}
-\qquad \text{bzw. stufenweise} \qquad
+\qquad \text{or stage by stage} \qquad
 B^{\,i} \;=\; \frac{\operatorname{Var}\!\bigl(q_t^{\,i}\bigr)}{\operatorname{Var}\!\bigl(q_t^{\,i-1}\bigr)}.
 $$
 
-Gilt $B>1$, verstärkt eine Stufe die Varianz der an sie herangetragenen Nachfrage; $B=1$ bedeutet, dass die Bestellvarianz genau der Nachfragevarianz entspricht (kein Bullwhip-Effekt); $B<1$ würde sogar eine Glättung anzeigen. In der ursprünglichen Definition wird statt der reinen Varianz oft der **Variationskoeffizient** ($\text{VK}=\sigma/\mu$) verwendet, um Größenordnungseffekte zwischen den Stufen auszugleichen; für die praktische Anwendung – insbesondere wenn $\mu$ zwischen den Stufen ähnlich bleibt – ist das einfache Varianzverhältnis jedoch die gebräuchlichere und leichter zu berechnende Kennzahl.
+If $B>1$, a stage amplifies the variance of the demand it faces; $B=1$ means that the order variance corresponds exactly to the demand variance (no bullwhip effect); $B<1$ would even indicate smoothing. In the original definition, the **coefficient of variation** ($\text{CV}=\sigma/\mu$) is often used instead of the pure variance in order to compensate for scale effects between the stages; for practical application, however – especially when $\mu$ remains similar across the stages – the simple variance ratio is the more common and easier-to-calculate metric.
 
-Für unser Sushi-Boxen-Beispiel lässt sich $B$ mit einer Zeile R-Code berechnen:
+For our sushi box example, $B$ can be calculated with a single line of R code:
 
 ```{r ch8-sushi-bullwhip-mass}
 bullwhip_mass_sushi <- var(sushi_sim$Bestellmenge) / var(sushi_sim$Bedarf)
 round(bullwhip_mass_sushi, 2)
 ```
 
-In diesem ersten, bewusst einfach gehaltenen Fallbeispiel ergibt sich $B=1{,}00$ – SushiFresh GmbH verstärkt die Nachfrageschwankung der Filiale Frankfurt hier noch **nicht**. Das ist kein Fehler, sondern folgt zwingend aus der Bestellregel: Solange der Ziellagerbestand $S$ **konstant** bleibt und täglich überprüft wird, entspricht die Bestellmenge exakt der (zeitversetzten) Nachfrage – die Order-up-to-Regel reicht die Nachfrage lediglich unverändert weiter. Der Bullwhip-Effekt entsteht erst, wenn $S$ selbst über rollierend **geschätzte** Nachfrageparameter $\hat\mu$ und $\hat\sigma$ periodisch neu berechnet wird, wie es in der Praxis – und im nachfolgenden Abschnitt zur mehrstufigen Simulation – der Fall ist: Dort wird die Bestellmenge einer Stufe zur (verzerrten) "Nachfrage" der nächsten Stufe, und mit jeder erneuten Schätzung von $\hat\mu$ und $\hat\sigma$ wächst die Bestellvarianz weiter an, **obwohl** jede Stufe sich strikt an dieselbe einfache, rationale Order-up-to-Regel hält. Der Bullwhip-Effekt ist damit kein Zeichen für irrationales Verhalten Einzelner, sondern eine strukturelle Eigenschaft der Interaktion von rollierender Prognose, Bestandspolitik und Wiederbeschaffungszeit.
+In this first, deliberately simple case example, $B=1.00$ – SushiFresh GmbH does **not** yet amplify the demand fluctuation of the Frankfurt store here. This is not an error but follows necessarily from the ordering rule: as long as the order-up-to level $S$ remains **constant** and is reviewed daily, the order quantity corresponds exactly to the (time-shifted) demand – the order-up-to rule merely passes demand on unchanged. The bullwhip effect only arises when $S$ itself is periodically recalculated from rolling **estimated** demand parameters $\hat\mu$ and $\hat\sigma$, as is the case in practice – and in the following section on multi-echelon simulation: there the order quantity of one stage becomes the (distorted) "demand" of the next stage, and with each re-estimation of $\hat\mu$ and $\hat\sigma$ the order variance continues to grow, **although** each stage strictly follows the same simple, rational order-up-to rule. The bullwhip effect is therefore not a sign of irrational behaviour by individuals but a structural property of the interaction of rolling forecasts, inventory policy and replenishment lead time.
 
-## Rollierende Parameterschätzung: wie der Bullwhip-Effekt entsteht
+## Rolling parameter estimation: how the bullwhip effect arises
 
-In der Praxis kennt SushiFresh die Parameter $\mu$ und $\sigma$ nicht, sondern **schätzt** sie laufend aus den zuletzt beobachteten Bedarfen – etwa mit einem gleitenden Mittelwert und der empirischen Standardabweichung über die letzten $T$ Tage:
+In practice, SushiFresh does not know the parameters $\mu$ and $\sigma$ but continually **estimates** them from the most recently observed demand – for instance with a moving average and the empirical standard deviation over the last $T$ days:
 $$
 \hat{\mu}_t = \frac{1}{T} \sum_{\tau=t-T}^{t-1} d_\tau,
 \qquad
 \hat{\sigma}_t = \sqrt{\frac{1}{T-1} \sum_{\tau=t-T}^{t-1} \big(d_\tau - \hat{\mu}_t\big)^2 } .
 $$
-$\hat\sigma_t$ misst dabei die Streuung der Nachfrage um die Prognose und damit den **Prognosefehler**. Mit diesen Schätzwerten wird der Ziellagerbestand jeden Tag neu berechnet: $S_t = (l+1)\,\hat\mu_t + z_\alpha\,\hat\sigma_t\sqrt{l+1}$. Die Vorlesung rechnet dieses Vorgehen für dieselben zwölf Tage durch, mit einem Schätzfenster von $T = 3$ Tagen, $l = 2$ und $\alpha = 95\,\%$:
+$\hat\sigma_t$ measures the dispersion of demand around the forecast and thus the **forecast error**. With these estimates, the order-up-to level is recalculated every day: $S_t = (l+1)\,\hat\mu_t + z_\alpha\,\hat\sigma_t\sqrt{l+1}$. The lecture works through this procedure for the same twelve days, with an estimation window of $T = 3$ days, $l = 2$ and $\alpha = 95\%$:
 
 ```{r ch8-dynamisch}
 fenster     <- 3
@@ -221,58 +223,58 @@ n_t         <- length(nachfrage)
 
 mu_hat <- sigma_hat <- S_t <- numeric(n_t)
 bestellung_dyn <- lieferung_dyn <- netto_dyn <- dispo_dyn <- numeric(n_t)
-netto_vor <- 990                               # Anfangsbestand
+netto_vor <- 990                               # initial inventory
 
 for (t in seq_len(n_t)) {
-  # 1. Parameterschaetzung aus den (hoechstens) 'fenster' Vortagen;
-  #    am ersten Tag: Planwerte der Filiale Frankfurt (280 / 55)
+  # 1. parameter estimation from the (at most) 'fenster' previous days;
+  #    on the first day: planning values of the Frankfurt store (280 / 55)
   hist <- if (t == 1) numeric(0) else nachfrage[max(1, t - fenster):(t - 1)]
   mu_hat[t]    <- if (length(hist) == 0) 280 else mean(hist)
   sigma_hat[t] <- if (length(hist) < 2) 55 else sd(hist)
   S_t[t]       <- (wbz_s + 1) * mu_hat[t] + z_95 * sigma_hat[t] * sqrt(wbz_s + 1)
 
-  # 2. Lieferung der Bestellung von vor wbz Tagen trifft ein, Bedarf faellt an
+  # 2. delivery of the order placed wbz days ago arrives, demand occurs
   lieferung_dyn[t] <- if (t > wbz_s) bestellung_dyn[t - wbz_s] else 0
   netto_dyn[t]     <- netto_vor + lieferung_dyn[t] - nachfrage[t]
 
-  # 3. disponibler Bestand = Nettobestand + noch offene Bestellungen
+  # 3. inventory position = net inventory + outstanding orders
   offen <- if (t == 1) 0 else sum(bestellung_dyn[max(1, t - wbz_s + 1):(t - 1)])
   dispo_dyn[t] <- netto_dyn[t] + offen
 
-  # 4. Auffuellen auf den (neu geschaetzten) Ziellagerbestand
+  # 4. top up to the (newly estimated) order-up-to level
   bestellung_dyn[t] <- max(0, S_t[t] - dispo_dyn[t])
   netto_vor <- netto_dyn[t]
 }
 
-tibble(Tag = 1:n_t, Bedarf = nachfrage, mu_hat = mu_hat, sigma_hat = sigma_hat,
-       S_t = S_t, Bestellung = bestellung_dyn) |>
-  kable(digits = 1, caption = "Bestellentscheidungen bei rollierender Parameterschätzung")
+tibble(Day = 1:n_t, Demand = nachfrage, mu_hat = mu_hat, sigma_hat = sigma_hat,
+       S_t = S_t, Order = bestellung_dyn) |>
+  kable(digits = 1, caption = "Ordering decisions with rolling parameter estimation")
 
-c(sd_Nachfrage  = sd(nachfrage),
-  sd_Bestellung = sd(bestellung_dyn),
-  B             = var(bestellung_dyn) / var(nachfrage))
+c(sd_demand  = sd(nachfrage),
+  sd_order   = sd(bestellung_dyn),
+  B          = var(bestellung_dyn) / var(nachfrage))
 ```
 
-Die Standardabweichung der Bestellmengen ist nun mit rund `r round(sd(bestellung_dyn))` Boxen deutlich größer als die der Nachfrage (`r round(sd(nachfrage))` Boxen); das Varianzverhältnis beträgt $B \approx `r round(var(bestellung_dyn) / var(nachfrage), 1)`$. **SushiFresh erzeugt damit zusätzliche Unsicherheit für Nord-Fisch**, obwohl sich an der Endkundennachfrage nichts geändert hat. Die Ursache ist gut an den Tagen 4 und 5 zu erkennen: Die hohen Bedarfe der Tage 3 und 4 (344 und 410 Boxen) gehen in das Schätzfenster ein und erhöhen $\hat\mu_t$ – und jede Erhöhung von $\hat\mu_t$ wirkt mit dem Multiplikator $(l+1) = 3$ auf den Ziellagerbestand, der innerhalb von zwei Tagen um mehr als 400 Boxen steigt. Gleichzeitig steigt $\hat\sigma_t$, weil der Prognosefehler wächst. SushiFresh bestellt deshalb nicht nur den Mehrverbrauch nach, sondern baut zusätzlich Bestand auf – und reduziert die Bestellungen umso stärker, sobald die hohen Werte das Schätzfenster wieder verlassen haben.
+The standard deviation of the order quantities, at around `r round(sd(bestellung_dyn))` boxes, is now considerably larger than that of demand (`r round(sd(nachfrage))` boxes); the variance ratio is $B \approx `r round(var(bestellung_dyn) / var(nachfrage), 1)`$. **SushiFresh thus creates additional uncertainty for Nord-Fisch**, although nothing has changed in end-customer demand. The cause can be clearly seen on days 4 and 5: the high demand on days 3 and 4 (344 and 410 boxes) enters the estimation window and increases $\hat\mu_t$ – and each increase in $\hat\mu_t$ acts on the order-up-to level with the multiplier $(l+1) = 3$, which rises by more than 400 boxes within two days. At the same time $\hat\sigma_t$ rises because the forecast error grows. SushiFresh therefore not only reorders the additional consumption but also builds up additional stock – and reduces its orders all the more sharply as soon as the high values have left the estimation window again.
 
 ::: {.vertiefung}
-**Theorie-Vertiefung: Eine untere Schranke für den Bullwhip-Effekt**
+**In depth (theory): a lower bound for the bullwhip effect**
 
-@chen2000quantifying haben den in der Tabelle sichtbaren Mechanismus analytisch untersucht. Betrachtet wird eine Stufe, die nach einer Order-up-to-Politik bestellt, die Wiederbeschaffungszeit $L$ hat und die mittlere Nachfrage mit einem gleitenden Durchschnitt über die letzten $p$ Perioden schätzt. Für unabhängige, identisch verteilte Nachfrage zeigen sie, dass das Varianzverhältnis mindestens
+@chen2000quantifying analysed the mechanism visible in the table analytically. They consider a stage that orders according to an order-up-to policy, has the replenishment lead time $L$ and estimates mean demand with a moving average over the last $p$ periods. For independent, identically distributed demand, they show that the variance ratio is at least
 $$
 B = \frac{\operatorname{Var}(q)}{\operatorname{Var}(d)} \;\geq\; 1 + \frac{2L}{p} + \frac{2L^2}{p^2}
 $$
-beträgt. (Die Schranke gilt, wenn auch die Standardabweichung geschätzt wird; wird nur der Mittelwert geschätzt, gilt sie mit Gleichheit.) Aus der Formel lassen sich drei Einsichten ablesen:
+(The bound holds when the standard deviation is also estimated; if only the mean is estimated, it holds with equality.) Three insights can be read from the formula:
 
-1. **Der Bullwhip-Effekt ist unvermeidlich**, sobald Parameter geschätzt werden: Für jede positive Wiederbeschaffungszeit ist $B > 1$ – auch bei völlig rationalen Entscheidern.
-2. **Längere Wiederbeschaffungszeiten verstärken ihn quadratisch.** Eine Verkürzung von $L$ ist deshalb einer der wirksamsten Hebel.
-3. **Längere Schätzfenster dämpfen ihn.** Mit wachsendem $p$ reagiert die Prognose träger auf einzelne Ausreißer, und $B$ sinkt gegen 1 – allerdings um den Preis, dass echte Nachfrageverschiebungen später erkannt werden.
+1. **The bullwhip effect is unavoidable** as soon as parameters are estimated: for any positive replenishment lead time $B > 1$ – even with perfectly rational decision-makers.
+2. **Longer replenishment lead times amplify it quadratically.** Reducing $L$ is therefore one of the most effective levers.
+3. **Longer estimation windows dampen it.** As $p$ grows, the forecast reacts more sluggishly to individual outliers and $B$ falls towards 1 – but at the price that genuine demand shifts are detected later.
 
-Für das Beispiel der Vorlesung ($L = 2$, $p = 3$) ergibt sich eine Schranke von $1 + 4/3 + 8/9 \approx 3{,}2$. Für mehrstufige Ketten, in denen jede Stufe unabhängig prognostiziert, multiplizieren sich die Verstärkungen der einzelnen Stufen; teilen alle Stufen dagegen die Endkundennachfrage (zentralisierte Information), addieren sich die Wiederbeschaffungszeiten nur noch in der Formel, und der Effekt fällt deutlich kleiner aus.
+For the example from the lecture ($L = 2$, $p = 3$) the bound is $1 + 4/3 + 8/9 \approx 3.2$. For multi-echelon chains in which each stage forecasts independently, the amplifications of the individual stages multiply; if, on the other hand, all stages share end-customer demand (centralised information), only the lead times add up in the formula, and the effect is considerably smaller.
 :::
 
 ```{r ch8-chen-schranke}
-#| fig-cap: "Untere Schranke des Varianzverhältnisses nach Chen et al. (2000) in Abhängigkeit vom Schätzfenster p"
+#| fig-cap: "Lower bound of the variance ratio according to Chen et al. (2000) as a function of the estimation window p"
 
 expand_grid(L = 1:4, p = 2:20) |>
   mutate(B_min = 1 + 2 * L / p + 2 * L^2 / p^2,
@@ -280,114 +282,116 @@ expand_grid(L = 1:4, p = 2:20) |>
   ggplot(aes(p, B_min, colour = L)) +
   geom_line(linewidth = 1) +
   geom_hline(yintercept = 1, linetype = "dashed") +
-  labs(x = "Länge des Schätzfensters p (Perioden)", y = "untere Schranke für B", colour = NULL) +
+  labs(x = "Length of estimation window p (periods)", y = "lower bound for B", colour = NULL) +
   theme_minimal()
 ```
 
-## R-Exkurs: Zeitversatz mit `dplyr::lag()`
+## R aside: time lags with `dplyr::lag()`
 
 ::: {.r-exkurs}
-**R-Exkurs: `dplyr::lag()`**
+**R aside: `dplyr::lag()`**
 
-Weil zwischen Bestellung und Lieferung eine Wiederbeschaffungszeit liegt, möchte man Zeitreihen häufig **um eine oder mehrere Perioden verschoben** miteinander vergleichen – zum Beispiel die heutige Bestellmenge mit der Nachfrage der Vorperiode. Dafür stellt das `tidyverse`-Paket `dplyr` die Funktion `lag()` bereit: `dplyr::lag(x, n = 1)` gibt einen Vektor derselben Länge wie `x` zurück, dessen Werte um `n` Positionen "nach hinten" verschoben sind; die ersten `n` Werte werden dabei mit `NA` aufgefüllt.
+Because there is a replenishment lead time between order and delivery, one often wants to compare time series **shifted by one or more periods** – for example today's order quantity with the demand of the previous period. For this, the `tidyverse` package `dplyr` provides the function `lag()`: `dplyr::lag(x, n = 1)` returns a vector of the same length as `x` whose values are shifted "backwards" by `n` positions; the first `n` values are filled with `NA`.
 
 ```{r ch8-lag-demo}
 sushi_sim_lag <- sushi_sim |>
   mutate(
-    # Nachfrage der Vorperiode neben die heutige Bestellmenge stellen
+    # place previous-period demand next to today's order quantity
     Bedarf_Vorperiode = dplyr::lag(Bedarf, n = 1)
   )
 
 sushi_sim_lag |>
   select(Periode, Bedarf, Bedarf_Vorperiode, Bestellmenge) |>
   head(6) |>
-  kable(align = "r")
+  kable(align = "r",
+        col.names = c("Period", "Demand", "Demand previous period", "Order quantity"))
 ```
 
-Anders als `diff()`, das eine Differenz *berechnet* und dabei die Vektorlänge verkürzt, *verschiebt* `lag()` lediglich die Werte und erhält die ursprüngliche Länge – die Funktion eignet sich deshalb besonders gut, um verschobene Spalten direkt in ein bestehendes `tibble` einzufügen und dort mit anderen Spalten der gleichen Periode zu kombinieren (z. B. für eine anschließende `mutate()`-Berechnung einer Differenz `Bestellmenge - Bedarf_Vorperiode` oder eine Korrelation `cor(..., use = "complete.obs")`). Das Gegenstück `dplyr::lead()` verschiebt entsprechend "nach vorne" und ist z. B. hilfreich, wenn man eine Bestellung mit der Lieferung vergleichen möchte, die erst *danach* eintrifft.
+Unlike `diff()`, which *calculates* a difference and thereby shortens the vector length, `lag()` merely *shifts* the values and preserves the original length – the function is therefore particularly well suited for inserting shifted columns directly into an existing `tibble` and combining them there with other columns of the same period (e.g. for a subsequent `mutate()` calculation of a difference `Bestellmenge - Bedarf_Vorperiode` or a correlation `cor(..., use = "complete.obs")`). The counterpart `dplyr::lead()` correspondingly shifts "forwards" and is helpful, for example, when one wants to compare an order with the delivery that arrives only *afterwards*.
 :::
 
-## Das Beergame
+## The Beer Game
 
-Die bisherigen Überlegungen zeigen den Bullwhip-Effekt als Konsequenz einer *rationalen* Bestandsregel unter Wiederbeschaffungszeiten. In der Praxis kommen weitere, meist verhaltensbedingte Verstärkungseffekte hinzu – diese werden besonders eindrücklich durch das **Beergame** demonstriert, ein am MIT entwickeltes Planspiel, das seit Jahrzehnten fester Bestandteil der Ausbildung im Supply Chain Management ist.
+The considerations so far show the bullwhip effect as a consequence of a *rational* inventory rule under replenishment lead times. In practice, further, mostly behavioural amplification effects are added – these are demonstrated particularly vividly by the **Beer Game**, a business simulation game developed at MIT that has been an integral part of supply chain management education for decades.
 
 ::: {.callout-note}
-## Spielprinzip
 
-Im Beergame bilden vier Spielergruppen die vierstufige Lieferkette eines fiktiven Biers ab: **Einzelhandel – Großhandel – Distributor – Brauerei**. Jede Stufe kennt nur die Bestellungen ihrer unmittelbar nachgelagerten Stufe, nicht aber die tatsächliche Endkundennachfrage und nicht die Entscheidungen der anderen Stufen. Kommunikation zwischen den Stufen ist untersagt. In jeder Spielrunde (Periode) muss jede Gruppe – ohne Rücksprache – eine Bestellmenge bei der eigenen vorgelagerten Stufe festlegen; Lieferungen treffen erst nach einer festen Verzögerung ein. Die Endkundennachfrage selbst ist im klassischen Spielaufbau denkbar einfach: über weite Strecken konstant, mit einem einmaligen, moderaten Sprung.
+## How the game works
+
+In the Beer Game, four groups of players represent the four-stage supply chain of a fictitious beer: **retailer – wholesaler – distributor – brewery**. Each stage knows only the orders of the stage immediately downstream, but not actual end-customer demand and not the decisions of the other stages. Communication between the stages is prohibited. In each round of the game (period), each group must – without consultation – set an order quantity with its own upstream stage; deliveries only arrive after a fixed delay. End-customer demand itself is extremely simple in the classic game set-up: constant for long stretches, with a single, moderate step.
 :::
 
-Trotz dieser simplen, fast schon "langweiligen" Nachfrage zeigt sich im Beergame regelmäßig ein ausgeprägtes Aufschaukeln der Bestellmengen entlang der Kette: Bestände laufen zunächst leer, es kommt zu Fehlmengen, Spieler reagieren mit überproportionalen Nachbestellungen, und sobald die Lieferungen eintreffen, sitzen alle Stufen auf deutlich zu hohen Beständen. Das Spiel macht damit unmittelbar erfahrbar, was wir oben bereits formal hergeleitet haben: **Lokale, rationale Entscheidungen auf jeder Stufe führen – ohne bösen Willen und ohne fehlerhafte Information – in Summe zu einem für die gesamte Kette suboptimalen Ergebnis.** Genau diese Eigenschaft, dass individuelle Optimierung nicht automatisch zu einem globalen Optimum führt, ist eine der zentralen Lehren des Supply Chain Managements insgesamt.
+Despite this simple, almost "boring" demand, the Beer Game regularly shows a pronounced escalation of order quantities along the chain: inventories initially run empty, shortages occur, players react with disproportionate reorders, and as soon as the deliveries arrive, all stages are sitting on far too high inventories. The game thus makes directly tangible what we have already derived formally above: **local, rational decisions at each stage lead – without ill will and without faulty information – in total to an outcome that is suboptimal for the chain as a whole.** Precisely this property, that individual optimisation does not automatically lead to a global optimum, is one of the central lessons of supply chain management as a whole.
 
 ::: {.vertiefung}
-**Theorie-Vertiefung: Verhaltensursachen – was das Beergame über Entscheider zeigt**
+**In depth (theory): behavioural causes – what the Beer Game reveals about decision-makers**
 
-Das Beergame geht auf die Arbeiten von Jay Forrester zur *Industrial Dynamics* zurück, der bereits 1961 zeigte, dass Verzögerungen und Rückkopplungen in Produktions- und Distributionssystemen zu Schwingungen führen [@forrester1961industrial]. @sterman1989modeling hat das Spielverhalten systematisch ausgewertet und festgestellt, dass die Bestellungen der Teilnehmer gut durch eine einfache **Ankerungs- und Anpassungsheuristik** beschrieben werden: Man bestellt die erwartete Nachfrage plus einen Bruchteil der Lücke zwischen Soll- und Istbestand – und plus einen *noch kleineren* Bruchteil der Lücke in der Pipeline. Genau darin liegt der Fehler: Die Spieler **vernachlässigen die bereits bestellten, aber noch nicht gelieferten Mengen** (*supply line underweighting*). Sie bestellen deshalb immer wieder nach, obwohl die Ware bereits unterwegs ist, und stehen einige Perioden später vor überfüllten Lagern. Sterman spricht von einer *Fehlwahrnehmung von Rückkopplung*: Menschen unterschätzen systematisch, wie stark Verzögerungen die Wirkung ihrer eigenen Entscheidungen verschieben.
+The Beer Game goes back to Jay Forrester's work on *Industrial Dynamics*, who showed as early as 1961 that delays and feedback loops in production and distribution systems lead to oscillations [@forrester1961industrial]. @sterman1989modeling systematically analysed playing behaviour and found that participants' orders are well described by a simple **anchoring and adjustment heuristic**: one orders the expected demand plus a fraction of the gap between target and actual inventory – and plus an *even smaller* fraction of the gap in the pipeline. This is precisely where the error lies: players **neglect the quantities already ordered but not yet delivered** (*supply line underweighting*). They therefore keep reordering even though the goods are already on their way, and a few periods later are faced with overflowing warehouses. Sterman speaks of a *misperception of feedback*: people systematically underestimate how strongly delays shift the effect of their own decisions.
 
-Für die Formeln dieses Kapitels bedeutet das: Die Order-up-to-Regel $q_t = S - p_t$ berücksichtigt die Pipeline über den *disponiblen* Bestand $p_t$ korrekt. Menschen, die stattdessen nur auf den physischen Bestand schauen, erzeugen einen noch stärkeren Bullwhip-Effekt als die rationale Regel. Die rationalen Ursachen (Prognoseaktualisierung, Lieferzeiten) und die verhaltensbedingten Ursachen verstärken sich in der Praxis also gegenseitig.
+For the formulae in this chapter this means: the order-up-to rule $q_t = S - p_t$ correctly takes the pipeline into account via the inventory position $p_t$. People who instead look only at on-hand inventory generate an even stronger bullwhip effect than the rational rule. The rational causes (forecast updating, lead times) and the behavioural causes thus reinforce each other in practice.
 :::
 
-Wir können den Kern des Beergames – eine mehrstufige Kette, in der jede Stufe nur die Bestellungen ihrer Nachbarstufe beobachtet und daraus eine eigene Bestellentscheidung ableitet – mit den Werkzeugen dieses Buches direkt in R nachbilden.
+We can reproduce the core of the Beer Game – a multi-echelon chain in which each stage observes only the orders of its neighbouring stage and derives its own ordering decision from them – directly in R with the tools of this book.
 
-## R-Exkurs: eine mehrstufige Simulationsschleife
+## R aside: a multi-echelon simulation loop
 
 ::: {.r-exkurs}
-**R-Exkurs: Simulation einer mehrstufigen Lieferkette**
+**R aside: simulating a multi-echelon supply chain**
 
-Bislang haben wir mit `simuliere_tS()` immer nur *eine* Stufe simuliert. Das Prinzip des Beergames – mehrere Stufen, von denen jede die Bestellungen der nachgelagerten Stufe als "ihre" Nachfrage interpretiert – lässt sich aber ohne großen Mehraufwand als **verschachtelte Schleife** programmieren: eine äußere Schleife über die Stufen, eine innere Schleife über die Perioden. Jede Stufe verwendet dieselbe einfache Order-up-to-Regel wie SushiFresh GmbH oben, schätzt ihren Erwartungswert und ihre Standardabweichung aber **rollierend** aus den zuletzt beobachteten Bestellungen der nachgelagerten Stufe – sie kennt ja nur diese, nicht die tatsächliche Endkundennachfrage.
+So far we have only ever simulated *one* stage with `simuliere_tS()`. The principle of the Beer Game – several stages, each of which interprets the orders of the downstream stage as "its" demand – can, however, be programmed without much extra effort as a **nested loop**: an outer loop over the stages, an inner loop over the periods. Each stage uses the same simple order-up-to rule as SushiFresh GmbH above, but estimates its mean and standard deviation on a **rolling** basis from the most recently observed orders of the downstream stage – after all, it knows only these, not actual end-customer demand.
 
 ```{r ch8-mehrstufig-sim}
-# Anzahl Perioden und Stufen der Modellkette (wie im Beergame):
-# Filiale Frankfurt bestellt bei SushiFresh GmbH, SushiFresh GmbH
-# bestellt bei Nord-Fisch KG
+# Number of periods and stages of the model chain (as in the Beer Game):
+# the Frankfurt store orders from SushiFresh GmbH, SushiFresh GmbH
+# orders from Nord-Fisch KG
 n_perioden <- 30
-stufen     <- c("Filiale Frankfurt", "SushiFresh GmbH", "Nord-Fisch KG")
+stufen     <- c("Frankfurt store", "SushiFresh GmbH", "Nord-Fisch KG")
 n_stufen   <- length(stufen)
 
-# Steuerungsparameter (hier fuer alle Stufen identisch angenommen)
-wbz         <- 2            # Wiederbeschaffungszeit in Perioden
-fenster     <- 4            # Fenster der rollierenden Nachfrageschaetzung
+# Control parameters (assumed identical for all stages here)
+wbz         <- 2            # replenishment lead time in periods
+fenster     <- 4            # window of the rolling demand estimate
 servicegrad <- 0.95
 z_alpha     <- qnorm(servicegrad)
 anfangsbestand <- 660
 
-# Endkundennachfrage der Filiale Frankfurt: zunaechst konstant,
-# danach ein moderater Sprung (z.B. eine Werbeaktion)
+# End-customer demand of the Frankfurt store: initially constant,
+# then a moderate step (e.g. a promotion)
 kundennachfrage <- c(rep(220, 6), rep(280, n_perioden - 6))
 
-# Matrizen zur Speicherung je Periode (Zeile) und Stufe (Spalte)
+# Matrices for storage per period (row) and stage (column)
 beobachtete_nachfrage <- matrix(0, n_perioden, n_stufen, dimnames = list(NULL, stufen))
 bestellung            <- matrix(0, n_perioden, n_stufen, dimnames = list(NULL, stufen))
 lieferung             <- matrix(0, n_perioden, n_stufen, dimnames = list(NULL, stufen))
 nettobestand          <- matrix(0, n_perioden, n_stufen, dimnames = list(NULL, stufen))
 disponibler_bestand   <- matrix(0, n_perioden, n_stufen, dimnames = list(NULL, stufen))
 
-# aeussere Schleife: jede Stufe wird vollstaendig ueber alle Perioden simuliert,
-# bevor die naechste (vorgelagerte) Stufe an der Reihe ist
+# outer loop: each stage is simulated completely over all periods
+# before the next (upstream) stage takes its turn
 for (s in seq_len(n_stufen)) {
 
   netto_vorperiode <- anfangsbestand
 
-  # innere Schleife: Fortschreibung Periode fuer Periode
+  # inner loop: updating period by period
   for (t in seq_len(n_perioden)) {
 
-    # die von Stufe s "gesehene" Nachfrage: bei der ersten Stufe die
-    # tatsaechliche Endkundennachfrage, sonst die Bestellung der
-    # nachgelagerten (downstream) Stufe
+    # the demand "seen" by stage s: for the first stage the
+    # actual end-customer demand, otherwise the order of the
+    # downstream stage
     beobachtete_nachfrage[t, s] <- if (s == 1) {
       kundennachfrage[t]
     } else {
       bestellung[t, s - 1]
     }
 
-    # Lieferungen treffen wbz Perioden nach der Bestellung ein
+    # deliveries arrive wbz periods after the order
     lieferung[t, s] <- if (t > wbz) bestellung[t - wbz, s] else 0
 
-    # Fortschreibung des Nettobestands dieser Stufe
+    # update the net inventory of this stage
     nettobestand[t, s] <- netto_vorperiode + lieferung[t, s] - beobachtete_nachfrage[t, s]
 
-    # rollierende Schaetzung von mu und sigma aus den zuletzt
-    # beobachteten Bestellungen/Nachfragen dieser Stufe
+    # rolling estimate of mu and sigma from the most recently
+    # observed orders/demands of this stage
     hist_index <- seq_len(t - 1L)
     hist_index <- tail(hist_index, min(fenster, length(hist_index)))
 
@@ -400,11 +404,11 @@ for (s in seq_len(n_stufen)) {
       sigma_hat     <- if (length(beobachtungen) > 1L) sd(beobachtungen) else 0
     }
 
-    # dynamischer Ziellagerbestand dieser Periode (vgl. Formel oben)
+    # dynamic order-up-to level of this period (cf. formula above)
     S_t <- (wbz + 1) * mu_hat + z_alpha * sigma_hat * sqrt(wbz + 1)
 
-    # offene Bestellungen: die noch nicht gelieferten Bestellungen
-    # der letzten (wbz - 1) Perioden
+    # outstanding orders: the not yet delivered orders
+    # of the last (wbz - 1) periods
     off_index <- seq.int(max(1L, t - wbz + 1L), t - 1L)
     offene <- if (t == 1L || length(off_index) == 0L) {
       0
@@ -420,21 +424,21 @@ for (s in seq_len(n_stufen)) {
 }
 ```
 
-Der Code unterscheidet sich von der Ein-Stufen-Simulation nur durch die zusätzliche äußere Schleife über `s` und dadurch, dass die "Nachfrage" jeder Stufe nicht extern vorgegeben, sondern aus der Bestellspalte der jeweils vorherigen Stufe entnommen wird (`bestellung[t, s - 1]`). Genau dieser Mechanismus – jede Stufe reicht ihre eigene, bereits verzerrte Bestellmenge als "Nachfrage" an die nächste Stufe weiter – ist der algorithmische Kern des Bullwhip-Effekts.
+The code differs from the single-stage simulation only by the additional outer loop over `s` and by the fact that the "demand" of each stage is not specified externally but taken from the order column of the respective previous stage (`bestellung[t, s - 1]`). Precisely this mechanism – each stage passes on its own, already distorted order quantity as "demand" to the next stage – is the algorithmic core of the bullwhip effect.
 :::
 
-## R-Exkurs: Varianzverhältnis und gefacettete Visualisierung
+## R aside: variance ratio and faceted visualisation
 
 ::: {.r-exkurs}
-**R-Exkurs: Bullwhip-Maß und `facet_wrap()`**
+**R aside: bullwhip measure and `facet_wrap()`**
 
-Mit den Ergebnismatrizen aus dem vorigen Exkurs lässt sich das Varianzverhältnis nun für jede Stufe berechnen – sowohl gegenüber der tatsächlichen Endkundennachfrage als auch gegenüber der jeweils direkt vorgelagerten Stufe:
+With the result matrices from the previous aside, the variance ratio can now be calculated for each stage – both relative to actual end-customer demand and relative to the immediately preceding stage in each case:
 
 ```{r ch8-bullwhip-mass}
-# Varianzverhaeltnis jeder Stufe gegenueber der Endkundennachfrage
+# variance ratio of each stage relative to end-customer demand
 bullwhip_kunde <- apply(bestellung, 2, function(x) var(x) / var(kundennachfrage))
 
-# Varianzverhaeltnis jeder Stufe gegenueber der unmittelbar vorgelagerten Stufe
+# variance ratio of each stage relative to the immediately preceding stage
 bullwhip_vorstufe <- c(
   bullwhip_kunde[1],
   var(bestellung[, 2]) / var(bestellung[, 1]),
@@ -442,15 +446,15 @@ bullwhip_vorstufe <- c(
 )
 
 tibble(
-  Stufe                          = stufen,
-  `B ggü. Endkundennachfrage`    = round(bullwhip_kunde, 2),
-  `B ggü. vorgelagerter Stufe`   = round(bullwhip_vorstufe, 2)
+  Stage                          = stufen,
+  `B vs. end-customer demand`    = round(bullwhip_kunde, 2),
+  `B vs. preceding stage`        = round(bullwhip_vorstufe, 2)
 ) |>
   kable(align = "lrr",
-        caption = "Varianzverhältnis je Stufe der simulierten Beergame-Kette")
+        caption = "Variance ratio per stage of the simulated Beer Game chain")
 ```
 
-Um den Effekt auch grafisch sichtbar zu machen, bringen wir die Matrizen zunächst mit `pivot_longer()` in ein *long format* und stellen dann für jede Stufe einen eigenen Teilplot dar. Genau dafür ist `facet_wrap()` aus `ggplot2` gemacht: Es erzeugt automatisch ein Panel pro Ausprägung einer Gruppierungsvariable – hier je eine Teilgrafik pro Stufe der Kette:
+To make the effect visible graphically as well, we first bring the matrices into *long format* with `pivot_longer()` and then display a separate subplot for each stage. This is exactly what `facet_wrap()` from `ggplot2` is made for: it automatically creates one panel per value of a grouping variable – here one subplot per stage of the chain:
 
 ```{r ch8-bullwhip-plot}
 #| fig-width: 8
@@ -459,141 +463,141 @@ Um den Effekt auch grafisch sichtbar zu machen, bringen wir die Matrizen zunäch
 sim_daten <- tibble(
   Periode    = rep(seq_len(n_perioden), times = n_stufen),
   Stufe      = factor(rep(stufen, each = n_perioden), levels = stufen),
-  Nachfrage  = as.vector(beobachtete_nachfrage),
-  Bestellung = as.vector(bestellung)
+  Demand     = as.vector(beobachtete_nachfrage),
+  Orders     = as.vector(bestellung)
 ) |>
   pivot_longer(
-    cols      = c(Nachfrage, Bestellung),
-    names_to  = "Größe",
+    cols      = c(Demand, Orders),
+    names_to  = "Series",
     values_to = "Menge"
   )
 
-ggplot(sim_daten, aes(x = Periode, y = Menge, color = `Größe`)) +
+ggplot(sim_daten, aes(x = Periode, y = Menge, color = Series)) +
   geom_line(linewidth = 1) +
   geom_point(size = 1.5) +
   facet_wrap(~ Stufe, ncol = 1, scales = "free_y") +
-  scale_color_manual(values = c(Nachfrage = farbe_nachfrage, Bestellung = farbe_bestellung)) +
+  scale_color_manual(values = c(Demand = farbe_nachfrage, Orders = farbe_bestellung)) +
   labs(
-    title = "Bullwhip-Effekt in der simulierten dreistufigen Lieferkette",
-    x = "Periode", y = "Menge", color = NULL
+    title = "Bullwhip effect in the simulated three-stage supply chain",
+    x = "Period", y = "Quantity", color = NULL
   ) +
   theme_minimal()
 ```
 
-In der Grafik ist gut zu erkennen, wie der anfängliche Nachfragesprung bei der Filiale Frankfurt noch moderat, bei Nord-Fisch KG dagegen bereits stark überzeichnet ankommt – die Bestellmenge "überschwingt" mit jeder Stufe stärker, bevor sie sich wieder auf ein neues Niveau einpendelt. Genau dieses Muster – nicht die absolute Höhe der Bestellungen – ist die charakteristische "Peitschenform", die dem Bullwhip-Effekt seinen Namen gibt.
+The graph clearly shows how the initial demand step still arrives moderately at the Frankfurt store, but already strongly exaggerated at Nord-Fisch KG – the order quantity "overshoots" more strongly with each stage before settling at a new level again. Precisely this pattern – not the absolute level of the orders – is the characteristic "whip shape" that gives the bullwhip effect its name.
 :::
 
-## Wiederbeschaffungszeit-Effekte
+## Lead time effects
 
-Die Simulation legt bereits nahe, dass die Wiederbeschaffungszeit $l$ eine zentrale Stellschraube des Bullwhip-Effekts ist. Das lässt sich auch analytisch begründen: Ändert sich die geschätzte Nachfragerate $\hat\mu$ um $\Delta\hat\mu$ – etwa weil ein einzelner hoher Bedarfswert in das rollierende Schätzfenster rutscht –, verändert sich der Ziellagerbestand gemäß der Formel $S=\hat\mu\cdot(l+1)+z_\alpha\hat\sigma\sqrt{l+1}$ um
+The simulation already suggests that the replenishment lead time $l$ is a central adjusting screw of the bullwhip effect. This can also be justified analytically: if the estimated demand rate $\hat\mu$ changes by $\Delta\hat\mu$ – for instance because a single high demand value slips into the rolling estimation window –, the order-up-to level changes according to the formula $S=\hat\mu\cdot(l+1)+z_\alpha\hat\sigma\sqrt{l+1}$ by
 
 $$
 \Delta S = \Delta \hat\mu \cdot (l+1),
 $$
 
-und diese Änderung wird über die Bestellregel $q_t = S - p_t$ **unmittelbar und vollständig** in eine veränderte Bestellmenge übersetzt. Je länger die Wiederbeschaffungszeit, desto größer der Multiplikator $(l+1)$ – und desto stärker reagiert die Bestellmenge auf jede noch so kleine Prognoseänderung. Auch der Sicherheitsbestandsterm wächst mit $\sqrt{l+1}$, wenngleich unterproportional zum Grundbedarfsterm. Wir können diesen Zusammenhang direkt mit `diff()` aus dem ersten R-Exkurs sichtbar machen, indem wir den Ziellagerbestand für steigende Wiederbeschaffungszeiten berechnen und die Grenzzunahme je zusätzlichem WBZ-Tag bestimmen:
+and this change is translated **immediately and in full** into a changed order quantity via the ordering rule $q_t = S - p_t$. The longer the replenishment lead time, the larger the multiplier $(l+1)$ – and the more strongly the order quantity reacts to every forecast change, however small. The safety stock term also grows with $\sqrt{l+1}$, albeit less than proportionally to the base demand term. We can make this relationship visible directly with `diff()` from the first R aside by calculating the order-up-to level for increasing replenishment lead times and determining the marginal increase per additional lead-time day:
 
 ```{r ch8-wbz-sensitivitaet}
-# Nachfrageparameter der Filiale Frankfurt (mu = 280, sigma = 55)
+# Demand parameters of the Frankfurt store (mu = 280, sigma = 55)
 mu_beispiel    <- 280
 sigma_beispiel <- 55
 
 tibble(
-  WBZ = 0:4,
-  Zielbestand_S = mu_beispiel * (0:4 + 1) +
+  Lead_time = 0:4,
+  Target_S = mu_beispiel * (0:4 + 1) +
     z_alpha * sigma_beispiel * sqrt(0:4 + 1)
 ) |>
   mutate(
-    # Grenzzunahme des Zielbestands je zusaetzlichem WBZ-Tag
-    Grenzzunahme = c(NA, diff(Zielbestand_S))
+    # marginal increase of the order-up-to level per additional lead-time day
+    Marginal_increase = c(NA, diff(Target_S))
   ) |>
   kable(digits = 1, align = "r")
 ```
 
-Die Tabelle zeigt: Mit jedem zusätzlichen Tag Wiederbeschaffungszeit steigt der erforderliche Ziellagerbestand – und mit ihm die Bandbreite, innerhalb derer Bestellmengen schwanken können. Kürzere Lieferzeiten wirken daher doppelt: Sie reduzieren nicht nur den benötigten Sicherheitsbestand (das kennen wir bereits aus dem Pooling-Kapitel), sondern dämpfen auch die Weitergabe von Prognoseschwankungen entlang der Kette.
+The table shows: with each additional day of replenishment lead time, the required order-up-to level rises – and with it the range within which order quantities can fluctuate. Shorter lead times therefore have a double effect: they not only reduce the required safety stock (we already know this from the pooling chapter) but also dampen the transmission of forecast fluctuations along the chain.
 
-## Ursachen des Bullwhip-Effekts
+## Causes of the bullwhip effect
 
-Die bisherige Herleitung erklärt den Bullwhip-Effekt bereits vollständig aus dem Zusammenspiel von Bestandspolitik, rollierender Prognose und Wiederbeschaffungszeit. In der grundlegenden Arbeit von @lee1997bullwhip werden vier Ursachen unterschieden, die sich in der Praxis meist überlagern:
+The derivation so far already explains the bullwhip effect completely from the interplay of inventory policy, rolling forecasts and replenishment lead time. The seminal work by @lee1997bullwhip distinguishes four causes, which usually overlap in practice:
 
-**Demand Signaling / Prognoseaktualisierung.** Jede Stufe interpretiert die Bestellmenge der nachgelagerten Stufe fälschlich als eigenständiges Nachfragesignal und aktualisiert darauf ihre Prognose – genau der Mechanismus, den wir in der Simulation oben nachgebaut haben. Da die Bestellmenge selbst bereits eine verzerrte, geglättete oder verzögerte Version der Endkundennachfrage ist, verstärkt sich der Prognosefehler mit jeder Stufe.
+**Demand signalling / forecast updating.** Each stage wrongly interprets the order quantity of the downstream stage as an independent demand signal and updates its forecast on that basis – exactly the mechanism we reproduced in the simulation above. Since the order quantity itself is already a distorted, smoothed or delayed version of end-customer demand, the forecast error increases with each stage.
 
-**Order Batching (Auftragsbündelung).** Aus Gründen der Bestellkosten, Transportkapazitäten (Losgrößen, Lkw-Ladungen) oder periodischer Bestellzyklen bestellen viele Unternehmen nicht kontinuierlich, sondern in gebündelten, größeren Losen. Für die vorgelagerte Stufe erscheinen dadurch künstliche, in Wirklichkeit gar nicht vorhandene Nachfragespitzen.
+**Order batching.** For reasons of ordering costs, transport capacities (lot sizes, truckloads) or periodic ordering cycles, many companies do not order continuously but in bundled, larger lots. As a result, artificial demand peaks that do not actually exist appear to the upstream stage.
 
-**Preisschwankungen und Promotions.** Temporäre Preisnachlässe oder Sonderaktionen führen dazu, dass Kunden – Endverbraucher wie gewerbliche Abnehmer – *Forward Buying* betreiben: Sie kaufen in der Aktionsperiode deutlich mehr, als sie kurzfristig benötigen, und in der Folgeperiode entsprechend weniger. Die beobachtete Nachfrage schwankt dadurch stärker, als es der tatsächliche Verbrauch rechtfertigen würde.
+**Price fluctuations and promotions.** Temporary price reductions or special promotions lead customers – end consumers as well as business buyers – to engage in *forward buying*: they buy considerably more in the promotion period than they need in the short term, and correspondingly less in the following period. The observed demand therefore fluctuates more strongly than actual consumption would justify.
 
-**Rationierung und Shortage Gaming.** Kommt es – etwa wegen einer Lieferengpasssituation – zu einer anteiligen Zuteilung (*Rationierung*) durch den Lieferanten, haben Kunden einen Anreiz, ihre Bestellmengen strategisch zu überhöhen, um trotz Rationierung genügend Ware zugeteilt zu bekommen. Sobald sich die Lage entspannt, werden überzählige Bestellungen storniert – für den Lieferanten bleibt eine scheinbar hochvolatile, in Wahrheit aber strategisch verzerrte Nachfrage zurück.
+**Rationing and shortage gaming.** If – for instance because of a supply bottleneck – the supplier makes a proportional allocation (*rationing*), customers have an incentive to inflate their order quantities strategically in order to be allocated enough goods despite rationing. As soon as the situation eases, surplus orders are cancelled – what remains for the supplier is a seemingly highly volatile but in truth strategically distorted demand.
 
-Die Vorlesung fächert diese vier Grundursachen in eine feinere Übersicht mit acht Mechanismen auf, die sich in der Praxis gut als Checkliste eignet:
+The lecture breaks these four root causes down into a more detailed overview of eight mechanisms, which is well suited as a checklist in practice:
 
-| Ursache | Wirkungsmechanismus | Zuordnung nach Lee et al. |
+| Cause | Mechanism of action | Classification according to Lee et al. |
 |:---|:---|:---|
-| Lokale Prognosen | Bestellungen werden als tatsächliche Nachfrage interpretiert | Demand Signaling |
-| Prognoseaktualisierung | Kleine Nachfrageänderungen führen zu Anpassungen der Zielbestände | Demand Signaling |
-| Lange Lieferzeiten | Entscheidungen müssen weit in die Zukunft wirken (Multiplikator $l+1$) | Demand Signaling (verstärkend) |
-| Auftragsbündelung | Seltene Großbestellungen erzeugen künstliche Bedarfsspitzen | Order Batching |
-| Preisaktionen | Vorratskäufe verzerren die beobachtete Nachfrage | Preisschwankungen |
-| Rationierung | Akteure bestellen strategisch mehr als ihren tatsächlichen Bedarf | Shortage Gaming |
-| Fehlende Transparenz | Endkundennachfrage ist nicht für alle Stufen sichtbar | übergreifend |
-| Lokale Zielsysteme | Stufen optimieren individuell statt systemweit | übergreifend |
+| Local forecasts | Orders are interpreted as actual demand | Demand signalling |
+| Forecast updating | Small changes in demand lead to adjustments of target inventories | Demand signalling |
+| Long lead times | Decisions must take effect far into the future (multiplier $l+1$) | Demand signalling (amplifying) |
+| Order batching | Infrequent large orders create artificial demand peaks | Order batching |
+| Price promotions | Stockpiling purchases distort observed demand | Price fluctuations |
+| Rationing | Actors strategically order more than their actual requirement | Shortage gaming |
+| Lack of transparency | End-customer demand is not visible to all stages | cross-cutting |
+| Local systems of objectives | Stages optimise individually instead of system-wide | cross-cutting |
 
-Alle vier Ursachen haben gemeinsam, dass sie auf **fehlender oder verzögerter Information** über die tatsächliche Endkundennachfrage beruhen und dass jede Stufe ausschließlich lokal – im eigenen Interesse und mit eigenen, unvollständigen Informationen – optimiert, ohne die Rückwirkung auf die gesamte Kette zu berücksichtigen.
+All four causes have in common that they are based on **missing or delayed information** about actual end-customer demand and that each stage optimises exclusively locally – in its own interest and with its own incomplete information – without considering the repercussions on the entire chain.
 
-## Empirische Befunde und Folgen
+## Empirical findings and consequences
 
-Der Bullwhip-Effekt ist kein theoretisches Konstrukt, sondern empirisch vielfach belegt. In einer Stichprobe von 4.689 börsennotierten US-Unternehmen zeigten rund **zwei Drittel** eine positive Verstärkung der Beschaffungs- gegenüber der Absatzvariabilität [@bray2012information]. Die mittlere Verstärkung betrug 15,8 % der Nachfragevariabilität, der Median 6,7 % – die Verteilung ist also rechtsschief: Wenige Unternehmen weisen einen sehr starken Effekt auf. In absoluten Größen lag die quartalsweise Standardabweichung der vorgelagerten Bestellungen im Mittel um rund 20 Mio. US-Dollar über derjenigen der beobachteten Nachfrage. Ergänzende Arbeiten zeigen, dass ein stärkerer Bullwhip-Effekt systematisch mit höheren Lagerbeständen **und gleichzeitig** mehr Fehlmengen einhergeht [@yao2020empirically; @chen2012bullwhip] – Sicherheitsbestände allein kompensieren die zusätzliche Unsicherheit also nicht. Bemerkenswert ist zudem, dass auf aggregierter Ebene (z. B. Monats- oder Kategoriedaten) berechnete Kennzahlen den tatsächlichen Bullwhip-Effekt auf Ebene einzelner Artikel und Wochen systematisch unterschätzen [@yao2020empirically] – wer den Effekt im eigenen Unternehmen messen will, sollte deshalb möglichst granular vorgehen. Auch Studien zu realen Zulieferernetzwerken – etwa im Toyota-Produktionsnetzwerk – bestätigen, dass die Struktur einer Lieferkette (Anzahl Stufen, Konzentration der Zulieferer) die Weitergabe und Verstärkung von Schwankungen maßgeblich mitbestimmt [@kito2014structure].
+The bullwhip effect is not a theoretical construct but has been documented empirically many times. In a sample of 4,689 listed US companies, around **two thirds** showed a positive amplification of procurement variability relative to sales variability [@bray2012information]. The mean amplification amounted to 15.8% of demand variability, the median 6.7% – the distribution is therefore right-skewed: a few companies show a very strong effect. In absolute terms, the quarterly standard deviation of upstream orders was on average around US$20 million above that of observed demand. Complementary studies show that a stronger bullwhip effect is systematically associated with higher inventories **and at the same time** more shortages [@yao2020empirically; @chen2012bullwhip] – so safety stocks alone do not compensate for the additional uncertainty. It is also noteworthy that metrics calculated at an aggregated level (e.g. monthly or category data) systematically underestimate the actual bullwhip effect at the level of individual items and weeks [@yao2020empirically] – anyone wishing to measure the effect in their own company should therefore proceed as granularly as possible. Studies of real supplier networks – for instance in the Toyota production network – also confirm that the structure of a supply chain (number of stages, concentration of suppliers) significantly shapes the transmission and amplification of fluctuations [@kito2014structure].
 
-Als Management-Botschaft fasst die Vorlesung zusammen: Nicht nur die Endkundennachfrage erzeugt Volatilität, sondern *Nachfragesignal + lokale Disposition = Bestellvarianz*. Die operativen und ökonomischen Folgen des Bullwhip-Effekts sind vielfältig:
+As a management message, the lecture summarises: it is not only end-customer demand that generates volatility, but *demand signal + local replenishment planning = order variance*. The operational and economic consequences of the bullwhip effect are manifold:
 
-| Operative Folgen | Ökonomische Folgen |
+| Operational consequences | Economic consequences |
 |---|---|
-| Schwankende Produktionsprogramme | Höhere Kapitalbindung |
-| Instabile Kapazitätsauslastung | Höhere Lagerkosten |
-| Eiltransporte und Sondermaßnahmen | Höhere Obsoleszenzrisiken |
-| Hohe Bestände und dennoch Fehlmengen | Höhere Rüst- und Produktionskosten |
-| Niedrigere Lieferfähigkeit | Höhere Transportkosten |
-| Höhere Planungsunsicherheit | Umsatz- und Deckungsbeitragsverluste |
+| Fluctuating production schedules | Higher capital tied up |
+| Unstable capacity utilisation | Higher warehousing costs |
+| Express shipments and special measures | Higher obsolescence risks |
+| High inventories and yet shortages | Higher set-up and production costs |
+| Lower delivery capability | Higher transport costs |
+| Greater planning uncertainty | Losses in revenue and contribution margin |
 
-## Gegenmaßnahmen
+## Countermeasures
 
-Da die Ursachen des Bullwhip-Effekts vor allem in fehlender Information und lokaler Optimierung liegen, setzen die wirksamsten Gegenmaßnahmen genau dort an:
+Since the causes of the bullwhip effect lie above all in missing information and local optimisation, the most effective countermeasures start precisely there:
 
-| Hebel | Maßnahme | Wirkung |
+| Lever | Measure | Effect |
 |---|---|---|
-| Informationsfluss | Point-of-Sale-Daten (POS) mit vorgelagerten Stufen teilen | reduziert den Prognosefehler an jeder Stufe |
-| Bestandsverantwortung | **Vendor Managed Inventory (VMI)**: der Lieferant disponiert den Bestand seines Kunden selbst | vermeidet doppelte, gegenläufige Bestandsanpassungen |
-| Gemeinsame Planung | **CPFR** (*Collaborative Planning, Forecasting and Replenishment*): Kunde und Lieferant erstellen eine gemeinsame Prognose | reduziert lokale Prognoseverzerrungen |
-| Bestellpolitik | kleine, häufige statt große, seltene Bestellungen | reduziert Order-Batching-Effekte |
-| Lieferzeit | Informations- und Lieferzeiten verkürzen (u. a. durch **EDI**, elektronischen Datenaustausch) | reduziert die Schutzperiode und damit den Verstärkungsfaktor $(l+1)$ |
-| Preispolitik | stabile Preise statt häufiger Promotions (*Every-Day-Low-Pricing*) | reduziert künstliche Bedarfsspitzen durch Forward Buying |
-| Allokation | Rationierung nach historischen Verkaufsmengen statt nach aktuellen Bestellmengen | reduziert Anreize zum Shortage Gaming |
-| Steuerungslogik | Gesamtoptimum statt rein lokaler Zielgrößen anstreben | koordiniert Bestell- und Bestandsentscheidungen über die ganze Kette |
+| Information flow | Share point-of-sale (POS) data with upstream stages | reduces the forecast error at each stage |
+| Inventory responsibility | **Vendor Managed Inventory (VMI)**: the supplier manages its customer's inventory itself | avoids duplicate, counteracting inventory adjustments |
+| Joint planning | **CPFR** (*Collaborative Planning, Forecasting and Replenishment*): customer and supplier create a joint forecast | reduces local forecast distortions |
+| Ordering policy | small, frequent instead of large, infrequent orders | reduces order batching effects |
+| Lead time | shorten information and delivery lead times (e.g. through **EDI**, electronic data interchange) | reduces the protection period and thus the amplification factor $(l+1)$ |
+| Pricing policy | stable prices instead of frequent promotions (*every-day low pricing*) | reduces artificial demand peaks caused by forward buying |
+| Allocation | rationing based on historical sales volumes instead of current order quantities | reduces incentives for shortage gaming |
+| Control logic | aim for the overall optimum instead of purely local targets | coordinates ordering and inventory decisions across the entire chain |
 
-Der gemeinsame Nenner dieser Maßnahmen ist **Koordination**: Je mehr Information eine Stufe über die tatsächliche Endkundennachfrage – statt nur über die (bereits verzerrten) Bestellungen ihrer direkten Nachbarstufe – erhält, desto kleiner wird der Prognosefehler, und desto geringer fällt die Verstärkung entlang der Kette aus [@lee1997bullwhip; @chopra2025supply]. Genau diese Erkenntnis ist einer der wichtigsten Impulse für die informationstechnische Vernetzung von Supply Chains, wie sie heute über ERP-Systeme, elektronischen Datenaustausch und gemeinsame Planungsplattformen Standard ist.
+The common denominator of these measures is **coordination**: the more information a stage receives about actual end-customer demand – instead of only about the (already distorted) orders of its direct neighbouring stage – the smaller the forecast error becomes, and the lower the amplification along the chain [@lee1997bullwhip; @chopra2025supply]. Precisely this insight is one of the most important drivers of the IT-based integration of supply chains, which today is standard via ERP systems, electronic data interchange and joint planning platforms.
 
-## Zusammenfassung
+## Summary
 
-Dieses Kapitel hat gezeigt, dass eine scheinbar harmlose, rationale Bestandspolitik – der Order-up-to-Ansatz aus den vorigen Kapiteln –, sobald sie über mehrere Stufen hintereinander angewendet wird, systematisch zu einer Verstärkung der Nachfrageschwankungen führt: dem **Bullwhip-Effekt**. Wir haben diesen Effekt formal definiert, mit dem **Varianzverhältnis** $B=\operatorname{Var}(q_t)/\operatorname{Var}(d_t)$ gemessen und in einer eigenen R-Simulation einer mehrstufigen Lieferkette – dem Kern des klassischen **Beergames** – nachvollzogen. Die vier klassischen Ursachen (Demand Signaling, Order Batching, Preisschwankungen, Rationierung) erklären, warum der Effekt selbst bei rationalem Verhalten aller Beteiligten auftritt, während empirische Studien seine erhebliche wirtschaftliche Bedeutung belegen. Gegenmaßnahmen wie Informationsaustausch, VMI und CPFR setzen konsequent an der zugrundeliegenden Ursache an: fehlender Transparenz über die tatsächliche Nachfrage.
+This chapter has shown that a seemingly harmless, rational inventory policy – the order-up-to approach from the previous chapters – systematically leads to an amplification of demand fluctuations as soon as it is applied across several stages in succession: the **bullwhip effect**. We defined this effect formally, measured it with the **variance ratio** $B=\operatorname{Var}(q_t)/\operatorname{Var}(d_t)$ and reproduced it in our own R simulation of a multi-echelon supply chain – the core of the classic **Beer Game**. The four classic causes (demand signalling, order batching, price fluctuations, rationing) explain why the effect occurs even when all participants behave rationally, while empirical studies document its considerable economic significance. Countermeasures such as information sharing, VMI and CPFR consistently address the underlying cause: a lack of transparency about actual demand.
 
-Auf der R-Seite haben Sie in diesem Kapitel gelernt, Zeitreihen als einfache Vektoren zu begreifen und mit `diff()` Periodenveränderungen zu berechnen, mit `dplyr::lag()` Zeitreihen gegeneinander zu verschieben, eine mehrstufige Simulation als verschachtelte Schleife zu programmieren sowie Ergebnisse mehrerer Gruppen mit `facet_wrap()` übersichtlich nebeneinander darzustellen.
+On the R side, in this chapter you have learned to understand time series as simple vectors and to calculate period-to-period changes with `diff()`, to shift time series against each other with `dplyr::lag()`, to program a multi-echelon simulation as a nested loop, and to display the results of several groups clearly side by side with `facet_wrap()`.
 
 ::: {.kontrollfragen}
-**Kontrollfragen**
+**Review questions**
 
-1. Definieren Sie den Bullwhip-Effekt und erläutern Sie, warum ihn ein Varianzverhältnis $B>1$ anzeigt.
-2. Warum kann der Bullwhip-Effekt auch dann auftreten, wenn jede Stufe einer Supply Chain vollkommen rational nach einer Order-up-to-Regel bestellt?
-3. Nennen und erläutern Sie die vier klassischen Ursachen des Bullwhip-Effekts nach Lee, Padmanabhan und Whang.
-4. Wie wirkt sich eine längere Wiederbeschaffungszeit $l$ auf die Stärke des Bullwhip-Effekts aus, und warum?
-5. Beschreiben Sie Aufbau und Ziel des Beergames. Welche zentrale Erkenntnis des Supply Chain Managements macht es erfahrbar?
-6. Erklären Sie den Unterschied zwischen `diff()` und `dplyr::lag()` bei der Arbeit mit Zeitreihen in R.
-7. Was besagt der Begriff Vendor Managed Inventory (VMI), und inwiefern reduziert er den Bullwhip-Effekt?
-8. Berechnen Sie die untere Schranke des Varianzverhältnisses nach Chen et al. für $L = 2$ und ein Schätzfenster von $p = 3$ bzw. $p = 10$ Perioden. Was folgt daraus für die Wahl des Prognoseverfahrens?
-9. Warum bestellen Teilnehmer des Beergames systematisch zu viel, sobald Fehlmengen aufgetreten sind? Erläutern Sie den Begriff *supply line underweighting*.
-10. Skizzieren Sie mit eigenen Worten, wie eine mehrstufige Simulationsschleife in R aufgebaut sein muss, damit jede Stufe die Bestellungen der jeweils nachgelagerten Stufe als eigene Nachfrage verwendet.
+1. Define the bullwhip effect and explain why a variance ratio $B>1$ indicates it.
+2. Why can the bullwhip effect occur even when each stage of a supply chain orders completely rationally according to an order-up-to rule?
+3. Name and explain the four classic causes of the bullwhip effect according to Lee, Padmanabhan and Whang.
+4. How does a longer replenishment lead time $l$ affect the strength of the bullwhip effect, and why?
+5. Describe the set-up and aim of the Beer Game. Which central insight of supply chain management does it make tangible?
+6. Explain the difference between `diff()` and `dplyr::lag()` when working with time series in R.
+7. What does the term Vendor Managed Inventory (VMI) mean, and to what extent does it reduce the bullwhip effect?
+8. Calculate the lower bound of the variance ratio according to Chen et al. for $L = 2$ and an estimation window of $p = 3$ and $p = 10$ periods respectively. What follows from this for the choice of forecasting method?
+9. Why do participants in the Beer Game systematically order too much as soon as shortages have occurred? Explain the term *supply line underweighting*.
+10. Outline in your own words how a multi-echelon simulation loop in R must be structured so that each stage uses the orders of the respective downstream stage as its own demand.
 :::
 
-## Ausblick
+## Outlook
 
-Mit dem Bullwhip-Effekt schließt dieses Buch den Bogen zu einem Thema, das alle vorangegangenen Kapitel implizit begleitet hat: dem Umgang mit **Unsicherheit** in Supply Chains. Standortentscheidungen, Kostenstrukturen, Pooling-Effekte und das Newsvendor-Modell haben gezeigt, wie einzelne Stufen und einzelne Entscheidungen unter unsicherer Nachfrage optimiert werden können; der Bullwhip-Effekt macht deutlich, dass die **Summe** lokal optimaler Entscheidungen eine Lieferkette als Ganzes destabilisieren kann, wenn Information nicht geteilt wird.
+With the bullwhip effect, this book comes full circle to a topic that has implicitly accompanied all the preceding chapters: dealing with **uncertainty** in supply chains. Location decisions, cost structures, pooling effects and the newsvendor model have shown how individual stages and individual decisions can be optimised under uncertain demand; the bullwhip effect makes clear that the **sum** of locally optimal decisions can destabilise a supply chain as a whole if information is not shared.
 
-In der unternehmerischen Praxis wird diesem Spannungsfeld nicht mit einem einzelnen Modell begegnet, sondern mit einem Bündel an **Koordinationsmechanismen**, die in diesem Kapitel bereits angesprochen wurden: dem systematischen Teilen von Verkaufsdaten, gemeinsamer Bedarfsplanung (CPFR), der Übertragung von Bestandsverantwortung an Lieferanten (VMI) sowie einer durchgängigen informationstechnischen Vernetzung der Supply-Chain-Partner. Diese Mechanismen ersetzen die in diesem Buch entwickelten quantitativen Modelle nicht – sie sind vielmehr die organisatorische und technische Infrastruktur, innerhalb derer Parameter wie $\mu$, $\sigma$ und $l$ überhaupt zuverlässig geschätzt und die hier hergeleiteten Formeln sinnvoll angewendet werden können. Wer diese Methoden – von der Standortwahl über die Bestandsplanung bis zur Analyse mehrstufiger Ketten – beherrscht und dabei die in diesem Buch eingeführten R-Werkzeuge sicher einsetzen kann, verfügt über eine solide Grundlage, um Supply-Chain-Probleme in der Praxis sowohl quantitativ zu durchdringen als auch im Team zu kommunizieren und zu lösen.
+In business practice, this tension is not addressed with a single model but with a bundle of **coordination mechanisms** that have already been touched on in this chapter: the systematic sharing of sales data, joint demand planning (CPFR), the transfer of inventory responsibility to suppliers (VMI) and continuous IT-based integration of supply chain partners. These mechanisms do not replace the quantitative models developed in this book – rather, they are the organisational and technical infrastructure within which parameters such as $\mu$, $\sigma$ and $l$ can be estimated reliably at all and the formulae derived here can be applied meaningfully. Anyone who masters these methods – from location choice and inventory planning to the analysis of multi-echelon chains – and can confidently use the R tools introduced in this book has a solid foundation for both penetrating supply chain problems quantitatively in practice and communicating and solving them in a team.

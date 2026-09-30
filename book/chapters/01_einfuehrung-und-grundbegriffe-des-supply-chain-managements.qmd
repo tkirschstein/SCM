@@ -1,97 +1,97 @@
-# Einführung und Grundbegriffe des Supply Chain Managements {#sec-einfuehrung}
+# Introduction and Basic Concepts of Supply Chain Management {#sec-einfuehrung}
 
 ::: {.lernziele}
-**Lernziele**
+**Learning objectives**
 
-- zentrale Begriffe, Akteure und Flüsse einer Supply Chain erläutern,
-- Supply Chain Management gegenüber Logistik und Beschaffung abgrenzen,
-- strategische, taktische und operative Entscheidungen in Supply Chains unterscheiden,
-- die Bedeutung von Koordination für Wertschöpfung und Wettbewerbsfähigkeit beurteilen,
-- die grundlegende Arbeitsweise von R, RStudio und Quarto nachvollziehen und einfache Vektoren, Tabellen und Grafiken selbst erstellen.
+- explain the key concepts, actors and flows of a supply chain,
+- distinguish supply chain management from logistics and procurement,
+- differentiate between strategic, tactical and operational decisions in supply chains,
+- assess the importance of coordination for value creation and competitiveness,
+- understand the basic workings of R, RStudio and Quarto and create simple vectors, tables and charts yourself.
 :::
 
-## Supply Chains sind keine Erfindung der Moderne
+## Supply chains are not an invention of the modern age
 
-Wer an Supply Chain Management (SCM) denkt, denkt meist zuerst an Containerschiffe, globale Werksnetze oder das Distributionssystem eines Online-Händlers. Tatsächlich ist die Koordination von Material-, Informations- und Finanzflüssen über mehrere Akteure hinweg ein uraltes Problem der Menschheitsgeschichte — nur die Werkzeuge zu seiner Lösung haben sich verändert.
+When people think of supply chain management (SCM), they usually think first of container ships, global plant networks or the distribution system of an online retailer. In fact, coordinating material, information and financial flows across multiple actors is an age-old problem in human history — only the tools for solving it have changed.
 
-Ein eindrucksvolles Beispiel liefert der Bau der Cheops-Pyramide, der um 2620 v. Chr. begann und ein Bauwerk von ursprünglich 147 Metern Höhe hervorbrachte. Für die Errichtung waren etwa 2,3 Millionen Steinblöcke mit einem Durchschnittsgewicht von 2,5 Tonnen zu gewinnen, zu transportieren und exakt zu verbauen. Das gelang nur durch koordinierten Transport, ein funktionierendes Werkzeug- und Ersatzteilmanagement sowie eine Versorgungslogistik, die täglich rund 100.000 Arbeitskräfte verpflegen musste. Ohne eine planvolle Abstimmung von Beschaffung (Steinbrüche, Werkzeuge), Transport (Nil, Schlitten, Rampen) und Verpflegung wäre ein Projekt dieser Größenordnung nicht realisierbar gewesen.
+An impressive example is the construction of the Great Pyramid of Cheops, which began around 2620 BC and produced a structure originally 147 metres high. Its construction required around 2.3 million stone blocks with an average weight of 2.5 tonnes to be quarried, transported and placed with precision. This was only possible through coordinated transport, functioning tool and spare-parts management, and a supply logistics system that had to feed around 100,000 workers every day. Without the planned coordination of procurement (quarries, tools), transport (the Nile, sledges, ramps) and provisioning, a project of this scale would not have been feasible.
 
 ::: {layout-ncol="2"}
-![Steinbruch- und Transportlogistik beim Bau der Cheops-Pyramide](../images/image6.jpeg){fig-alt="Historische Darstellung des Pyramidenbaus"}
+![Quarry and transport logistics during the construction of the Pyramid of Cheops](../images/image6.jpeg){fig-alt="Historical depiction of pyramid construction"}
 
-![Rampen- und Baustellenorganisation am Pyramidenkomplex von Gizeh](../images/image7.png){fig-alt="Darstellung der Baustellenorganisation an der Cheops-Pyramide"}
+![Ramp and construction-site organisation at the Giza pyramid complex](../images/image7.png){fig-alt="Depiction of the construction-site organisation at the Pyramid of Cheops"}
 :::
 
-Ein zweites, militärisches Beispiel ist Hannibals Alpenüberquerung während des Zweiten Punischen Krieges. Sein Heer bestand unter anderem aus 37 Kriegselefanten und rund 40.000 Soldaten samt einer großen Reiterei — und musste über Hunderte Kilometer hinweg in weitgehend feindlichem Gebiet versorgt werden. Anders als bei einem stationären Bauprojekt wie der Pyramide war hier zusätzlich die Bewegung der gesamten Versorgungskette selbst eine Herausforderung: Nachschub musste dem Heer vorauseilen oder es entlang der Route erreichen, während sich Terrain, Verbündete und Gegner laufend änderten.
+A second, military example is Hannibal's crossing of the Alps during the Second Punic War. Among other things, his army comprised 37 war elephants and around 40,000 soldiers together with a large cavalry — and it had to be supplied over hundreds of kilometres in largely hostile territory. Unlike a stationary construction project such as the pyramid, here the movement of the entire supply chain itself was an additional challenge: supplies had to travel ahead of the army or reach it along the route, while terrain, allies and enemies were constantly changing.
 
 ::: {layout-ncol="2"}
-![Route von Hannibals Alpenüberquerung](../images/image8.jpeg){fig-alt="Karte von Hannibals Invasionsroute nach Italien"}
+![Route of Hannibal's crossing of the Alps](../images/image8.jpeg){fig-alt="Map of Hannibal's invasion route to Italy"}
 
-![Logistische Herausforderungen des Feldzugs](../images/image9.png){fig-alt="Darstellung der Versorgungssituation von Hannibals Heer"}
+![Logistical challenges of the campaign](../images/image9.png){fig-alt="Depiction of the supply situation of Hannibal's army"}
 :::
 
-Beide Beispiele zeigen bereits die Kernmerkmale, die auch moderne Supply Chains prägen: mehrere Akteure (Steinbrüche, Transportkolonnen, Verpflegungsstellen bzw. Nachschubtruppen, Verbündete), ein Zielobjekt, das über mehrere Stufen bewegt oder veredelt wird, sowie die Notwendigkeit, Mengen, Zeitpunkte und Orte so abzustimmen, dass am Ende ein Bedarf gedeckt wird. Genau diese Abstimmungsleistung — nicht der einzelne Transport oder die einzelne Fertigungsstufe — ist der Gegenstand des Supply Chain Managements.
+Both examples already show the core characteristics that also shape modern supply chains: multiple actors (quarries, transport columns, provisioning points or supply troops, allies), a target object that is moved or refined over several stages, and the need to coordinate quantities, timing and locations so that a demand is ultimately met. It is precisely this coordination effort — not the individual transport or the individual production stage — that is the subject of supply chain management.
 
 ::: {.r-exkurs}
-**R-Exkurs: R, RStudio und Quarto**
+**R aside: R, RStudio and Quarto**
 
-Dieses Lehrbuch nutzt durchgängig die Programmiersprache **R**, eine kostenlose Open-Source-Sprache für statistische Berechnungen und Datenvisualisierung. Programmiert wird typischerweise in **RStudio**, einer Entwicklungsumgebung, die einen Editor, eine Konsole zur unmittelbaren Codeausführung und Werkzeuge zur Verwaltung von Dateien und Paketen in einem Fenster vereint.
+This textbook uses the programming language **R** throughout, a free open-source language for statistical computing and data visualisation. Programming is typically done in **RStudio**, an integrated development environment that combines an editor, a console for immediate code execution, and tools for managing files and packages in a single window.
 
-Dieses Buch selbst ist als **Quarto**-Dokument (Dateiendung `.qmd`) geschrieben. Quarto verbindet gewöhnlichen Text (wie diesen Absatz) mit ausführbarem R-Code in sogenannten **Code-Chunks**. Ein Chunk beginnt und endet mit drei rückwärts geneigten Anführungszeichen (`` ``` ``), wobei die öffnende Zeile zusätzlich `{r}` enthält, um R als Sprache zu kennzeichnen. Beim Rendern des Dokuments wird der Code tatsächlich ausgeführt, und Ergebnisse (Zahlen, Tabellen, Grafiken) werden automatisch in den Text eingebettet — Text und Berechnung laufen also nie auseinander.
+This book itself is written as a **Quarto** document (file extension `.qmd`). Quarto combines ordinary text (like this paragraph) with executable R code in so-called **code chunks**. A chunk begins and ends with three backticks (`` ``` ``), with the opening line additionally containing `{r}` to identify R as the language. When the document is rendered, the code is actually executed, and results (numbers, tables, charts) are automatically embedded in the text — so text and calculations never diverge.
 
-Ein minimales Beispiel:
+A minimal example:
 
 ```{r}
 #| label: ch1-erste-zuweisung
 
-# Eine Zuweisung: Der Name "anzahl_akteure" erhaelt den Wert 5
+# An assignment: the name "anzahl_akteure" receives the value 5
 anzahl_akteure <- 5
 
-# Wird der Name ausgewertet, gibt R den gespeicherten Wert aus
+# When the name is evaluated, R prints the stored value
 anzahl_akteure
 ```
 
-Die Zeile `#| label: ch1-erste-zuweisung` ist keine Ausgabe, sondern eine **Chunk-Option**: Sie vergibt einen eindeutigen internen Namen für diesen Codeblock, was bei der Fehlersuche und beim Verweisen auf Abbildungen hilft.
+The line `#| label: ch1-erste-zuweisung` is not output but a **chunk option**: it assigns a unique internal name to this code block, which helps with debugging and with referencing figures.
 :::
 
-## Ein antikes Fallbeispiel: Die Toga praetexta
+## An ancient case example: the toga praetexta
 
-Wie stark bereits vormoderne Wertschöpfungsketten Rohstoffbeschaffung, Verarbeitung und Distribution über weite Entfernungen verknüpften, illustriert die Herstellung der *Toga praetexta*, des purpurgesäumten Gewandes römischer Amtsträger. Der Produktionsprozess begann mit der Schafhaltung und der Schur und Sortierung der Rohwolle. Die Wolle wurde zu Garn versponnen, zu weißem Wolltuch verwoben und anschließend gewalkt, gereinigt, gebleicht und zugeschnitten — ein Verarbeitungsschritt, der die Ware auf rund 100 Sesterze je Pfund verteuerte.
+How strongly even pre-modern value chains linked raw material procurement, processing and distribution over long distances is illustrated by the production of the *toga praetexta*, the purple-bordered garment of Roman magistrates. The production process began with sheep farming and the shearing and sorting of the raw wool. The wool was spun into yarn, woven into white woollen cloth and then fulled, cleaned, bleached and cut — a processing step that raised the cost of the goods to around 100 sesterces per pound.
 
-Parallel dazu lief eine zweite, deutlich kostspieligere Kette: die Purpurgewinnung. Aus eigens gezüchteten Purpurschnecken wurde die Hypobranchialdrüse entnommen, gesalzen und über mehrere Tage erhitzt, um daraus den namensgebenden Farbstoff zu gewinnen, mit dem Wolle oder fertige Tuchbahnen gefärbt wurden. Dieser Veredelungsschritt kostete rund 4.000 Sesterze je Pfund — vierzigmal so viel wie die reine Wollverarbeitung. Erst im letzten Schritt wurden Purpursaum und Wollgewand zur fertigen Toga konfektioniert.
+In parallel ran a second, considerably more expensive chain: purple production. The hypobranchial gland was removed from specially bred murex snails, salted and heated over several days to obtain the eponymous dye, with which wool or finished lengths of cloth were dyed. This refining step cost around 4,000 sesterces per pound — forty times as much as the wool processing alone. Only in the final step were the purple border and woollen garment assembled into the finished toga.
 
-Am Markt zeigte sich diese Wertschöpfungsstruktur in drastisch gestaffelten Preisen: Eine einfache weiße Toga kostete etwa 12 Sesterze, eine bessere weiße Toga rund 60 Sesterze, eine Toga praetexta hingegen 800 Sesterze — bei einem Jahressold eines einfachen Soldaten von rund 1.000 Sesterzen entsprach eine einzige Toga praetexta also fast einem Jahreseinkommen. Der Preisunterschied lässt sich fast vollständig auf den Wertschöpfungsschritt "Purpurfärbung" zurückführen, der wiederum von einer eigenen, geografisch weit gespannten Beschaffungskette abhing: Rohwolle kam unter anderem aus Tarent und Milet, der Purpurfarbstoff aus dem levantinischen Tyros, Verarbeitung und Absatz konzentrierten sich auf Rom.
+On the market, this value-creation structure was reflected in drastically tiered prices: a simple white toga cost about 12 sesterces, a better white toga around 60 sesterces, whereas a toga praetexta cost 800 sesterces — with an ordinary soldier's annual pay of around 1,000 sesterces, a single toga praetexta was thus worth almost a year's income. The price difference can be attributed almost entirely to the value-creation step “purple dyeing”, which in turn depended on its own geographically far-flung procurement chain: raw wool came from Tarentum and Miletus, among other places, the purple dye from Tyre in the Levant, while processing and sales were concentrated in Rome.
 
 ::: {.definition}
-**Definition: Wertschöpfungskette**
+**Definition: Value chain**
 
-Eine **Wertschöpfungskette** ist die Abfolge von Aktivitäten, durch die ein Ausgangsstoff schrittweise so verändert wird, dass sein Wert aus Sicht des Endabnehmers steigt. Jede Stufe fügt entweder physisch Wert hinzu (Verarbeitung, Veredelung) oder verschiebt den Wert räumlich beziehungsweise zeitlich (Transport, Lagerung) [@chopra2025supply].
+A **value chain** is the sequence of activities through which a starting material is transformed step by step in such a way that its value increases from the perspective of the end customer. Each stage either adds value physically (processing, refining) or shifts value in space or time (transport, storage) [@chopra2025supply].
 :::
 
 ::: {.r-exkurs}
-**R-Exkurs: Zuweisung, Kommentare und Basisdatentypen**
+**R aside: Assignment, comments and basic data types**
 
-R kennt wie die meisten Programmiersprachen benannte Speicherplätze für Werte. Ein Wert wird einem Namen mit dem **Zuweisungsoperator** `<-` zugewiesen (gesprochen "wird zugewiesen von"); alternativ funktioniert auch `=`, in R-Code ist `<-` jedoch üblich. Text nach einem Rautezeichen `#` ist ein **Kommentar** und wird von R ignoriert — Kommentare dienen ausschließlich dazu, Code für Menschen verständlich zu machen.
+Like most programming languages, R has named storage locations for values. A value is assigned to a name with the **assignment operator** `<-` (read as “gets”); alternatively, `=` also works, but `<-` is customary in R code. Text after a hash sign `#` is a **comment** and is ignored by R — comments serve solely to make code understandable to humans.
 
-R unterscheidet mehrere **Basisdatentypen**. Die drei wichtigsten für den Einstieg sind:
+R distinguishes several **basic data types**. The three most important for getting started are:
 
-- `numeric`: Zahlen, etwa Preise oder Mengen,
-- `character`: Zeichenketten (Text), stets in Anführungszeichen,
-- `logical`: Wahrheitswerte, nur `TRUE` oder `FALSE`.
+- `numeric`: numbers, such as prices or quantities,
+- `character`: character strings (text), always in quotation marks,
+- `logical`: truth values, only `TRUE` or `FALSE`.
 
 ```{r}
 #| label: ch1-basisdatentypen
 
-# numeric: eine Zahl -- hier der Preis einer einfachen Toga in Sesterzen
+# numeric: a number -- here the price of a simple toga in sesterces
 preis_einfache_toga <- 12
 
-# character: eine Zeichenkette -- hier der Produktname
+# character: a character string -- here the product name
 produktname <- "Toga praetexta"
 
-# logical: ein Wahrheitswert -- handelt es sich um ein Luxusgut?
+# logical: a truth value -- is it a luxury good?
 ist_luxusgut <- TRUE
 
-# class() gibt den Datentyp eines Objekts zurueck
+# class() returns the data type of an object
 class(preis_einfache_toga)
 class(produktname)
 class(ist_luxusgut)
@@ -99,98 +99,98 @@ class(ist_luxusgut)
 :::
 
 ::: {.r-exkurs}
-**R-Exkurs: Vektoren und Vektorrechnung**
+**R aside: Vectors and vector arithmetic**
 
-Einzelne Werte reichen selten aus, um eine ganze Produktpalette oder mehrere Supply-Chain-Stufen abzubilden. Die Funktion `c()` (für *combine*) fasst mehrere Werte zu einem **Vektor** zusammen — der grundlegenden Datenstruktur in R. Vektorelemente können über Namen adressiert werden, und Rechenoperationen werden **elementweise** ausgeführt, das heißt, jede einzelne Zahl im Vektor wird separat verarbeitet, ohne dass eine Schleife von Hand geschrieben werden muss.
+Single values are rarely sufficient to represent an entire product range or several supply chain stages. The function `c()` (for *combine*) combines several values into a **vector** — the fundamental data structure in R. Vector elements can be addressed by name, and arithmetic operations are performed **element-wise**, meaning each individual number in the vector is processed separately without having to write a loop by hand.
 
 ```{r}
 #| label: ch1-toga-preise
 
-# c() fasst mehrere benannte Werte zu einem Vektor zusammen
+# c() combines several named values into a vector
 toga_preise <- c(einfach = 12, besser = 60, praetexta = 800)
 
-# Ausgabe des gesamten Vektors mit Namen
+# Print the entire vector with names
 toga_preise
 
-# Elementweise Rechnung: Aufschlagsfaktor gegenueber der einfachsten Toga
-# (jedes Element von toga_preise wird durch denselben Skalar geteilt)
+# Element-wise calculation: mark-up factor relative to the simplest toga
+# (each element of toga_preise is divided by the same scalar)
 aufschlagsfaktor <- toga_preise / toga_preise["einfach"]
 round(aufschlagsfaktor, 1)
 ```
 
-Der letzte Aufruf zeigt: Eine Toga praetexta kostete rund 67-mal so viel wie das einfachste Modell — ein direktes Abbild der zusätzlichen Wertschöpfungsstufe "Purpurfärbung".
+The last call shows that a toga praetexta cost around 67 times as much as the simplest model — a direct reflection of the additional value-creation stage “purple dyeing”.
 :::
 
-## Globale Supply Chains vor der Moderne: der Gewürzhandel
+## Global supply chains before the modern age: the spice trade
 
-Noch deutlicher als am Beispiel der Toga zeigt sich die räumliche Ausdehnung vormoderner Supply Chains im Gewürzhandel des 15. Jahrhunderts. Pfeffer wuchs praktisch ausschließlich auf den Molukken und an der Malabarküste Vorderindiens, wurde aber in ganz Europa nachgefragt. Vor 1498 verlief der Handelsweg über eine lange Kette von Umschlagsplätzen: von den Molukken über Malakka und Calicut auf dem Seeweg, von dort über Aden und das Rote Meer, per Karawane weiter über Kairo nach Alexandria und schließlich per Schiff nach Venedig, von wo aus der Weiterverkauf in die europäischen Konsumräume erfolgte. Jede dieser Stufen — Produktion, Umschlag, Zwischenhandel, Transport — erforderte eigene Akteure, eigene Transportmittel und eigene Verträge, und jede Stufe schlug einen Aufpreis auf die Ware.
+The geographical reach of pre-modern supply chains is even more evident in the spice trade of the 15th century than in the example of the toga. Pepper grew almost exclusively in the Moluccas and on the Malabar Coast of India, but was in demand throughout Europe. Before 1498, the trade route ran through a long chain of transhipment points: from the Moluccas via Malacca and Calicut by sea, from there via Aden and the Red Sea, onwards by caravan via Cairo to Alexandria and finally by ship to Venice, from where it was resold to the European consumer regions. Each of these stages — production, transhipment, intermediate trade, transport — required its own actors, its own means of transport and its own contracts, and each stage added a mark-up to the goods.
 
-Das Ergebnis war eine drastische Preissteigerung entlang der Kette: Ausgehend von einem Wert von etwa 1,5 Gramm Silberäquivalent je Kilogramm Pfeffer auf den Molukken stieg der Preis über Malakka (4 g) und Calicut (8 g) auf 12 g in Alexandria, 16 g in Venedig und schließlich rund 25 g Silber je Kilogramm in den europäischen Konsumzentren — eine Verzehnfachung, bevor die Ware überhaupt den Endverbraucher erreichte. Diese Marge lockte 1519 die von der spanischen Krone finanzierte Magellan-Expedition, die einen direkten westlichen Seeweg zu den Gewürzinseln unter Umgehung des von Venedig und arabischen Zwischenhändlern kontrollierten Landwegs suchte. Der Preis dieses Versuchs war hoch: Von den fünf Schiffen und 260 Mann Besatzung, die 1519 ausliefen, kehrte 1522 nur ein Schiff mit 18 Überlebenden zurück — wirtschaftlich war die Fahrt durch die mitgeführte Nelkenladung dennoch profitabel, ein Umstand, der die Bedeutung dieses neuen, kürzeren Versorgungswegs unterstreicht [@zweig1983magellan].
+The result was a drastic price increase along the chain: starting from a value of about 1.5 grams of silver equivalent per kilogram of pepper in the Moluccas, the price rose via Malacca (4 g) and Calicut (8 g) to 12 g in Alexandria, 16 g in Venice and finally around 25 g of silver per kilogram in the European centres of consumption — a tenfold increase before the goods had even reached the end consumer. In 1519, this margin attracted the Magellan expedition, financed by the Spanish Crown, which sought a direct western sea route to the Spice Islands, bypassing the overland route controlled by Venice and Arab intermediaries. The price of this attempt was high: of the five ships and 260 crew members that set sail in 1519, only one ship with 18 survivors returned in 1522 — yet the voyage was still economically profitable thanks to its cargo of cloves, a fact that underlines the importance of this new, shorter supply route [@zweig1983magellan].
 
-Nach 1498, mit der Umsegelung Afrikas durch Vasco da Gama, entstand eine zweite, rein seegestützte Route von Lissabon über Mosambik und Malindi direkt nach Calicut. Sie umging die zahlreichen Zwischenstufen der Karawanen- und Levante-Route und veränderte dadurch nachhaltig, welche Akteure am Gewürzhandel verdienten — ein frühes Beispiel dafür, wie eine veränderte Netzwerkstruktur die Verteilung der Wertschöpfung innerhalb einer Supply Chain verschiebt, ohne dass sich das Produkt selbst änderte.
+After 1498, with Vasco da Gama's circumnavigation of Africa, a second, purely maritime route emerged from Lisbon via Mozambique and Malindi directly to Calicut. It bypassed the numerous intermediate stages of the caravan and Levant route and thereby permanently changed which actors profited from the spice trade — an early example of how a change in network structure shifts the distribution of value creation within a supply chain without the product itself changing.
 
-### Die Wirtschaftlichkeit einer Supply-Chain-Innovation: die Magellan-Expedition
+### The economics of a supply chain innovation: the Magellan expedition
 
-Die Vorlesungsfolien stellen der Preisentwicklung entlang der Gewürzroute eine zweite Grafik gegenüber: die wirtschaftliche Bilanz der Magellan-Expedition. Sie lohnt eine genauere Betrachtung, weil sie ein Grundmuster jeder Netzwerkentscheidung zeigt, das uns in den Kapiteln zur Standortplanung wiederbegegnen wird: Einer **hohen, sicheren Anfangsinvestition** (Schiffe, Ausrüstung, Proviant, Heuer, Tauschwaren) steht ein **unsicherer, zeitlich weit entfernter Rückfluss** gegenüber (der Erlös der Gewürzladung). Die Kosten- und Erlöspositionen sind in der Rechnungswährung der spanischen Krone, dem *Maravedí*, überliefert [@zweig1983magellan]. Um sie mit den Preisangaben der Gewürzroute vergleichbar zu machen, werden sie in Silberäquivalente umgerechnet (rund 3,195 g Silber je 34 Maravedís):
+The lecture slides contrast the price development along the spice route with a second chart: the economic balance of the Magellan expedition. It deserves a closer look because it shows a basic pattern of every network decision that we will encounter again in the chapters on facility location planning: a **high, certain initial investment** (ships, equipment, provisions, wages, trade goods) is set against an **uncertain return that lies far in the future** (the revenue from the spice cargo). The cost and revenue items have been handed down in the accounting currency of the Spanish Crown, the *maravedí* [@zweig1983magellan]. To make them comparable with the price data for the spice route, they are converted into silver equivalents (around 3.195 g of silver per 34 maravedís):
 
 ```{r}
 #| label: ch1-magellan-bilanz
-#| fig-cap: "Wirtschaftliche Bilanz der Magellan-Expedition in kg Silberäquivalent (Wasserfalldiagramm)"
+#| fig-cap: "Economic balance of the Magellan expedition in kg of silver equivalent (waterfall chart)"
 
 library(tidyverse)
 
-silber_je_maravedi <- 3.195 / 34   # g Silber je Maravedi
+silber_je_maravedi <- 3.195 / 34   # g of silver per maravedi
 
 magellan <- tribble(
   ~position,                                     ~maravedis,
-  "Schiffe, Takelage, Artillerie, Bewaffnung",   -3912241,
-  "Proviant und Fässer",                         -1585551,
-  "Heuer für 237 Personen",                      -1154504,
-  "Tausch- und Handelswaren",                    -1679769,
-  "Sonstiger Bedarf",                             -415060,
-  "Erlös der Nelkenladung",                       7888684,
-  "Weitere Waren",                                1000000
+  "Ships, rigging, artillery, weapons",          -3912241,
+  "Provisions and barrels",                      -1585551,
+  "Wages for 237 people",                        -1154504,
+  "Barter and trade goods",                      -1679769,
+  "Other requirements",                           -415060,
+  "Revenue from the clove cargo",                 7888684,
+  "Other goods",                                  1000000
 ) |>
   mutate(
-    silber_kg = maravedis * silber_je_maravedi / 1000,  # Umrechnung in kg Silber
-    typ       = if_else(silber_kg < 0, "Kosten", "Erlös"),
-    ende      = cumsum(silber_kg),                       # kumulierter Saldo
+    silber_kg = maravedis * silber_je_maravedi / 1000,  # conversion to kg of silver
+    typ       = if_else(silber_kg < 0, "Costs", "Revenue"),
+    ende      = cumsum(silber_kg),                       # cumulative balance
     anfang    = lag(ende, default = 0),
     nr        = row_number()
   )
 
-# Wasserfalldiagramm: jedes Rechteck beginnt dort, wo das vorige endet
+# Waterfall chart: each rectangle starts where the previous one ends
 ggplot(magellan) +
   geom_rect(aes(xmin = nr - 0.4, xmax = nr + 0.4,
                 ymin = pmin(anfang, ende), ymax = pmax(anfang, ende), fill = typ)) +
   geom_hline(yintercept = 0, colour = "grey40") +
   scale_x_continuous(breaks = magellan$nr, labels = magellan$position) +
-  scale_fill_manual(values = c(Kosten = "#b2182b", "Erlös" = "#1b7837")) +
-  labs(x = NULL, y = "kg Silberäquivalent", fill = NULL) +
+  scale_fill_manual(values = c(Costs = "#b2182b", "Revenue" = "#1b7837")) +
+  labs(x = NULL, y = "kg of silver equivalent", fill = NULL) +
   theme_minimal(base_size = 11) +
   theme(axis.text.x = element_text(angle = 30, hjust = 1))
 
-# Saldo der Expedition in kg Silber
+# Balance of the expedition in kg of silver
 round(sum(magellan$silber_kg), 1)
 ```
 
-Den Kosten von rund `r round(-sum(magellan$silber_kg[magellan$silber_kg < 0]), 0)` kg Silber standen Erlöse von rund `r round(sum(magellan$silber_kg[magellan$silber_kg > 0]), 0)` kg Silber gegenüber — trotz des Verlusts von vier der fünf Schiffe blieb also ein knapper Überschuss. Die Rechnung macht zweierlei deutlich. Erstens: Der Wert der Ladung — gut 20 Tonnen Gewürznelken — war so hoch, dass selbst ein einziges zurückkehrendes Schiff die gesamte Expedition refinanzierte. Die gewaltige Preisspanne zwischen Molukken und Europa (siehe oben) ist die ökonomische Ursache dafür. Zweitens: Die Bilanz war extrem riskant. Wäre auch das letzte Schiff verloren gegangen, hätten den Kosten keinerlei Erlöse gegenübergestanden. Hohe Margen entlang einer Supply Chain sind deshalb nicht nur Ausdruck von Marktmacht, sondern häufig auch eine **Risikoprämie** für Akteure, die Transport-, Verderbs- und Ausfallrisiken tragen — ein Gedanke, der in Kapitel [-@sec-strategic-fit] (Risikoallokation) und in den Kapiteln zur Unsicherheit (Kapitel [-@sec-unsicherheit-pooling] bis [-@sec-bullwhip]) wieder aufgegriffen wird.
+Costs of around `r round(-sum(magellan$silber_kg[magellan$silber_kg < 0]), 0)` kg of silver were offset by revenues of around `r round(sum(magellan$silber_kg[magellan$silber_kg > 0]), 0)` kg of silver — so despite the loss of four of the five ships, a narrow surplus remained. The calculation makes two things clear. First, the value of the cargo — a good 20 tonnes of cloves — was so high that even a single returning ship refinanced the entire expedition. The enormous price spread between the Moluccas and Europe (see above) is the economic reason for this. Second, the balance was extremely risky. Had the last ship also been lost, the costs would have been matched by no revenue at all. High margins along a supply chain are therefore not only an expression of market power but often also a **risk premium** for actors who bear transport, spoilage and default risks — an idea that is taken up again in Chapter [-@sec-strategic-fit] (risk allocation) and in the chapters on uncertainty (Chapters [-@sec-unsicherheit-pooling] to [-@sec-bullwhip]).
 
 ::: {.r-exkurs}
-**R-Exkurs: `data.frame` und `tibble` als Tabellenstruktur**
+**R aside: `data.frame` and `tibble` as table structures**
 
-Ein Vektor bildet nur eine einzelne Größe ab. Für Daten mit mehreren zusammengehörigen Variablen — etwa "Handelsstufe" und "Preis" — wird eine **Tabellenstruktur** benötigt, in der jede Zeile eine Beobachtung (hier: eine Stufe der Handelsroute) und jede Spalte eine Variable darstellt. In Basis-R heißt diese Struktur `data.frame`; im sogenannten **tidyverse** (siehe nächster Exkurs) existiert mit `tibble` eine modernisierte Variante mit übersichtlicherer Druckausgabe.
+A vector represents only a single quantity. For data with several related variables — such as “trading stage” and “price” — a **table structure** is needed, in which each row represents an observation (here: a stage of the trade route) and each column a variable. In base R, this structure is called `data.frame`; in the so-called **tidyverse** (see next aside), `tibble` is a modernised variant with clearer printed output.
 
 ```{r}
 #| label: ch1-gewuerzhandel-tabelle
 
-# data.frame(): eine Tabelle aus gleich langen, benannten Spaltenvektoren
+# data.frame(): a table made of named column vectors of equal length
 gewuerzhandel <- data.frame(
   stufe = c("Molukken", "Malakka", "Calicut", "Alexandria", "Venedig", "Europa"),
   preis_silber_pro_kg = c(1.5, 4, 8, 12, 16, 25)
 )
 
-# str() zeigt die Struktur: 6 Beobachtungen (Zeilen), 2 Variablen (Spalten)
+# str() shows the structure: 6 observations (rows), 2 variables (columns)
 str(gewuerzhandel)
 
 gewuerzhandel
@@ -198,31 +198,31 @@ gewuerzhandel
 :::
 
 ::: {.r-exkurs}
-**R-Exkurs: Pakete laden mit `library()`**
+**R aside: Loading packages with `library()`**
 
-Der Funktionsumfang von R lässt sich durch **Pakete** (*packages*) erweitern — Sammlungen zusätzlicher Funktionen, die von der R-Gemeinschaft bereitgestellt werden. Ein Paket muss einmalig mit `install.packages("paketname")` installiert, aber in **jeder neuen R-Sitzung** erneut mit `library(paketname)` geladen werden, bevor seine Funktionen genutzt werden können.
+The functionality of R can be extended with **packages** — collections of additional functions provided by the R community. A package has to be installed once with `install.packages("paketname")`, but must be loaded again with `library(paketname)` in **every new R session** before its functions can be used.
 
-Dieses Buch verwendet durchgängig das **tidyverse**, ein Bündel von Paketen für Datenmanipulation (u. a. `dplyr`, das Paket für `tibble`) und Visualisierung (`ggplot2`).
+This book uses the **tidyverse** throughout, a bundle of packages for data manipulation (including `dplyr`, the package for `tibble`) and visualisation (`ggplot2`).
 
 ```{r}
 #| label: ch1-library-tidyverse
 #| message: false
 #| warning: false
 
-# library() laedt ein zuvor installiertes Paket in die aktuelle Sitzung.
-# tidyverse buendelt u.a. dplyr (Datenmanipulation) und ggplot2 (Grafik).
+# library() loads a previously installed package into the current session.
+# tidyverse bundles, among others, dplyr (data manipulation) and ggplot2 (graphics).
 library(tidyverse)
 ```
 :::
 
-Mit geladenem tidyverse lässt sich dieselbe Tabelle als `tibble` anlegen. Der zusätzliche Schritt, die Spalte `stufe` als **Faktor** mit fester Reihenfolge zu definieren, sorgt dafür, dass die Handelsroute später in der richtigen chronologischen Abfolge dargestellt wird und nicht alphabetisch sortiert erscheint.
+With the tidyverse loaded, the same table can be created as a `tibble`. The additional step of defining the column `stufe` as a **factor** with a fixed order ensures that the trade route is later displayed in the correct chronological sequence rather than being sorted alphabetically.
 
 ```{r}
 #| label: ch1-gewuerzhandel-tibble
 
-# tibble() ist die tidyverse-Variante von data.frame()
-# factor(..., levels = ...) legt eine feste Kategorien-Reihenfolge fest,
-# statt R die (unerwuenschte) alphabetische Sortierung ueberlassen
+# tibble() is the tidyverse variant of data.frame()
+# factor(..., levels = ...) sets a fixed order of categories
+# instead of leaving R to apply the (unwanted) alphabetical sorting
 reihenfolge_stufen <- c("Molukken", "Malakka", "Calicut",
                          "Alexandria", "Venedig", "Europa")
 
@@ -235,113 +235,123 @@ gewuerzhandel_tbl
 ```
 
 ::: {.r-exkurs}
-**R-Exkurs: Die erste `ggplot()`-Grafik**
+**R aside: Your first `ggplot()` chart**
 
-Das Paket `ggplot2` folgt der sogenannten **Grammar of Graphics**: Eine Grafik entsteht aus drei Bausteinen, die additiv mit `+` verknüpft werden.
+The `ggplot2` package follows the so-called **Grammar of Graphics**: a chart is built from three building blocks that are combined additively with `+`.
 
-1. `data`: der Datensatz, der die darzustellenden Werte enthält,
-2. `aes()` (*aesthetic mapping*): die Zuordnung von Tabellenspalten zu visuellen Eigenschaften wie x-Achse, y-Achse oder Farbe,
-3. `geom_*()`: die geometrische Darstellungsform, z. B. `geom_col()` für Balken oder `geom_line()` für Linien.
+1. `data`: the data set containing the values to be displayed,
+2. `aes()` (*aesthetic mapping*): the mapping of table columns to visual properties such as the x-axis, y-axis or colour,
+3. `geom_*()`: the geometric form of representation, e.g. `geom_col()` for bars or `geom_line()` for lines.
 
 ```{r}
 #| label: ch1-ggplot-gewuerzhandel
-#| fig-cap: "Preissteigerung von Pfeffer entlang der vorkolonialen Handelsroute (vor 1498)"
+#| fig-cap: "Price increase of pepper along the pre-colonial trade route (before 1498)"
 
-# ggplot(): data + aes() legen Datensatz und Achsenzuordnung fest,
-# geom_col() waehlt Saeulen als geometrische Darstellungsform
+# ggplot(): data + aes() define the data set and axis mapping,
+# geom_col() selects columns as the geometric form of representation
 ggplot(data = gewuerzhandel_tbl, aes(x = stufe, y = preis_silber_pro_kg)) +
   geom_col(fill = "#2D6A4F") +
   labs(
     x = NULL,
-    y = "g Silber je kg Pfeffer",
-    title = "Wertschoepfung entlang der Gewuerzhandelsroute"
+    y = "g of silver per kg of pepper",
+    title = "Value creation along the spice trade route"
   ) +
   theme_minimal(base_size = 12)
 ```
 
-Jede zusätzliche Handelsstufe erhöht den Preis sichtbar — die Grafik macht damit auf einen Blick nachvollziehbar, was der Fließtext zuvor in Zahlen beschrieben hat.
+Each additional trading stage visibly increases the price — the chart thus makes immediately clear what the text previously described in figures.
 :::
 
-## Was ist eine Supply Chain? Begriffsbestimmung
+## What is a supply chain? Defining the term
 
-Die historischen Beispiele lassen bereits ein gemeinsames Muster erkennen: Mehrere rechtlich und wirtschaftlich selbstständige Akteure sind über physische, informatorische und finanzielle Beziehungen so miteinander verbunden, dass am Ende ein Bedarf gedeckt wird, den kein einzelner Akteur allein hätte decken können.
+The historical examples already reveal a common pattern: several legally and economically independent actors are connected through physical, informational and financial relationships in such a way that, in the end, a demand is met that no single actor could have met alone.
 
 ::: {.definition}
-**Definition: Supply Chain**
+**Definition: Supply chain**
 
-Eine **Supply Chain** (Wertschöpfungs- oder Lieferkette) umfasst alle Parteien, die direkt oder indirekt daran beteiligt sind, eine Kundenanfrage zu erfüllen — von Rohstofflieferanten über Hersteller und Transporteure bis zu Groß- und Einzelhändlern sowie den Kunden selbst. Innerhalb jedes Unternehmens schließt die Supply Chain zudem alle Funktionen ein, die eine Kundenanfrage empfangen und erfüllen, etwa Produktentwicklung, Marketing, Produktion, Distribution, Finanzen und Kundendienst [@chopra2025supply].
+A **supply chain** (value chain or delivery chain) consists of all parties involved, directly or indirectly, in fulfilling a customer request — from raw material suppliers through manufacturers and transporters to wholesalers and retailers as well as the customers themselves. Within each company, the supply chain also includes all functions involved in receiving and filling a customer request, such as new product development, marketing, operations, distribution, finance and customer service [@chopra2025supply].
 :::
 
-Zentral ist dabei, dass eine Supply Chain **kein linearer Prozess**, sondern ein Netzwerk ist: Ein Hersteller bezieht in der Regel von mehreren Lieferanten und beliefert mehrere Distributionskanäle; jeder dieser Partner ist wiederum selbst Teil weiterer Supply Chains. Innerhalb dieses Netzwerks lassen sich drei Arten von Flüssen unterscheiden, die in entgegengesetzte oder parallele Richtungen verlaufen:
+The crucial point is that a supply chain is **not a linear process** but a network: a manufacturer usually sources from several suppliers and supplies several distribution channels; each of these partners is in turn itself part of further supply chains. Within this network, three types of flows can be distinguished, which run in opposite or parallel directions:
 
-- der **Materialfluss** (auch Güterfluss): die physische Bewegung von Rohstoffen, Halb- und Fertigerzeugnissen stromabwärts, vom Ursprung zum Endkunden,
-- der **Finanzfluss**: Zahlungen, die in der Regel stromaufwärts fließen, sobald eine Leistung erbracht wurde, sowie damit verbundene Bestands- und Kapitalbindungseffekte,
-- der **Informationsfluss**: Bedarfsprognosen, Bestellungen, Statusmeldungen und Planungsdaten, die in beide Richtungen fließen und die Abstimmung der beiden anderen Flüsse überhaupt erst ermöglichen.
+- the **material flow** (also flow of goods): the physical movement of raw materials, semi-finished and finished products downstream, from the origin to the end customer,
+- the **financial flow**: payments, which usually flow upstream once a service has been provided, as well as the associated effects on inventory and tied-up capital,
+- the **information flow**: demand forecasts, orders, status reports and planning data, which flow in both directions and make it possible to coordinate the other two flows in the first place.
 
-![Materialfluss, Finanzfluss und Informationsfluss entlang einer Supply Chain](../images/clipboard-35016753.png){fig-align="center" width="80%"}
+![Material flow, financial flow and information flow along a supply chain](../images/clipboard-35016753.png){fig-align="center" width="80%"}
 
-Diese Dreiteilung lässt sich unmittelbar auf die Ebenen im Unternehmen selbst übertragen, wenn man ein Unternehmen als offenes System begreift, das mit seiner Umwelt sowohl Güter als auch Informationen und Zahlungen austauscht [@kummer2018grundzuge]:
+This threefold division can be transferred directly to the levels within the company itself if a company is understood as an open system that exchanges goods as well as information and payments with its environment [@kummer2018grundzuge]:
 
-- Die **dispositive Ebene** behandelt den Informationsfluss im und zwischen Unternehmen sowie die damit verbundenen Planungs-, Entscheidungs- und Kontrollprozesse (Management im engeren Sinn).
-- Die **Finanzebene** erfasst Geld- und Zahlungsströme innerhalb und außerhalb des Unternehmens.
-- Die **Güterebene** erfasst Bewegung und Bestand physischer Güter — Roh-, Hilfs- und Betriebsstoffe ebenso wie fertige Produkte — innerhalb und zwischen Unternehmen.
+- The **managerial (dispositive) level** covers the information flow within and between companies as well as the associated planning, decision-making and control processes (management in the narrower sense).
+- The **financial level** covers money and payment flows inside and outside the company.
+- The **goods level** covers the movement and stock of physical goods — raw materials, auxiliary materials and supplies as well as finished products — within and between companies.
 
-![Das Unternehmen als offenes System mit dispositiver Ebene, Finanzebene und Güterebene](../images/image15.png){fig-align="center" width="70%"}
+```{r}
+#| label: fig-open-firm-model
+#| echo: false
+#| fig-cap: "The company as an open system with a managerial level, financial level and goods level (after @kummer2018grundzuge)"
+#| fig-width: 9
+#| fig-height: 6.3
+#| out-width: "80%"
+#| fig-align: center
+source("../R/scm_functions.R")
+plot_open_firm_model()
+```
 
-Diese drei Ebenen sind nicht unabhängig voneinander: Eine Entscheidung auf der dispositiven Ebene (z. B. eine Bestellauslösung) erzeugt sowohl einen zukünftigen Güterfluss als auch einen zukünftigen Zahlungsfluss. Genau diese Verzahnung macht die Koordination über Unternehmensgrenzen hinweg zur zentralen Managementaufgabe, die im weiteren Verlauf dieses Buches als Supply Chain Management bezeichnet wird.
+These three levels are not independent of one another: a decision at the managerial level (e.g. triggering an order) generates both a future flow of goods and a future flow of payments. It is precisely this interlinking that makes coordination across company boundaries the central management task, referred to in the remainder of this book as supply chain management.
 
-## Wertschöpfung und Kundennutzen in der Supply Chain
+## Value creation and customer benefit in the supply chain
 
-Aus Sicht des Endkunden ist ein Produkt erst dann wertvoll, wenn es am richtigen Ort, zur richtigen Zeit, in der richtigen Form und mit vollständiger Verfügungsgewalt zur Verfügung steht. Betriebswirtschaftlich lässt sich dieser Kundennutzen in mehrere Nutzenarten zerlegen, die jeweils durch bestimmte Supply-Chain-Funktionen erzeugt werden:
+From the end customer's perspective, a product is only valuable when it is available at the right place, at the right time, in the right form and with full power of disposal. In business terms, this customer benefit can be broken down into several types of utility, each generated by particular supply chain functions:
 
-- **Formnutzen** (*utility by design*): entsteht durch Produktion — das physische Umwandeln von Rohstoffen und Vorprodukten in ein Gut, das die Bedürfnisse des Kunden erfüllt.
-- **Informationsnutzen** (*utility by information*): entsteht dadurch, dass Kunden und Anbieter wissen, was, wann und in welcher Qualität verfügbar ist.
-- **Raumnutzen** (*utility by location*): entsteht durch Transport — ein Gut, das nicht am Ort der Nachfrage verfügbar ist, stiftet keinen Nutzen.
-- **Zeitnutzen** (*utility by time*): entsteht durch Lagerung und termingerechte Bereitstellung — ein Gut, das zu früh oder zu spät verfügbar ist, verfehlt seinen Zweck ebenso.
-- **Verfügungsnutzen** (*utility by property*): entsteht durch den rechtlichen und physischen Übergang der Verfügungsgewalt vom Anbieter zum Nachfrager im Rahmen des Konsums.
+- **Form utility** (*utility by design*): generated by production — the physical transformation of raw materials and intermediate products into a good that meets the customer's needs.
+- **Information utility** (*utility by information*): generated by customers and suppliers knowing what is available, when and in what quality.
+- **Place utility** (*utility by location*): generated by transport — a good that is not available at the place of demand provides no benefit.
+- **Time utility** (*utility by time*): generated by storage and timely provision — a good that is available too early or too late equally fails to serve its purpose.
+- **Possession utility** (*utility by property*): generated by the legal and physical transfer of the power of disposal from supplier to buyer in the course of consumption.
 
-Diese Nutzenarten entstehen entlang der klassischen betrieblichen Grundfunktionen Beschaffung, Produktion, Distribution und Konsum: Beschaffung und Produktion tragen primär zum Formnutzen bei, Distribution zu Raum-, Zeit- und Informationsnutzen, und der Konsum realisiert schließlich den Verfügungsnutzen als Bedürfnisbefriedigung. Die **Logistik** ist dabei die Funktion, die gezielt Raum- und Zeitnutzen erzeugt — und damit eine Querschnittsfunktion, die alle Stufen der Supply Chain miteinander verbindet, ohne selbst eine eigene Wertschöpfungsstufe im engeren Sinn zu sein.
+These types of utility arise along the classic basic business functions of procurement, production, distribution and consumption: procurement and production contribute primarily to form utility, distribution to place, time and information utility, and consumption finally realises possession utility as the satisfaction of needs. **Logistics** is the function that specifically generates place and time utility — and is therefore a cross-functional activity that links all stages of the supply chain without itself being a separate value-creation stage in the narrower sense.
 
-Innerbetrieblich lässt sich diese Querschnittsfunktion weiter untergliedern in **Beschaffungslogistik** (Warenanlieferung vom Lieferanten bis ins Werk), **Produktionslogistik** (innerbetrieblicher Materialfluss zwischen Fertigungsstufen), **Distributionslogistik** (Warenausgang bis zum Kunden) und **Entsorgungslogistik** (Rückführung von Verpackungen, Retouren und Reststoffen).
+Within the company, this cross-functional activity can be further subdivided into **procurement logistics** (inbound delivery of goods from the supplier to the plant), **production logistics** (internal material flow between production stages), **distribution logistics** (outbound goods to the customer) and **disposal logistics** (return of packaging, customer returns and residual materials).
 
-![Teilbereiche der Logistik im Unternehmen](../images/clipboard-1798916514.png){fig-align="center" width="75%"}
+![Areas of logistics within the company](../images/clipboard-1798916514.png){fig-align="center" width="75%"}
 
-Der Blick auf Nutzenarten lässt sich mit dem klassischen Konzept der **Wertkette** (*value chain*) nach Michael Porter verknüpfen. Porter unterscheidet **primäre Aktivitäten**, die direkt zur Herstellung, zum Verkauf und zur Lieferung eines Produkts beitragen (Eingangslogistik, Produktion, Ausgangslogistik, Marketing & Vertrieb, Kundendienst), von **unterstützenden Aktivitäten**, die diese primären Aktivitäten erst ermöglichen (Unternehmensinfrastruktur, Personalmanagement, Technologieentwicklung, Beschaffung). Supply Chain Management lässt sich damit auch als der Versuch verstehen, die primären Aktivitäten der Wertkette nicht nur innerhalb eines Unternehmens, sondern über mehrere rechtlich selbstständige Wertketten hinweg zu koordinieren.
+The perspective of utility types can be linked with Michael Porter's classic concept of the **value chain**. Porter distinguishes **primary activities**, which contribute directly to the manufacture, sale and delivery of a product (inbound logistics, operations, outbound logistics, marketing & sales, service), from **support activities**, which make these primary activities possible in the first place (firm infrastructure, human resource management, technology development, procurement). Supply chain management can thus also be understood as the attempt to coordinate the primary activities of the value chain not only within a single company but across several legally independent value chains.
 
 ::: {layout-ncol="2"}
-![Porters Wertkettenmodell](../images/clipboard-871463286.png){fig-alt="Porters Wertkettenmodell mit primären und unterstützenden Aktivitäten"}
+![Porter's value chain model](../images/clipboard-871463286.png){fig-alt="Porter's value chain model with primary and support activities"}
 
-![Übertragung der Wertkette auf mehrstufige Supply Chains](../images/clipboard-2899353534.png){fig-alt="Verkettete Wertketten mehrerer Supply-Chain-Partner"}
+![Applying the value chain to multi-stage supply chains](../images/clipboard-2899353534.png){fig-alt="Linked value chains of several supply chain partners"}
 :::
 
-Aus dieser Perspektive lässt sich der wirtschaftliche Erfolg einer Supply Chain formal fassen. Der **SCM-Gewinn** ergibt sich als Differenz aus dem beim Endkunden erzielten Umsatz und den Gesamtkosten aller beteiligten Prozesse und Partner:
+From this perspective, the economic success of a supply chain can be expressed formally. The **supply chain surplus (SCM profit)** is the difference between the revenue generated from the end customer and the total costs of all processes and partners involved:
 
 $$
-\text{SCM-Gewinn} = \text{Kundenumsatz} - \text{Gesamtkosten aller Prozesse und Partner}
+\text{SCM profit} = \text{Customer revenue} - \text{Total costs of all processes and partners}
 $$
 
-Dieser SCM-Gewinn ist zugleich die Summe der individuellen Gewinne aller beteiligten Akteure. Daraus folgt eine zentrale, oft unterschätzte Erkenntnis: **Die Optimierung der individuellen Gewinne einzelner Akteure führt in der Regel nicht zur Optimierung des SCM-Gewinns.** Ein Lieferant, der seinen eigenen Gewinn maximiert, indem er große Losgrößen produziert, kann beim Abnehmer hohe Lagerkosten und Kapitalbindung verursachen, die den Gesamtgewinn der Kette schmälern. Genau diese Diskrepanz zwischen individueller und gesamthafter Optimierung begründet den eigenständigen Koordinationsbedarf, den Supply Chain Management adressiert — ein Thema, das in späteren Kapiteln dieses Buches, etwa beim Bullwhip-Effekt, wieder aufgegriffen wird.
+This SCM profit is at the same time the sum of the individual profits of all actors involved. This leads to a central, often underestimated insight: **optimising the individual profits of single actors does not, as a rule, lead to optimisation of the SCM profit.** A supplier that maximises its own profit by producing large lot sizes may cause high inventory costs and tied-up capital at the customer, reducing the overall profit of the chain. It is precisely this discrepancy between individual and overall optimisation that justifies the distinct need for coordination that supply chain management addresses — a topic that will be taken up again in later chapters of this book, for example in connection with the bullwhip effect.
 
 ::: {.vertiefung}
-**Theorie-Vertiefung: Doppelte Marginalisierung — warum lokale Gewinnmaximierung den SCM-Gewinn senkt**
+**In depth (theory): Double marginalisation — why local profit maximisation reduces SCM profit**
 
-Die Folienaussage "Optimierung der individuellen Gewinne führt i. d. R. nicht zur Optimierung des SCM-Gewinns" lässt sich an einem klassischen mikroökonomischen Modell präzise zeigen, der **doppelten Marginalisierung** [@spengler1950vertical]. Betrachtet wird eine zweistufige Kette aus Hersteller und Händler. Der Hersteller produziert zu Stückkosten $c$ und verkauft an den Händler zum Großhandelspreis $w$; der Händler setzt den Endkundenpreis $p$. Die Endkundennachfrage sei linear, $q = a - p$.
+The statement on the slides that “optimising individual profits does not, as a rule, lead to optimising SCM profit” can be shown precisely using a classic microeconomic model, **double marginalisation** [@spengler1950vertical]. Consider a two-stage chain consisting of a manufacturer and a retailer. The manufacturer produces at unit cost $c$ and sells to the retailer at the wholesale price $w$; the retailer sets the end-customer price $p$. End-customer demand is assumed to be linear, $q = a - p$.
 
-*Integrierte Kette (ein Entscheider):* Maximiert wird der gesamte Kettengewinn $(p - c)\,q = (a - q - c)\,q$. Die Bedingung erster Ordnung $a - 2q - c = 0$ liefert $q^{I} = (a-c)/2$ und einen Kettengewinn von $(a-c)^2/4$.
+*Integrated chain (one decision-maker):* the total chain profit $(p - c)\,q = (a - q - c)\,q$ is maximised. The first-order condition $a - 2q - c = 0$ yields $q^{I} = (a-c)/2$ and a chain profit of $(a-c)^2/4$.
 
-*Dezentrale Kette (jeder optimiert für sich):* Der Händler maximiert $(a - q - w)\,q$ und wählt $q = (a-w)/2$. Der Hersteller antizipiert diese Reaktion und maximiert $(w-c)\,(a-w)/2$, woraus $w = (a+c)/2$ folgt. Eingesetzt ergibt sich $q^{D} = (a-c)/4$ — **nur die Hälfte** der integrierten Menge. Beide Stufen schlagen nacheinander einen eigenen Aufschlag ("Marge") auf, der Endkundenpreis steigt, die Absatzmenge sinkt, und der Kettengewinn fällt auf $3(a-c)^2/16$, also auf 75 % des möglichen Wertes.
+*Decentralised chain (each actor optimises independently):* the retailer maximises $(a - q - w)\,q$ and chooses $q = (a-w)/2$. The manufacturer anticipates this response and maximises $(w-c)\,(a-w)/2$, from which $w = (a+c)/2$ follows. Substituting gives $q^{D} = (a-c)/4$ — **only half** of the integrated quantity. Both stages successively add their own mark-up (“margin”), the end-customer price rises, the sales volume falls, and chain profit drops to $3(a-c)^2/16$, i.e. to 75% of the possible value.
 
 ```{r}
 #| label: ch1-doppelte-marginalisierung
 
-a <- 100   # Marktgröße (Prohibitivpreis)
-k <- 20    # Stückkosten des Herstellers (nicht "c" nennen: c() ist die R-Funktion zum Kombinieren)
+a <- 100   # market size (prohibitive price)
+k <- 20    # manufacturer's unit cost (do not call it "c": c() is the R function for combining)
 
-# Integrierte Kette
+# Integrated chain
 q_int     <- (a - k) / 2
 gewinn_int <- (a - q_int - k) * q_int
 
-# Dezentrale Kette: Hersteller setzt w, Händler reagiert
+# Decentralised chain: manufacturer sets w, retailer responds
 w_dez      <- (a + k) / 2
 q_dez      <- (a - w_dez) / 2
 p_dez      <- a - q_dez
@@ -349,136 +359,136 @@ gewinn_haendler   <- (p_dez - w_dez) * q_dez
 gewinn_hersteller <- (w_dez - k) * q_dez
 
 tibble(
-  Kennzahl  = c("Menge", "Endkundenpreis", "Gewinn Hersteller", "Gewinn Händler", "SCM-Gewinn"),
-  Integriert = c(q_int, a - q_int, NA, NA, gewinn_int),
-  Dezentral  = c(q_dez, p_dez, gewinn_hersteller, gewinn_haendler,
+  Metric  = c("Quantity", "End-customer price", "Manufacturer profit", "Retailer profit", "SCM profit"),
+  Integrated = c(q_int, a - q_int, NA, NA, gewinn_int),
+  Decentralised  = c(q_dez, p_dez, gewinn_hersteller, gewinn_haendler,
                  gewinn_hersteller + gewinn_haendler)
 )
 ```
 
-Das Beispiel ist bewusst einfach, zeigt aber den Kern des Koordinationsproblems: Jeder Akteur handelt für sich völlig rational, und dennoch verschenkt die Kette ein Viertel ihres Gewinnpotenzials — zulasten von Hersteller, Händler **und** Endkunden, die höhere Preise zahlen. Instrumente wie Mengenrabatte, Rücknahme- oder Erlösbeteiligungsverträge (*Supply Chain Contracts*) setzen genau hier an, indem sie die Anreize der Einzelakteure an das Kettenoptimum angleichen [@cachon2024matching; @chopra2025supply].
+The example is deliberately simple, but it shows the core of the coordination problem: each actor behaves entirely rationally on its own, and yet the chain gives away a quarter of its profit potential — at the expense of the manufacturer, the retailer **and** the end customers, who pay higher prices. Instruments such as quantity discounts, buyback or revenue-sharing contracts (*supply chain contracts*) address precisely this issue by aligning the incentives of the individual actors with the chain optimum [@cachon2024matching; @chopra2025supply].
 :::
 
-## Supply-Chain-Strukturen: Netzwerke, fokale und polyzentrische Ketten
+## Supply chain structures: networks, focal and polycentric chains
 
-Der Begriff "Kette" (chain) ist insofern irreführend, als reale Supply Chains selten linear verlaufen. Realistischer ist die Vorstellung eines mehrstufigen **Netzwerks**: Auf jeder Stufe — Lieferant, Hersteller, Distributor, Händler, Konsument — existieren typischerweise mehrere parallele Akteure, und die Verbindungen zwischen benachbarten Stufen kreuzen sich: Ein Hersteller bezieht von mehreren Lieferanten und beliefert mehrere Distributoren, die wiederum jeweils mehrere Händler versorgen. Diese netzwerkartige Struktur erhöht die Flexibilität (z. B. bei Lieferantenausfällen), erschwert zugleich aber die Koordination, weil Entscheidungen an einem Knoten Rückwirkungen auf viele andere Knoten im Netzwerk haben können.
+The term “chain” is misleading in that real supply chains rarely run in a linear fashion. A more realistic picture is that of a multi-stage **network**: at each stage — supplier, manufacturer, distributor, retailer, consumer — there are typically several parallel actors, and the connections between adjacent stages intersect: a manufacturer sources from several suppliers and supplies several distributors, each of which in turn serves several retailers. This network-like structure increases flexibility (e.g. in the event of supplier failures), but at the same time makes coordination more difficult, because decisions at one node can have repercussions for many other nodes in the network.
 
-Innerhalb dieses allgemeinen Netzwerkgedankens lassen sich idealtypisch zwei Governance-Strukturen unterscheiden, je nachdem, wie Marktmacht und Koordinationsfunktion im Netzwerk verteilt sind:
+Within this general network concept, two ideal-typical governance structures can be distinguished, depending on how market power and the coordinating function are distributed in the network:
 
 ::: {.definition}
-**Definition: Fokale Supply Chain**
+**Definition: Focal supply chain**
 
-Eine **fokale Supply Chain** wird von einem einzelnen, meist an einer Engpassposition sitzenden Unternehmen dominiert, das das Netzwerk hinsichtlich Akteuren und Struktur weitgehend kontrolliert. Das fokale Unternehmen verfügt über hohe Marktmacht, kontrolliert häufig den Marktzugang und legt als zentraler Koordinator Standards und strategische Ziele für die übrige Kette fest. Typische Beispiele sind die Automobilindustrie oder Apple, wo ein Endprodukthersteller die Anforderungen an vor- und nachgelagerte Partner weitgehend vorgibt.
+A **focal supply chain** is dominated by a single company, usually occupying a bottleneck position, which largely controls the network in terms of actors and structure. The focal company has considerable market power, often controls market access and, as the central coordinator, sets standards and strategic objectives for the rest of the chain. Typical examples are the automotive industry or Apple, where a manufacturer of the end product largely dictates the requirements for upstream and downstream partners.
 :::
 
-![Struktur einer fokalen Supply Chain](../images/clipboard-1428622780.png){fig-align="center" width="85%"}
+![Structure of a focal supply chain](../images/clipboard-1428622780.png){fig-align="center" width="85%"}
 
 ::: {.definition}
-**Definition: Polyzentrische Supply Chain**
+**Definition: Polycentric supply chain**
 
-Eine **polyzentrische Supply Chain** zeichnet sich durch verteilte und sich überschneidende Kompetenzen mehrerer, tendenziell gleichberechtigter Akteure aus. Koordination entsteht hier weniger durch Weisung eines dominanten Partners als durch Spezialisierung und Kooperation; Marktmacht ist eher egalitär verteilt, und eine einheitliche Standardsetzung fällt entsprechend schwerer. Beispiele sind Unternehmen wie IKEA, Neste oder Unilever, deren Zulieferer- und Distributionsnetzwerke breiter diversifiziert und weniger von einem einzelnen dominanten Partner abhängig sind.
+A **polycentric supply chain** is characterised by distributed and overlapping competences of several actors of broadly equal standing. Here, coordination arises less from instructions issued by a dominant partner than from specialisation and cooperation; market power is distributed more evenly, and uniform standard-setting is correspondingly more difficult. Examples are companies such as IKEA, Neste or Unilever, whose supplier and distribution networks are more broadly diversified and less dependent on a single dominant partner.
 :::
 
-![Struktur einer polyzentrischen Supply Chain](../images/clipboard-574717847.png){fig-align="center" width="85%"}
+![Structure of a polycentric supply chain](../images/clipboard-574717847.png){fig-align="center" width="85%"}
 
-Wie unterschiedlich Supply-Chain-Strukturen im Detail aussehen können, zeigt bereits ein flüchtiger Vergleich alltäglicher Konsumgüter: Die Glasflasche eines Erfrischungsgetränks folgt einer anderen Beschaffungs- und Distributionslogik als ein Baumwoll-T-Shirt, ein handgefertigtes Gravel-Bike oder eine Tafel Schokolade mit Kakao- und Haselnusszulieferungen aus verschiedenen Kontinenten. Rohstoffherkunft, Verarbeitungstiefe, Transportmodalität und Distributionskanal unterscheiden sich hier so stark, dass ein und derselbe theoretische Rahmen — Akteure, Stufen, Flüsse — auf jeweils sehr unterschiedliche konkrete Netzwerke angewendet werden muss.
+Even a cursory comparison of everyday consumer goods shows how different supply chain structures can look in detail: the glass bottle of a soft drink follows a different procurement and distribution logic from a cotton T-shirt, a hand-built gravel bike or a bar of chocolate with cocoa and hazelnut supplies from different continents. Origin of raw materials, depth of processing, transport mode and distribution channel differ so greatly here that one and the same theoretical framework — actors, stages, flows — has to be applied to very different concrete networks in each case.
 
-Warum sich in manchen Branchen fokale, in anderen polyzentrische Strukturen herausbilden, lässt sich mit der **Engpassposition** begründen: Wer eine knappe, schwer ersetzbare Ressource kontrolliert — die Marke und den Endkundenzugang (Apple), die Systemintegration eines komplexen Produkts (Automobil-OEM) oder eine Schlüsseltechnologie —, kann den übrigen Akteuren Standards, Mengen und Preise vorgeben. Je austauschbarer dagegen die Leistungen der einzelnen Stufen sind und je stärker sich Kompetenzen überlappen, desto eher entsteht ein polyzentrisches Netz, in dem Koordination über Verhandlung und Kooperation statt über Weisung erfolgt. Für das Supply Chain Management folgt daraus, dass die **Koordinationsinstrumente** zur Struktur passen müssen: In fokalen Ketten kann der Koordinator Planungsdaten, Lieferabrufe und Qualitätsstandards zentral setzen; in polyzentrischen Ketten sind gemeinsame Planung, Informationsteilung und vertragliche Anreizsysteme die wichtigeren Hebel.
+Why focal structures emerge in some industries and polycentric structures in others can be explained by the **bottleneck position**: whoever controls a scarce, hard-to-replace resource — the brand and access to end customers (Apple), the system integration of a complex product (automotive OEM) or a key technology — can dictate standards, quantities and prices to the other actors. Conversely, the more interchangeable the services of the individual stages are and the more competences overlap, the more likely a polycentric network is to emerge, in which coordination takes place through negotiation and cooperation rather than instruction. For supply chain management, it follows that the **coordination instruments** must fit the structure: in focal chains, the coordinator can set planning data, delivery call-offs and quality standards centrally; in polycentric chains, joint planning, information sharing and contractual incentive systems are the more important levers.
 
 ::: {.kontrollfragen}
-**Übung aus der Vorlesung: Supply-Chain-Strukturen beschreiben**
+**Exercise from the lecture: Describing supply chain structures**
 
-Beschreiben Sie die Struktur der Supply Chains — insbesondere die Distributionsstruktur — der folgenden Produkte: eine Flasche Coca-Cola (Glas, 0,3 l), ein T-Shirt von Patagonia, das Gravel-Bike *Waldwiesel* von Urwahn und eine Tafel Ritter Sport Haselnuss.
+Describe the structure of the supply chains — in particular the distribution structure — of the following products: a bottle of Coca-Cola (glass, 0.3 l), a T-shirt from Patagonia, the gravel bike *Waldwiesel* from Urwahn and a bar of Ritter Sport Hazelnut.
 
-1. Beschreiben Sie die wesentlichen Produktionsschritte durch Angabe der verwendeten Rohstoffe, Materialien und Bauteile sowie der erzeugten (Zwischen-)Produkte.
-2. Ergänzen Sie die Darstellung durch die logistischen Prozesse, die die Fertigungsstufen verbinden.
-3. Ordnen Sie die einzelnen Prozessschritte (Produktion und Logistik) räumlich zu.
-4. Handelt es sich eher um eine fokale oder eine polyzentrische Supply Chain? Wer besetzt gegebenenfalls die Engpassposition?
+1. Describe the main production steps by specifying the raw materials, materials and components used as well as the (intermediate) products generated.
+2. Add the logistics processes that link the production stages.
+3. Assign the individual process steps (production and logistics) to locations.
+4. Is it more of a focal or a polycentric supply chain? Who, if anyone, occupies the bottleneck position?
 
-*Hinweis zur Bearbeitung:* Hilfreich ist es, für jedes Produkt mit dem Endprodukt zu beginnen und die Stückliste "rückwärts" aufzulösen (z. B. Schokolade → Kakaomasse, Zucker, Milchpulver, Haselnüsse, Verpackung), bevor Orte und Transportmittel ergänzt werden.
+*Note on working through the exercise:* for each product, it helps to start with the end product and break down the bill of materials “backwards” (e.g. chocolate → cocoa mass, sugar, milk powder, hazelnuts, packaging) before adding locations and means of transport.
 :::
 
-## Supply Chain Management: Definitionen und Abgrenzung
+## Supply chain management: definitions and delimitation
 
-Der Begriff Supply Chain Management wird in der Literatur nicht einheitlich definiert, drei vielzitierte Definitionen machen jedoch einen gemeinsamen Kern sichtbar:
+The term supply chain management is not defined uniformly in the literature, but three frequently cited definitions reveal a common core:
 
-> "Supply Chain Management ist die Aufgabe, Organisationseinheiten entlang der Supply Chain zu integrieren, den Material-, Informations- und Geldfluss zu koordinieren und die Wettbewerbsfähigkeit der gesamten Supply Chain zu verbessern, um Kundenbedarfe zu erfüllen." [@stadtler2000supply, S. 9]
+> “Supply chain management is the task of integrating organisational units along a supply chain and coordinating material, information and financial flows in order to fulfil customer demands with the aim of improving the competitiveness of the supply chain as a whole.” [@stadtler2000supply, p. 9]
 
-> "Supply Chain Management is coordination of production, inventory, location, transportation, and information among the participants in a supply chain to achieve the best mix of responsiveness and efficiency for the market being served." [@hugos2018essentials]
+> “Supply Chain Management is coordination of production, inventory, location, transportation, and information among the participants in a supply chain to achieve the best mix of responsiveness and efficiency for the market being served.” [@hugos2018essentials]
 
-> "Supply chain management encompasses the planning and management of all activities involved in sourcing and procurement, conversion, and all logistics management activities. Importantly, it also includes coordination and collaboration with channel partners […]. In essence, supply chain management integrates supply and demand management within and across companies." [@cscmp_definition]
+> “Supply chain management encompasses the planning and management of all activities involved in sourcing and procurement, conversion, and all logistics management activities. Importantly, it also includes coordination and collaboration with channel partners […]. In essence, supply chain management integrates supply and demand management within and across companies.” [@cscmp_definition]
 
 ::: {.definition}
-**Definition: Supply Chain Management**
+**Definition: Supply chain management**
 
-**Supply Chain Management** bezeichnet die unternehmensübergreifende Planung, Steuerung und Kontrolle der Material-, Informations- und Finanzflüsse entlang einer Supply Chain mit dem Ziel, die Wettbewerbsfähigkeit der gesamten Kette — nicht nur einzelner Akteure — zu verbessern und Kundenbedarfe möglichst effizient und reaktionsfähig zu erfüllen [@stadtler2000supply; @hugos2018essentials; @cscmp_definition].
+**Supply chain management** refers to the cross-company planning, control and monitoring of material, information and financial flows along a supply chain with the aim of improving the competitiveness of the entire chain — not just of individual actors — and of fulfilling customer demands as efficiently and responsively as possible [@stadtler2000supply; @hugos2018essentials; @cscmp_definition].
 :::
 
-Alle drei Definitionen teilen drei Merkmale, die SCM von benachbarten Konzepten abgrenzen. Erstens der **Koordinationsanspruch**: Es geht nicht um die isolierte Optimierung einzelner Funktionen, sondern um deren Abstimmung über Organisationsgrenzen hinweg — genau der Aspekt, der im vorigen Abschnitt anhand des SCM-Gewinns formal begründet wurde. Zweitens die **Mehrdimensionalität der Flüsse**: Material-, Informations- und Finanzflüsse werden gemeinsam betrachtet, nicht isoliert. Drittens der **Bedarfsbezug**: Ausgangspunkt und Zielgröße ist stets die Erfüllung eines Kundenbedarfs, nicht die Effizienz eines Prozessschritts als Selbstzweck.
+All three definitions share three characteristics that distinguish SCM from neighbouring concepts. First, the **claim to coordination**: the aim is not the isolated optimisation of individual functions, but their alignment across organisational boundaries — exactly the aspect that was formally justified in the previous section using SCM profit. Second, the **multidimensionality of flows**: material, information and financial flows are considered together, not in isolation. Third, the **focus on demand**: the starting point and target variable is always the fulfilment of a customer demand, not the efficiency of a process step as an end in itself.
 
-Damit lässt sich SCM auch klar von zwei benachbarten Begriffen abgrenzen. **Logistik** ist, wie oben gezeigt, primär auf die physische Raum- und Zeitüberbrückung von Gütern ausgerichtet und stellt eine — wichtige — Funktion innerhalb des SCM dar, nicht dessen Gesamtheit [@corsten2001einfuehrung; @werner2020supply]. **Beschaffung** (*procurement*) wiederum bezeichnet die vorgelagerte Funktion der Versorgung eines einzelnen Unternehmens mit Vorprodukten, Rohstoffen und Dienstleistungen und bildet damit nur einen Ausschnitt der gesamten Supply Chain ab. SCM umfasst beide Funktionen, geht aber insofern über sie hinaus, als es deren Zusammenspiel über mehrere Unternehmen und mehrere Flussarten hinweg zum eigentlichen Gestaltungsgegenstand macht.
+This also allows SCM to be clearly distinguished from two neighbouring terms. **Logistics**, as shown above, is primarily concerned with bridging space and time for physical goods and represents one — important — function within SCM, not SCM in its entirety [@corsten2001einfuehrung; @werner2020supply]. **Procurement**, in turn, refers to the upstream function of supplying an individual company with intermediate products, raw materials and services, and thus covers only a section of the entire supply chain. SCM encompasses both functions but goes beyond them in that it makes their interaction across several companies and several types of flow the actual object of design.
 
-## Planungsebenen in Supply Chains
+## Planning levels in supply chains
 
-Entscheidungen im Supply Chain Management unterscheiden sich erheblich in ihrem zeitlichen Horizont, ihrer Reversibilität und ihrer Tragweite. Es ist daher üblich, drei **Planungsebenen** zu unterscheiden, die sich wie eine Pyramide zueinander verhalten: Wenige, weitreichende strategische Entscheidungen bilden den Rahmen für zahlreichere taktische Entscheidungen, die wiederum den Rahmen für die tägliche operative Steuerung setzen.
+Decisions in supply chain management differ considerably in their time horizon, their reversibility and their scope. It is therefore customary to distinguish three **planning levels**, which relate to one another like a pyramid: a few far-reaching strategic decisions form the framework for more numerous tactical decisions, which in turn set the framework for day-to-day operational control.
 
-Die **strategische Ebene** umfasst Entscheidungen mit einem Planungshorizont von mehreren Jahren, die nur mit hohem Aufwand revidierbar sind, weil sie mit erheblichen Investitionen verbunden sind. Hierzu zählen die Gestaltung des Supply-Chain-Netzwerks selbst — also etwa Standortentscheidungen für Werke und Lager (siehe die Kapitel zur Standortplanung in diesem Buch) —, die Wahl der Fertigungstiefe (Eigenfertigung oder Fremdbezug) sowie grundsätzliche Entscheidungen über Transportmodi und Kooperationspartner.
+The **strategic level** comprises decisions with a planning horizon of several years, which can only be reversed at great expense because they involve substantial investment. These include the design of the supply chain network itself — for example, location decisions for plants and warehouses (see the chapters on facility location planning in this book) —, the choice of vertical integration (make or buy) and fundamental decisions about transport modes and cooperation partners.
 
-Die **taktische Ebene** umfasst Entscheidungen mit einem Planungshorizont von einigen Monaten bis etwa einem Jahr, die innerhalb des durch die strategische Ebene vorgegebenen Netzwerks getroffen werden. Beispiele sind die mittelfristige Produktions- und Personalplanung, die Festlegung von Bestellrhythmen und Sicherheitsbeständen oder saisonale Kapazitätsanpassungen.
+The **tactical level** comprises decisions with a planning horizon of a few months to about a year, which are made within the network specified by the strategic level. Examples include medium-term production and workforce planning, setting order cycles and safety stocks, or seasonal capacity adjustments.
 
-Die **operative Ebene** schließlich umfasst kurzfristige, häufig tägliche oder wöchentliche Entscheidungen innerhalb der durch die taktische Ebene gesetzten Parameter — etwa die konkrete Auslösung einer Bestellung, die Feinplanung von Touren oder die tagesaktuelle Disposition von Lagerbeständen. Diese Ebene wird in späteren Kapiteln unter anderem anhand von Bestandsmodellen (Newsvendor-Modell, Sicherheitsbestände) und des Bullwhip-Effekts vertieft.
+Finally, the **operational level** comprises short-term, often daily or weekly decisions within the parameters set by the tactical level — such as actually triggering an order, detailed route planning or the day-to-day management of inventory. This level is examined in more depth in later chapters, among other things using inventory models (newsvendor model, safety stocks) and the bullwhip effect.
 
-Wie eng operative Entscheidungen mit den darüberliegenden Ebenen verknüpft sind, zeigt sich schon an einer einfachen Kennzahl: dem Lagerbestand an unterschiedlichen Stufen einer Supply Chain. Ein Lagerbestand ist zwar eine operative Größe (er verändert sich täglich), seine zulässige Bandbreite wird aber durch taktische Zielvorgaben (Servicegrade, Sicherheitsbestände) und indirekt durch strategische Netzwerkentscheidungen (Anzahl und Lage der Lagerstandorte) bestimmt.
+How closely operational decisions are linked to the levels above them is already evident from a simple key figure: the inventory at different stages of a supply chain. Although inventory is an operational variable (it changes daily), its permissible range is determined by tactical targets (service levels, safety stocks) and indirectly by strategic network decisions (number and location of warehouse sites).
 
 ::: {.r-exkurs}
-**R-Exkurs: Ein Vektor mit Lagerbeständen — Zusammenfassung**
+**R aside: A vector of inventory levels — summary**
 
-Die folgende Grafik verbindet die bisherigen R-Grundlagen: ein benannter Vektor mit Lagerbeständen an drei Supply-Chain-Stufen wird in eine Tabelle überführt und mit `ggplot()` visualisiert.
+The following chart brings together the R basics covered so far: a named vector of inventory levels at three supply chain stages is converted into a table and visualised with `ggplot()`.
 
 ```{r}
 #| label: ch1-lagerbestand-akteure
-#| fig-cap: "Beispielhafte Lagerbestände an drei Stufen einer Supply Chain"
+#| fig-cap: "Example inventory levels at three stages of a supply chain"
 
-# Vektor mit Lagerbestaenden (Stueck) an drei Stufen der Supply Chain
-lagerbestand <- c(Lieferant = 420, Hersteller = 180, Haendler = 95)
+# Vector of inventory levels (units) at three stages of the supply chain
+lagerbestand <- c(Supplier = 420, Manufacturer = 180, Retailer = 95)
 
-# Umwandlung in eine Tabelle (tibble) fuer ggplot: eine Spalte mit der
-# Stufe (aus den Vektornamen) und eine Spalte mit dem Zahlenwert
+# Conversion into a table (tibble) for ggplot: one column with the
+# stage (from the vector names) and one column with the numerical value
 lagerbestand_tbl <- tibble(
   stufe = factor(names(lagerbestand), levels = names(lagerbestand)),
   bestand = as.numeric(lagerbestand)
 )
 
-# data + aes() + geom_col(): Saeulendiagramm der Lagerbestaende je Stufe
+# data + aes() + geom_col(): column chart of inventory levels per stage
 ggplot(lagerbestand_tbl, aes(x = stufe, y = bestand)) +
   geom_col(fill = "#0B6E4F") +
   labs(
-    x = NULL, y = "Lagerbestand (Stück)",
-    title = "Lagerbestände entlang einer dreistufigen Supply Chain"
+    x = NULL, y = "Inventory (units)",
+    title = "Inventory levels along a three-stage supply chain"
   ) +
   theme_minimal(base_size = 12)
 ```
 
-Der abnehmende Bestand von Lieferant zu Händler ist kein Zufall, sondern spiegelt typische Bestandsmuster wider, die in den Kapiteln zu Unsicherheit, Pooling und dem Newsvendor-Modell noch genauer untersucht werden.
+The decreasing inventory from supplier to retailer is no coincidence but reflects typical inventory patterns that will be examined in more detail in the chapters on uncertainty, pooling and the newsvendor model.
 :::
 
-## Zusammenfassung
+## Summary
 
-Dieses Kapitel hat Supply Chain Management als die unternehmensübergreifende Koordination von Material-, Informations- und Finanzflüssen eingeführt und anhand historischer Beispiele — vom Pyramidenbau über die Toga praetexta bis zum Gewürzhandel des 15. Jahrhunderts — gezeigt, dass dieses Koordinationsproblem so alt ist wie arbeitsteilige Wertschöpfung selbst. Eine Supply Chain wurde als Netzwerk mehrerer, rechtlich selbstständiger Akteure definiert, die gemeinsam einen Kundenbedarf erfüllen; je nach Verteilung von Marktmacht und Koordinationsfunktion lassen sich fokale und polyzentrische Strukturen unterscheiden. Der SCM-Gewinn als Differenz von Kundenumsatz und Gesamtkosten aller Prozesse macht deutlich, warum individuelle Gewinnoptimierung einzelner Akteure nicht automatisch zur Optimierung der gesamten Kette führt — und begründet damit den eigenständigen Koordinationsauftrag des Supply Chain Managements gegenüber Logistik und Beschaffung. Schließlich wurden mit der strategischen, taktischen und operativen Ebene drei Zeithorizonte unterschieden, die in den folgenden Kapiteln — beginnend mit Wertschöpfung und Strategic Fit — systematisch vertieft werden.
+This chapter has introduced supply chain management as the cross-company coordination of material, information and financial flows and, using historical examples — from the construction of the pyramids and the toga praetexta to the spice trade of the 15th century — has shown that this coordination problem is as old as value creation based on the division of labour itself. A supply chain was defined as a network of several legally independent actors who jointly fulfil a customer demand; depending on the distribution of market power and the coordinating function, focal and polycentric structures can be distinguished. SCM profit, as the difference between customer revenue and the total costs of all processes, makes clear why individual profit optimisation by single actors does not automatically lead to optimisation of the entire chain — and thus justifies the distinct coordination mandate of supply chain management compared with logistics and procurement. Finally, three time horizons were distinguished — the strategic, tactical and operational levels — which will be examined systematically in the following chapters, beginning with value creation and strategic fit.
 
-Parallel dazu wurden die ersten Bausteine der Programmiersprache R eingeführt: Zuweisung und Kommentare, die drei Basisdatentypen, Vektoren und elementweise Rechenoperationen, Tabellen in Form von `data.frame` und `tibble`, das Laden von Paketen mit `library()` sowie eine erste Grafik mit `ggplot()`. Diese Werkzeuge werden in den folgenden Kapiteln durchgängig genutzt, um Modelle des Supply Chain Managements nicht nur zu beschreiben, sondern auch zu berechnen und zu visualisieren.
+In parallel, the first building blocks of the R programming language were introduced: assignment and comments, the three basic data types, vectors and element-wise arithmetic, tables in the form of `data.frame` and `tibble`, loading packages with `library()` and a first chart with `ggplot()`. These tools will be used throughout the following chapters not only to describe supply chain management models but also to calculate and visualise them.
 
 ::: {.kontrollfragen}
-**Kontrollfragen**
+**Review questions**
 
-1. Erläutern Sie anhand des Pyramidenbaus oder von Hannibals Alpenüberquerung, welche Kernmerkmale eine Supply Chain im modernen Sinn bereits in der Antike aufwies.
-2. Warum lässt sich das dramatische Preisgefälle zwischen einfacher Toga, besserer Toga und Toga praetexta als Ausdruck einer Wertschöpfungskette interpretieren?
-3. Nennen und erläutern Sie die drei Flussarten, die eine Supply Chain miteinander verbindet, und geben Sie für jede ein Beispiel aus dem Gewürzhandel des 15. Jahrhunderts.
-4. Was unterscheidet die dispositive Ebene, die Finanzebene und die Güterebene eines Unternehmens voneinander, und wie hängen sie zusammen?
-5. Erklären Sie den Zusammenhang zwischen SCM-Gewinn und individuellen Partnergewinnen. Warum führt individuelle Gewinnmaximierung nicht zwangsläufig zu einem maximalen SCM-Gewinn?
-6. Grenzen Sie eine fokale von einer polyzentrischen Supply-Chain-Struktur ab und nennen Sie je ein Beispiel.
-7. Worin unterscheidet sich Supply Chain Management von Logistik und von Beschaffung? Begründen Sie Ihre Antwort mit mindestens einer der im Kapitel zitierten Definitionen.
-8. Wählen Sie zwei der folgenden Produkte — eine Glasflasche Cola, ein T-Shirt, ein Gravel-Bike, eine Tafel Schokolade — und skizzieren Sie stichpunktartig deren Supply-Chain-Struktur: Welche Rohstoffe und Bauteile sind beteiligt, welche Produktionsschritte lassen sich unterscheiden, und wie könnten strategische, taktische und operative Entscheidungen in dieser Kette aussehen?
-9. Erläutern Sie das Prinzip der doppelten Marginalisierung. Um wie viel Prozent sinkt im linearen Modell der Kettengewinn, wenn Hersteller und Händler ihre Preise unabhängig voneinander setzen?
-10. Warum war die Magellan-Expedition trotz des Verlusts von vier Schiffen profitabel, und welches allgemeine Muster von Netzwerkentscheidungen illustriert ihre Bilanz?
+1. Using the construction of the pyramids or Hannibal's crossing of the Alps, explain which core characteristics of a supply chain in the modern sense were already present in antiquity.
+2. Why can the dramatic price gradient between a simple toga, a better toga and a toga praetexta be interpreted as an expression of a value chain?
+3. Name and explain the three types of flow that link a supply chain, and give an example of each from the 15th-century spice trade.
+4. What distinguishes the managerial level, the financial level and the goods level of a company from one another, and how are they related?
+5. Explain the relationship between SCM profit and the individual profits of partners. Why does individual profit maximisation not necessarily lead to maximum SCM profit?
+6. Distinguish a focal from a polycentric supply chain structure and give an example of each.
+7. How does supply chain management differ from logistics and from procurement? Justify your answer with at least one of the definitions cited in this chapter.
+8. Choose two of the following products — a glass bottle of cola, a T-shirt, a gravel bike, a bar of chocolate — and outline their supply chain structure in bullet points: which raw materials and components are involved, which production steps can be distinguished, and what might strategic, tactical and operational decisions in this chain look like?
+9. Explain the principle of double marginalisation. By what percentage does chain profit fall in the linear model if the manufacturer and retailer set their prices independently of one another?
+10. Why was the Magellan expedition profitable despite the loss of four ships, and what general pattern of network decisions does its balance illustrate?
 :::

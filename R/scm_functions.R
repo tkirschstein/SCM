@@ -133,26 +133,27 @@ kable_zeilenweise <- function(data,
   )
 }
 
-# 0. Inventor management ─────────────────────────────────────────────────────
+# 0. Inventory management ─────────────────────────────────────────────────────
 
-#' Simulation einer periodischen (t, S)-Bestandspolitik
+#' Simulation of a periodic-review (t, S) inventory policy
 #'
-#' Zeitliche Reihenfolge innerhalb einer Periode k:
-#'   1. Eingang der Bestellung aus Periode k - wbz
-#'   2. Realisierung des Bedarfs
-#'   3. Fortschreibung von Nettobestand und physischem Bestand
-#'   4. Ermittlung der offenen Bestellungen
-#'   5. Bestellentscheidung in jeder t-ten Periode
+#' Sequence of events within a period k:
+#'   1. Receipt of the order placed in period k - wbz
+#'   2. Realisation of demand
+#'   3. Update of net inventory and physical inventory
+#'   4. Determination of outstanding orders
+#'   5. Order decision in every t-th period
 #'
-#' @param bedarf Numerischer Vektor der periodischen Bedarfe d[k].
-#' @param t Positives ganzzahliges Bestell- bzw. Überprüfungsintervall.
-#' @param S Order-up-to-Level beziehungsweise Zielbestand.
-#' @param anfangsbestand Physischer Anfangsbestand vor Periode 1.
-#' @param wbz Feste Wiederbeschaffungszeit in ganzen Perioden.
-#' @param backorders Logisch. Bei TRUE werden Fehlmengen als Backorders
-#'   fortgeschrieben. Bei FALSE handelt es sich um Lost Sales.
+#' @param bedarf Numeric vector of period demands d[k] (German: Bedarf = demand).
+#' @param t Positive integer order (review) interval.
+#' @param S Order-up-to level (target inventory).
+#' @param anfangsbestand Initial physical inventory before period 1.
+#' @param wbz Fixed replenishment lead time in whole periods.
+#' @param backorders Logical. If TRUE, shortages are carried forward as
+#'   backorders. If FALSE, unmet demand is lost (lost sales).
 #'
-#' @return Ein tibble mit Bestands-, Bestell- und Lieferinformationen.
+#' @return A tibble with inventory, order and delivery information
+#'   (column names are in German, e.g. Periode = period, Bedarf = demand).
 #'
 #' @examples
 #' simuliere_tS(
@@ -170,32 +171,32 @@ simuliere_tS <- function(bedarf,
                          backorders = TRUE) {
   
   if (!is.numeric(bedarf) || length(bedarf) == 0L) {
-    stop("'bedarf' muss ein nicht-leerer numerischer Vektor sein.")
+    stop("'bedarf' must be a non-empty numeric vector.")
   }
   
   if (any(is.na(bedarf)) || any(bedarf < 0)) {
-    stop("'bedarf' darf keine fehlenden oder negativen Werte enthalten.")
+    stop("'bedarf' must not contain missing or negative values.")
   }
   
   if (length(t) != 1L || is.na(t) || t < 1 || t != as.integer(t)) {
-    stop("'t' muss eine positive ganze Zahl sein.")
+    stop("'t' must be a positive integer.")
   }
   
   if (length(S) != 1L || is.na(S) || S < 0) {
-    stop("'S' muss eine nicht-negative Zahl sein.")
+    stop("'S' must be a non-negative number.")
   }
   
   if (length(anfangsbestand) != 1L ||
       is.na(anfangsbestand) ||
       anfangsbestand < 0) {
-    stop("'anfangsbestand' muss eine nicht-negative Zahl sein.")
+    stop("'anfangsbestand' must be a non-negative number.")
   }
   
   if (length(wbz) != 1L ||
       is.na(wbz) ||
       wbz < 0 ||
       wbz != as.integer(wbz)) {
-    stop("'wbz' muss eine nicht-negative ganze Zahl sein.")
+    stop("'wbz' must be a non-negative integer.")
   }
   
   n_perioden <- length(bedarf)
@@ -216,25 +217,25 @@ simuliere_tS <- function(bedarf,
   disponibler_bestand_vor_bestellung <- numeric(n_perioden)
   disponibler_bestand_nach_bestellung <- numeric(n_perioden)
   
-  # n_0 ist bei Backorders identisch mit dem physischen Anfangsbestand.
+  # With backorders, n_0 equals the initial physical inventory.
   netto_vorperiode <- anfangsbestand
   
   for (k in periode) {
     
-    # 1. Lieferung zu Periodenbeginn:
-    # Bestellung o_(k-wbz) trifft in Periode k ein.
+    # 1. Delivery at the start of the period:
+    # order o_(k-wbz) arrives in period k.
     if (wbz == 0L) {
       liefermenge[k] <- 0
     } else if (k > wbz) {
       liefermenge[k] <- bestellmenge[k - wbz]
     }
     
-    # 2. Nettobestand nach Lieferung und Bedarfsrealisierung.
+    # 2. Net inventory after delivery and realisation of demand.
     nettobestand_vor_bestellung[k] <-
       netto_vorperiode + liefermenge[k] - bedarf[k]
     
-    # Bei Backordering wird der Nettobestand einschließlich Fehlmengen
-    # fortgeschrieben. Bei Lost Sales geht nicht bedienter Bedarf verloren.
+    # With backordering, net inventory is carried forward including
+    # shortages. With lost sales, unmet demand is lost.
     if (backorders) {
       nettobestand[k] <- nettobestand_vor_bestellung[k]
     } else {
@@ -244,29 +245,29 @@ simuliere_tS <- function(bedarf,
       )
     }
     
-    # Physischer Bestand ist nie negativ.
+    # Physical inventory is never negative.
     physischer_bestand[k] <- max(
       0,
       nettobestand[k]
     )
     
-    # Der Bestand unmittelbar vor Bedarfsrealisierung ergibt sich aus
-    # dem Nettobestand der Vorperiode zuzüglich der eingetroffenen Menge.
+    # Inventory immediately before demand is realised equals the
+    # previous period's net inventory plus the quantity received.
     physischer_bestand_vor_bedarf[k] <- max(
       0,
       netto_vorperiode + liefermenge[k]
     )
     
-    # Fehlmenge ist nur bei Backordering relevant.
+    # Shortage quantity is only relevant with backordering.
     fehlmenge[k] <- if (backorders) {
       max(0, -netto_vorperiode - liefermenge[k] + bedarf[k])
     } else {
       max(0, -netto_vorperiode - liefermenge[k] + bedarf[k])
     }
     
-    # 3. Noch offene Bestellungen vor der Neubestellung:
-    # Alle Bestellungen der letzten wbz Perioden, die noch nicht
-    # eingetroffen sind.
+    # 3. Outstanding orders before the new order:
+    # all orders of the last wbz periods that have not yet
+    # arrived.
     if (wbz == 0L) {
       offene_bestellungen[k] <- 0
     } else {
@@ -280,12 +281,12 @@ simuliere_tS <- function(bedarf,
       }
     }
     
-    # 4. Disponibler Bestand bzw. Bestandsposition vor Neubestellung.
+    # 4. Inventory position before the new order.
     disponibler_bestand_vor_bestellung[k] <-
       nettobestand[k] + offene_bestellungen[k]
     
-    # 5. Bestellentscheidung:
-    # In Perioden 1, 1+t, 1+2t, ... wird auf S aufgefüllt.
+    # 5. Order decision:
+    # in periods 1, 1+t, 1+2t, ... inventory is raised to S.
     if ((k - 1L) %% t == 0L) {
       bestellmenge[k] <- max(
         0,
@@ -293,11 +294,11 @@ simuliere_tS <- function(bedarf,
       )
     }
     
-    # Bestandsposition unmittelbar nach der Bestellung.
+    # Inventory position immediately after ordering.
     disponibler_bestand_nach_bestellung[k] <-
       disponibler_bestand_vor_bestellung[k] + bestellmenge[k]
     
-    # Fortschreibung für die nächste Periode.
+    # Carry forward to the next period.
     netto_vorperiode <- nettobestand[k]
   }
   
@@ -853,9 +854,9 @@ add_heuristic_wlp <- function(fixed_costs, transport_cost_mat, demand,
     names(cand_cost) <- wh_names[candidates]
     savings <- cost_cur - cand_cost
 
-    # Auswahl über die resultierenden Gesamtkosten (robust auch wenn
-    # cost_cur = Inf ist: sonst sind im ersten Schritt alle savings
-    # gleich "Inf" und which.max() waere nur Zufall der Reihenfolge)
+    # Select by resulting total cost (robust even when
+    # cost_cur = Inf: otherwise all savings equal "Inf" in the first
+    # step and which.max() would merely pick by order)
     best_idx    <- which.min(cand_cost)
     best_saving <- savings[best_idx]
     if (best_saving <= 0 && length(open) > 0) break   # no improvement
@@ -979,4 +980,328 @@ dupont_roi <- function(revenue, mat_cost, pers_cost,
     asset_turnover = asset_turnover,
     roi            = roi
   )
+}
+
+
+# ─── 6. FIGURES ───────────────────────────────────────────────────────────────
+
+#' Open system model of the firm (after Kummer et al. 2018)
+#'
+#' Draws the company as an open system between suppliers and customers with
+#' the functional areas procurement, production and sales, the cross-sectional
+#' function logistics and the three flow levels (managerial, financial, goods).
+#'
+#' @param base_size Base font size.
+#' @return A ggplot object.
+#' @examples
+#' plot_open_firm_model()
+plot_open_firm_model <- function(base_size = 12) {
+  red    <- "#C8102E"
+  pink   <- "#F6C5B8"
+  salmon <- "#E9967A"
+  grey   <- "#D9D9D9"
+  line   <- "#4D4D4D"
+  fs     <- base_size / ggplot2::.pt
+
+  boxes <- data.frame(
+    xmin = c(0.0, 7.4, 1.3, 3.1, 4.9),
+    xmax = c(1.1, 8.5, 3.1, 4.9, 6.7),
+    ymin = c(1.2, 1.2, 0.4, 0.4, 0.4),
+    ymax = c(4.0, 4.0, 4.6, 4.6, 4.6),
+    fill = c(grey, grey, pink, pink, pink)
+  )
+  labels <- data.frame(
+    x = c(0.55, 7.95, 2.2, 4.0, 5.8, 4.0),
+    y = c(2.6, 2.6, 4.25, 4.25, 4.25, 4.95),
+    label = c("Suppliers", "Customers", "Procurement", "Production", "Sales", "Management")
+  )
+  # arrow segments: 4 pieces between suppliers and customers
+  brk  <- seq(1.15, 7.35, length.out = 5)
+  segs <- data.frame(x = head(brk, -1) + 0.08, xend = tail(brk, -1) - 0.08)
+  mk <- function(y, type) transform(segs, y = y, yend = y, type = type)
+  flows <- rbind(mk(3.65, "info"), mk(3.10, "fin"), mk(2.45, "goods"))
+
+  legend_df <- data.frame(
+    x = c(0.3, 3.2, 6.0), xend = c(1.0, 3.9, 6.7), y = -0.45, yend = -0.45,
+    type = c("info", "fin", "goods"),
+    label = c("Managerial level", "Financial level", "Goods level")
+  )
+  lt <- c(info = "42", fin = "15", goods = "solid")
+  lw <- c(info = 2.2, fin = 2.6, goods = 2.2)
+
+  p <- ggplot2::ggplot() +
+    ggplot2::geom_rect(data = boxes,
+      ggplot2::aes(xmin = xmin, xmax = xmax, ymin = ymin, ymax = ymax, fill = I(fill)),
+      colour = line, linewidth = 0.4) +
+    ggplot2::annotate("rect", xmin = 1.3, xmax = 6.7, ymin = 4.6, ymax = 5.3,
+      fill = "white", colour = line, linetype = "dotted", linewidth = 0.5) +
+    ggplot2::annotate("rect", xmin = 0.6, xmax = 7.2, ymin = 0.9, ymax = 1.65,
+      fill = salmon, colour = line, linewidth = 0.4) +
+    ggplot2::annotate("text", x = 4.0, y = 1.45, label = "Logistics",
+      fontface = "bold", size = fs, colour = "grey20") +
+    ggplot2::annotate("text", x = c(2.2, 4.0, 5.8), y = 1.1,
+      label = c("Procurement logistics", "Production logistics", "Distribution logistics"),
+      fontface = "bold", size = fs * 0.85, colour = "grey20") +
+    ggplot2::geom_text(data = labels, ggplot2::aes(x = x, y = y, label = label),
+      fontface = "bold", size = fs, colour = "grey20")
+
+  arr <- grid::arrow(length = grid::unit(0.14, "inches"), type = "closed")
+  for (tp in names(lt)) {
+    d <- flows[flows$type == tp, ]
+    both <- tp != "fin"                    # payments flow upstream only
+    # dashed/dotted shaft without arrow heads (heads are drawn solid below)
+    p <- p + ggplot2::geom_segment(data = d,
+      ggplot2::aes(x = x + 0.18, xend = xend - if (both) 0.18 else 0.02, y = y, yend = yend),
+      colour = red, linewidth = lw[[tp]], linetype = lt[[tp]],
+      lineend = if (tp == "fin") "round" else "butt")
+    # solid arrow heads
+    p <- p + ggplot2::geom_segment(data = d,
+      ggplot2::aes(x = x + 0.2, xend = x, y = y, yend = yend),
+      colour = red, linewidth = lw[[tp]] * 0.6, arrow = arr, linejoin = "mitre")
+    if (both) p <- p + ggplot2::geom_segment(data = d,
+      ggplot2::aes(x = xend - 0.2, xend = xend, y = y, yend = yend),
+      colour = red, linewidth = lw[[tp]] * 0.6, arrow = arr, linejoin = "mitre")
+    l <- legend_df[legend_df$type == tp, ]
+    p <- p + ggplot2::geom_segment(data = l,
+      ggplot2::aes(x = x, xend = xend, y = y, yend = yend),
+      colour = red, linewidth = lw[[tp]], linetype = lt[[tp]],
+      lineend = if (tp == "fin") "round" else "butt") +
+      ggplot2::annotate("text", x = l$xend + 0.12, y = l$y, label = l$label,
+        hjust = 0, size = fs * 0.9, colour = "grey20")
+  }
+  p + ggplot2::coord_fixed(xlim = c(0, 8.5), ylim = c(-0.7, 5.35), expand = FALSE) +
+    ggplot2::theme_void(base_size = base_size)
+}
+
+
+#' Managerial (order-processing) activities of the firm (after Kummer et al. 2018, p. 45)
+#'
+#' Draws the external managerial activities with suppliers and customers
+#' (inquiry, offer, order, order confirmation, invoice) and the internal
+#' managerial activities between sales, production and procurement
+#' (requirement, queries, reports). Numbers 1-4 mark the sequence in which a
+#' customer inquiry propagates upstream through the firm.
+#'
+#' @param base_size Base font size.
+#' @return A ggplot object.
+#' @examples
+#' plot_order_cycles_model()
+plot_order_cycles_model <- function(base_size = 12) {
+  red    <- "#C8102E"
+  pink   <- "#F6C5B8"
+  salmon <- "#E9967A"
+  grey   <- "#D9D9D9"
+  line   <- "#4D4D4D"
+  fs     <- base_size / ggplot2::.pt
+
+  # block-arrow polygon: from x0 to x1 (direction given by order), centre yc, height h
+  block_arrow <- function(x0, x1, yc, h, id, head = 0.35, double = FALSE) {
+    s <- sign(x1 - x0); hd <- min(head, abs(x1 - x0) / 2)
+    if (!double) {
+      xs <- c(x0, x1 - s * hd, x1 - s * hd, x1, x1 - s * hd, x1 - s * hd, x0)
+      ys <- yc + c(-h / 2, -h / 2, -h * 0.75, 0, h * 0.75, h / 2, h / 2)
+    } else {
+      xs <- c(x0, x0 + s * hd, x0 + s * hd, x1 - s * hd, x1 - s * hd, x1,
+              x1 - s * hd, x1 - s * hd, x0 + s * hd, x0 + s * hd)
+      ys <- yc + c(0, -h * 0.75, -h / 2, -h / 2, -h * 0.75, 0, h * 0.75, h / 2, h / 2, h * 0.75)
+    }
+    data.frame(x = xs, y = ys, id = id)
+  }
+
+  # external activities (white arrows); dir = -1 points left, +1 points right
+  ext_rows <- data.frame(
+    label = c("Inquiry", "Offer", "Order", "Order\nconfirmation", "Invoice"),
+    y     = c(5.75, 5.15, 4.55, 3.95, 3.35),
+    dir   = c(-1, 1, -1, 1, 1)
+  )
+  ext <- do.call(rbind, lapply(seq_len(nrow(ext_rows)), function(i) {
+    r <- ext_rows[i, ]
+    rbind(
+      transform(block_arrow(if (r$dir > 0) 0.85 else 2.25, if (r$dir > 0) 2.25 else 0.85,
+                            r$y, 0.38, paste0("L", i)), side = "L", label = r$label, dir = r$dir),
+      transform(block_arrow(if (r$dir > 0) 7.75 else 9.15, if (r$dir > 0) 9.15 else 7.75,
+                            r$y, 0.38, paste0("R", i)), side = "R", label = r$label, dir = r$dir)
+    )
+  }))
+  ext_lab <- unique(ext[, c("id", "side", "label", "dir")])
+  ext_lab$x <- ifelse(ext_lab$side == "L", 1.55, 8.45) - ext_lab$dir * 0.12
+  ext_lab$y <- ext_rows$y[as.integer(sub("[LR]", "", ext_lab$id))]
+
+  # internal activities (salmon arrows) between sales-production and production-procurement
+  int_rows <- data.frame(label = c("Requirement", "Queries", "Reports"),
+                         y = c(5.15, 4.25, 3.35), dir = c(-1, 1, 1))
+  int <- do.call(rbind, lapply(seq_len(nrow(int_rows)), function(i) {
+    r <- int_rows[i, ]
+    do.call(rbind, lapply(list(c(2.75, 4.85, "A"), c(5.15, 7.25, "B")), function(sp) {
+      a <- as.numeric(sp[1]); b <- as.numeric(sp[2])
+      transform(block_arrow(if (r$dir > 0) a else b, if (r$dir > 0) b else a, r$y, 0.55,
+                            paste0(sp[3], i)),
+                label = r$label, xm = (a + b) / 2 - r$dir * 0.1, ym = r$y)
+    }))
+  }))
+  int_lab <- unique(int[, c("id", "label", "xm", "ym")])
+
+  both <- rbind(block_arrow(0.75, 3.95, 2.7, 0.3, "P1", head = 0.3, double = TRUE),
+                block_arrow(6.05, 9.25, 2.7, 0.3, "P2", head = 0.3, double = TRUE))
+
+  legend_ext <- rbind(block_arrow(1.3, 0.3, 0.75, 0.3, "LE1", 0.3),
+                      block_arrow(0.3, 1.3, 0.25, 0.3, "LE2", 0.3))
+  legend_int <- rbind(block_arrow(6.6, 5.6, 0.75, 0.3, "LI1", 0.3),
+                      block_arrow(5.6, 6.6, 0.25, 0.3, "LI2", 0.3))
+
+  nums <- data.frame(x = c(8.3, 5.35, 2.95, 1.7), y = c(6.3, 5.75, 5.75, 6.3),
+                     label = c("1", "2", "3", "4"))
+
+  poly <- function(d, fill, col = line) ggplot2::geom_polygon(data = d,
+    ggplot2::aes(x = x, y = y, group = id), fill = fill, colour = col, linewidth = 0.35)
+
+  ggplot2::ggplot() +
+    ggplot2::annotate("rect", xmin = c(0, 8.5), xmax = c(1.5, 10), ymin = 1.05, ymax = 6.6,
+      fill = grey, colour = line, linewidth = 0.4) +
+    ggplot2::annotate("rect", xmin = c(1.5, 3.8, 6.2), xmax = c(3.8, 6.2, 8.5),
+      ymin = 1.05, ymax = 6.6, fill = pink, colour = line, linewidth = 0.4) +
+    ggplot2::annotate("rect", xmin = 1.5, xmax = 8.5, ymin = 6.6, ymax = 7.3,
+      fill = "white", colour = line, linetype = "dotted", linewidth = 0.5) +
+    ggplot2::annotate("text", x = c(5, 2.65, 5, 7.35), y = c(6.95, 6.3, 6.3, 6.3),
+      label = c("Management", "Procurement", "Production", "Sales"),
+      fontface = "bold", size = fs, colour = "grey20") +
+    ggplot2::annotate("text", x = c(0.42, 9.58), y = 4.55, label = c("Suppliers", "Customers"),
+      fontface = "bold", size = fs * 0.9, colour = "grey20", angle = 90) +
+    ggplot2::annotate("rect", xmin = 1.1, xmax = 8.9, ymin = 1.3, ymax = 2.2,
+      fill = salmon, colour = line, linewidth = 0.4) +
+    ggplot2::annotate("text", x = 5, y = 1.98, label = "Logistics",
+      fontface = "bold", size = fs * 0.9, colour = "grey20") +
+    ggplot2::annotate("text", x = c(2.65, 5, 7.35), y = 1.55,
+      label = c("Procurement logistics", "Production logistics", "Distribution logistics"),
+      fontface = "bold", size = fs * 0.75, colour = "grey20") +
+    poly(ext, "white") +
+    ggplot2::geom_text(data = ext_lab, ggplot2::aes(x = x, y = y, label = label),
+      size = fs * 0.72, lineheight = 0.8, colour = "grey15") +
+    poly(int, salmon, col = "#B84A3A") +
+    ggplot2::geom_text(data = int_lab, ggplot2::aes(x = xm, y = ym, label = label),
+      size = fs * 0.85, fontface = "bold", colour = "white") +
+    poly(both, "white") +
+    ggplot2::annotate("text", x = c(2.35, 7.65), y = 2.7,
+      label = "Product information/queries", size = fs * 0.7, colour = "grey15") +
+    ggplot2::geom_point(data = nums, ggplot2::aes(x = x, y = y), shape = 21, size = fs * 2.2,
+      fill = red, colour = "white", stroke = 0.8) +
+    ggplot2::geom_text(data = nums, ggplot2::aes(x = x, y = y, label = label),
+      size = fs * 0.85, fontface = "bold", colour = "white") +
+    poly(legend_ext, "white") + poly(legend_int, salmon, col = "#B84A3A") +
+    ggplot2::annotate("text", x = c(1.5, 6.8), y = 0.5, hjust = 0, lineheight = 0.9,
+      label = c("External managerial\nactivities", "Internal managerial\nactivities"),
+      size = fs * 0.8, colour = "grey20") +
+    ggplot2::coord_fixed(xlim = c(0, 10), ylim = c(0, 7.35), expand = FALSE) +
+    ggplot2::theme_void(base_size = base_size)
+}
+
+
+#' Levels of the management system (after Dyckhoff 1998)
+#'
+#' Pyramid with the normative, strategic, tactical and operational levels of
+#' the management system above the performance system, and the value,
+#' information and material levels on the right.
+#'
+#' @param base_size Base font size.
+#' @return A ggplot object.
+#' @examples
+#' plot_management_pyramid()
+plot_management_pyramid <- function(base_size = 12) {
+  fs  <- base_size / ggplot2::.pt
+  ink <- "grey10"
+  apex <- c(5, 10); bl <- c(0.6, 0); br <- c(9.4, 0)
+  # x-coordinates of the triangle edges at height y
+  xl <- function(y) apex[1] - (apex[1] - bl[1]) * (apex[2] - y) / apex[2]
+  xr <- function(y) apex[1] + (br[1] - apex[1]) * (apex[2] - y) / apex[2]
+  lev_y <- c(7.3, 5.6, 3.9, 2.2)                    # level boundaries
+  hlines <- data.frame(x = xl(lev_y), xend = xr(lev_y), y = lev_y, yend = lev_y,
+                       lw = c(0.5, 0.5, 0.5, 0.9))
+  # "fan" lines (operating units) from the tactical level downwards
+  k <- -4:4
+  fan <- data.frame(x = 5 + k * 0.33, y = 3.9, xend = 5 + k * 0.95, yend = 0)
+  fan <- fan[fan$x > xl(3.9) + 0.1 & fan$x < xr(3.9) - 0.1, ]
+  fan_top <- data.frame(x = 5 + k * 0.33, y = 5.6, xend = 5 + k * 0.33, yend = 3.9)
+  fan_top <- fan_top[abs(fan_top$x - 5) < 0.8 & fan_top$x != 5, ]
+  lab <- data.frame(
+    x = 5, y = c(7.9, 6.45, 4.75, 3.05, 1.1),
+    label = c("normative", "strategic", "tactical", "operational", "performance system"))
+  side <- data.frame(x = 11.8, y = c(8.6, 4.75, 1.1),
+                     label = c("value level", "information level", "material level"))
+  # bracket along the left edge (management system)
+  off <- -0.6
+  br_df <- data.frame(x = xl(c(9.9, 2.2)) + off * c(1, 1), y = c(9.9, 2.2) + c(0.05, -0.05))
+  ggplot2::ggplot() +
+    ggplot2::annotate("polygon", x = c(bl[1], apex[1], br[1]), y = c(bl[2], apex[2], br[2]),
+      fill = "white", colour = ink, linewidth = 1.1) +
+    ggplot2::geom_segment(data = hlines, ggplot2::aes(x = x, xend = xend, y = y, yend = yend,
+      linewidth = I(lw)), colour = ink) +
+    ggplot2::geom_segment(data = fan, ggplot2::aes(x = x, xend = xend, y = y, yend = yend),
+      colour = ink, linewidth = 0.35) +
+    ggplot2::geom_segment(data = fan_top, ggplot2::aes(x = x, xend = xend, y = y, yend = yend),
+      colour = ink, linewidth = 0.35) +
+    ggplot2::annotate("segment", x = -0.5, xend = 13.2, y = c(7.3, 2.2), yend = c(7.3, 2.2),
+      linetype = "dashed", colour = ink, linewidth = 0.5) +
+    ggplot2::annotate("label", x = 5, y = lab$y, label = lab$label, size = fs,
+      label.size = 0, fill = "white", colour = ink) +
+    ggplot2::annotate("text", x = side$x, y = side$y, label = side$label, size = fs, colour = ink) +
+    ggplot2::annotate("segment", x = br_df$x[1], xend = br_df$x[2], y = br_df$y[1], yend = br_df$y[2],
+      colour = ink, linewidth = 0.5) +
+    ggplot2::annotate("segment", x = br_df$x, xend = br_df$x + 0.28, y = br_df$y, yend = br_df$y,
+      colour = ink, linewidth = 0.5) +
+    ggplot2::annotate("text", x = mean(br_df$x) - 0.45, y = mean(br_df$y) + 0.2,
+      label = "management system", size = fs, colour = ink,
+      angle = atan2(br_df$y[1] - br_df$y[2], br_df$x[1] - br_df$x[2]) * 180 / pi) +
+    ggplot2::coord_fixed(xlim = c(-0.6, 13.3), ylim = c(-0.2, 10.2), expand = FALSE) +
+    ggplot2::theme_void(base_size = base_size)
+}
+
+#' Substantive and formal objectives of the company (after Buscher et al. 2013, p. 12)
+#'
+#' Classification of corporate objectives into substantive and formal
+#' objectives (monetary / non-monetary, quantifiable / non-quantifiable) and
+#' their transformation into operational target metrics.
+#'
+#' @param base_size Base font size.
+#' @return A ggplot object.
+#' @examples
+#' plot_objective_types()
+plot_objective_types <- function(base_size = 12) {
+  fs  <- base_size / ggplot2::.pt
+  ink <- "grey10"
+  xs  <- c(0, 2.3, 4.6, 6.9, 9.2)                  # column borders
+  cell <- function(x0, x1, y0, y1) data.frame(xmin = x0, xmax = x1, ymin = y0, ymax = y1)
+  grid_rects <- rbind(
+    cell(xs[1], xs[2], 5.1, 7.3),                    # substantive objectives header
+    cell(xs[2], xs[5], 6.6, 7.3),                    # formal objectives
+    cell(xs[2], xs[3], 5.85, 6.6), cell(xs[3], xs[5], 5.85, 6.6),
+    cell(xs[2], xs[4], 5.1, 5.85), cell(xs[4], xs[5], 5.1, 5.85),
+    cell(xs[1], xs[2], 3.3, 5.1), cell(xs[2], xs[3], 3.3, 5.1),
+    cell(xs[3], xs[4], 3.3, 5.1), cell(xs[4], xs[5], 3.3, 5.1),
+    cell(2.3, 6.9, 0.35, 1.75))                      # target metrics box
+  heads <- data.frame(
+    x = c(1.15, 5.75, 3.45, 6.9, 4.6, 8.05), y = c(6.2, 6.95, 6.22, 6.22, 5.47, 5.47),
+    label = c("Substantive\nobjectives", "Formal objectives", "Monetary objectives",
+              "Non-monetary objectives", "Quantifiable objectives", "NQ objectives"))
+  body <- data.frame(
+    x = xs[1:4] + 0.1, y = 4.2,
+    label = c("Types of products\nto be produced in\nterms of quantity\nand quality",
+              "Profit objectives\nRevenue objectives\nCost objectives\nLiquidity objectives",
+              "Growth objectives\nMarket share\nobjectives\nEnvironmental\nobjectives",
+              "Social objectives\nAutonomy, flexibility\nand prestige\nEnvironmental\nobjectives"))
+  ggplot2::ggplot() +
+    ggplot2::geom_rect(data = grid_rects, ggplot2::aes(xmin = xmin, xmax = xmax, ymin = ymin, ymax = ymax),
+      fill = "white", colour = ink, linewidth = 0.5) +
+    ggplot2::geom_text(data = heads, ggplot2::aes(x = x, y = y, label = label),
+      fontface = "bold", size = fs * 0.95, lineheight = 0.9, colour = ink) +
+    ggplot2::geom_text(data = body, ggplot2::aes(x = x, y = y, label = label),
+      hjust = 0, size = fs * 0.85, lineheight = 0.9, colour = ink) +
+    ggplot2::annotate("segment", x = 4.6, xend = 4.6, y = c(3.25, 2.25), yend = c(2.8, 1.8),
+      arrow = grid::arrow(length = grid::unit(0.1, "inches")), linewidth = 0.5, colour = ink) +
+    ggplot2::annotate("text", x = 4.6, y = 2.53, label = "Objective transformation",
+      fontface = "bold", size = fs, colour = ink) +
+    ggplot2::annotate("text", x = 4.6, y = 1.05, lineheight = 1,
+      label = "max. period contribution margin\nmin. inventory levels\nmax. capacity utilisation\nmin. order lead times",
+      size = fs * 0.9, colour = ink) +
+    ggplot2::coord_fixed(xlim = c(-0.05, 9.25), ylim = c(0.25, 7.35), expand = FALSE) +
+    ggplot2::theme_void(base_size = base_size)
 }

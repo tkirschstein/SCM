@@ -1,8 +1,8 @@
 ---
-title: "Fallstudie 6: Der Bullwhip-Effekt"
-subtitle: "Empirische Messung in US-Wirtschaftsdaten und Simulation von Gegenmaßnahmen"
-author: "Supply Chain Management – Gruppenarbeit"
-lang: de
+title: "Case Study 6: The Bullwhip Effect"
+subtitle: "Empirical measurement in US economic data and simulation of countermeasures"
+author: "Supply Chain Management – Group Work"
+lang: en
 format:
   html:
     theme: cosmo
@@ -18,124 +18,125 @@ execute:
 ---
 
 ::: {.callout-note}
-## Steckbrief
+
+## Overview
 
 | | |
 |---|---|
-| **Thema** | Nachfrageaufschaukelung in mehrstufigen Supply Chains |
-| **Vorlesungsbezug** | Kapitel 8 des Readers: Ursachen des Bullwhip-Effekts, Bestellpolitik mit Bestellniveau, Varianzverhältnis, Schranke nach Chen et al. (2000), Beer Game, Gegenmaßnahmen |
-| **Typ** | Datenbasierte Fallstudie: **reale Umsatz- und Bestandsdaten** des U.S. Census Bureau (über FRED) und eine Simulation |
-| **Gruppengröße** | 3–6 Personen |
-| **Ergebnis** | Präsentation (30 Min.) + Diskussion (15 Min.), Foliensatz (PDF) und reproduzierbarer R-/Quarto-Code |
+| **Topic** | Demand amplification in multi-stage supply chains |
+| **Link to the lecture** | Chapter 8 of the course reader: causes of the bullwhip effect, order-up-to ordering policy, variance ratio, bound according to Chen et al. (2000), Beer Game, countermeasures |
+| **Type** | Data-based case study: **real sales and inventory data** from the U.S. Census Bureau (via FRED) and a simulation |
+| **Group size** | 3–6 people |
+| **Deliverable** | Presentation (30 min) + discussion (15 min), slide deck (PDF) and reproducible R/Quarto code |
 :::
 
-# Lernziele
+# Learning objectives
 
-Nach Bearbeitung der Fallstudie können Sie
+After working through this case study, you will be able to
 
-- den Bullwhip-Effekt als Varianzverhältnis operationalisieren und in realen Wirtschaftsdaten messen,
-- Messprobleme (Saisonbereinigung, Aggregation, Trends) erkennen und diskutieren,
-- eine mehrstufige Supply Chain mit Bestellniveau-Politik und gleitender Durchschnittsprognose simulieren,
-- die theoretische Schranke nach Chen et al. (2000) mit Simulationsergebnissen vergleichen und
-- die Wirkung von Gegenmaßnahmen (Informationsaustausch, kürzere Lieferzeiten, bessere Prognosen, Vermeidung von Bestellbündelung) quantitativ bewerten.
+- operationalise the bullwhip effect as a variance ratio and measure it in real economic data,
+- recognise and discuss measurement problems (seasonal adjustment, aggregation, trends),
+- simulate a multi-stage supply chain with an order-up-to policy and a moving-average forecast,
+- compare the theoretical bound according to Chen et al. (2000) with simulation results, and
+- quantitatively evaluate the effect of countermeasures (information sharing, shorter lead times, better forecasts, avoidance of order batching).
 
-# Ausgangslage
+# Initial situation
 
-Seit Forrester (1961) und Lee et al. (1997) ist bekannt, dass die Schwankungen der Bestellungen stromaufwärts in einer Supply Chain zunehmen. Die Folgen sind hohe Sicherheitsbestände, schlecht ausgelastete Kapazitäten und Lieferengpässe. Spätestens die Jahre 2020–2023 haben gezeigt, wie stark sich das auswirken kann: Auf den Nachfrageeinbruch zu Beginn der Pandemie folgten Hamsterkäufe, später Knappheit bei Halbleitern und schließlich volle Lager.
+Since Forrester (1961) and Lee et al. (1997), it has been known that the variability of orders increases upstream in a supply chain. The consequences are high safety stocks, poorly utilised capacities and supply shortages. The years 2020–2023 at the latest have shown how strong the impact can be: the slump in demand at the start of the pandemic was followed by panic buying, later by a shortage of semiconductors and finally by full warehouses.
 
-Ein Beratungsunternehmen erhält von einem Branchenverband zwei Aufträge:
+A consulting firm receives two assignments from an industry association:
 
-1. **Empirisch** zu prüfen, ob und wie stark der Bullwhip-Effekt in der US-Wirtschaft zwischen Einzelhandel, Großhandel und Industrie messbar ist.
-2. In einem **Simulationsmodell** zu zeigen, welche Gegenmaßnahmen den Effekt in einer typischen vierstufigen Supply Chain (Einzelhandel – Großhandel – Hersteller – Zulieferer) am wirksamsten dämpfen.
+1. To examine **empirically** whether and how strongly the bullwhip effect is measurable in the US economy between retail, wholesale and manufacturing.
+2. To show in a **simulation model** which countermeasures most effectively dampen the effect in a typical four-stage supply chain (retail – wholesale – manufacturer – supplier).
 
-# Daten
+# Data
 
-## Teil A: Manufacturing and Trade Inventories and Sales (MTIS)
+## Part A: Manufacturing and Trade Inventories and Sales (MTIS)
 
-Das U.S. Census Bureau veröffentlicht monatlich Umsätze und Lagerbestände für die Stufen Einzelhandel, Großhandel und Industrie. Die Reihen sind frei über FRED (Federal Reserve Bank of St. Louis) abrufbar, z. B. als CSV unter `https://fred.stlouisfed.org/graph/fredgraph.csv?id=<ID>`.
+The U.S. Census Bureau publishes monthly sales and inventories for the retail, wholesale and manufacturing stages. The series are freely available via FRED (Federal Reserve Bank of St. Louis), e.g. as CSV at `https://fred.stlouisfed.org/graph/fredgraph.csv?id=<ID>`.
 
-| Stufe | Umsatz (Mio. USD, saisonbereinigt) | Lagerbestand (Mio. USD, saisonbereinigt, Monatsende) |
+| Stage | Sales (million USD, seasonally adjusted) | Inventory (million USD, seasonally adjusted, end of month) |
 |---|---|---|
-| Einzelhandel | `RETAILSMSA` | `RETAILIMSA` |
-| Großhandel (Merchant Wholesalers) | `WHLSLRSMSA` | `WHLSLRIMSA` |
-| Industrie (Manufacturers) | `MNFCTRSMSA` | `MNFCTRIMSA` |
+| Retail | `RETAILSMSA` | `RETAILIMSA` |
+| Wholesale (merchant wholesalers) | `WHLSLRSMSA` | `WHLSLRIMSA` |
+| Manufacturing (manufacturers) | `MNFCTRSMSA` | `MNFCTRIMSA` |
 
-Für Branchenanalysen stellt das Census Bureau (<https://www.census.gov/mtis/> sowie die Einzelstatistiken *Monthly Retail Trade*, *Monthly Wholesale Trade* und *M3 Manufacturers' Shipments, Inventories & Orders*) die Daten nach NAICS-Branchen bereit, zum Teil auch **nicht saisonbereinigt**. Ein Beispiel für eine Lebensmittelkette: Food and Beverage Stores (NAICS 445) → Grocery Wholesalers (NAICS 4244) → Food Manufacturing (NAICS 311).
+For industry analyses, the Census Bureau (<https://www.census.gov/mtis/> as well as the individual statistics *Monthly Retail Trade*, *Monthly Wholesale Trade* and *M3 Manufacturers' Shipments, Inventories & Orders*) provides the data by NAICS industry, in some cases also **not seasonally adjusted**. An example of a food chain: Food and Beverage Stores (NAICS 445) → Grocery Wholesalers (NAICS 4244) → Food Manufacturing (NAICS 311).
 
-Da Bestellungen in diesen Daten nicht direkt beobachtet werden, verwendet die empirische Literatur (z. B. Cachon et al. 2007) als Näherung die **Produktion bzw. Beschaffung** einer Stufe:
+Since orders are not directly observed in these data, the empirical literature (e.g. Cachon et al. 2007) uses the **production or procurement** of a stage as a proxy:
 
 $$
 P_t = S_t + I_t - I_{t-1},
 $$
 
-wobei $S_t$ den Umsatz (bewertet zu Einstandspreisen) und $I_t$ den Lagerbestand am Monatsende bezeichnet. Der Bullwhip-Effekt einer Stufe wird dann als $B = \operatorname{Var}(P)/\operatorname{Var}(S)$ gemessen.
+where $S_t$ denotes sales (valued at cost) and $I_t$ the inventory at the end of the month. The bullwhip effect of a stage is then measured as $B = \operatorname{Var}(P)/\operatorname{Var}(S)$.
 
-## Teil B: Endkundennachfrage für die Simulation
+## Part B: End-customer demand for the simulation
 
-Als Endkundennachfrage verwenden Sie eine **reale Zeitreihe** Ihrer Wahl, zum Beispiel
+As end-customer demand, use a **real time series** of your choice, for example
 
-- die wöchentlichen Abverkäufe eines Artikels aus dem M5-Datensatz (Fallstudie 4),
-- den Tagesabsatz eines Artikels der französischen Bäckerei (Fallstudie 5) oder
-- eine monatliche Einzelhandelsumsatzreihe aus FRED (z. B. `RSXFS`).
+- the weekly demand of a product category from the Olist dataset (Case Study 4),
+- the daily sales of an item from the French bakery (Case Study 5), or
+- a monthly retail sales series from FRED (e.g. `RSXFS`).
 
-Begründen Sie Ihre Wahl und beschreiben Sie die statistischen Eigenschaften der Reihe (Niveau, Streuung, Saisonalität, Autokorrelation).
+Justify your choice and describe the statistical properties of the series (level, variability, seasonality, autocorrelation).
 
-# Aufgaben
+# Tasks
 
-## Teil A – Empirische Messung
+## Part A – Empirical measurement
 
-**A1.** Laden Sie die sechs MTIS-Reihen ab 1992, berechnen Sie $P_t$ je Stufe und visualisieren Sie $S_t$ und $P_t$ gemeinsam.
+**A1.** Load the six MTIS series from 1992 onwards, calculate $P_t$ for each stage and visualise $S_t$ and $P_t$ together.
 
-**A2.** Berechnen Sie das Varianzverhältnis $B$ je Stufe auf den Niveaus und auf den ersten Differenzen, jeweils für mindestens zwei Teilperioden (z. B. 1992–2019 und 2020–heute). Ist $B > 1$? Wie unterscheiden sich Stufen und Perioden?
+**A2.** Calculate the variance ratio $B$ for each stage on the levels and on the first differences, in each case for at least two sub-periods (e.g. 1992–2019 and 2020–today). Is $B > 1$? How do stages and periods differ?
 
-**A3.** Nennen Sie zwei wesentliche Messprobleme dieses Vorgehens (z. B. Saisonbereinigung, Aggregation über Branchen) und vergleichen Sie Ihre Ergebnisse mit Cachon et al. (2007).
+**A3.** Name two significant measurement problems of this approach (e.g. seasonal adjustment, aggregation across industries) and compare your results with Cachon et al. (2007).
 
-## Teil B – Simulation einer vierstufigen Supply Chain
+## Part B – Simulation of a four-stage supply chain
 
-**B1.** Nutzen Sie den Startercode, in dem jede Stufe $k$ in jeder Periode die Nachfrage ihres Kunden beobachtet, Mittelwert und Standardabweichung mit einem gleitenden Durchschnitt über $p$ Perioden schätzt, das Bestellniveau $S_t = \hat\mu_t (L+1) + z\,\hat\sigma_t\sqrt{L+1}$ bestimmt und $O_t = \max\{0,\ D_t + S_t - S_{t-1}\}$ bestellt. Simulieren Sie den Basisfall ($L=2$, $p=4$, $z=1{,}65$) mit Ihrer realen Endkundennachfrage und vergleichen Sie $B_k$ je Stufe mit der Schranke nach Chen et al. (2000):
+**B1.** Use the starter code, in which each stage $k$ in each period observes its customer's demand, estimates the mean and standard deviation with a moving average over $p$ periods, determines the order-up-to level $S_t = \hat\mu_t (L+1) + z\,\hat\sigma_t\sqrt{L+1}$ and orders $O_t = \max\{0,\ D_t + S_t - S_{t-1}\}$. Simulate the base case ($L=2$, $p=4$, $z=1.65$) with your real end-customer demand and compare $B_k$ for each stage with the bound according to Chen et al. (2000):
 
 $$
 \frac{\operatorname{Var}(O)}{\operatorname{Var}(D)} \;\ge\; 1 + \frac{2L}{p} + \frac{2L^2}{p^2}.
 $$
 
-**B2.** Untersuchen Sie mindestens **drei** der folgenden Gegenmaßnahmen und stellen Sie die Ergebnisse vergleichend dar:
+**B2.** Investigate at least **three** of the following countermeasures and present the results comparatively:
 
-| Szenario | Veränderung |
+| Scenario | Change |
 |---|---|
-| Längeres Prognosefenster | $p = 8, 12, 26$ |
-| Kürzere Lieferzeit | $L = 1$ (und $L = 4$ zum Vergleich) |
-| Informationsaustausch | Alle Stufen prognostizieren auf Basis der Endkundennachfrage |
-| Bestellbündelung | Bestellungen nur alle $m = 4$ Perioden |
-| Vendor Managed Inventory | Stufe 1 und 2 werden gemeinsam disponiert |
+| Longer forecast window | $p = 8, 12, 26$ |
+| Shorter lead time | $L = 1$ (and $L = 4$ for comparison) |
+| Information sharing | All stages forecast on the basis of end-customer demand |
+| Order batching | Orders only every $m = 4$ periods |
+| Vendor managed inventory | Stages 1 and 2 are planned jointly |
 
-Welche Maßnahme wirkt am stärksten, und an welcher Ursache nach Lee et al. (1997) setzt sie an?
+Which measure has the strongest effect, and which cause according to Lee et al. (1997) does it address?
 
-## Teil C – Beer Game (in der Lehrveranstaltung)
+## Part C – Beer Game (in class)
 
-**C1.** Dokumentieren Sie beim Beer Game Bestellungen, Bestände und Rückstände Ihrer Gruppe je Runde und berechnen Sie die Varianzverhältnisse je Stufe.
+**C1.** During the Beer Game, document your group's orders, inventories and backlogs for each round and calculate the variance ratios for each stage.
 
-## Teil D – Empfehlung und Reflexion
+## Part D – Recommendation and reflection
 
-**D1. Empfehlung.** Welche drei Maßnahmen sollten Unternehmen zuerst umsetzen, und welche Voraussetzungen (IT, Vertrauen, Verträge) sind dafür nötig?
+**D1. Recommendation.** Which three measures should companies implement first, and which prerequisites (IT, trust, contracts) are necessary for this?
 
-**D2. Reflexion.** Beantworten Sie in der Präsentation die folgenden Fragen. Sie bilden den Ausgangspunkt der anschließenden Diskussion:
+**D2. Reflection.** Answer the following questions in your presentation. They form the starting point for the subsequent discussion:
 
-1. Warum ist der Bullwhip-Effekt in den aggregierten Wirtschaftsdaten deutlich schwächer als in Simulation und Beer Game? Was sagt das über die Aussagekraft der jeweiligen Methode?
-2. Was hat das Beer Game über Ihr eigenes Entscheidungsverhalten gezeigt? Haben Sie Pipeline-Bestände vernachlässigt (Sterman 1989), und warum?
-3. Welche Gegenmaßnahme wirkt in der Simulation stark, ist in der Praxis aber schwer umzusetzen, und woran scheitert sie (Anreize, Vertrauen, Daten)?
-4. Wie verstärken internationale Supply Chains mit langer Seefracht, vielen Schnittstellen und unterschiedlichen Kulturen der Zusammenarbeit den Effekt?
-5. Wie lassen sich die Engpässe und Überbestände der Jahre 2020–2023 (Pandemie, Chipkrise) mit Ihren Ergebnissen erklären?
+1. Why is the bullwhip effect considerably weaker in the aggregated economic data than in the simulation and the Beer Game? What does this say about the significance of each method?
+2. What did the Beer Game reveal about your own decision-making behaviour? Did you neglect pipeline inventories (Sterman 1989), and why?
+3. Which countermeasure has a strong effect in the simulation but is difficult to implement in practice, and why does it fail (incentives, trust, data)?
+4. How do international supply chains with long sea freight, many interfaces and different cultures of collaboration amplify the effect?
+5. How can the shortages and excess inventories of 2020–2023 (pandemic, chip crisis) be explained with your results?
 
-# Literatur
+# Literature
 
 - Cachon, G. P.; Randall, T.; Schmidt, G. M. (2007): In Search of the Bullwhip Effect. *Manufacturing & Service Operations Management* 9(4), 457–479.
 - Chen, F.; Drezner, Z.; Ryan, J. K.; Simchi-Levi, D. (2000): Quantifying the Bullwhip Effect in a Simple Supply Chain. *Management Science* 46(3), 436–443.
 - Forrester, J. W. (1961): *Industrial Dynamics*. Cambridge, MA: MIT Press.
 - Lee, H. L.; Padmanabhan, V.; Whang, S. (1997): The Bullwhip Effect in Supply Chains. *Sloan Management Review* 38(3), 93–102.
 - Sterman, J. D. (1989): Modeling Managerial Behavior: Misperceptions of Feedback in a Dynamic Decision Making Experiment. *Management Science* 35(3), 321–339.
-- Reader zur Vorlesung, Kapitel 8.
+- Course reader for the lecture, Chapter 8.
 
-# Anhang: R-Startercode
+# Appendix: R starter code
 
 ```{r}
 #| label: starter-fred
@@ -149,10 +150,10 @@ lade_fred <- function(id) {
 }
 
 stufen <- tribble(
-  ~stufe,         ~umsatz,      ~bestand,
-  "Einzelhandel", "RETAILSMSA", "RETAILIMSA",
-  "Großhandel",   "WHLSLRSMSA", "WHLSLRIMSA",
-  "Industrie",    "MNFCTRSMSA", "MNFCTRIMSA"
+  ~stufe,          ~umsatz,      ~bestand,
+  "Retail",        "RETAILSMSA", "RETAILIMSA",
+  "Wholesale",     "WHLSLRSMSA", "WHLSLRIMSA",
+  "Manufacturing", "MNFCTRSMSA", "MNFCTRIMSA"
 )
 
 mtis <- stufen |>
@@ -171,30 +172,30 @@ mtis |> group_by(stufe) |>
 
 ```{r}
 #| label: starter-sim
-# Einfache Simulation der Bestellungen in einer mehrstufigen Supply Chain
-# (ohne Lagerbestände und Lieferungen)
+# Simple simulation of orders in a multi-stage supply chain
+# (without inventories and deliveries)
 simuliere_bullwhip <- function(D, stufen = 4, L = 2, p = 4, z = 1.65,
                                info_sharing = FALSE) {
   n <- length(D)
   O <- matrix(NA_real_, nrow = n, ncol = stufen + 1)
-  O[, 1] <- D                                    # Spalte 1 = Endkundennachfrage
+  O[, 1] <- D                                    # column 1 = end-customer demand
   for (k in 1:stufen) {
-    d_k   <- O[, k]                              # Nachfrage, die Stufe k sieht
-    d_fc  <- if (info_sharing) D else d_k        # Datengrundlage der Prognose
+    d_k   <- O[, k]                              # demand seen by stage k
+    d_fc  <- if (info_sharing) D else d_k        # data basis for the forecast
     S_alt <- NA
     for (t in seq_len(n)) {
-      if (t < p) { O[t, k + 1] <- d_k[t]; next } # Einschwingphase
+      if (t < p) { O[t, k + 1] <- d_k[t]; next } # warm-up phase
       fenster <- d_fc[(t - p + 1):t]
       S <- mean(fenster) * (L + 1) + z * sd(fenster) * sqrt(L + 1)
       O[t, k + 1] <- if (is.na(S_alt)) d_k[t] else max(0, d_k[t] + S - S_alt)
       S_alt <- S
     }
   }
-  colnames(O) <- c("Endkunde", paste0("Stufe_", 1:stufen))
+  colnames(O) <- c("End_customer", paste0("Stage_", 1:stufen))
   as.data.frame(O)
 }
 
-# Demonstration mit künstlicher Nachfrage – ersetzen Sie D durch Ihre reale Reihe
+# Demonstration with artificial demand – replace D with your real series
 set.seed(42)
 D <- round(rnorm(156, mean = 100, sd = 15))
 sim <- simuliere_bullwhip(D, L = 2, p = 8)

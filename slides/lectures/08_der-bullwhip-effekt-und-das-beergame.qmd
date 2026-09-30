@@ -14,7 +14,7 @@ library(kableExtra)
 library(xml2)
 library(datawizard)
 
-# Funktionen aus scm_functions.R einbinden
+# Load functions from scm_functions.R
 source("../R/scm_functions.R")
 
 set.seed(1234)
@@ -47,51 +47,52 @@ plotly_layout <- function(p,
 }
 ```
 
-## Unsicherheit in Supply Chains  {#outline}
+## Uncertainty in supply chains  {#outline}
 
-- Pooling
-- Newsvendor-Modell
-- **Bullwhip-Effekt**
-
-------------------------------------------------------------------------------
-
-## Lernziele {#lernziele}
-
-Nach dieser Einheit können Sie …
-
-- den Bullwhip-Effekt entlang einer Supply Chain erklären
-- wesentliche **Ursachen und Folgen** des Bullwhip-Effekts beurteilen
-- Order-up-to-Level $S$ und Sicherheitsbestand $SB$ bestimmen
-- Maßnahmen zur Reduktion des Bullwhip-Effekts einordnen
-
-**Literatur zur Vertiefung**
-
-- **Grundlegende Ursachen und Gegenmaßnahmen des Bullwhip-Effekts:** [@thonemann2023operations, Kapitel 8, insbesondere 8.2].
-- **Empirische Untersuchung der Informationsübertragung:** [@bray2012information].
-- **Messung, Aggregation und Wirkung von Bullwhip-Effekten:** [@yao2020empirically].
+- Risk pooling
+- Newsvendor model
+- **Bullwhip effect**
 
 ------------------------------------------------------------------------------
 
-## Fallbeispiel: Sushi-Boxen {#fallbeispiel-intro}
+## Learning objectives {#lernziele}
+
+After this unit you will be able to …
+
+- explain the bullwhip effect along a supply chain
+- assess the main **causes and consequences** of the bullwhip effect
+- determine the order-up-to level $S$ and safety stock $SB$
+- classify measures to reduce the bullwhip effect
+
+**Further reading**
+
+- **Fundamental causes of and countermeasures to the bullwhip effect:** [@thonemann2023operations, Chapter 8, especially 8.2].
+- **Empirical study of information transmission:** [@bray2012information].
+- **Measurement, aggregation and impact of bullwhip effects:** [@yao2020empirically].
+
+------------------------------------------------------------------------------
+
+## Case example: sushi boxes {#fallbeispiel-intro}
 ::: slide-subtitle
-Fortsetzung
+Continued
 ::: 
 
 ::: {.callout-note}
-## Die SushiFresh-Lieferkette
 
-**SushiFresh GmbH** ist ein regionaler Hersteller frischer Sushi-Boxen und beliefert sechs Supermarkt-Filialen im Rhein-Main-Gebiet. Für die Produktion ist SushiFresh auf die tägliche Lieferung von frischen Fischfilets angewiesen, die der Fischgroßhändler **Nord-Fisch KG** liefert. Die Sushi-Supply-Chain ist also so strukturiert:
+## The SushiFresh supply chain
+
+**SushiFresh GmbH** is a regional producer of fresh sushi boxes and supplies six supermarket stores in the Rhine-Main area. For production, SushiFresh depends on daily deliveries of fresh fish fillets supplied by the fish wholesaler **Nord-Fisch KG**. The sushi supply chain is therefore structured as follows:
 
 $$
-\text{Supermarkt-Filialen}
+\text{Supermarket stores}
 \mathrel{
   \mathop{\leftrightharpoons}
-  \limits^{\text{Lieferung}}_{\text{Bestellung}}
+  \limits^{\text{Delivery}}_{\text{Order}}
 }
 \text{SushiFresh GmbH}
 \mathrel{
   \mathop{\leftrightharpoons}
-  \limits^{\text{Lieferung}}_{\text{Bestellung}}
+  \limits^{\text{Delivery}}_{\text{Order}}
 }
 \text{Nord-Fisch KG}
 $$
@@ -102,62 +103,63 @@ $$
 ::: columns
 ::: {.column width="30%"}
 
-**Supermarkt-Filialen**
+**Supermarket stores**
 
-- beobachten Endkundennachfrage (z. B. Filiale Frankfurt: $\mu=280$, $\sigma=55$)
-- bestellen täglich Sushi-Boxen bei SushiFresh 
+- observe end-customer demand (e.g. Frankfurt store: $\mu=280$, $\sigma=55$)
+- order sushi boxes from SushiFresh daily 
 :::
 
 ::: {.column width="30%"}
 **SushiFresh GmbH**
 
-- bekommt Bestellungen der Filialen (=Nachfrage)
-- bestellt Fisch für die Sushi-Boxen bei Nord-Fisch KG und hält einen Bestand an Fisch als Vorrat
+- receives orders from the stores (= demand)
+- orders fish for the sushi boxes from Nord-Fisch KG and keeps a stock of fish in reserve
 
 :::
 
 ::: {.column width="30%"}
 **Nord-Fisch KG**
 
-- bekommt Bestellungen von SushiFresh GmbH (=Nachfrage)
-- beschafft Rohfisch, produziert die Fisch-Filets und lagert diese, um schnell liefern zu können
+- receives orders from SushiFresh GmbH (= demand)
+- sources raw fish, produces the fish fillets and stores them in order to deliver quickly
 :::
 :::
 :::
 
 ::: {.fragment .fade-up}
 ::: {.callout-important}
-SushiFresh und Nord-Fisch Akteure halten einen (Sicherheits-)Bestand an Fischfilets, um Fehlmengen zu vermeiden $\rightarrow$ Wie hoch sollte dieser sein?
+SushiFresh and Nord-Fisch each hold a (safety) stock of fish fillets to avoid shortages $\rightarrow$ How high should it be?
 :::
 :::
 
 -----------------------------------------------------------------------------
 
-## Fallbeispiel: SushiFresh GmbH {#fallbeispiel-ordering-stocks}
+## Case example: SushiFresh GmbH {#fallbeispiel-ordering-stocks}
 ::: slide-subtitle
-Situation von SushiFresh GmbH
+Situation of SushiFresh GmbH
 :::
 
 ::: {.callout-note}
-## Bestellprozess für Fischfilets
 
-SushiFresh GmbH entscheidet täglich über seine Produktionsmenge an Sushi-Boxen für die Filiale Frankfurt (vgl. Folien Newsvendormodell). Basierend auf der Sushi-Box-Nachfrage, sei $d_t$ der Bedarf an Fischfilet-Einheiten an Tag $t$ (Filiale Frankfurt: $\mu=280$, $\sigma=55$). SushiFresh kann jeden Tag Nachschub bei Nord-Fisch KG bestellen. Die Bestellmenge an Tag $t$ sei $q_t$. Bestellte Fischfilets werden $l=2$ Tage später geliefert. Die physisch verfügbare Menge an Fischfilet-Einheiten sei $i_t$. Falls keine Fischfilets vorrätig sind, wird der Bedarf vorgemerkt ($b_t$) und später nachproduziert bzw. nachgeliefert.
+## Ordering process for fish fillets
+
+SushiFresh GmbH decides daily on its production quantity of sushi boxes for the Frankfurt store (cf. newsvendor model slides). Based on sushi box demand, let $d_t$ be the demand for fish fillet units on day $t$ (Frankfurt store: $\mu=280$, $\sigma=55$). SushiFresh can order replenishment from Nord-Fisch KG every day. Let the order quantity on day $t$ be $q_t$. Ordered fish fillets are delivered $l=2$ days later. Let the physically available quantity of fish fillet units be $i_t$. If no fish fillets are in stock, the demand is backordered ($b_t$) and produced or delivered later.
 :::
 
 ::: {.fragment .fade-up}
-**Sushi-Boxen-Bestände**
+**Sushi box inventories**
 
-- der **physische Bestand** $i_t$ wird berechnet als $i_t = \max(0,i_{t-1} + q_{t-2} - d_t)$
-- der **Nettobestand** $n_t$ berücksichtigt auch Fehlmengen $n_t = i_{t-1} + q_{t-2} - d_t$
-- der **disponible Bestand** $p_t$ berücksichtigt auch offene Bestellungen $p_t = n_{t-1} + q_{t-1} (+q_t)$
+- the **physical inventory** $i_t$ is calculated as $i_t = \max(0,i_{t-1} + q_{t-2} - d_t)$
+- the **net inventory** $n_t$ also accounts for shortages $n_t = i_{t-1} + q_{t-2} - d_t$
+- the **inventory position** $p_t$ also accounts for open orders $p_t = n_{t-1} + q_{t-1} (+q_t)$
 :::
 
 
 ------------------------------------------------------------------------------
 
-## Fallbeispiel: SushiFresh GmbH {#fallbeispiel-stock-overview}
+## Case example: SushiFresh GmbH {#fallbeispiel-stock-overview}
 ::: slide-subtitle
-Bestand von SushiFresh GmbH (Filiale Frankfurt)
+Inventory of SushiFresh GmbH (Frankfurt store)
 :::
 
 :::: columns
@@ -168,9 +170,9 @@ Bestand von SushiFresh GmbH (Filiale Frankfurt)
 #| fig-width: 13
 #| fig-height: 7
 
-# Parameter und Beispieldaten: Filiale Frankfurt (mu=280, sigma=55)
-# Wiederbeschaffungszeit: zwei Perioden (Rohstoffbeschaffung + Produktion/Auslieferung)
-# Eine Bestellung o_t trifft zu Beginn der Periode t + 2 ein.
+# Parameters and sample data: Frankfurt store (mu=280, sigma=55)
+# Replenishment lead time: two periods (raw material sourcing + production/delivery)
+# An order o_t arrives at the beginning of period t + 2.
 
 dem <- c(234, 256, 344, 410, 278, 322, 212, 256, 278, 234, 256, 278)
 
@@ -205,7 +207,7 @@ p_bestand <- p_bestand |>
     x = ~(Periode-.3),
     y = ~(-Bedarf),
     base = ~Nettobestand_vor_Bedarf,
-    name = "Bedarf d[t]",
+    name = "Demand d[t]",
     type = "bar",
     width = 0.4,
     marker = list(
@@ -225,7 +227,7 @@ p_bestand <- p_bestand |>
     x = ~(Periode-0.15),
     y = ~Liefermenge,
     base = ~(Nettobestand_vor_Bedarf-Bedarf),
-    name = "Liefermenge q[t-2]",
+    name = "Delivery quantity q[t-2]",
     type = "bar",
     width = 0.2,
     marker = list(
@@ -245,7 +247,7 @@ p_bestand <- p_bestand |>
     x = ~(Periode+0.2),
     y = ~(offene_Bestellungen-Bestellmenge),
     base = ~Nettobestand,
-    name = "Offene Bestellungen q[t-1]",
+    name = "Open orders q[t-1]",
     type = "bar",
     width = 0.2,
     marker = list(
@@ -265,7 +267,7 @@ p_bestand <- p_bestand |>
     x = ~(Periode+0.2),
     y = ~Bestellmenge,
     base = ~(Nettobestand+offene_Bestellungen-Bestellmenge),
-    name = "Bestellmenge q[t]",
+    name = "Order quantity q[t]",
     type = "bar",
     width = 0.2,
     marker = list(
@@ -284,7 +286,7 @@ p_bestand <- p_bestand |>
     data = daten_bestand,
     x = ~Periode,
     y = ~Physischer_Bestand,
-    name = "Physischer Bestand i[t]",
+    name = "Physical inventory i[t]",
     type = "scatter",
     mode = "lines+markers",
     line = list(
@@ -297,7 +299,7 @@ p_bestand <- p_bestand |>
       size = 9
     ),
     hovertemplate = paste0(
-      "Periode %{x}<br>",
+      "Period %{x}<br>",
       "%{y}<extra></extra>"
     )
   ) |>
@@ -305,7 +307,7 @@ p_bestand <- p_bestand |>
     data = daten_bestand,
     x = ~Periode,
     y = ~Nettobestand,
-    name = "Nettobestand n[t]",
+    name = "Net inventory n[t]",
     type = "scatter",
     mode = "lines+markers",
     line = list(
@@ -318,7 +320,7 @@ p_bestand <- p_bestand |>
       size = 9
     ),
     hovertemplate = paste0(
-      "Periode %{x}<br>",
+      "Period %{x}<br>",
       "%{y}<extra></extra>"
     )
   ) |>
@@ -326,7 +328,7 @@ p_bestand <- p_bestand |>
     data = daten_bestand,
     x = ~Periode,
     y = ~Disponibler_Bestand,
-    name = "Disponibler Bestand p[t]",
+    name = "Inventory position p[t]",
     type = "scatter",
     mode = "lines+markers",
     line = list(
@@ -341,19 +343,19 @@ p_bestand <- p_bestand |>
       symbol = "diamond"
     ),
     hovertemplate = paste0(
-      "Periode %{x}<br>",
+      "Period %{x}<br>",
       "%{y}<extra></extra>"
     )
   ) |>
   layout(
     xaxis = list(
-      title = "Periode t",
+      title = "Period t",
       tickmode = "linear",
       tick0 = 1,
       dtick = 1
     ),
     yaxis = list(
-      title = "Menge",
+      title = "Quantity",
       zeroline = TRUE,
       zerolinecolor = "#7C8792",
       zerolinewidth = 2
@@ -385,35 +387,37 @@ p_bestand
 ::: {.column width="30%"}
 
 ::: {.smaller-text}
-**Nachfrage**
+**Demand**
 
 ```{r}
 daten_bestand |>
   dplyr::rename(Nachfrage = Bedarf) |>
   dplyr::select(Periode, Nachfrage) |>
   knitr::kable(
+    col.names = c("Period", "Demand"),
     align = "rr",
     digits = 0
   )
 ```
 
-**Anfangslagerbestand** $i_0 =$ `r round(i.ini)`
-**Zielbestand** $S =$ `r round(S.par)`
+**Initial inventory** $i_0 =$ `r round(i.ini)`
+**Order-up-to level** $S =$ `r round(S.par)`
 :::
 :::
 ::::
 
 ------------------------------------------------------------------------------
 
-## Fallbeispiel: SushiFresh GmbH {#fallbeispiel-order-up-to-level}
+## Case example: SushiFresh GmbH {#fallbeispiel-order-up-to-level}
 ::: slide-subtitle
-Festlegung des Ziellagerbestands
+Setting the order-up-to level
 :::
 
 ::: {.callout-note}
-## Bestellprozess & Ziellagerbestand $S$
 
-Durch Festlegung des Ziellagerbestand $S$ ergibt sich die Bestellmenge und der Sicherheitsbestand:
+## Ordering process & order-up-to level $S$
+
+Setting the order-up-to level $S$ determines the order quantity and the safety stock:
 
 $$ q_t = S - p_t \qquad \qquad sb_t = S - \mu \cdot (l+1) $$
 :::
@@ -424,9 +428,9 @@ $$ q_t = S - p_t \qquad \qquad sb_t = S - \mu \cdot (l+1) $$
 ::: {.column width="50%"}
 ::: {.fragment .fade-up}
 
-**bei gegebenen $\alpha$-Servicegrad** 
+**for a given $\alpha$ service level** 
 
-Übertragung der Formel für eine Periode (vgl. Pooling-Vorlesung) auf mehrere Perioden:
+Extending the single-period formula (cf. pooling lecture) to multiple periods:
 
 $$ S = \mu \cdot (l+1) + \sqrt{l+1} \cdot \sigma \cdot z_{\alpha}$$
 
@@ -435,9 +439,9 @@ $$ S = \mu \cdot (l+1) + \sqrt{l+1} \cdot \sigma \cdot z_{\alpha}$$
 
 ::: {.column width="50%"}
 ::: {.fragment .fade-up}
-**bei gegebenen Fehlmengen-Kostensatz $c^u$ und Lagerhaltungskostensatz $c^o$ ** 
+**for a given shortage cost rate $c^u$ and inventory holding cost rate $c^o$ ** 
 
-Übertragung der Newsvendor-Formel:
+Applying the newsvendor formula:
 
 $$ S = \mu \cdot (l+1) + \sqrt{l+1} \cdot \sigma \cdot z_{\frac{c^u}{c^u+c^o}}$$
 
@@ -448,24 +452,25 @@ $$ S = \mu \cdot (l+1) + \sqrt{l+1} \cdot \sigma \cdot z_{\frac{c^u}{c^u+c^o}}$$
 
 ::: {.fragment .fade-up}
 ::: {.callout-important}
-Wichtig: Die Parameter $\mu$ und $\sigma$ sind die erwarte tägliche **Nachfrage(-rate)** (Nachfrage pro Periode) und die erwartete **Abweichung** (Standardabweichung). Beide Parameter werden **geschätzt** auf Basis der empirischen Kundennachfrage.
+Important: the parameters $\mu$ and $\sigma$ are the expected daily **demand (rate)** (demand per period) and the expected **deviation** (standard deviation). Both parameters are **estimated** on the basis of empirical customer demand.
 ::: 
 :::
 
 
 ------------------------------------------------------------------------------
 
-## Fallbeispiel: SushiFresh GmbH {#fallbeispiel-order-decisions}
+## Case example: SushiFresh GmbH {#fallbeispiel-order-decisions}
 ::: slide-subtitle
-Bestellentscheidungen und deren Auswirkungen
+Order decisions and their effects
 :::
 
 ::: {.callout-note}
-## Schätzung der Nachfrageparameter $\mu$ und $\sigma$
 
-Die Parameter der Nachfrageverteilung werden durch statistische Schätzverfahren (Schätzer) ermittelt, wie dem (gleitenden) Mittelwert und der empirischen Standardabweichung: 
+## Estimating the demand parameters $\mu$ and $\sigma$
 
-$\hat{\mu} = \frac{1}{T} \sum_{\tau=t-T}^{t-1} d_\tau \qquad \qquad \hat{\sigma} = \sqrt{ \frac{1}{T-1} \sum_{\tau=t-T}^{t-1} (d_\tau - \hat{\mu})^2 } \rightarrow \;\text{Prognosefehler}$ 
+The parameters of the demand distribution are determined using statistical estimation methods (estimators), such as the (moving) average and the empirical standard deviation: 
+
+$\hat{\mu} = \frac{1}{T} \sum_{\tau=t-T}^{t-1} d_\tau \qquad \qquad \hat{\sigma} = \sqrt{ \frac{1}{T-1} \sum_{\tau=t-T}^{t-1} (d_\tau - \hat{\mu})^2 } \rightarrow \;\text{forecast error}$ 
 :::
 
 ::: {.smaller-text}
@@ -475,7 +480,7 @@ $\hat{\mu} = \frac{1}{T} \sum_{\tau=t-T}^{t-1} d_\tau \qquad \qquad \hat{\sigma}
 #| results: asis
 
 # ---------------------------------------------------------------
-# Parameter der Bestands- und Prognosepolitik
+# Parameters of the inventory and forecasting policy
 # ---------------------------------------------------------------
 
 n_perioden <- length(dem)
@@ -487,20 +492,20 @@ z_alpha <- qnorm(servicegrad)
 
 anfangsbestand <- i.ini
 
-# Der Zielbestand wird in jeder Periode neu bestimmt.
-# Dadurch lässt sich die direkte Wirkung der Parameterschätzung
-# auf die Bestellentscheidung illustrieren.
+# The order-up-to level is redetermined in every period.
+# This illustrates the direct effect of parameter estimation
+# on the order decision.
 bestellintervall <- 1L
 
 # ---------------------------------------------------------------
-# Rollierende Parameterschätzung
-# Für die Entscheidung in Periode t werden nur die Bedarfe der
-# vorherigen Perioden verwendet:
+# Rolling parameter estimation
+# For the decision in period t, only the demands of the
+# previous periods are used:
 # mu_hat[t]    = mean(d[t-fenster], ..., d[t-1])
 # sigma_hat[t] = sd(d[t-fenster], ..., d[t-1])
-# In den ersten Perioden wird mit allen bis dahin verfügbaren
-# Beobachtungen gearbeitet. Bei nur einer Beobachtung wird
-# sigma_hat konservativ als 0 gesetzt.
+# In the first periods, all observations available up to that
+# point are used. With only one observation,
+# sigma_hat is conservatively set to 0.
 # ---------------------------------------------------------------
 
 mu_hat <- numeric(n_perioden)
@@ -533,9 +538,9 @@ for (t in seq_len(n_perioden)) {
 }
 
 # ---------------------------------------------------------------
-# Dynamischer Order-up-to-Level
-# Bei täglicher Überprüfung gilt R = 1.
-# Die Schutzperiode beträgt daher:
+# Dynamic order-up-to level
+# With daily review, R = 1.
+# The protection period is therefore:
 # P = R + L = 1 + wbz
 # ---------------------------------------------------------------
 
@@ -546,13 +551,13 @@ sicherheitsbestand <- z_alpha * sigma_hat * sqrt(schutzperiode)
 S_t <- round(schutzperiode * mu_hat + sicherheitsbestand)
 
 # ---------------------------------------------------------------
-# Simulation der täglichen Bestellentscheidungen
-# Reihenfolge innerhalb der Periode t:
-# 1. Lieferung q[t-wbz] trifft ein.
-# 2. Bedarf dem[t] wird realisiert.
-# 3. Physischer Bestand und Nettobestand werden aktualisiert.
-# 4. Offene Bestellungen werden berücksichtigt.
-# 5. Es wird auf den dynamischen Zielbestand S_t aufgefüllt.
+# Simulation of daily order decisions
+# Sequence within period t:
+# 1. Delivery q[t-wbz] arrives.
+# 2. Demand dem[t] is realised.
+# 3. Physical inventory and net inventory are updated.
+# 4. Open orders are taken into account.
+# 5. Stock is replenished up to the dynamic order-up-to level S_t.
 # ---------------------------------------------------------------
 
 liefermenge <- numeric(n_perioden)
@@ -633,8 +638,8 @@ bullwhip_mass <- var(daten_order_decisions$Bestellmenge) /
 
 sd_vergleich <- tibble(
   Groesse = c(
-    "Endkunden-Nachfrage d[t]",
-    "Bestellmenge q[t]"
+    "End-customer demand d[t]",
+    "Order quantity q[t]"
   ),
   Standardabweichung = c(
     sd_bedarf,
@@ -649,12 +654,12 @@ sd_vergleich <- tibble(
 daten_order_decisions |>
   dplyr::select(Periode, Bedarf, Mittelwert_Schaetzung,Standardabweichung_Schaetzung, Zielbestand, Bestellmenge) |> 
   dplyr::transmute(
-    Tag = Periode,
-    'Bedarf d[t]' = round(Bedarf,1),
-    `Mittelwert μ̂[t]` = round(Mittelwert_Schaetzung,1),
-    `Standardabweichung σ̂[t]` = round(Standardabweichung_Schaetzung, 1),
-    `Zielbestand S[t]` = round(Zielbestand, 1),
-    `Bestellung q[t]` = round(Bestellmenge, 1)
+    Day = Periode,
+    'Demand d[t]' = round(Bedarf,1),
+    `Mean μ̂[t]` = round(Mittelwert_Schaetzung,1),
+    `Standard deviation σ̂[t]` = round(Standardabweichung_Schaetzung, 1),
+    `Order-up-to level S[t]` = round(Zielbestand, 1),
+    `Order q[t]` = round(Bestellmenge, 1)
   ) |>
   t() |> 
   row_to_colnames(row = 1) |> 
@@ -669,21 +674,23 @@ daten_order_decisions |>
 
 ::: {.fragment .fade-up}
 ::: {.callout-important}
-## Beobachtung
 
-Die Schwankung der Nachfrage $\sigma_d=$ `r round(sd_vergleich$Standardabweichung[1],1)` ist deutlich kleiner als die Standardabweichung der Bestellmengen $\sigma_q=$ `r round(sd_vergleich$Standardabweichung[2],1)` $\rightarrow$ **zusätzliche Unsicherheit** für Nord-Fisch KG wird generiert
+## Observation
+
+The variability of demand $\sigma_d=$ `r round(sd_vergleich$Standardabweichung[1],1)` is considerably smaller than the standard deviation of the order quantities $\sigma_q=$ `r round(sd_vergleich$Standardabweichung[2],1)` $\rightarrow$ **additional uncertainty** is generated for Nord-Fisch KG
 ::: 
 :::
 
 
 ------------------------------------------------------------------------------
 
-##  Bullwhip-Effekt
+##  Bullwhip effect
 ::: slide-subtitle
-Definition & Illustration
+Definition & illustration
 :::
 
 ::: {.callout-important}
+
 ## Definition [@cachon2024matching]
 
 The bullwhip effect is present in a supply chain if the variability of demand at one level of the supply chain is greater than the variability of demand at the next downstream level in the supply chain, where variability is  measured with the coefficient of variation.
@@ -694,7 +701,7 @@ The bullwhip effect is present in a supply chain if the variability of demand at
 
 ::: {.column width="60%"}
 
-**Typische Verläufe**
+**Typical patterns**
 
 ```{r}
 #| fig-width: 12
@@ -732,7 +739,7 @@ p_sushi_bullwhip <- daten_bullwhip |>
   add_trace(
     x = ~Periode,
     y = ~Endkundennachfrage,
-    name = "Endkundennachfrage",
+    name = "End-customer demand",
     type = "scatter",
     mode = "lines+markers",
     line = list(
@@ -747,7 +754,7 @@ p_sushi_bullwhip <- daten_bullwhip |>
   add_trace(
     x = ~Periode,
     y = ~Handel,
-    name = "Bestellmenge Einzelhändler",
+    name = "Order quantity retailer",
     type = "scatter",
     mode = "lines+markers",
     line = list(
@@ -764,7 +771,7 @@ p_sushi_bullwhip <- daten_bullwhip |>
     y = ~Großhandel,
     type = "scatter",
     mode = "lines+markers",
-    name = "Bestellmenge Großhändler",
+    name = "Order quantity wholesaler",
     line = list(
       colour = "#C00000",
       width = 3
@@ -776,11 +783,11 @@ p_sushi_bullwhip <- daten_bullwhip |>
   ) |>
   layout(
     xaxis = list(
-      title = "Periode",
+      title = "Period",
       dtick = 1
     ),
     yaxis = list(
-      title = "Bestellmenge",
+      title = "Order quantity",
       range = c(0,15)
     ),
     legend = list(
@@ -807,36 +814,37 @@ p_sushi_bullwhip
 
 ::: {.column width="39%"}
 ::: {.small-text}
-**Upstream-Effekte**
+**Upstream effects**
 
-- "Aufschaukeln" der Bestellmengen 
-- Volatilität der Bestände steigt
-- häufigere Fehlmengen
+- “Amplification” of order quantities 
+- Inventory volatility increases
+- more frequent shortages
 :::
 :::
 
 ::::
 ------------------------------------------------------------------------------
 
-##  Bullwhip-Effekt
+##  Bullwhip effect
 ::: slide-subtitle
-Typische Beobachtungen
+Typical observations
 :::
 
 ::: {.small-text}
-- meist gilt $q_t \neq d_t$, denn die Bestellmenge enthält mehrere Bestandteile $$
-q_t=\text{erwarteter Bedarf}+\text{Bestandskorrektur}+\text{Sicherheitsbestandskorrektur}.$$
-- für Lieferanten ist es nicht ersichtlich, ob Bestellmengenschwankungen langfristig Verschiebungen anzeigen (d.h. die Endkundennachfrage steigt) oder ob es kurzfristige Bestandskorrekturen sind $\rightarrow$  Schätzung der zukünftigen Nachfrage schwierig $\rightarrow$ **Prognosefehler steigen** $\rightarrow$ Bestellmengen schwanken stärker
-- daher folgt oft das die Schwankungen der Bestellmengen mit jeder Wertschöpfungsstufe steigen: $\operatorname{Var}(d_t)< \operatorname{Var}(q_t^{i})<\operatorname{Var}(q_t^{i+1})<\operatorname{Var}(q_t^{i+2})< ...$
+- usually $q_t \neq d_t$, since the order quantity contains several components $$
+q_t=\text{expected demand}+\text{inventory correction}+\text{safety stock correction}.$$
+- suppliers cannot tell whether fluctuations in order quantities indicate long-term shifts (i.e. end-customer demand is rising) or short-term inventory corrections $\rightarrow$  estimating future demand is difficult $\rightarrow$ **forecast errors increase** $\rightarrow$ order quantities fluctuate more
+- hence the fluctuations of order quantities often increase with every stage of the value chain: $\operatorname{Var}(d_t)< \operatorname{Var}(q_t^{i})<\operatorname{Var}(q_t^{i+1})<\operatorname{Var}(q_t^{i+2})< ...$
 :::
 
 ::: {.fragment .fade-up}
 ::: {.callout-important}
-## Messung des Bullwhip-Effekts
 
-Maße für den Bullwhip-Effekt sind die Varianzquotienten $B=\frac{\operatorname{Var}(q_t)}{\operatorname{Var}(d_t)}>1$ und $B=\frac{\operatorname{Var}(q^{i}_t)}{\operatorname{Var}(q^{i-1}_t)}>1$ 
+## Measuring the bullwhip effect
 
-$\rightarrow$ je größer $B$ desto stärker der Bullwhip-Effekt
+Measures of the bullwhip effect are the variance ratios $B=\frac{\operatorname{Var}(q_t)}{\operatorname{Var}(d_t)}>1$ and $B=\frac{\operatorname{Var}(q^{i}_t)}{\operatorname{Var}(q^{i-1}_t)}>1$ 
+
+$\rightarrow$ the larger $B$, the stronger the bullwhip effect
 
 ::: 
 :::
@@ -844,39 +852,41 @@ $\rightarrow$ je größer $B$ desto stärker der Bullwhip-Effekt
 
 ------------------------------------------------------------------------------
 
-## Bullwhip-Effekt
+## Bullwhip effect
 
 ::: slide-subtitle
-Empirie [@bray2012information; @chen2012bullwhip; @yao2020empirically]
+Empirical evidence [@bray2012information; @chen2012bullwhip; @yao2020empirically]
 :::
 
 ::: columns
 ::: {.column width="48%"}
 
 ::: {.callout-note appearance="minimal" icon="false"}
-### $2/3$ der Unternehmen
 
-In einer Stichprobe von **4.689 börsennotierten US-Unternehmen**
-zeigten rund zwei Drittel eine positive Verstärkung der
-Beschaffungs- gegenüber der Absatzvariabilität.
+### $2/3$ of companies
+
+In a sample of **4,689 listed US companies**,
+around two thirds showed a positive amplification of
+procurement variability relative to sales variability.
 
 :::
 
 ::: {.callout-important appearance="minimal" icon="false"}
 
-### $+15{,}8\%$ im Durchschnitt
+### $+15.8\%$ on average
 
-Die mittlere Bullwhip-Verstärkung betrug $15{,}8\%$ der
-Nachfragevariabilität; der Median lag bei $6{,}7\%$.
+The mean bullwhip amplification was $15.8\%$ of
+demand variability; the median was $6.7\%$.
 
 :::
 
 ::: {.callout-warning appearance="minimal" icon="false"}
-### Größenordnung
 
-Im Mittel lag die quartalsweise Standardabweichung vorgelagerter
-Bestellungen um rund **20 Mio. US-Dollar** über derjenigen der
-beobachteten Nachfrage.
+### Order of magnitude
+
+On average, the quarterly standard deviation of upstream
+orders exceeded that of observed demand
+by around **USD 20 million**.
 
 :::
 
@@ -886,35 +896,35 @@ beobachteten Nachfrage.
 
 ::: {.callout-tip appearance="minimal" icon="false"}
 
-### Reale Performance-Folgen [@yao2020empirically]
+### Real performance consequences [@yao2020empirically]
 
-Ein stärkerer Bullwhip-Effekt geht mit einem höheren Bestandsverhältnis und
-zugleich mehr Fehlmengen einher $\rightarrow$ Sicherhietsbestände reichen nicht
+A stronger bullwhip effect is associated with a higher inventory ratio and
+at the same time more stockouts $\rightarrow$ safety stocks are insufficient
 
 :::
 
 ::: {.callout-note appearance="minimal" icon="false"}
 
-### Aggregation verdeckt das Problem
+### Aggregation conceals the problem
 
-Auf Produkt-, Filial- oder Zeitaggregate verdichtete Kennzahlen
-unterschätzen den Bullwhip-Effekt gegenüber einer Messung auf
-SKU-Ebene.
+Metrics aggregated across products, stores or time
+underestimate the bullwhip effect compared with measurement at
+SKU level.
 
 :::
 
 ::: {.callout-important appearance="minimal" icon="false"}
 
-### Management-Botschaft
+### Management message
 
-Nicht nur die Endkundennachfrage erzeugt Volatilität:
+It is not only end-customer demand that creates volatility:
 
 $$
-\text{Nachfragesignal}
+\text{demand signal}
 +
-\text{lokale Disposition}
+\text{local ordering decisions}
 =
-\text{Bestellvarianz}
+\text{order variance}
 $$
 
 :::
@@ -925,56 +935,56 @@ $$
 
 ------------------------------------------------------------------------------
 
-##  Bullwhip-Effekt
+##  Bullwhip effect
 ::: slide-subtitle
-Ursachen des Bullwhip-Effekts
+Causes of the bullwhip effect
 :::
 
 ::: {.small-text}
 
-| Ursache | Wirkungsmechanismus |
+| Cause | Mechanism |
 |---|---------|
-| Lokale Prognosen | Bestellungen werden als tatsächliche Nachfrage interpretiert |
-| Prognoseaktualisierung | Kleine Nachfrageänderungen führen zu Anpassungen der Zielbestände |
-| Lange Lieferzeiten | Entscheidungen müssen weit in die Zukunft wirken |
-| Auftragsbündelung | Seltene Großbestellungen erzeugen künstliche Bedarfsspitzen |
-| Preisaktionen | Vorratskäufe verzerren die beobachtete Nachfrage |
-| Rationierung | Akteure bestellen strategisch mehr als ihren tatsächlichen Bedarf |
-| Fehlende Transparenz | Endkundennachfrage ist nicht für alle Stufen sichtbar |
-| Lokale Zielsysteme | Stufen optimieren individuell statt systemweit |
+| Local forecasts | Orders are interpreted as actual demand |
+| Forecast updating | Small changes in demand lead to adjustments of order-up-to levels |
+| Long lead times | Decisions must take effect far into the future |
+| Order batching | Infrequent large orders create artificial demand peaks |
+| Price promotions | Forward buying distorts observed demand |
+| Rationing | Actors strategically order more than their actual demand |
+| Lack of transparency | End-customer demand is not visible to all stages |
+| Local systems of objectives | Stages optimise individually rather than system-wide |
 
-::: 
+:::
 
 ------------------------------------------------------------------------------
 
-##  Bullwhip-Effekt
+##  Bullwhip effect
 ::: slide-subtitle
-Typische Folgen
+Typical consequences
 :::
 
 ::: columns
 ::: {.column width="50%"}
 
-**Operative Folgen**
+**Operational consequences**
 
-- Schwankende Produktionsprogramme
-- Instabile Kapazitätsauslastung
-- Eiltransporte und Sondermaßnahmen
-- Hohe Bestände und dennoch Fehlmengen
-- Niedrigere Lieferfähigkeit
-- Höhere Planungsunsicherheit
+- Fluctuating production schedules
+- Unstable capacity utilisation
+- Express shipments and special measures
+- High inventories and yet shortages
+- Lower delivery capability
+- Greater planning uncertainty
 
 :::
 
 ::: {.column width="50%"}
-**Ökonomische Folgen**
+**Economic consequences**
 
-- Höhere Kapitalbindung
-- Höhere Lagerkosten
-- Höhere Obsoleszenzrisiken
-- Höhere Rüst- und Produktionskosten
-- Höhere Transportkosten
-- Umsatz- und Deckungsbeitragsverluste
+- Higher capital tie-up
+- Higher warehousing costs
+- Higher obsolescence risks
+- Higher set-up and production costs
+- Higher transport costs
+- Losses in revenue and contribution margin
 
 :::
 :::
@@ -982,19 +992,19 @@ Typische Folgen
 ------------------------------------------------------------------------------
 
 
-##  Bullwhip-Effekt
+##  Bullwhip effect
 ::: slide-subtitle
-Gegenmaßnahmen
+Countermeasures
 :::
 
 ::: {.small-text}
-| Hebel | Maßnahme | Wirkung auf Bestände und Varianz |
+| Lever | Measure | Effect on inventories and variance |
 |--|-----|-----|
-| Informationsfluss | Point-of-Sale-Daten teilen | $\sigma$ der Prognosefehler sinkt |
-| Planung | Gemeinsame Prognosen und CPFR | Lokale Prognoseverzerrungen sinken |
-| Bestellpolitik | Kleine, häufige Bestellungen | Auftragsbündelung sinkt |
-| Lieferzeit | Informations- und Lieferzeiten verkürzen | Risikozeitraum sinkt |
-| Preise | Stabile Preise statt Vorratsanreize | Künstliche Bedarfsspitzen sinken |
-| Allokation | Rationierung nach historischen Mengen | Strategische Überbestellung sinkt |
-| Steuerung | Gesamtoptimum statt lokaler Zielgrößen | Bestell- und Bestandsentscheidungen werden koordiniert |
+| Information flow | Share point-of-sale data | $\sigma$ of forecast errors decreases |
+| Planning | Joint forecasts and CPFR | Local forecast bias decreases |
+| Ordering policy | Small, frequent orders | Order batching decreases |
+| Lead time | Shorten information and delivery lead times | Risk period decreases |
+| Prices | Stable prices instead of forward-buying incentives | Artificial demand peaks decrease |
+| Allocation | Rationing based on historical quantities | Strategic over-ordering decreases |
+| Control | Overall optimum instead of local targets | Order and inventory decisions are coordinated |
 :::

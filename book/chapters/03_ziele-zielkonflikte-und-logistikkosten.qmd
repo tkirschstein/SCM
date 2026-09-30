@@ -1,137 +1,162 @@
-# Ziele, Zielkonflikte und Logistikkosten {#sec-logistikkosten}
+# Objectives, Trade-offs and Logistics Costs {#sec-logistikkosten}
 
 ```{r}
 #| label: ch3-setup
 #| message: false
 #| warning: false
 
-# Tidyverse: dplyr (Datenmanipulation), ggplot2 (Grafiken), u.a.
+# Tidyverse: dplyr (data manipulation), ggplot2 (graphics), etc.
 library(tidyverse)
-# kableExtra: formatierte HTML-/PDF-Tabellen (kbl(), kable_styling())
+# kableExtra: formatted HTML/PDF tables (kbl(), kable_styling())
 library(kableExtra)
 
-# Farbpalette und Hilfsfunktionen des Kurses einbinden (Objekt `cols`)
+# Load the course colour palette and helper functions (object `cols`)
 source("../R/scm_functions.R")
 ```
 
 ::: {.lernziele}
-**Lernziele**
+**Learning objectives**
 
-- Sie können das Zielsystem der Logistik und des Supply Chain Managements benennen und die zentralen Zielgrößen (Kosten, Zeit, Zuverlässigkeit, Flexibilität/Resilienz, Qualität, Information) unterscheiden.
-- Sie können erklären, warum diese Ziele in einem Spannungsfeld zueinanderstehen, und das "Tetraeder der Zielkonflikte" sowie Zielprofile interpretieren.
-- Sie können die wichtigsten Logistikkostenarten (Transport-, Lager-, Bestands-, Handling-, Fehlmengenkosten u. a.) unterscheiden und an Beispielen quantifizieren.
-- Sie können typische Abwägungsentscheidungen der Logistik (Transportmittel, Lageranzahl, Sicherheitsbestand, Losgröße) anhand gegenläufiger Kostenkurven analysieren.
-- Sie können den R-Pipe-Operator `|>`, `dplyr::group_by()`/`summarise()` zur Aggregation sowie formatierte Tabellen mit `kableExtra` einsetzen, um Kostendaten auszuwerten und darzustellen.
+- You can name the system of objectives of logistics and supply chain management and distinguish the key target variables (cost, time, reliability, flexibility/resilience, quality, information).
+- You can explain why these objectives are in tension with one another, and interpret the "tetrahedron of trade-offs" as well as objective profiles.
+- You can distinguish the most important types of logistics costs (transport, warehousing, inventory holding, handling and shortage costs, among others) and quantify them using examples.
+- You can analyse typical logistics trade-off decisions (mode of transport, number of warehouses, safety stock, lot size) by means of opposing cost curves.
+- You can use the R pipe operator `|>`, `dplyr::group_by()`/`summarise()` for aggregation and formatted tables with `kableExtra` to evaluate and present cost data.
 :::
 
-## Von der Strategie zur operativen Steuerung
+## From strategy to operational control
 
-Im vorangegangenen Kapitel stand die strategische Ebene im Vordergrund: Welche Wertschöpfungsstufen übernimmt ein Unternehmen selbst, welche werden ausgelagert, und wie muss die Supply Chain gestaltet sein, damit sie zur Wettbewerbsstrategie passt (*Strategic Fit*)? Diese strategischen Weichenstellungen legen den Rahmen fest, innerhalb dessen Logistik und Supply Chain Management operativ handeln. Damit stellt sich die Anschlussfrage: Woran genau wird der Erfolg dieses operativen Handelns gemessen? Mit welchen Zielgrößen arbeitet das SCM, und was kostet es, diese Ziele zu erreichen?
+The previous chapter focused on the strategic level: which value-creation stages does a company perform itself, which are outsourced, and how must the supply chain be designed so that it matches the competitive strategy (*strategic fit*)? These strategic choices set the framework within which logistics and supply chain management act operationally. This raises the follow-up question: by what exactly is the success of this operational action measured? Which target variables does SCM work with, and what does it cost to achieve these objectives?
 
-Dieses Kapitel führt das **Zielsystem** der Logistik und des Supply Chain Managements ein, zeigt anhand eines anschaulichen "Tetraeders" die unausweichlichen **Zielkonflikte** zwischen Kosten, Geschwindigkeit, Qualität, Flexibilität sowie Nachhaltigkeit und arbeitet die wichtigsten **Logistikkostenarten** heraus. Abschließend wird an mehreren Zahlenbeispielen — von der Bananenwertschöpfungskette bis zum Apple iPod — gezeigt, wie sich Logistikkosten in der Praxis zusammensetzen und wie man sie mit R systematisch auswertet.
+This chapter introduces the **system of objectives** of logistics and supply chain management, uses an illustrative "tetrahedron" to show the unavoidable **trade-offs** between cost, speed, quality, flexibility and sustainability, and identifies the most important **types of logistics costs**. Finally, several numerical examples — from the banana value chain to the Apple iPod — show how logistics costs are made up in practice and how they can be analysed systematically with R.
 
-## Ziele des Supply-Chain-Managements
+## Objectives of supply chain management
 
-Supply-Chain-Management gestaltet Material-, Informations- und Finanzflüsse über Unternehmensgrenzen hinweg. Jede Gestaltungsentscheidung — etwa über Standorte, Bestände, Transportmittel, Kapazitäten oder Lieferanten — beeinflusst mehrere Zielgrößen gleichzeitig. Ein Netzwerk mit niedrigen Kosten kann lange Lieferwege verursachen. Hohe Lieferbereitschaft kann Sicherheitsbestände erhöhen. Eine starke Zentralisierung kann Bestände und Abschreibungen verringern, zugleich aber Entfernungen zu Kundinnen und Kunden vergrößern.
+Supply chain management designs material, information and financial flows across company boundaries. Every design decision — for example on locations, inventories, modes of transport, capacities or suppliers — affects several target variables at once. A low-cost network may lead to long delivery routes. High delivery readiness may increase safety stocks. Strong centralisation may reduce inventories and depreciation, but at the same time increase distances to customers.
 
-Eine fundierte Entscheidung erfordert daher mehr als die Frage, welche Alternative die geringsten unmittelbaren Kosten auslöst. Sie verlangt eine transparente Bewertung wirtschaftlicher, leistungsbezogener, risiko- und umweltbezogener Wirkungen. Dieses Kapitel entwickelt dafür die Begriffe und Modellierungslogiken, auf die die folgenden Kapitel zur Standortplanung, Unsicherheit und Bestandssteuerung aufbauen.
+A well-founded decision therefore requires more than asking which alternative causes the lowest immediate costs. It demands a transparent assessment of economic, performance-related, risk-related and environmental effects. This chapter develops the concepts and modelling logic on which the following chapters on facility location planning, uncertainty and inventory control build.
 
-## Zielsysteme in Unternehmen: eine Verortung
+## Systems of objectives in companies: a positioning
 
-Bevor wir uns den logistikspezifischen Zielen zuwenden, lohnt ein kurzer Blick auf die Struktur betrieblicher Zielsysteme insgesamt. In jedem Unternehmen existiert ein hierarchisch gegliedertes Managementsystem: Auf der **normativen Ebene** werden grundsätzliche Werte, die Unternehmensverfassung und die -kultur festgelegt; auf der **strategischen Ebene** werden langfristige Erfolgspotenziale aufgebaut (dies war der Gegenstand von Kapitel [-@sec-strategic-fit]); auf der **operativen Ebene** schließlich werden die Tagesgeschäfte so gesteuert, dass die strategischen Vorgaben erfüllt werden [@dyckhoff1998grundzuege].
+Before we turn to logistics-specific objectives, it is worth taking a brief look at the structure of corporate systems of objectives as a whole. Every company has a hierarchically structured management system: at the **normative level**, fundamental values, the corporate constitution and the corporate culture are defined; at the **strategic level**, long-term success potentials are built up (this was the subject of Chapter [-@sec-strategic-fit]); finally, at the **operational level**, day-to-day business is controlled in such a way that the strategic targets are met [@dyckhoff1998grundzuege].
 
-Jeder dieser Ebenen sind eigene Ziele zugeordnet — von sehr allgemeinen, langfristigen Leitbildern bis zu sehr konkreten, kurzfristig messbaren Kennzahlen. Logistik- und SCM-Ziele sind typischerweise auf der strategischen bis operativen Ebene angesiedelt: Sie leiten sich aus übergeordneten Unternehmenszielen (z. B. Rentabilität, Wachstum, Kundenzufriedenheit) ab, sind aber konkret genug, um im Tagesgeschäft als Entscheidungskriterium zu dienen.
+```{r}
+#| label: fig-management-levels
+#| echo: false
+#| fig-cap: "Levels of the management system above the performance system (after @dyckhoff1998grundzuege)"
+#| fig-width: 9
+#| fig-height: 6.6
+#| out-width: "75%"
+#| fig-align: center
+plot_management_pyramid()
+```
 
-Diese Einordnung ist mehr als eine akademische Fingerübung: Sie erklärt, warum Logistikentscheidungen fast nie "im luftleeren Raum" getroffen werden. Eine Entscheidung über die Anzahl der Auslieferungslager etwa ist eine operative bis strategische Entscheidung, die aber nur dann sinnvoll ist, wenn sie zur übergeordneten Servicestrategie des Unternehmens passt. Wer sich auf der strategischen Ebene für eine Kostenführerschaft entschieden hat (vgl. Kapitel [-@sec-strategic-fit]), wird auf der operativen Ebene tendenziell andere Ziel-Anspruchsniveaus setzen als ein Unternehmen, das auf Differenzierung durch Schnelligkeit setzt. Das Zielsystem der Logistik ist also kein Selbstzweck, sondern die operative "Übersetzung" der Wettbewerbsstrategie in messbare Größen.
+@fig-management-levels also shows how the levels relate to each other: the normative level belongs to the *value level*, the strategic, tactical and operational levels to the *information level*, and all of them steer the *performance system* at the *material level*, where goods are actually procured, produced and distributed.
+
+Each of these levels has its own objectives — from very general, long-term mission statements to very concrete, short-term measurable key figures. Logistics and SCM objectives are typically located at the strategic to operational level: they are derived from higher-level corporate objectives (e.g. profitability, growth, customer satisfaction), but are concrete enough to serve as decision criteria in day-to-day business.
+
+A common classification distinguishes **substantive objectives** (what is to be produced, in which quantities and qualities) from **formal objectives**, which measure the success of this activity. Formal objectives are either monetary (profit, revenue, costs, liquidity) or non-monetary; the latter can be quantifiable (growth, market share, environmental objectives) or non-quantifiable (social objectives, autonomy, flexibility, prestige). For decision-making, these objectives must be transformed into operational target metrics such as a maximum period contribution margin or minimum inventory levels (@fig-objective-types).
+
+```{r}
+#| label: fig-objective-types
+#| echo: false
+#| fig-cap: "Substantive and formal objectives and their transformation into operational target metrics [after @buscher2013produktion, p. 12]"
+#| fig-width: 8
+#| fig-height: 6.4
+#| out-width: "75%"
+#| fig-align: center
+plot_objective_types()
+```
+
+This classification is more than an academic exercise: it explains why logistics decisions are almost never made "in a vacuum". A decision on the number of distribution warehouses, for example, is an operational to strategic decision, but it only makes sense if it fits the company's overarching service strategy. A company that has opted for cost leadership at the strategic level (cf. Chapter [-@sec-strategic-fit]) will tend to set different target aspiration levels at the operational level than a company that relies on differentiation through speed. The system of objectives of logistics is therefore not an end in itself, but the operational "translation" of the competitive strategy into measurable variables.
 
 ::: {.definition}
-**Definition: Ziel**
+**Definition: Objective**
 
-Ein **Ziel** beschreibt einen angestrebten zukünftigen Zustand, der durch eine **Zielgröße** (das *Was*, z. B. "Lieferzeit"), ein **Anspruchsniveau** (das *Wie viel*, z. B. "maximal 24 Stunden") und einen **zeitlichen Bezug** (das *Bis wann*) charakterisiert ist. Ziele dienen als Maßstab, an dem Entscheidungsalternativen bewertet und Zielerreichungsgrade gemessen werden.
+An **objective** describes a desired future state that is characterised by a **target variable** (the *what*, e.g. "delivery time"), an **aspiration level** (the *how much*, e.g. "a maximum of 24 hours") and a **time reference** (the *by when*). Objectives serve as a yardstick against which decision alternatives are evaluated and degrees of goal achievement are measured.
 :::
 
-### Wirtschaftlichkeit
+### Economic efficiency
 
-Wirtschaftlichkeit bedeutet, die zur Leistungserstellung eingesetzten Ressourcen effizient zu nutzen. In Supply Chains umfasst dies insbesondere Beschaffungs-, Produktions-, Lager-, Transport-, Umschlag-, Informations- und Koordinationskosten. Entscheidend sind nicht isolierte Einzelkosten, sondern die Kosten des gesamten Systems. Eine Maßnahme, die lokale Transportkosten senkt, kann beispielsweise an anderer Stelle höhere Bestände, längere Durchlaufzeiten oder schlechtere Servicewerte verursachen.
+Economic efficiency means using the resources employed to provide a service efficiently. In supply chains, this includes in particular procurement, production, warehousing, transport, transhipment, information and coordination costs. What matters is not isolated individual costs, but the costs of the entire system. A measure that lowers local transport costs may, for example, cause higher inventories, longer lead times or poorer service levels elsewhere.
 
-Die Perspektive der Gesamtkosten wird häufig als *Total-Cost-of-Ownership*- oder *Total-Logistics-Cost*-Denken bezeichnet. Sie verlangt, dass Entscheidungen entlang der gesamten Kette bewertet werden und nicht nur aus Sicht einer einzelnen Funktion oder eines einzelnen Unternehmens.
+The total-cost perspective is often referred to as *total cost of ownership* or *total logistics cost* thinking. It requires decisions to be evaluated along the entire chain and not only from the perspective of a single function or a single company.
 
-### Service und Zeit
+### Service and time
 
-Logistikleistung zeigt sich für Kundinnen und Kunden vor allem in Verfügbarkeit, Lieferzeit, Lieferzuverlässigkeit, Flexibilität und Informationsqualität. Typische Kennzahlen sind der Lieferbereitschaftsgrad, die vollständige und pünktliche Lieferung sowie die mittlere Durchlaufzeit.
+For customers, logistics performance is reflected above all in availability, delivery time, delivery reliability, flexibility and information quality. Typical key figures are the degree of delivery readiness, complete and on-time delivery, and mean lead time.
 
-Ein hohes Serviceniveau ist meist nicht kostenlos erreichbar. Kürzere Lieferzeiten benötigen häufig mehr Lagerstandorte, zusätzliche Kapazitäten, höhere Sicherheitsbestände oder schnellere Transportmodi. Die zentrale betriebswirtschaftliche Aufgabe besteht darin, das gewünschte Leistungsniveau explizit zu bestimmen und die dafür erforderlichen Ressourcen sichtbar zu machen.
+A high service level can rarely be achieved free of charge. Shorter delivery times often require more warehouse locations, additional capacity, higher safety stocks or faster transport modes. The central managerial task is to determine the desired performance level explicitly and to make the resources required for it visible.
 
-### Resilienz und Risiko
+### Resilience and risk
 
-Supply Chains sind Störungen ausgesetzt, etwa durch Nachfrageschwankungen, Ausfälle von Lieferanten, Kapazitätsengpässe, Naturereignisse oder infrastrukturelle Unterbrechungen. Resilienz beschreibt die Fähigkeit eines Netzwerks, solche Störungen zu absorbieren, sich anzupassen und seine Leistungsfähigkeit wiederherzustellen.
+Supply chains are exposed to disruptions, for example from demand fluctuations, supplier failures, capacity bottlenecks, natural events or infrastructure interruptions. Resilience describes the ability of a network to absorb such disruptions, adapt and restore its performance.
 
-Resilienz kann durch Redundanzen, alternative Bezugsquellen, flexible Kapazitäten, regionale Diversifikation, Transparenz und geeignete Sicherheitsbestände verbessert werden. Solche Maßnahmen erhöhen häufig die unmittelbaren Kosten. Sie können jedoch wirtschaftlich sinnvoll sein, wenn sie erwartete Störungskosten, Umsatzausfälle oder Reputationsschäden vermindern.
+Resilience can be improved through redundancy, alternative sources of supply, flexible capacity, regional diversification, transparency and appropriate safety stocks. Such measures often increase immediate costs. However, they can make economic sense if they reduce expected disruption costs, lost revenue or reputational damage.
 
-### Nachhaltigkeit
+### Sustainability
 
-Nachhaltigkeit erweitert das Zielsystem um ökologische und soziale Wirkungen. Im Mittelpunkt dieses Kapitels stehen zunächst ökologische Wirkungen logistischer Entscheidungen: Treibhausgasemissionen, Energie- und Ressourcenverbrauch, Flächeninanspruchnahme, Luftschadstoffe, Abfall und Verderb. Soziale Aspekte — etwa Arbeitsbedingungen, Sicherheit und regionale Wertschöpfung — sind ebenfalls relevant, werden hier aber nicht in ein einheitliches quantitatives Maß überführt.
+Sustainability extends the system of objectives to include environmental and social effects. This chapter initially focuses on the environmental effects of logistics decisions: greenhouse gas emissions, energy and resource consumption, land use, air pollutants, waste and spoilage. Social aspects — such as working conditions, safety and regional value creation — are also relevant, but are not converted into a single quantitative measure here.
 
-Nachhaltigkeit ist kein isoliertes Zusatzkriterium. Sie verändert, wie Standorte, Transportwege, Bestände, Verpackungen, Produktionsmengen und Beschaffungsstrukturen bewertet werden. In vielen Supply Chains entstehen wesentliche Umweltwirkungen nicht im eigenen Betrieb, sondern bei Vorlieferanten, Transportdienstleistern oder in der Nutzungs- und Rücknahmephase von Produkten.
-
-
-## Zielmetriken in Logistik und Supply Chain Management
-
-Traditionell wird die Leistungsfähigkeit von Logistik und Supply Chain Management anhand einer überschaubaren Menge von **Zielmetriken** beurteilt. Sechs Größen tauchen in nahezu jedem Logistik-Lehrbuch auf und bilden gemeinsam ein Rad, dessen Speichen sich gegenseitig beeinflussen:
-
-- **Lieferzeit**: die Zeitspanne zwischen Auftragserteilung durch den Kunden und der tatsächlichen Erfüllung des Auftrags (Wareneingang beim Kunden). Kurze Lieferzeiten erhöhen die Kundenzufriedenheit, verlangen aber häufig höhere Bestände oder teurere Transportmittel.
-- **Liefertreue**: das Verhältnis zwischen zugesagtem und tatsächlich realisiertem Liefertermin. Eine hohe Liefertreue bedeutet, dass Zusagen verlässlich eingehalten werden — unabhängig davon, wie lang die zugesagte Frist ist.
-- **Lieferqualität**: der Anteil der Aufträge, die sowohl mengenmäßig als auch qualitativ korrekt ausgeführt wurden (keine Falsch- oder Fehllieferungen, keine Transportschäden).
-- **Flexibilität/Resilienz**: die Fähigkeit, kurzfristige Änderungen bei Mengen, Terminen oder Produktspezifikationen zu realisieren bzw. sich von Störungen (Lieferengpässen, Nachfrageschocks) schnell zu erholen.
-- **Information**: die Qualität und Transparenz der Information, die während der gesamten Auftragsabwicklung verfügbar ist — etwa Sendungsverfolgung oder verlässliche Bestandsdaten.
-- **Kosten**: die Effizienz, mit der all diese Leistungen erbracht werden, gemessen an den Gesamtkosten der logistischen Aktivitäten.
-
-Diese sechs Zielgrößen sind nicht unabhängig voneinander. Im Gegenteil: Ihr Zusammenspiel — genauer gesagt ihr *Widerspruch* — ist der eigentliche Kern des Logistikmanagements, wie der folgende Abschnitt zeigt.
-
-Neben diesen "klassischen" ökonomischen Zielgrößen rücken in den letzten Jahren zunehmend **ökologische und soziale Ziele** in den Vordergrund: die Reduktion von Treibhausgasemissionen entlang der Kette, der schonende Umgang mit Ressourcen oder die Einhaltung sozialer Mindeststandards bei Zulieferern. Diese Ziele treten nicht additiv neben das bestehende Zielsystem, sondern verschärfen die bereits bestehenden Zielkonflikte zusätzlich — eine emissionsärmere Bahnverbindung ist oft langsamer als der Lkw-Transport, ein regionaler statt globaler Zulieferer kann teurer, aber ökologisch vorteilhafter sein. Eine vollständige Behandlung dieser dritten und vierten Zieldimension würde den Rahmen dieses Kapitels sprengen; sie sei aber als Ausblick festgehalten und findet sich vertiefend bei @dyckhoff2008nachhaltige.
+Sustainability is not an isolated additional criterion. It changes how locations, transport routes, inventories, packaging, production quantities and procurement structures are evaluated. In many supply chains, significant environmental impacts arise not in the company's own operations, but at upstream suppliers, transport service providers or in the use and take-back phase of products.
 
 
-## Das Spannungsfeld der Logistikziele: Zieldimensionen und das Tetraeder
+## Target metrics in logistics and supply chain management
 
-Würde man jede der sechs Zielgrößen unabhängig maximieren bzw. minimieren wollen, entstünde ein Logistiksystem mit perfekter Lieferzeit, perfekter Liefertreue, perfekter Qualität, maximaler Flexibilität, voller Transparenz — zu minimalen Kosten. Ein solches System existiert nicht. Jede Verbesserung einer Zielgröße geht in aller Regel zulasten mindestens einer anderen. Man spricht hier von einem **Zielkonflikt**.
+Traditionally, the performance of logistics and supply chain management is assessed using a manageable set of **target metrics**. Six variables appear in almost every logistics textbook and together form a wheel whose spokes influence one another:
+
+- **Delivery time**: the time span between the customer placing the order and the actual fulfilment of the order (receipt of goods by the customer). Short delivery times increase customer satisfaction, but often require higher inventories or more expensive modes of transport.
+- **Delivery reliability**: the relationship between the promised and the actually achieved delivery date. High delivery reliability means that commitments are reliably kept — regardless of how long the promised period is.
+- **Delivery quality**: the share of orders that were executed correctly in terms of both quantity and quality (no wrong or missing deliveries, no transport damage).
+- **Flexibility/resilience**: the ability to implement short-term changes in quantities, dates or product specifications, or to recover quickly from disruptions (supply shortages, demand shocks).
+- **Information**: the quality and transparency of the information available throughout order processing — for example shipment tracking or reliable inventory data.
+- **Cost**: the efficiency with which all these services are provided, measured by the total costs of the logistics activities.
+
+These six target variables are not independent of one another. On the contrary: their interplay — more precisely, their *contradiction* — is the actual core of logistics management, as the following section shows.
+
+In addition to these "classical" economic target variables, **environmental and social objectives** have increasingly come to the fore in recent years: the reduction of greenhouse gas emissions along the chain, the careful use of resources or compliance with minimum social standards at suppliers. These objectives are not simply added alongside the existing system of objectives, but further intensify the existing trade-offs — a lower-emission rail connection is often slower than road haulage, and a regional rather than global supplier may be more expensive but environmentally more advantageous. A complete treatment of this third and fourth dimension of objectives would go beyond the scope of this chapter; it is, however, noted here as an outlook and is covered in depth by @dyckhoff2008nachhaltige.
+
+## The tension between logistics objectives: dimensions of objectives and the tetrahedron
+
+If one tried to maximise or minimise each of the six target variables independently, the result would be a logistics system with perfect delivery time, perfect delivery reliability, perfect quality, maximum flexibility and full transparency — at minimum cost. Such a system does not exist. As a rule, any improvement in one target variable comes at the expense of at least one other. This is referred to as a **trade-off (goal conflict)**.
 
 ::: {.definition}
-**Definition: Zielkonflikt**
+**Definition: Trade-off (goal conflict)**
 
-Ein **Zielkonflikt** liegt vor, wenn die Verbesserung einer Zielgröße (z. B. kürzere Lieferzeit) notwendigerweise die Verschlechterung mindestens einer anderen Zielgröße (z. B. höhere Kosten) nach sich zieht. Zielkonflikte lassen sich nicht "auflösen", sondern nur durch eine bewusste Abwägung — einen **Trade-off** — handhaben.
+A **goal conflict** exists when the improvement of one target variable (e.g. shorter delivery time) necessarily entails the deterioration of at least one other target variable (e.g. higher costs). Goal conflicts cannot be "resolved", but can only be handled through a deliberate weighing-up — a **trade-off**.
 :::
 
 ::: {.vertiefung}
-**Theorie-Vertiefung: Zielbeziehungen und Pareto-Effizienz**
+**In depth (theory): Relationships between objectives and Pareto efficiency**
 
-Die betriebswirtschaftliche Entscheidungstheorie unterscheidet drei Arten von Beziehungen zwischen zwei Zielen [@dyckhoff1998grundzuege]: **Komplementäre** Ziele fördern sich gegenseitig (eine bessere Lieferqualität senkt z. B. Reklamations- und damit Logistikkosten), **indifferente** Ziele beeinflussen sich nicht, und **konkurrierende** Ziele stehen im Konflikt. Wichtig ist, dass die Art der Beziehung nicht "naturgegeben" ist, sondern vom betrachteten Bereich der Alternativen abhängt: Solange ein Logistiksystem Verschwendung enthält (etwa Leerfahrten oder doppelt gehaltene Bestände), lassen sich Kosten und Lieferzeit oft **gleichzeitig** verbessern — die Ziele verhalten sich in diesem Bereich komplementär. Erst wenn alle solchen Verbesserungen ausgeschöpft sind, wird die Beziehung konkurrierend.
+Managerial decision theory distinguishes three types of relationship between two objectives [@dyckhoff1998grundzuege]: **complementary** objectives support each other (better delivery quality, for example, reduces complaint costs and thus logistics costs), **indifferent** objectives do not influence each other, and **competing** objectives are in conflict. It is important to note that the type of relationship is not "given by nature", but depends on the range of alternatives under consideration: as long as a logistics system contains waste (such as empty runs or duplicated inventories), cost and delivery time can often be improved **simultaneously** — in this range the objectives behave in a complementary way. Only when all such improvements have been exhausted does the relationship become competitive.
 
-Formal nennt man eine Alternative **Pareto-effizient** (oder dominanzfrei), wenn es keine andere zulässige Alternative gibt, die in mindestens einem Ziel besser und in keinem Ziel schlechter ist. Die Menge aller Pareto-effizienten Alternativen bildet die **Effizienzgrenze** — dieselbe Denkfigur, die in Kapitel [-@sec-strategic-fit] als Kosten-Reaktionsfähigkeits-Grenze eingeführt wurde. Echte Zielkonflikte existieren nur *auf* dieser Grenze. Daraus folgen zwei Managementaufgaben, die man sauber trennen sollte: Erstens ein ineffizientes System an die Grenze heranzuführen (hier gibt es keinen Zielkonflikt, nur Verbesserungspotenzial), und zweitens auf der Grenze eine Position zu wählen, die zur Wettbewerbsstrategie passt (hier ist eine Abwägung unvermeidlich). Die Zielprofile weiter unten sind im Grunde nichts anderes als unterschiedliche Positionen auf einer solchen mehrdimensionalen Effizienzgrenze.
+Formally, an alternative is called **Pareto-efficient** (or non-dominated) if there is no other feasible alternative that is better in at least one objective and worse in none. The set of all Pareto-efficient alternatives forms the **efficient frontier** — the same concept that was introduced in Chapter [-@sec-strategic-fit] as the cost–responsiveness frontier. Genuine trade-offs exist only *on* this frontier. This gives rise to two management tasks that should be clearly separated: first, bringing an inefficient system up to the frontier (here there is no trade-off, only potential for improvement), and second, choosing a position on the frontier that matches the competitive strategy (here a trade-off is unavoidable). The objective profiles below are essentially nothing other than different positions on such a multidimensional efficient frontier.
 :::
 
-Zur Veranschaulichung reduziert man das Zielsystem häufig auf vier zentrale, stark verdichtete Dimensionen: **Qualität**, **Geschwindigkeit**, **Kosten** und **Flexibilität/Resilienz**. Stellt man diese vier Dimensionen als die vier Eckpunkte eines Tetraeders (einer dreiseitigen Pyramide) dar, wird das Spannungsfeld unmittelbar sichtbar: Jede Kante des Tetraeders verbindet zwei Zielgrößen, zwischen denen abgewogen werden muss, und kein reales Logistiksystem kann gleichzeitig in allen vier Ecken "perfekt" positioniert sein.
+For illustration, the system of objectives is often reduced to four central, highly condensed dimensions: **quality**, **speed**, **cost** and **flexibility/resilience**. If these four dimensions are represented as the four vertices of a tetrahedron (a triangular pyramid), the tension becomes immediately visible: each edge of the tetrahedron connects two target variables between which a trade-off must be made, and no real logistics system can be positioned "perfectly" in all four corners at the same time.
 
 ```{r}
 #| label: ch3-tetraeder
-#| fig-cap: "Das Tetraeder der Zielkonflikte: Qualität, Geschwindigkeit, Kosten und Flexibilität/Resilienz stehen in einem gegenseitigen Spannungsfeld."
-#| fig-alt: "Dreidimensionale Pyramide (Tetraeder) mit den vier Eckpunkten Qualität, Geschwindigkeit, Kosten und Flexibilität/Resilienz."
+#| fig-cap: "The tetrahedron of trade-offs: quality, speed, cost and flexibility/resilience are in mutual tension."
+#| fig-alt: "Three-dimensional pyramid (tetrahedron) with the four vertices quality, speed, cost and flexibility/resilience."
 
 library(plotly)
 
-# Vier Eckpunkte des Tetraeders: 1-3 bilden die Grundfläche, 4 die Spitze
+# Four vertices of the tetrahedron: 1-3 form the base, 4 the apex
 eckpunkte <- data.frame(
-  ziel = c("Qualität", "Geschwindigkeit", "Kosten", "Flexibilität / Resilienz"),
+  ziel = c("Quality", "Speed", "Cost", "Flexibility / resilience"),
   x = c(-3.8, 0.0, 3.8, 0.0),
   y = c(-2.2, 3.2, -2.2, 0.0),
   z = c(0.0, 0.0, 0.0, 4.2)
 )
 
-# Vier Dreiecksflächen: Grundfläche (0,1,2) sowie drei Seitenflächen zur Spitze (3)
+# Four triangular faces: base (0,1,2) and three side faces to the apex (3)
 flaechen_i <- c(0, 0, 0, 1)
 flaechen_j <- c(1, 2, 3, 2)
 flaechen_k <- c(2, 3, 1, 3)
 
-# Aufbau der 3D-Grafik mit plotly: Flächen (mesh3d), Kanten (Linien), Beschriftungen
+# Build the 3D graphic with plotly: faces (mesh3d), edges (lines), labels
 fig_tetraeder <- plot_ly() |>
   add_trace(
     type = "mesh3d",
@@ -164,38 +189,38 @@ fig_tetraeder <- plot_ly() |>
 fig_tetraeder
 ```
 
-Konkrete Logistiksysteme lassen sich dann als **Zielprofile** innerhalb dieses Spannungsfelds charakterisieren. Ein Express-Kurierdienst positioniert sich z. B. nahe an der Ecke "Geschwindigkeit" — zulasten der Kosten. Ein auf Kosteneffizienz getrimmter Seefracht-Massentransport liegt dagegen nahe der Ecke "Kosten" — zulasten der Lieferzeit. Ein Zulieferer in einer Just-in-Sequence-Fertigung wiederum muss auf der Kante zwischen Flexibilität und Geschwindigkeit operieren, da er auf kurzfristige Abrufänderungen reagieren *und* dennoch termingenau liefern muss.
+Specific logistics systems can then be characterised as **objective profiles** within this area of tension. An express courier service, for example, positions itself close to the "speed" corner — at the expense of cost. A bulk sea-freight service geared towards cost efficiency, by contrast, lies close to the "cost" corner — at the expense of delivery time. A supplier in just-in-sequence production, in turn, has to operate on the edge between flexibility and speed, as it must respond to short-term changes in call-offs *and* still deliver exactly on schedule.
 
-Statt der vier verdichteten Dimensionen lassen sich auch die vier Ursprungsgrößen **Lieferzeit**, **Lieferzuverlässigkeit**, **Lieferflexibilität** und **Logistikkosten** in einem sogenannten **Zielprofil-Diagramm** (auch Radar- oder Spinnendiagramm) abbilden. Jede Achse repräsentiert eine Zielgröße; ein konkretes System wird durch ein Polygon dargestellt, dessen Eckpunkte den erreichten Ausprägungen entsprechen. Vergleicht man mehrere Systeme (oder Systemalternativen) auf diese Weise, werden Unterschiede in der strategischen Positionierung sofort sichtbar — ein System mit einem "spitzen", einseitig ausgerichteten Profil verfolgt eine klare Fokus-Strategie, während ein ausgeglicheneres Profil auf einen Kompromiss zwischen den Zielen setzt.
+Instead of the four condensed dimensions, the four original variables **delivery time**, **delivery reliability**, **delivery flexibility** and **logistics costs** can also be shown in a so-called **objective profile chart** (also known as a radar or spider chart). Each axis represents a target variable; a specific system is represented by a polygon whose vertices correspond to the values achieved. If several systems (or system alternatives) are compared in this way, differences in strategic positioning become immediately visible — a system with a "pointed", one-sided profile pursues a clear focus strategy, whereas a more balanced profile relies on a compromise between the objectives.
 
 ```{r}
 #| label: ch3-zielprofile
-#| fig-cap: "Zielprofile: vier Logistiksysteme mit unterschiedlicher Positionierung zwischen kurzen Lieferzeiten, hoher Lieferzuverlässigkeit, großer Lieferflexibilität und niedrigen Logistikkosten."
-#| fig-alt: "Radardiagramm mit vier Achsen (Lieferzeit, Lieferzuverlässigkeit, Lieferflexibilität, Logistikkosten) und vier eingezeichneten Zielprofilen."
+#| fig-cap: "Objective profiles: four logistics systems with different positioning between short delivery times, high delivery reliability, great delivery flexibility and low logistics costs."
+#| fig-alt: "Radar chart with four axes (delivery time, delivery reliability, delivery flexibility, logistics costs) and four plotted objective profiles."
 
 library(plotly)
 
-# Vier Zielgrößen auf einer Skala von 0 bis 10; jedes Profil ein Polygon.
-# Die erste Achse wird am Ende wiederholt, damit sich das Polygon schließt.
-achsen <- c("kurze Lieferzeit", "hohe Lieferzuverlässigkeit",
-            "große Lieferflexibilität", "niedrige Logistikkosten")
+# Four target variables on a scale from 0 to 10; each profile is a polygon.
+# The first axis is repeated at the end so that the polygon closes.
+achsen <- c("short delivery time", "high delivery reliability",
+            "great delivery flexibility", "low logistics costs")
 
 zielprofile <- tibble::tribble(
   ~profil,    ~lieferzeit, ~zuverlaessigkeit, ~flexibilitaet, ~kosten,
-  "Profil 1",         5.8,               8.7,            5.8,     1.8,
-  "Profil 2",         7.6,               3.2,            8.6,     3.2,
-  "Profil 3",         9.3,               4.9,            1.5,     5.0,
-  "Profil 4",         3.6,               1.5,            3.6,     8.2
+  "Profile 1",         5.8,               8.7,            5.8,     1.8,
+  "Profile 2",         7.6,               3.2,            8.6,     3.2,
+  "Profile 3",         9.3,               4.9,            1.5,     5.0,
+  "Profile 4",         3.6,               1.5,            3.6,     8.2
 )
 
-# Radardiagramm mit plotly (scatterpolar): eine Spur je Zielprofil
+# Radar chart with plotly (scatterpolar): one trace per objective profile
 fig_zielprofile <- plot_ly(type = "scatterpolar", fill = "toself")
 
 for (i in seq_len(nrow(zielprofile))) {
   werte <- as.numeric(zielprofile[i, -1])
   fig_zielprofile <- fig_zielprofile |>
     add_trace(
-      r = c(werte, werte[1]),               # erste Achse wiederholen -> Polygon schließt sich
+      r = c(werte, werte[1]),               # repeat first axis -> polygon closes
       theta = c(achsen, achsen[1]),
       name = zielprofile$profil[i],
       opacity = 0.35
@@ -211,66 +236,65 @@ fig_zielprofile <- fig_zielprofile |>
 fig_zielprofile
 ```
 
-Beide Darstellungen — Tetraeder und Zielprofil — transportieren dieselbe Botschaft: Logistik- und SCM-Entscheidungen sind fast immer **Abwägungsentscheidungen**. Es geht nicht darum, "das beste" System schlechthin zu finden, sondern dasjenige Zielprofil zu wählen, das am besten zur übergeordneten Wettbewerbsstrategie passt — eine unmittelbare Fortsetzung des in Kapitel [-@sec-strategic-fit] behandelten Strategic-Fit-Gedankens [@chopra2025supply].
+Both representations — tetrahedron and objective profile — convey the same message: logistics and SCM decisions are almost always **trade-off decisions**. The point is not to find "the best" system per se, but to choose the objective profile that best fits the overarching competitive strategy — a direct continuation of the strategic-fit idea discussed in Chapter [-@sec-strategic-fit] [@chopra2025supply].
 
 ::: {.r-exkurs}
-**R-Exkurs: Der Pipe-Operator `|>`**
+**R aside: The pipe operator `|>`**
 
-In den bisherigen Kapiteln haben Sie einzelne R-Befehle meist nacheinander in getrennten Zeilen notiert oder Funktionsaufrufe ineinander verschachtelt. Bei mehrstufigen Datenverarbeitungen — "Nimm die Daten, filtere sie, gruppiere sie, fasse sie zusammen, sortiere sie" — wird eine Verschachtelung schnell unübersichtlich. Der **Pipe-Operator** `|>` (gesprochen "dann") löst dieses Problem: Er nimmt das Ergebnis auf seiner linken Seite und übergibt es als *erstes* Argument an die Funktion auf seiner rechten Seite.
+In the previous chapters, you have mostly written individual R commands one after the other on separate lines or nested function calls inside one another. With multi-step data processing — "take the data, filter it, group it, summarise it, sort it" — nesting quickly becomes confusing. The **pipe operator** `|>` (read as "then") solves this problem: it takes the result on its left-hand side and passes it as the *first* argument to the function on its right-hand side.
 
 ```{r}
 #| label: ch3-pipe-demo
 
-# Ohne Pipe: Funktionsaufrufe werden von innen nach außen verschachtelt
+# Without pipe: function calls are nested from the inside out
 kosten <- c(120, 340, 95, 410, 180)
 round(mean(sort(kosten, decreasing = TRUE)), 1)
 
-# Mit Pipe: dieselbe Berechnung, aber in der Reihenfolge lesbar,
-# in der sie gedanklich abläuft ("nimm kosten, dann sortiere, dann...")
+# With pipe: the same calculation, but readable in the order
+# in which it is thought through ("take kosten, then sort, then...")
 kosten |>
   sort(decreasing = TRUE) |>
   mean() |>
   round(1)
 ```
 
-Der Pipe-Operator verändert *nicht*, was berechnet wird — nur, wie leicht der Rechenweg nachvollziehbar ist. Ab jetzt werden wir ihn durchgängig verwenden, insbesondere in Verbindung mit den `dplyr`-Funktionen `filter()`, `mutate()`, `group_by()` und `summarise()`, die Sie in Kapitel [-@sec-strategic-fit] bereits kennengelernt haben bzw. im Folgenden kennenlernen. Eine Pipe-Kette liest sich dann fast wie ein Satz: *"Nimm die Kostendaten, gruppiere sie nach Kostenart, und fasse sie zu Summen zusammen."*
+The pipe operator does *not* change what is calculated — only how easy it is to follow the calculation. From now on we will use it throughout, especially in combination with the `dplyr` functions `filter()`, `mutate()`, `group_by()` and `summarise()`, which you have already met in Chapter [-@sec-strategic-fit] or will meet below. A pipe chain then reads almost like a sentence: *"Take the cost data, group it by cost type, and summarise it into totals."*
 :::
 
+## Logistics costs as a basis for decision-making
 
-## Logistikkosten als Entscheidungsgrundlage
+The cost perspective deserves closer attention because it appears as the "opponent" of time, quality and flexibility in practically every trade-off. In many areas of logistics, two (or more) cost components face each other that behave in *opposite* directions with respect to the same decision variable: if one type of cost rises, the other falls — and vice versa. Because both effects act simultaneously, the **total costs** follow a U-shaped curve with a (at least theoretical) cost minimum.
 
-Die Kostenperspektive verdient eine genauere Betrachtung, weil sie in praktisch jeder Zielabwägung als "Gegenspieler" zu Zeit, Qualität und Flexibilität auftritt. In vielen Teilbereichen der Logistik stehen sich zwei (oder mehr) Kostenkomponenten gegenüber, die sich mit derselben Entscheidungsvariable *gegenläufig* verhalten: Steigt die eine Kostenart, sinkt die andere — und umgekehrt. Weil beide Effekte gleichzeitig wirken, ergibt sich für die **Gesamtkosten** eine u-förmige Kurve mit einem (zumindest theoretischen) Kostenminimum.
-
-Formal lässt sich ein solcher Zusammenhang häufig durch eine Kostenfunktion der Form
+Formally, such a relationship can often be described by a cost function of the form
 
 $$
-K(x) = \underbrace{a \cdot x^2}_{\text{steigende Kostenart}} + \underbrace{\frac{b}{x}}_{\text{fallende Kostenart}}, \qquad x > 0
+K(x) = \underbrace{a \cdot x^2}_{\text{increasing cost type}} + \underbrace{\frac{b}{x}}_{\text{decreasing cost type}}, \qquad x > 0
 $$
 
-beschreiben, wobei $x$ die Entscheidungsvariable (z. B. Sicherheitsbestand, Losgröße, Anzahl Lager) und $a, b > 0$ Kostenparameter sind. Das Minimum dieser Funktion ergibt sich durch Nullsetzen der ersten Ableitung:
+where $x$ is the decision variable (e.g. safety stock, lot size, number of warehouses) and $a, b > 0$ are cost parameters. The minimum of this function is obtained by setting the first derivative to zero:
 
 $$
 K'(x) = 2a x - \frac{b}{x^2} \stackrel{!}{=} 0 \quad \Longrightarrow \quad x^* = \left(\frac{b}{2a}\right)^{1/3}
 $$
 
-Dieses Muster — eine steigende und eine fallende Kostenkomponente, deren Summe ein Minimum besitzt — begegnet uns in der Logistik in immer wieder ähnlicher Form. Wichtig ist dabei die Interpretation der Parameter $a$ und $b$: Sie sind keine willkürlichen Konstanten, sondern bilden reale Kostensätze ab (z. B. Zinssatz und Lagerkostensatz je Einheit für $a$, Rüst- oder Fehlmengenkostensatz für $b$) und müssten in der Praxis aus der Kostenrechnung geschätzt werden. Je nach Entscheidungssituation ändert sich außerdem, *welche* Kostenart steigt und welche fällt — das mathematische Grundmuster bleibt aber dasselbe. Vier typische Beispiele:
+This pattern — one increasing and one decreasing cost component whose sum has a minimum — appears again and again in logistics in similar form. The interpretation of the parameters $a$ and $b$ is important here: they are not arbitrary constants, but represent real cost rates (e.g. interest rate and warehousing cost rate per unit for $a$, set-up or shortage cost rate for $b$) and would have to be estimated from cost accounting in practice. Depending on the decision situation, *which* type of cost rises and which falls also changes — but the basic mathematical pattern remains the same. Four typical examples:
 
-1. **Wahl des Transportmittels**: Schnellere Transportmittel (Flugzeug) verursachen höhere direkte Transportkosten, senken aber die Kosten der Kapitalbindung im Bestand (kürzere Transportzeit $\rightarrow$ weniger Bestand unterwegs). Langsamere Transportmittel (Schiff, Bahn) sind günstiger je Mengeneinheit, binden aber länger Kapital in Beständen.
-2. **Anzahl der Lager**: Mehr Lagerstandorte erhöhen die Kosten der Lagerhaltung und -versorgung (mehr Fixkosten, mehr Sicherheitsbestände), senken aber die Transportkosten der Auslieferung an die Kunden (kürzere "letzte Meile").
-3. **Höhe des Sicherheitsbestands**: Ein höherer Sicherheitsbestand erhöht die Lagerkosten (Kapitalbindung, Lagerplatz), senkt aber die erwarteten Fehlmengenkosten (Umsatzverlust, Konventionalstrafen, Image-Schäden bei Lieferausfällen).
-4. **Losgröße**: Größere Bestellmengen bzw. Fertigungslose erhöhen die Lagerkosten (mehr durchschnittlicher Bestand), senken aber die Rüst- bzw. Bestellkosten (weniger Bestellvorgänge/Rüstwechsel je Periode).
+1. **Choice of transport mode**: faster modes of transport (air) cause higher direct transport costs, but reduce the costs of capital tied up in inventory (shorter transit time $\rightarrow$ less inventory in transit). Slower modes of transport (sea, rail) are cheaper per unit, but tie up capital in inventory for longer.
+2. **Number of warehouses**: more warehouse locations increase the costs of warehousing and replenishment (more fixed costs, more safety stock), but reduce the transport costs of delivery to customers (shorter "last mile").
+3. **Level of safety stock**: a higher safety stock increases warehousing costs (capital tie-up, storage space), but reduces the expected shortage costs (lost revenue, contractual penalties, damage to reputation in the event of delivery failures).
+4. **Lot size**: larger order quantities or production lots increase warehousing costs (more average inventory), but reduce set-up or ordering costs (fewer orders/changeovers per period).
 
 ```{r}
 #| label: ch3-tradeoff-plot
-#| fig-cap: "Grundmuster einer logistischen Abwägungsentscheidung: Zwei gegenläufige Kostenkomponenten ergeben in der Summe eine u-förmige Gesamtkostenkurve mit einem Kostenminimum."
-#| fig-alt: "Liniendiagramm mit drei Kurven: einer fallenden, einer steigenden und der u-förmigen Summenkurve mit Minimum."
+#| fig-cap: "Basic pattern of a logistics trade-off decision: two opposing cost components add up to a U-shaped total cost curve with a cost minimum."
+#| fig-alt: "Line chart with three curves: a decreasing one, an increasing one and the U-shaped sum curve with a minimum."
 
-# Entscheidungsvariable x (z.B. Sicherheitsbestand, Losgröße, Lageranzahl)
+# Decision variable x (e.g. safety stock, lot size, number of warehouses)
 x <- seq(1, 5, length.out = 200)
 
-# Zwei gegenläufige Kostenkomponenten
-kosten_a <- 0.1 * x^2   # z.B. Lager-/Bestandskosten: steigen mit x
-kosten_b <- 1 / x       # z.B. Fehlmengen-/Rüst-/Transportkosten: fallen mit x
+# Two opposing cost components
+kosten_a <- 0.1 * x^2   # e.g. warehousing/inventory costs: increase with x
+kosten_b <- 1 / x       # e.g. shortage/set-up/transport costs: decrease with x
 kosten_gesamt <- kosten_a + kosten_b
 
 tradeoff_df <- tibble(
@@ -278,114 +302,120 @@ tradeoff_df <- tibble(
 ) |>
   pivot_longer(-x, names_to = "kostenart", values_to = "kosten")
 
+# English legend labels for the (German) internal keys
+kosten_labels <- c(
+  Lagerkosten = "Warehousing costs", Gegenkosten = "Opposing costs", Gesamtkosten = "Total costs"
+)
+
 ggplot(tradeoff_df, aes(x = x, y = kosten, color = kostenart, linewidth = kostenart)) +
   geom_line() +
   scale_color_manual(values = c(
     Lagerkosten = cols$mid, Gegenkosten = cols$atp, Gesamtkosten = cols$border
-  )) +
-  scale_linewidth_manual(values = c(Lagerkosten = 0.8, Gegenkosten = 0.8, Gesamtkosten = 1.3)) +
+  ), labels = kosten_labels) +
+  scale_linewidth_manual(values = c(Lagerkosten = 0.8, Gegenkosten = 0.8, Gesamtkosten = 1.3),
+                         labels = kosten_labels) +
   labs(
-    x = "Entscheidungsvariable (z. B. Sicherheitsbestand, Losgröße, Lageranzahl)",
-    y = "Kosten", color = "Kostenkomponente", linewidth = "Kostenkomponente"
+    x = "Decision variable (e.g. safety stock, lot size, number of warehouses)",
+    y = "Costs", color = "Cost component", linewidth = "Cost component"
   ) +
   theme_minimal()
 ```
 
-So anschaulich dieses Grundmuster ist, in der Praxis bleibt es oft nur eine Annäherung. Die tatsächliche **Transparenz der Kostenfunktionen** ist häufig stark eingeschränkt, und zwar aus mehreren Gründen:
+However illustrative this basic pattern is, in practice it often remains only an approximation. The actual **transparency of cost functions** is often severely limited, for several reasons:
 
-- **Datenverfügbarkeit**: Viele Kostenkomponenten (insbesondere Fehlmengenkosten) sind schwer zu beobachten, weil entgangene Umsätze oder Imageschäden nicht direkt in der Buchhaltung erscheinen.
-- **Intertemporale Zurechenbarkeit**: Investitionsentscheidungen (z. B. Bau eines neuen Lagers) wirken über mehrere Perioden; welcher Anteil der Kosten welcher Periode "zuzurechnen" ist, ist eine normative, keine rein technische Frage.
-- **Kostenträgerschaft**: In komplexen Supply Chains mit mehreren Akteuren ist oft unklar, wer welche Kosten letztlich trägt — der Hersteller, der Logistikdienstleister oder der Handel.
-- **Stochastizität**: Nachfrage-, Durchlaufzeit- und Störungsrisiken sind zufallsbehaftet; Kostenfunktionen, die auf Erwartungswerten basieren, verdecken die Streuung um diesen Erwartungswert.
+- **Data availability**: many cost components (especially shortage costs) are difficult to observe because lost revenue or damage to reputation does not appear directly in the accounts.
+- **Intertemporal attributability**: investment decisions (e.g. building a new warehouse) have an effect over several periods; which share of the costs is to be "attributed" to which period is a normative, not a purely technical question.
+- **Cost responsibility**: in complex supply chains with several actors, it is often unclear who ultimately bears which costs — the manufacturer, the logistics service provider or the retailer.
+- **Stochasticity**: demand, lead-time and disruption risks are subject to randomness; cost functions based on expected values conceal the variability around this expected value.
 
-Trotz dieser Einschränkungen ist das Grundmuster "zwei gegenläufige Kostenkomponenten, ein Optimum" ein zentrales Denkwerkzeug des Logistikmanagements. Es wird uns in den folgenden Kapiteln in konkreterer, formalisierter Form wiederbegegnen — etwa bei der Bestimmung der optimalen Bestellmenge (EOQ-Modell) oder bei der Wahl des optimalen Sicherheitsbestands unter Nachfrageunsicherheit.
+Despite these limitations, the basic pattern "two opposing cost components, one optimum" is a central thinking tool in logistics management. We will encounter it again in the following chapters in a more concrete, formalised form — for example when determining the optimal order quantity (EOQ model) or when choosing the optimal safety stock under demand uncertainty.
 
 ::: {.r-exkurs}
-**R-Exkurs: Vektorisierte Kostenberechnungen**
+**R aside: Vectorised cost calculations**
 
-R ist von Grund auf **vektorisiert**: Rechenoperationen wirken automatisch auf jedes Element eines Vektors, ohne dass eine explizite Schleife (`for`) nötig wäre. Das ist besonders praktisch, wenn Gesamtkosten aus mehreren Kostenkomponenten zusammengesetzt werden sollen, die jeweils für unterschiedliche Perioden, Standorte oder Produkte vorliegen.
+R is **vectorised** from the ground up: arithmetic operations automatically apply to every element of a vector, without the need for an explicit loop (`for`). This is particularly practical when total costs are to be made up of several cost components, each of which is available for different periods, locations or products.
 
 ```{r}
 #| label: ch3-vektor-kosten
 
-# Monatliche Kostenkomponenten eines Lagerstandorts (in Tsd. EUR)
+# Monthly cost components of a warehouse location (in EUR thousand)
 transportkosten <- c(42, 38, 45, 51, 47, 39)
 lagerkosten     <- c(18, 19, 17, 20, 21, 18)
 fehlmengenkosten <- c(3, 1, 6, 2, 0, 4)
 
-# Gesamtkosten je Monat: elementweise Summe der drei Vektoren --
-# R addiert automatisch Element 1 mit Element 1, Element 2 mit Element 2 usw.
+# Total costs per month: element-wise sum of the three vectors --
+# R automatically adds element 1 to element 1, element 2 to element 2, etc.
 gesamtkosten <- transportkosten + lagerkosten + fehlmengenkosten
 gesamtkosten
 
-# Anteil der Fehlmengenkosten an den Gesamtkosten je Monat, in Prozent
+# Share of shortage costs in total costs per month, in per cent
 fehlmengenkosten / gesamtkosten * 100
 
-# Kennzahlen über alle sechs Monate hinweg
+# Key figures across all six months
 c(
-  Summe = sum(gesamtkosten),
-  Mittelwert = mean(gesamtkosten),
+  Total = sum(gesamtkosten),
+  Mean = mean(gesamtkosten),
   Maximum = max(gesamtkosten)
 )
 ```
 
-Ohne Vektorisierung müsste man für jede dieser Berechnungen eine Schleife über die sechs Monate schreiben. Da R Vektoroperationen "elementweise" ausführt, genügt ein einziger Ausdruck — kürzer, lesbarer und weniger fehleranfällig.
+Without vectorisation, one would have to write a loop over the six months for each of these calculations. Since R performs vector operations "element-wise", a single expression is sufficient — shorter, more readable and less error-prone.
 :::
 
-## Logistikkostenarten im Überblick
+## Types of logistics costs at a glance
 
-Nachdem das Grundmuster der Abwägung geklärt ist, lohnt sich ein systematischerer Blick auf die **Logistikkosten** selbst.
+Now that the basic pattern of the trade-off has been clarified, it is worth taking a more systematic look at **logistics costs** themselves.
 
 ::: {.definition}
-**Definition: Logistikkosten**
+**Definition: Logistics costs**
 
-**Logistikkosten** sind der bewertete Verzehr von Sachgütern und Dienstleistungen zum Zweck der Erbringung logistischer Leistungen — also aller Aktivitäten, die Güter in der richtigen Menge, Qualität, am richtigen Ort und zur richtigen Zeit verfügbar machen [@schulte2001material].
+**Logistics costs** are the valued consumption of goods and services for the purpose of providing logistics services — that is, all activities that make goods available in the right quantity and quality, at the right place and at the right time [@schulte2001material].
 :::
 
-In der Literatur und Praxis hat sich eine grobe Einteilung in fünf bis sechs Hauptkategorien etabliert, die sich unmittelbar aus den im vorangegangenen Abschnitt diskutierten Abwägungsentscheidungen ergeben:
+In the literature and in practice, a rough classification into five to six main categories has become established, which follows directly from the trade-off decisions discussed in the previous section:
 
-- **Transportkosten**: Kosten für den physischen Transport von Gütern zwischen zwei Punkten der Supply Chain — abhängig von Transportmittel, Entfernung, transportierter Menge und gewünschter Geschwindigkeit. Sie umfassen sowohl die eigentlichen Frachtkosten als auch Kosten für Umschlag und Vor-/Nachlauf.
-- **Lager-/Handlingkosten**: Kosten für Lagerhaltung im engeren Sinne (Miete oder kalkulatorische Abschreibung der Lagerfläche, Energie, Personal für Ein-, Aus- und Umlagerung) sowie für Kommissionierung und innerbetrieblichen Transport. Diese Kosten steigen in aller Regel mit der Anzahl der Lagerstandorte und mit dem durchschnittlich vorgehaltenen Bestand.
-- **Bestandskosten** (auch: Kapitalbindungskosten): Kosten, die durch das im Bestand gebundene Kapital entstehen — kalkulatorische Zinsen auf das gebundene Kapital, Versicherung, Wertminderung/Obsoleszenz sowie Schwund. Sie werden häufig als Prozentsatz des durchschnittlichen Bestandswerts angegeben (typische Größenordnungen: 15–30 % p. a.).
-- **Fehlmengenkosten**: Kosten, die entstehen, wenn Nachfrage nicht (rechtzeitig) bedient werden kann — entgangener Deckungsbeitrag, Konventionalstrafen, Eilbeschaffungskosten für Ersatzlieferungen sowie langfristige Reputationsschäden, die sich in zukünftig entgangenen Aufträgen niederschlagen können. Fehlmengenkosten sind besonders schwer zu quantifizieren, weil ein Teil davon (Imageverlust) sich erst mit erheblicher Verzögerung zeigt.
-- **Rüst-/Bestellkosten**: fixe, mengenunabhängige Kosten je Bestell- oder Rüstvorgang (Personal- und Verwaltungsaufwand für die Bestellabwicklung bzw. Maschinenumrüstung bei der Fertigung). Sie fallen unabhängig von der bestellten oder gefertigten Menge in gleicher Höhe an — ein Grund, warum größere, seltenere Lose diese Kostenart pro Stück senken.
-- **Verpackungs- und Informationskosten**: Kosten für Verpackungsmaterial (inkl. Schutz- und Ladungssicherung) sowie für die informationstechnische Abwicklung der Auftragsabwicklung (Auftragserfassung, Sendungsverfolgung, EDI-Schnittstellen zu Kunden und Lieferanten).
+- **Transport costs**: costs for the physical transport of goods between two points of the supply chain — depending on the mode of transport, distance, quantity transported and desired speed. They include both the actual freight costs and costs for transhipment and pre-/on-carriage.
+- **Warehousing/handling costs**: costs for warehousing in the narrower sense (rent or imputed depreciation of the storage space, energy, staff for putaway, retrieval and relocation) as well as for order picking and internal transport. As a rule, these costs increase with the number of warehouse locations and with the average inventory held.
+- **Inventory holding costs** (also: capital tie-up costs): costs arising from the capital tied up in inventory — imputed interest on the tied-up capital, insurance, depreciation/obsolescence and shrinkage. They are often expressed as a percentage of the average inventory value (typical orders of magnitude: 15–30% p.a.).
+- **Shortage costs**: costs incurred when demand cannot be served (on time) — lost contribution margin, contractual penalties, expediting costs for replacement deliveries and long-term damage to reputation, which may be reflected in future lost orders. Shortage costs are particularly difficult to quantify because part of them (loss of image) only becomes apparent with a considerable delay.
+- **Set-up/ordering costs**: fixed, quantity-independent costs per order or set-up (staff and administrative effort for order processing or machine changeover in production). They are incurred at the same level regardless of the quantity ordered or produced — one reason why larger, less frequent lots reduce this type of cost per unit.
+- **Packaging and information costs**: costs for packaging material (including protection and load securing) and for the IT handling of order processing (order entry, shipment tracking, EDI interfaces to customers and suppliers).
 
-Diese Kostenarten korrespondieren eng mit den vier Abwägungsbeispielen aus dem letzten Abschnitt: Transportmittelwahl betrifft primär Transport- vs. Bestandskosten, die Lageranzahl betrifft Lager- vs. Transportkosten, der Sicherheitsbestand betrifft Bestands- vs. Fehlmengenkosten, und die Losgröße betrifft Lager- vs. Rüstkosten. Ein zentrales Anliegen des Supply Chain Costing (Kostenrechnung entlang der gesamten Kette) ist es, diese Kostenarten nicht isoliert je Unternehmen, sondern **kettenübergreifend** zu betrachten — denn eine lokale Kostenoptimierung bei einem Akteur kann an anderer Stelle der Kette zu höheren Kosten führen [@guenther2012produktion; @thonemann2023operations].
+These cost types correspond closely to the four trade-off examples from the last section: the choice of transport mode primarily concerns transport vs. inventory holding costs, the number of warehouses concerns warehousing vs. transport costs, safety stock concerns inventory holding vs. shortage costs, and lot size concerns warehousing vs. set-up costs. A central concern of supply chain costing (cost accounting along the entire chain) is to consider these cost types not in isolation for each company, but **across the chain** — because local cost optimisation at one actor can lead to higher costs elsewhere in the chain [@guenther2012produktion; @thonemann2023operations].
 
-## Beispiel: Wertschöpfung und Logistikkosten in der Bananenkette
+## Example: value creation and logistics costs in the banana chain
 
-Wie stark Logistik- und Handelsspannen den Endpreis eines Produkts prägen können, zeigt die Wertschöpfungskette der Banane von Ecuador nach Deutschland (@fig-bananenkette). Von jedem Euro, den Konsumentinnen und Konsumenten im deutschen Einzelhandel für eine Banane bezahlen, verbleiben nur rund 6,1 % bei den Produzent:innen und 6,7 % als Löhne der Arbeiter:innen vor Ort — während Importeure (23,9 %) und der Einzelhandel (34,6 %) den größten Teil der Marge vereinnahmen.
+The value chain of bananas from Ecuador to Germany (@fig-bananenkette) shows how strongly logistics and trade margins can shape the final price of a product. Of every euro that consumers pay for a banana in German retail, only around 6.1% remains with the producers and 6.7% as wages for workers on the ground — while importers (23.9%) and retailers (34.6%) capture the largest part of the margin.
 
-![Wertschöpfungskette der Banane von Ecuador nach Deutschland, in Prozent des Endverkaufspreises (Quelle: Berechnungen von Basic).](../images/image51.png){#fig-bananenkette}
+![Value chain of bananas from Ecuador to Germany, as a percentage of the final retail price (source: calculations by Basic).](../images/image51.png){#fig-bananenkette}
 
-Diese Verteilung lässt sich in R nachbilden und systematisch auswerten — ein guter Anlass, zwei zentrale `dplyr`-Werkzeuge einzuführen: `group_by()` und `summarise()`.
+This distribution can be reproduced in R and analysed systematically — a good opportunity to introduce two central `dplyr` tools: `group_by()` and `summarise()`.
 
 ::: {.r-exkurs}
-**R-Exkurs: Aggregation mit `group_by()` und `summarise()`**
+**R aside: Aggregation with `group_by()` and `summarise()`**
 
-Häufig liegen Kostendaten in einer "langen" Tabelle vor — eine Zeile je Einzelposition — und man möchte sie nach einem Merkmal **gruppieren** und je Gruppe eine Kennzahl (Summe, Mittelwert, Anzahl, …) berechnen. Genau das leisten `dplyr::group_by()` und `dplyr::summarise()` im Zusammenspiel:
+Cost data are often available in a "long" table — one row per individual item — and one wants to **group** them by a characteristic and calculate a key figure (sum, mean, count, …) for each group. This is exactly what `dplyr::group_by()` and `dplyr::summarise()` do in combination:
 
-1. `group_by(spalte)` teilt den Datensatz gedanklich in Untergruppen anhand der Ausprägungen von `spalte`.
-2. `summarise(neue_spalte = funktion(...))` berechnet für **jede Gruppe** eine oder mehrere zusammenfassende Kennzahlen und liefert eine neue, kompaktere Tabelle zurück — eine Zeile je Gruppe.
+1. `group_by(spalte)` conceptually divides the data set into subgroups based on the values of `spalte`.
+2. `summarise(neue_spalte = funktion(...))` calculates one or more summary key figures for **each group** and returns a new, more compact table — one row per group.
 
 ```{r}
 #| label: ch3-bananen-gruppieren
 
-# Wertschöpfungskette der Banane: Anteil je Akteur am Endpreis (in Prozent)
+# Banana value chain: share of each actor in the final price (in per cent)
 bananenkette <- tibble::tribble(
   ~akteur,                    ~kategorie,        ~anteil_prozent,
-  "Löhne der Arbeiter/innen", "Produktionsland",             6.7,
-  "Produzenten",              "Produktionsland",             6.1,
-  "Exporteure",               "Produktionsland",             5.5,
-  "Importeure",                "Handel",                    23.9,
-  "Zoll",                      "Handel",                    11.8,
-  "Großhandel und Reiferei",  "Handel",                     11.4,
-  "Einzelhandel",              "Handel",                    34.6
+  "Workers' wages",           "Country of production",       6.7,
+  "Producers",                "Country of production",       6.1,
+  "Exporters",                "Country of production",       5.5,
+  "Importers",                "Trade",                      23.9,
+  "Customs",                  "Trade",                      11.8,
+  "Wholesale and ripening",   "Trade",                      11.4,
+  "Retail",                   "Trade",                      34.6
 )
 
-# Pipe + group_by + summarise: "Nimm die Bananenkette, gruppiere nach
-# Kategorie, und summiere je Kategorie den Anteil am Endpreis."
+# Pipe + group_by + summarise: "Take the banana chain, group by
+# category, and sum the share of the final price per category."
 bananenkette |>
   group_by(kategorie) |>
   summarise(
@@ -394,66 +424,66 @@ bananenkette |>
   )
 ```
 
-Das Ergebnis macht die zentrale Botschaft der Grafik in einer Zahl greifbar: Nur rund 18,3 % des Endpreises verbleiben im Produktionsland (bei drei Akteuren), während 81,7 % auf Handel, Zoll und Distribution im Zielland entfallen (bei vier Akteuren). `group_by()`/`summarise()` funktioniert nach demselben Prinzip auch für Logistikkosten: Gruppiert man z. B. nach Kostenart (Transport, Lager, Bestand, Fehlmengen) statt nach Kette-Kategorie, erhält man auf identische Weise eine Kostenartenübersicht — eine Auswertung, die in jeder Logistik-Controlling-Abteilung routinemäßig anfällt.
+The result makes the central message of the figure tangible in a single number: only around 18.3% of the final price remains in the country of production (across three actors), while 81.7% goes to trade, customs and distribution in the destination country (across four actors). `group_by()`/`summarise()` works on the same principle for logistics costs: if, for example, one groups by cost type (transport, warehousing, inventory, shortages) instead of by chain category, one obtains an overview of cost types in exactly the same way — an analysis that is carried out routinely in every logistics controlling department.
 :::
 
-## Formatierte Tabellen: das Beispiel Logistikkostenanteile
+## Formatted tables: the example of logistics cost shares
 
-Rohtabellen wie im letzten R-Exkurs sind für die interaktive Analyse praktisch, für die Präsentation in einem Bericht oder einer Präsentation aber oft zu schlicht. Das Paket `kableExtra` erlaubt es, Tabellen mit wenigen zusätzlichen Befehlen professionell zu formatieren.
+Raw tables as in the last R aside are practical for interactive analysis, but are often too plain for presentation in a report or a presentation. The `kableExtra` package makes it possible to format tables professionally with just a few additional commands.
 
-Als Anwendungsbeispiel dient eine Gegenüberstellung des Anteils der Logistikkosten (LK) am Verkaufspreis für fünf sehr unterschiedliche Produkte — von der in Bangladesch gefertigten Jeans bis zum in China montierten, per Luftfracht verschifften Mobiltelefon.
+The application example is a comparison of the share of logistics costs (LC) in the selling price for five very different products — from jeans made in Bangladesh to a mobile phone assembled in China and shipped by air freight.
 
 ::: {.r-exkurs}
-**R-Exkurs: Formatierte Tabellen mit `kableExtra`**
+**R aside: Formatted tables with `kableExtra`**
 
-`kableExtra` baut auf `knitr::kable()` auf und ergänzt es um Styling-Optionen. Der typische Arbeitsablauf ist: Daten mit `dplyr` aufbereiten $\rightarrow$ mit `kbl()` (kurz für "kable") in eine Tabelle verwandeln $\rightarrow$ mit `kable_styling()` formatieren.
+`kableExtra` builds on `knitr::kable()` and adds styling options. The typical workflow is: prepare data with `dplyr` $\rightarrow$ convert into a table with `kbl()` (short for "kable") $\rightarrow$ format with `kable_styling()`.
 
 ```{r}
 #| label: ch3-kableextra-demo
 
-# Logistikkostenanteile ausgewählter Produkte (Daten grob nach
-# praxisnahen Kalkulationsbeispielen, gerundet)
+# Logistics cost shares of selected products (data roughly based on
+# practice-oriented calculation examples, rounded)
 produktkosten <- tibble::tribble(
   ~produkt,          ~verkaufspreis_eur, ~direkte_lk_eur, ~indirekte_lk_eur,
   "Jeans",                        12.92,            1.89,              3.19,
-  "Bluse",                       129.30,            2.77,             16.81,
+  "Blouse",                      129.30,            2.77,             16.81,
   "Ford Focus",                12932.03,         1175.00,            106.00,
-  "el. Zahnbürste",              112.07,            8.19,              7.08,
-  "Mobiltelefon",                120.69,            5.95,              9.03
+  "Electric toothbrush",         112.07,            8.19,              7.08,
+  "Mobile phone",                120.69,            5.95,              9.03
 )
 
-# Logistikkosten insgesamt und deren Anteil am Verkaufspreis berechnen
+# Calculate total logistics costs and their share of the selling price
 produktkosten <- produktkosten |>
   mutate(
     lk_gesamt_eur = direkte_lk_eur + indirekte_lk_eur,
     lk_anteil_prozent = round(lk_gesamt_eur / verkaufspreis_eur * 100, 1)
   )
 
-# Formatierte Tabelle: kbl() erzeugt die Tabelle, kable_styling()
-# formatiert sie (u.a. gestreifte Zeilen, kompakte Breite)
+# Formatted table: kbl() creates the table, kable_styling()
+# formats it (e.g. striped rows, compact width)
 produktkosten |>
-  select(Produkt = produkt, `Preis (€)` = verkaufspreis_eur,
-         `LK gesamt (€)` = lk_gesamt_eur, `LK-Anteil (%)` = lk_anteil_prozent) |>
-  kbl(digits = 2, caption = "Logistikkostenanteile ausgewählter Produkte") |>
+  select(Product = produkt, `Price (€)` = verkaufspreis_eur,
+         `Total LC (€)` = lk_gesamt_eur, `LC share (%)` = lk_anteil_prozent) |>
+  kbl(digits = 2, caption = "Logistics cost shares of selected products") |>
   kable_styling(bootstrap_options = c("striped", "hover", "condensed"),
                 full_width = FALSE)
 ```
 :::
 
-Die Tabelle zeigt eine bemerkenswerte Spannweite: Während beim Ford Focus die Logistikkosten mit rund 9,9 % des Verkaufspreises verhältnismäßig gering ausfallen (weil der Fahrzeugpreis selbst sehr hoch ist), machen sie bei der vergleichsweise günstigen Jeans knapp 40 % des Verkaufspreises aus. Der Grund liegt im **Verhältnis von Produktwert zu Transportaufwand**: Eine Jeans wird über weite Strecken per Seefracht transportiert und ist trotzdem ein "Low-Value"-Produkt, sodass die (in absoluten Zahlen kleinen) Logistikkosten einen großen Anteil am ebenfalls kleinen Verkaufspreis ausmachen. Beim Auto verhält es sich umgekehrt: Auch wenn absolut hohe Logistikkosten anfallen (globales Sourcing, mehrere Transportstufen), ist der Fahrzeugwert so hoch, dass der prozentuale Anteil gering bleibt. Diese Beobachtung ist ein wichtiges Prinzip für die Praxis: **Die Bedeutung der Logistikkosten hängt maßgeblich vom Wert-Gewicht- bzw. Wert-Volumen-Verhältnis eines Produkts ab** — ein Zusammenhang, der auch die Standortentscheidungen im nächsten Kapitel mitbestimmt.
+The table shows a remarkable range: while logistics costs for the Ford Focus are relatively low at around 9.9% of the selling price (because the vehicle price itself is very high), they account for almost 40% of the selling price for the comparatively cheap jeans. The reason lies in the **ratio of product value to transport effort**: jeans are transported over long distances by sea freight and are nevertheless a "low-value" product, so that the logistics costs (small in absolute terms) make up a large share of the likewise small selling price. The opposite is true for the car: even though logistics costs are high in absolute terms (global sourcing, several transport stages), the vehicle value is so high that the percentage share remains low. This observation is an important principle for practice: **the significance of logistics costs depends crucially on the value-to-weight or value-to-volume ratio of a product** — a relationship that also influences the location decisions in the next chapter.
 
-## Supply Chain Costing: das Beispiel Apple iPod
+## Supply chain costing: the example of the Apple iPod
 
-Ein besonders anschauliches Fallbeispiel für **Supply Chain Costing** — also die Analyse der Kosten- und Wertschöpfungsverteilung entlang einer gesamten, global verteilten Kette — liefert der Video-iPod (30 GB) von Apple, wie er in der Studie von Dedrick, Kraemer und Linden [@dedrick2012usitc] rekonstruiert wurde.
+A particularly illustrative case example of **supply chain costing** — that is, the analysis of the distribution of costs and value added along an entire, globally distributed chain — is provided by Apple's video iPod (30 GB), as reconstructed in the study by Dedrick, Kraemer and Linden [@dedrick2012usitc].
 
-Die Wertschöpfungskette umfasst vier Prozessstufen: **Beschaffung**, **Produktion**, **Distribution** und **Absatz**. Komponenten wie Festplatte und Display kommen aus Japan, Speicherchips aus Korea, Prozessor und Flash-Speicher aus den USA, weitere Teile (u. a. Akku) aus anderen Ländern. Die Endmontage findet in China statt, Distribution und Handel laufen über die USA, bevor das Produkt bei US-amerikanischen Endkund:innen ankommt.
+The value chain comprises four process stages: **procurement**, **production**, **distribution** and **sales**. Components such as the hard disk and display come from Japan, memory chips from Korea, the processor and flash memory from the USA, and other parts (including the battery) from other countries. Final assembly takes place in China, while distribution and retail run via the USA before the product reaches US end customers.
 
-Die Kostenstruktur lässt sich wie folgt zusammenfassen: Die eingekauften Komponenten summieren sich auf 97 + 3 + 16 + 24 = 140 US-Dollar. Die Montage in China kostet zusätzlich 4 US-Dollar, und für Distribution und Einzelhandel in den USA fallen rund 75 US-Dollar an. Zusammen ergeben sich 140 + 4 + 75 = 219 US-Dollar, die in der Studie als "Herstellungskosten" aus Sicht von Apple ausgewiesen werden — der Begriff ist hier also weit gefasst und umfasst die gesamte Kette bis zum Regal. Bei einem Verkaufspreis von 299 US-Dollar verbleibt Apple ein Deckungsbeitrag von absolut 80 US-Dollar bzw. relativ rund 26 % des Verkaufspreises.
+The cost structure can be summarised as follows: the purchased components add up to 97 + 3 + 16 + 24 = 140 US dollars. Assembly in China costs an additional 4 US dollars, and distribution and retail in the USA account for around 75 US dollars. Together this gives 140 + 4 + 75 = 219 US dollars, which the study reports as "manufacturing costs" from Apple's perspective — the term is thus used broadly here and covers the entire chain up to the shelf. With a selling price of 299 US dollars, Apple is left with a contribution margin of 80 US dollars in absolute terms, or around 26% of the selling price in relative terms.
 
 ```{r}
 #| label: ch3-ipod-kostenrechnung
 
-# Kostenpositionen des Apple Video iPod (30 GB), in US-Dollar
+# Cost items of the Apple video iPod (30 GB), in US dollars
 ipod_kosten <- c(
   Komponenten_Japan  = 97,
   Komponenten_Korea  =  3,
@@ -463,7 +493,7 @@ ipod_kosten <- c(
   Distribution_Handel = 75
 )
 
-# Vektorisierte Summenbildung: Herstellungskosten insgesamt
+# Vectorised summation: total manufacturing costs
 herstellungskosten <- sum(ipod_kosten)
 herstellungskosten
 
@@ -471,214 +501,207 @@ verkaufspreis <- 299
 deckungsbeitrag_abs <- verkaufspreis - herstellungskosten
 deckungsbeitrag_rel <- deckungsbeitrag_abs / verkaufspreis * 100
 
-# Übersicht der Kennzahlen
+# Overview of key figures
 tibble::tibble(
-  Herstellungskosten = herstellungskosten,
-  Verkaufspreis = verkaufspreis,
-  Deckungsbeitrag_absolut = deckungsbeitrag_abs,
-  Deckungsbeitrag_relativ_Prozent = round(deckungsbeitrag_rel, 1)
+  Manufacturing_costs = herstellungskosten,
+  Selling_price = verkaufspreis,
+  Contribution_margin_absolute = deckungsbeitrag_abs,
+  Contribution_margin_relative_percent = round(deckungsbeitrag_rel, 1)
 ) |>
-  kbl(digits = 1, caption = "Kostenrechnung Apple Video iPod (30 GB)") |>
+  kbl(digits = 1, caption = "Cost accounting for the Apple video iPod (30 GB)") |>
   kable_styling(bootstrap_options = c("striped", "condensed"), full_width = FALSE)
 ```
 
-Bemerkenswert an diesem Beispiel ist, dass die Distributions- und Handelskosten (75 US-Dollar) fast so hoch sind wie *alle* Komponentenkosten zusammen (140 US-Dollar) und die reine Endmontage in China mit 4 US-Dollar nur einen minimalen Anteil ausmacht. Dieses Muster ist typisch für globale Elektronik-Supply-Chains: Der größte Teil der Wertschöpfung — und ein erheblicher Teil der Kosten — entsteht nicht in der Fertigung selbst, sondern in Beschaffung, Distribution und Handel. Genau hier setzt Supply Chain Management an: Es geht nicht darum, isoliert einzelne Fertigungsschritte zu optimieren, sondern die Kosten- und Wertschöpfungsstruktur der *gesamten* Kette zu verstehen und zu steuern [@chopra2025supply; @tripp2024distributions].
+What is remarkable about this example is that the distribution and retail costs (75 US dollars) are almost as high as *all* component costs combined (140 US dollars), and final assembly in China accounts for only a minimal share at 4 US dollars. This pattern is typical of global electronics supply chains: most of the value added — and a considerable part of the costs — arises not in manufacturing itself, but in procurement, distribution and retail. This is exactly where supply chain management comes in: the point is not to optimise individual manufacturing steps in isolation, but to understand and manage the cost and value-added structure of the *entire* chain [@chopra2025supply; @tripp2024distributions].
 
+## Sustainability as a target variable of logistics decisions
 
+### Environmental effects of logistics activities
 
+Logistics activities cause environmental impacts along the entire product life cycle. Particularly relevant sources include:
 
+- transport, through fuel or energy consumption and the distances travelled
+- warehousing and transhipment, through heating, cooling, lighting, conveyor technology and land use
+- packaging, through material use, protective function, weight and returnability
+- inventories, through spoilage, obsolescence, write-downs and disposal
+- production and procurement decisions, through their effects at upstream suppliers
 
+For an initial operational assessment, greenhouse gas emissions are often expressed as CO₂ equivalents. This measure makes comparisons easier, but does not replace a complete environmental balance. For example, land use, water scarcity, biodiversity or local air pollutants may also be relevant to the same decision.
 
-## Nachhaltigkeit als Zielgröße logistischer Entscheidungen
+### From external effects to decision-relevant costs
 
-### Ökologische Wirkungen logistischer Aktivitäten
+An external effect exists when an activity burdens or benefits third parties without this effect being fully reflected in the market price of the decision. Emissions, noise or local air pollutants are typical negative external effects of logistics activities.
 
-Logistische Aktivitäten verursachen Umweltwirkungen entlang des gesamten Produktlebenszyklus. Zu den besonders relevanten Quellen gehören:
+For business decisions, such effects can be taken into account in different ways:
 
-- Transporte durch Kraftstoff- oder Energieverbrauch sowie durch zurückgelegte Distanzen
-- Lager und Umschlag durch Heizung, Kühlung, Beleuchtung, Fördertechnik und Flächennutzung
-- Verpackungen durch Materialeinsatz, Schutzwirkung, Gewicht und Rücknahmefähigkeit
-- Bestände durch Verderb, Obsoleszenz, Abschreibungen und Entsorgung
-- Produktions- und Beschaffungsentscheidungen durch ihre Wirkungen bei vorgelagerten Lieferanten
+- through statutory prices, levies or tradable certificates
+- through internal CO₂ prices and investment rules
+- through emission budgets or internal reduction targets
+- through customer requirements, tenders and supplier standards
+- through reporting obligations as well as reputational and market risks
 
-Für eine erste operative Bewertung werden Treibhausgasemissionen häufig als CO₂-Äquivalente ausgedrückt. Dieses Maß erleichtert Vergleiche, ersetzt jedoch keine vollständige Umweltbilanz. Beispielsweise können Flächenverbrauch, Wasserknappheit, Biodiversität oder lokale Luftschadstoffe bei derselben Entscheidung ebenfalls relevant sein.
+Internalisation does not mean that an unequivocal market price exists for every environmental impact. It means, first of all, making environmental impacts visible in the decision and establishing a transparent rule for how they are weighted against, or limited relative to, cost and service.
 
-### Von externen Effekten zu entscheidungsrelevanten Kosten
+### Cost, service and emissions as a trade-off
 
-Ein externer Effekt liegt vor, wenn eine Aktivität Dritte belastet oder begünstigt, ohne dass diese Wirkung vollständig im Marktpreis der Entscheidung enthalten ist. Emissionen, Lärm oder lokale Luftschadstoffe sind typische negative externe Effekte logistischer Aktivitäten.
-
-Für betriebliche Entscheidungen können solche Wirkungen auf unterschiedliche Weise berücksichtigt werden:
-
-- durch gesetzliche Preise, Abgaben oder handelbare Zertifikate
-- durch interne CO₂-Preise und Investitionsregeln
-- durch Emissionsbudgets oder unternehmensinterne Reduktionsziele
-- durch Kundenanforderungen, Ausschreibungen und Lieferantenstandards
-- durch Berichtspflichten sowie Reputations- und Marktrisiken
-
-Die Internalisierung bedeutet nicht, dass für jede Umweltwirkung ein zweifelsfreier Marktpreis existiert. Sie bedeutet zunächst, Umweltwirkungen in der Entscheidung sichtbar zu machen und eine nachvollziehbare Regel festzulegen, wie sie gegenüber Kosten und Service gewichtet oder begrenzt werden.
-
-### Kosten, Service und Emissionen als Zielkonflikt
-
-Sei \(x\) ein Vektor logistischer Entscheidungsvariablen, beispielsweise über Lagerstandorte, Transportmengen, Lieferwege oder Bestandsniveaus. Die Gesamtkosten werden mit \(K(x)\), die Treibhausgasemissionen mit \(E(x)\) bezeichnet. Dann lautet eine mehrzielige Darstellung:
+Let \(x\) be a vector of logistics decision variables, for example on warehouse locations, transport quantities, delivery routes or inventory levels. Total costs are denoted by \(K(x)\) and greenhouse gas emissions by \(E(x)\). A multi-objective formulation is then:
 
 $$
 \min \; \left(K(x), E(x)\right).
 $$
 
-Ein solches Problem besitzt im Allgemeinen nicht nur eine eindeutig beste Lösung. Eine Verbesserung der Kosten kann mit höheren Emissionen verbunden sein und umgekehrt. Als effizient oder Pareto-optimal gelten Lösungen, bei denen keine Zielgröße verbessert werden kann, ohne mindestens eine andere Zielgröße zu verschlechtern.
+Such a problem generally does not have just one clearly best solution. An improvement in costs may be associated with higher emissions and vice versa. Solutions in which no target variable can be improved without worsening at least one other target variable are considered efficient or Pareto-optimal.
 
-Das Serviceniveau kann als drittes Ziel oder als Mindestanforderung modelliert werden. Beispielsweise kann verlangt werden, dass ein Anteil von mindestens \(\alpha\) der Nachfrage innerhalb einer vorgegebenen Zeit beliefert wird. In dieser Form wird klar: Nachhaltige Gestaltung bedeutet nicht automatisch, Kosten oder Service zu vernachlässigen, sondern Zielgrößen transparent gemeinsam zu steuern.
+The service level can be modelled as a third objective or as a minimum requirement. For example, it can be required that a share of at least \(\alpha\) of demand is delivered within a specified time. In this form it becomes clear: sustainable design does not automatically mean neglecting cost or service, but managing target variables jointly and transparently.
 
-### Mehrzielentscheidungen und CO₂-Preise
+### Multi-objective decisions and CO₂ prices
 
-Eine Möglichkeit, Kosten und Emissionen in einer Zielfunktion zusammenzuführen, ist die gewichtete Bewertung:
+One way of combining costs and emissions in a single objective function is weighted evaluation:
 
 $$
 \min \; Z(x) = K(x) + \lambda E(x).
 $$
 
-Der Parameter \(\lambda\) beschreibt, mit welchem Betrag eine zusätzliche Emissionseinheit bewertet wird. Er kann einen gesetzlichen Preis, einen internen Lenkungspreis oder eine analytische Gewichtung darstellen. Steigt \(\lambda\), gewinnen emissionsärmere Alternativen relativ an Attraktivität.
+The parameter \(\lambda\) describes the amount at which an additional unit of emissions is valued. It can represent a statutory price, an internal shadow (steering) price or an analytical weighting. As \(\lambda\) increases, lower-emission alternatives become relatively more attractive.
 
-Die Methode ist leicht anzuwenden, erfordert aber eine sorgfältige Interpretation. Ein bestimmter Wert von \(\lambda\) ist keine naturwissenschaftlich vorgegebene Wahrheit, sondern Ausdruck einer Regel, Präferenz oder institutionellen Rahmenbedingung. Deshalb sollten Ergebnisse für mehrere plausible Werte analysiert werden.
+The method is easy to apply, but requires careful interpretation. A particular value of \(\lambda\) is not a scientifically given truth, but the expression of a rule, preference or institutional framework. Results should therefore be analysed for several plausible values.
 
-### CO₂-Budgets und Nebenbedingungen
+### CO₂ budgets and constraints
 
-Eine zweite Möglichkeit besteht darin, die Emissionen zu begrenzen und innerhalb dieses Budgets die Kosten zu minimieren:
+A second option is to limit emissions and minimise costs within this budget:
 
 $$
 \begin{aligned}
 \min \quad & K(x) \\
-\text{unter der Nebenbedingung} \quad & E(x) \leq \bar{E}, \\
+\text{subject to} \quad & E(x) \leq \bar{E}, \\
 & x \in X.
 \end{aligned}
 $$
 
-Dabei bezeichnet \(\bar{E}\) ein Emissionsbudget und \(X\) die Menge aller technisch und organisatorisch zulässigen Entscheidungen. Diese Formulierung passt besonders gut zu unternehmensinternen Reduktionszielen, regulatorischen Obergrenzen oder verbindlichen Nachhaltigkeitsvorgaben.
+Here \(\bar{E}\) denotes an emission budget and \(X\) the set of all technically and organisationally feasible decisions. This formulation is particularly well suited to internal reduction targets, regulatory caps or binding sustainability requirements.
 
-Ist das Budget sehr großzügig, entspricht die Lösung häufig dem reinen Kostenminimum. Wird es schrittweise verschärft, steigen die minimal erreichbaren Kosten typischerweise an. Die Differenz zwischen den optimalen Kosten bei zwei Budgets macht den ökonomischen Aufwand zusätzlicher Emissionsminderung sichtbar.
+If the budget is very generous, the solution often corresponds to the pure cost minimum. If it is gradually tightened, the minimum achievable costs typically rise. The difference between the optimal costs under two budgets reveals the economic effort of additional emission reduction.
 
-### Beispiel: Liefernetz mit Kosten- und Emissionszielen
+### Example: delivery network with cost and emission objectives
 
-Ein Unternehmen beliefert Kundengebiete aus mehreren potenziellen Lagern. Jedes eröffnete Lager verursacht fixe Kosten. Transporte verursachen je nach Entfernung, Fahrzeugtyp, Auslastung und Energiequelle sowohl Kosten als auch Emissionen.
+A company supplies customer areas from several potential warehouses. Each warehouse opened incurs fixed costs. Depending on distance, vehicle type, utilisation and energy source, transport causes both costs and emissions.
 
-Eine kostenminimale Lösung kann wenige zentrale Lager bevorzugen, weil sie Fixkosten und Bestände bündelt. Eine emissionsminimale Lösung kann dagegen andere Standorte wählen, wenn dadurch Transportwege verkürzt, alternative Verkehrsträger erreichbar oder energieeffizientere Lager genutzt werden. Eine dritte Lösung minimiert Kosten unter einem verbindlichen Emissionsbudget.
+A cost-minimal solution may favour a few central warehouses because it pools fixed costs and inventories. An emission-minimal solution, by contrast, may choose other locations if this shortens transport routes, makes alternative transport modes accessible or allows more energy-efficient warehouses to be used. A third solution minimises costs under a binding emission budget.
 
-Die Standort- und Netzwerkmodelle der folgenden Kapitel erweitern genau diese Logik. Dort werden fixe Standortkosten, Transportmengen, Kapazitäten und Zuordnungen als formale Entscheidungsvariablen modelliert.
+The location and network models in the following chapters extend precisely this logic. There, fixed location costs, transport quantities, capacities and allocations are modelled as formal decision variables.
 
-## Kennzahlen und Entscheidungsprozess
+## Key figures and decision-making process
 
-### Geeignete Kennzahlen
+### Suitable key figures
 
-Kennzahlen verdichten komplexe Wirkungen, dürfen aber nicht zu falscher Sicherheit führen. Für Supply-Chain-Entscheidungen sind unter anderem relevant:
+Key figures condense complex effects, but must not lead to a false sense of certainty. For supply chain decisions, the following are relevant, among others:
 
-- Gesamtkosten und Kosten je Einheit
-- Lieferbereitschaft, Lieferzeit und Lieferzuverlässigkeit
-- Bestandsreichweite, Umschlagshäufigkeit und Abschreibungen
-- Transportleistung und Emissionen je Sendung, Einheit oder Tonnenkilometer
-- Energieverbrauch und Anteil erneuerbarer Energien
-- Abfall-, Retouren- und Verwertungsquoten
-- Störungsdauer, Wiederanlaufzeit und Anteil alternativer Bezugsquellen
+- total costs and costs per unit
+- delivery readiness, delivery time and delivery reliability
+- days of inventory, inventory turnover and write-downs
+- transport performance and emissions per shipment, unit or tonne-kilometre
+- energy consumption and share of renewable energy
+- waste, return and recovery rates
+- disruption duration, recovery time and share of alternative sources of supply
 
-Kennzahlen sollten stets mit klaren Bilanzgrenzen, Bezugsgrößen und Zeiträumen dokumentiert werden. Eine Emission pro Einheit kann sich verbessern, obwohl die absoluten Emissionen aufgrund steigender Mengen zunehmen. Beide Perspektiven sind daher erforderlich.
+Key figures should always be documented with clear system boundaries, reference values and time periods. Emissions per unit may improve even though absolute emissions increase due to rising volumes. Both perspectives are therefore necessary.
 
-### Systematisches Vorgehen
+### Systematic approach
 
-Ein belastbarer Entscheidungsprozess umfasst typischerweise fünf Schritte:
+A robust decision-making process typically comprises five steps:
 
-1. Entscheidung und Systemgrenze definieren: Welche Produkte, Standorte, Stufen und Zeiträume gehören zur Analyse?
-2. Zielgrößen und Mindestanforderungen bestimmen: Welche Kosten-, Service-, Risiko- und Umweltgrößen sind entscheidungsrelevant?
-3. Alternativen und Daten aufbereiten: Welche Distanzen, Mengen, Kapazitäten, Kosten- und Emissionsfaktoren werden benötigt?
-4. Modelle und Szenarien auswerten: Wie verändern sich Ergebnisse bei anderen CO₂-Preisen, Budgets, Nachfragewerten oder Servicevorgaben?
-5. Entscheidung begründen und überwachen: Welche Zielkonflikte werden akzeptiert, welche Kennzahlen werden später kontrolliert?
+1. Define the decision and the system boundary: which products, locations, stages and time periods are part of the analysis?
+2. Determine target variables and minimum requirements: which cost, service, risk and environmental variables are relevant to the decision?
+3. Prepare alternatives and data: which distances, quantities, capacities, cost and emission factors are required?
+4. Evaluate models and scenarios: how do results change with different CO₂ prices, budgets, demand values or service requirements?
+5. Justify and monitor the decision: which trade-offs are accepted, and which key figures will be monitored later?
 
-Die explizite Dokumentation von Annahmen ist besonders wichtig. Sie macht Entscheidungen nachvollziehbar und erlaubt, Modellresultate bei veränderten Rahmenbedingungen zu aktualisieren.
+Explicit documentation of assumptions is particularly important. It makes decisions traceable and allows model results to be updated when conditions change.
 
-## Fallstudie SushiFresh GmbH: Geschäftsidee und strategische Analyse {#sec-sushifresh-intro}
+## Case study SushiFresh GmbH: business idea and strategic analysis {#sec-sushifresh-intro}
 
-Zum Abschluss der Grundlagenkapitel wird das Fallbeispiel eingeführt, das uns durch den gesamten weiteren Reader begleitet. Es erlaubt, die bisher eingeführten Konzepte — Wertschöpfungsprozess, Strategic Fit, Zielsystem und Zielkonflikte — auf ein konkretes, überschaubares Geschäftsmodell anzuwenden, bevor in den folgenden Kapiteln die quantitativen Planungsmodelle an demselben Unternehmen durchgerechnet werden.
+To conclude the foundational chapters, we introduce the case example that will accompany us throughout the rest of the course reader. It allows the concepts introduced so far — value creation process, strategic fit, system of objectives and trade-offs — to be applied to a concrete, manageable business model before the quantitative planning models are worked through for the same company in the following chapters.
 
 ::: {.fallstudie}
-**Fallstudie: Die Geschäftsidee der SushiFresh GmbH**
+**Case study: The business idea of SushiFresh GmbH**
 
-Die **SushiFresh GmbH** ist ein (fiktives) Start-up, das **täglich frisch hergestellte Sushi-Boxen** im Rhein-Main-Gebiet anbietet.
+**SushiFresh GmbH** is a (fictitious) start-up that offers **freshly made sushi boxes every day** in the Rhine-Main region.
 
-- **Versprechen:** "Heute gefertigt, heute verkauft" — Sushi in Restaurantqualität, aber ohne Wartezeit.
-- **Produktion:** eine zentrale Küche, Fertigung in den frühen Morgenstunden.
-- **Absatzkanal:** Supermärkte (Regalverkauf im Kühlregal).
-- **Sortiment:** ca. 12 Boxen (klassisch, vegetarisch, vegan).
+- **Promise:** "Made today, sold today" — restaurant-quality sushi, but without the wait.
+- **Production:** one central kitchen, production in the early morning hours.
+- **Sales channel:** supermarkets (shelf sales from the chilled cabinet).
+- **Range:** approx. 12 boxes (classic, vegetarian, vegan).
 
-*Eckdaten:* Haltbarkeit maximal 24–36 Stunden; durchgehende Kühlkette von 0–4 °C; Zutaten Reis, Nori, regionales Gemüse sowie importierter Lachs und Thunfisch; stark schwankende Nachfrage (Wochentag, Wetter, Events); geplantes Wachstum von 3 auf 30 Verkaufsstellen.
+*Key data:* shelf life of at most 24–36 hours; unbroken cold chain at 0–4 °C; ingredients rice, nori, regional vegetables as well as imported salmon and tuna; strongly fluctuating demand (day of the week, weather, events); planned growth from 3 to 30 points of sale.
 :::
 
-Die Vorlesung stellt zu dieser Geschäftsidee zwei Gruppen von Leitfragen: zur **strategischen Position** und zur **Struktur der Supply Chain**. Im Folgenden wird eine mögliche Analyse skizziert, die die Begriffe der Kapitel [-@sec-einfuehrung] bis [-@sec-logistikkosten] systematisch anwendet. Sie ist nicht als einzig richtige Lösung zu verstehen, sondern als Beispiel für eine strukturierte Argumentation.
+The lecture poses two groups of guiding questions on this business idea: on the **strategic position** and on the **structure of the supply chain**. The following outlines one possible analysis that systematically applies the concepts of Chapters [-@sec-einfuehrung] to [-@sec-logistikkosten]. It is not to be understood as the only correct solution, but as an example of structured reasoning.
 
-### Strategische Position
+### Strategic position
 
-**Kundengruppen und Nutzenversprechen.** SushiFresh adressiert Kundinnen und Kunden, die eine schnelle, hochwertige Mahlzeit suchen — Berufstätige in der Mittagspause, Pendler, Kleinhaushalte am Abend. Im Sinne der Nutzenarten aus Kapitel [-@sec-einfuehrung] steht nicht allein der Formnutzen (das Produkt), sondern vor allem der **Zeitnutzen** (sofort verfügbar, ohne Wartezeit) und der **Raumnutzen** (im ohnehin besuchten Supermarkt) im Vordergrund. Die Frische ist dabei das zentrale Qualitätsmerkmal. Gegenüber Restaurants und Lieferdiensten punktet SushiFresh mit Bequemlichkeit und Preis, gegenüber industriell gefertigtem, länger haltbarem Supermarkt-Sushi mit Qualität und Frische. Wettbewerbsstrategisch entspricht dies am ehesten einer **Qualitäts- bzw. Serviceführerschaft** (vgl. die Normstrategien in Kapitel [-@sec-strategic-fit]) — nicht einer Kostenführerschaft.
+**Customer groups and value proposition.** SushiFresh targets customers looking for a quick, high-quality meal — working people during their lunch break, commuters, small households in the evening. In terms of the types of utility from Chapter [-@sec-einfuehrung], the focus is not only on form utility (the product), but above all on **time utility** (immediately available, without waiting) and **place utility** (in the supermarket that customers visit anyway). Freshness is the central quality attribute. Compared with restaurants and delivery services, SushiFresh scores on convenience and price; compared with industrially produced supermarket sushi with a longer shelf life, it scores on quality and freshness. In terms of competitive strategy, this corresponds most closely to **quality or service leadership** (cf. the generic strategies in Chapter [-@sec-strategic-fit]) — not cost leadership.
 
-**Implizierte Unsicherheit und Strategic Fit.** Nach der Systematik aus Kapitel [-@sec-strategic-fit] ist die implizierte Unsicherheit hoch: Die Tagesnachfrage schwankt mit Wochentag, Wetter und Events; das Sortiment umfasst zwölf Varianten, deren Einzelnachfrage schwerer zu prognostizieren ist als die Gesamtnachfrage; der Kunde erwartet sofortige Verfügbarkeit (Lieferzeit null); und die Zahl der Verkaufsstellen soll stark wachsen. Hinzu kommt eine Besonderheit des Produkts: Wegen der Haltbarkeit von maximal 36 Stunden lässt sich Unsicherheit **nicht über Fertigwarenbestände** über mehrere Tage puffern. Das Produkt verhält sich damit ähnlich wie Fishers "innovative" Produkte, obwohl es sich um ein Lebensmittel handelt. Strategic Fit verlangt deshalb eine eher **reaktionsfähige** Supply Chain — allerdings mit einer Einschränkung: Die Reaktionsfähigkeit kann nicht über Lagerbestände fertiger Boxen, sondern nur über **flexible Produktionsmengen**, **kurze Durchlaufzeiten** und **gute Prognosen** hergestellt werden.
+**Implied uncertainty and strategic fit.** According to the framework from Chapter [-@sec-strategic-fit], implied uncertainty is high: daily demand fluctuates with the day of the week, the weather and events; the range comprises twelve variants whose individual demand is harder to forecast than total demand; the customer expects immediate availability (zero delivery time); and the number of points of sale is set to grow strongly. In addition, the product has a special feature: because of its maximum shelf life of 36 hours, uncertainty **cannot be buffered through finished-goods inventories** over several days. The product thus behaves similarly to Fisher's "innovative" products, even though it is a food product. Strategic fit therefore calls for a rather **responsive** supply chain — but with one restriction: responsiveness cannot be achieved through inventories of finished boxes, but only through **flexible production quantities**, **short lead times** and **good forecasts**.
 
-**Zielkonflikte.** Übertragen auf das Tetraeder dieses Kapitels treten vor allem drei Konflikte auf. *Frische versus Kosten:* Tägliche Produktion und Auslieferung verhindern große Lose und volle Lkw-Auslastung. *Verfügbarkeit versus Ausschuss:* Jede zusätzliche Box, die zur Absicherung gegen leere Regale produziert wird, erhöht das Risiko, am Abend unverkaufte Ware abschreiben zu müssen — genau der Zielkonflikt, den das Newsvendor-Modell in Kapitel [-@sec-newsvendor] optimiert. *Service versus Umwelt:* Häufige, kleine Kühltransporte und Lebensmittelabfälle belasten die Ökobilanz (vgl. Kapitel [-@sec-nachhaltigkeit]). Strategisch besonders wichtig sind damit die Zielgrößen **Lieferqualität** (Frische, Kühlkette), **Liefertreue** (Ware muss vor Ladenöffnung im Regal sein) und **Verfügbarkeit**; die Logistikkosten sind nachrangig, dürfen aber die Marge nicht aufzehren.
+**Trade-offs.** Applied to the tetrahedron of this chapter, three conflicts in particular arise. *Freshness versus cost:* daily production and delivery prevent large lots and full truck utilisation. *Availability versus waste:* every additional box produced to guard against empty shelves increases the risk of having to write off unsold goods in the evening — exactly the trade-off that the newsvendor model optimises in Chapter [-@sec-newsvendor]. *Service versus environment:* frequent, small refrigerated transports and food waste weigh on the environmental balance (cf. Chapter [-@sec-nachhaltigkeit]). The strategically most important target variables are therefore **delivery quality** (freshness, cold chain), **delivery reliability** (goods must be on the shelf before the store opens) and **availability**; logistics costs are secondary, but must not eat up the margin.
 
-### Struktur der Supply Chain
+### Structure of the supply chain
 
-**Stufen und Partner.** Die Kette umfasst die Lieferanten (Fischgroßhandel für Lachs und Thunfisch, regionaler Gemüsehandel, Reis- und Nori-Lieferanten), die zentrale Küche von SushiFresh, die Kühllogistik zu den Filialen sowie den Lebensmitteleinzelhandel als Absatzkanal. Der Fisch ist dabei die kritische Komponente: Er ist teuer, verderblich und wird importiert, sodass Beschaffungsmenge und -zeitpunkt eng mit der Produktionsplanung abgestimmt werden müssen (vgl. den Bullwhip-Effekt in Kapitel [-@sec-bullwhip]).
+**Stages and partners.** The chain comprises the suppliers (fish wholesalers for salmon and tuna, regional vegetable traders, rice and nori suppliers), the SushiFresh central kitchen, refrigerated logistics to the stores, and food retail as the sales channel. Fish is the critical component: it is expensive, perishable and imported, so that procurement quantity and timing must be closely coordinated with production planning (cf. the bullwhip effect in Chapter [-@sec-bullwhip]).
 
-**Umgang mit Nachfrageschwankungen und Frische.** Da Fertigwaren nicht gelagert werden können, liegt der Entkopplungspunkt (Kapitel [-@sec-strategic-fit]) *vor* der Endmontage der Boxen: Vorgehalten werden allenfalls Rohwaren und vorbereitete Komponenten (gekochter Reis, geschnittenes Gemüse, portionierter Fisch), während die Boxen selbst täglich auf Basis einer Tagesprognose gefertigt werden. Die Kühlkette muss lückenlos dokumentiert werden, was für eine enge Anbindung der Logistik an SushiFresh spricht.
+**Dealing with demand fluctuations and freshness.** Since finished goods cannot be stored, the decoupling point (Chapter [-@sec-strategic-fit]) lies *before* the final assembly of the boxes: at most, raw materials and prepared components (cooked rice, cut vegetables, portioned fish) are held in stock, while the boxes themselves are produced daily on the basis of a daily forecast. The cold chain must be fully documented, which argues for close integration of logistics with SushiFresh.
 
-**Zentralität versus Dezentralität.** Eine zentrale Küche nutzt Skaleneffekte, bündelt Know-how und Qualitätskontrolle und erlaubt — wie Kapitel [-@sec-unsicherheit-pooling] zeigen wird — erhebliche Einsparungen durch **Pooling** der Nachfrageunsicherheit. Dem stehen längere Transportwege, ein höheres Ausfallrisiko (ein Standort) und frühere Produktionszeitpunkte gegenüber. Mehrere kleine, filialnahe Küchen wären reaktionsfähiger, aber teurer. Wo genau Produktionsstandorte liegen sollten und wie viele es sein sollten, ist Gegenstand der Kapitel [-@sec-standort-1] und 5.
+**Centralisation versus decentralisation.** A central kitchen exploits economies of scale, pools know-how and quality control and — as Chapter [-@sec-unsicherheit-pooling] will show — allows considerable savings through **risk pooling** of demand uncertainty. This is offset by longer transport routes, a higher risk of failure (a single site) and earlier production times. Several small kitchens close to the stores would be more responsive, but more expensive. Where exactly production sites should be located and how many there should be is the subject of Chapters [-@sec-standort-1] and 5.
 
-**Wertschöpfungstiefe.** Die Kernkompetenz liegt in der Rezeptur, der Produktion und der Frischegarantie — diese Stufen gehören in eigene Hand (*Make*). Bei der Kühllogistik ist eine Make-or-Buy-Abwägung im Sinne von Kapitel [-@sec-strategic-fit] nötig: Ein spezialisierter Dienstleister bietet Skaleneffekte und variable statt fixer Kosten, eine eigene Flotte dagegen Kontrolle über Zeitfenster und Kühlkette — ein Argument, das angesichts des Frischeversprechens und der engen Anlieferzeit vor Ladenöffnung schwer wiegt. Beim Fischeinkauf spricht die Volatilität der Rohwarenpreise und -verfügbarkeit für langfristige Rahmenverträge mit wenigen, zuverlässigen Großhändlern.
+**Depth of value creation.** The core competence lies in the recipes, production and the freshness guarantee — these stages belong in-house (*make*). For refrigerated logistics, a make-or-buy trade-off in the sense of Chapter [-@sec-strategic-fit] is necessary: a specialised service provider offers economies of scale and variable rather than fixed costs, whereas an own fleet offers control over time windows and the cold chain — an argument that carries considerable weight given the freshness promise and the tight delivery window before stores open. In fish purchasing, the volatility of raw material prices and availability argues for long-term framework contracts with a few reliable wholesalers.
 
-### Wie die Fallstudie im Reader weitergeht
+### How the case study continues in the course reader
 
-Die folgenden Kapitel greifen jeweils eine der hier aufgeworfenen Fragen auf und beantworten sie quantitativ:
+Each of the following chapters takes up one of the questions raised here and answers it quantitatively:
 
-| Kapitel | Fragestellung für SushiFresh | Methode |
+| Chapter | Question for SushiFresh | Method |
 |:---|:---|:---|
-| [-@sec-nachhaltigkeit] | Welche ökologischen Zielkonflikte (Kühlkette, Lebensmittelabfall) entstehen? | Nachhaltigkeitsstrategien, Circular SCM |
-| [-@sec-standort-1] | Welcher von drei Kandidatenstandorten eignet sich für die Produktion? Wo läge der transportkostenminimale Punkt? | Nutzwertanalyse, AHP, Center of Gravity, Weiszfeld |
-| [-@sec-standort-2] | Welche Standorte sollten eröffnet und welche Filialen von wo beliefert werden? | Warehouse Location Problem, Add-/Drop-Heuristik |
-| [-@sec-unsicherheit-pooling] | Wie viel Sicherheitsbestand spart eine zentrale Versorgung gegenüber einer dezentralen? | Kapazitäts- und Lagerbestandspooling |
-| [-@sec-newsvendor] | Wie viele Boxen sollen jeden Morgen für eine Filiale produziert werden? | Newsvendor-Modell |
-| [-@sec-bullwhip] | Wie schaukeln sich Bestellschwankungen zwischen Filialen, SushiFresh und Fischgroßhändler auf? | Bullwhip-Effekt, Order-up-to-Politik |
+| [-@sec-nachhaltigkeit] | Which environmental trade-offs (cold chain, food waste) arise? | Sustainability strategies, circular SCM |
+| [-@sec-standort-1] | Which of three candidate sites is suitable for production? Where would the transport-cost-minimising point lie? | Scoring model, AHP, centre-of-gravity method, Weiszfeld |
+| [-@sec-standort-2] | Which sites should be opened and which stores should be supplied from where? | Warehouse location problem, add/drop heuristic |
+| [-@sec-unsicherheit-pooling] | How much safety stock does central supply save compared with decentralised supply? | Capacity and inventory pooling |
+| [-@sec-newsvendor] | How many boxes should be produced for a store each morning? | Newsvendor model |
+| [-@sec-bullwhip] | How do order fluctuations build up between stores, SushiFresh and the fish wholesaler? | Bullwhip effect, order-up-to policy |
 
-## Zusammenfassung
+## Summary
 
-Dieses Kapitel hat das Zielsystem der Logistik und des Supply Chain Managements eingeführt: Lieferzeit, Liefertreue, Lieferqualität, Flexibilität/Resilienz, Information und Kosten bilden gemeinsam den Rahmen, an dem logistische Entscheidungen gemessen werden. Da sich diese Ziele nicht unabhängig voneinander optimieren lassen, entstehen unvermeidliche **Zielkonflikte**, die sich anschaulich als "Tetraeder" zwischen Qualität, Geschwindigkeit, Kosten und Flexibilität/Resilienz sowie als individuelle Zielprofile darstellen lassen. Konkret wird dieses Spannungsfeld bei typischen logistischen Abwägungsentscheidungen — Transportmittelwahl, Lageranzahl, Sicherheitsbestand, Losgröße —, bei denen jeweils zwei gegenläufige Kostenkomponenten eine u-förmige Gesamtkostenkurve mit einem (theoretischen) Minimum ergeben.
+This chapter has introduced the system of objectives of logistics and supply chain management: delivery time, delivery reliability, delivery quality, flexibility/resilience, information and cost together form the framework against which logistics decisions are measured. Since these objectives cannot be optimised independently of one another, unavoidable **trade-offs** arise, which can be illustrated as a "tetrahedron" between quality, speed, cost and flexibility/resilience, and as individual objective profiles. This tension becomes concrete in typical logistics trade-off decisions — choice of transport mode, number of warehouses, safety stock, lot size — in each of which two opposing cost components produce a U-shaped total cost curve with a (theoretical) minimum.
 
-Auf der Kostenseite wurden die wichtigsten **Logistikkostenarten** (Transport-, Lager-, Bestands-, Fehlmengen-, Rüst-/Bestellkosten) unterschieden und an drei Beispielen — der Bananenwertschöpfungskette, einem Produktvergleich der Logistikkostenanteile sowie der Kostenrechnung des Apple iPod — quantitativ veranschaulicht. Dabei wurde deutlich, dass die Bedeutung der Logistikkosten stark vom Wert-Gewicht-Verhältnis eines Produkts abhängt und dass ein sinnvolles Kostenmanagement die gesamte Supply Chain, nicht nur einzelne Stufen, in den Blick nehmen muss.
+On the cost side, the most important **types of logistics costs** (transport, warehousing, inventory holding, shortage and set-up/ordering costs) were distinguished and illustrated quantitatively using three examples — the banana value chain, a product comparison of logistics cost shares and the cost accounting of the Apple iPod. It became clear that the significance of logistics costs depends strongly on the value-to-weight ratio of a product and that meaningful cost management must consider the entire supply chain, not just individual stages.
 
-Auf der R-Seite haben Sie vier neue Werkzeuge kennengelernt: den **Pipe-Operator** `|>` zur lesbaren Verkettung von Operationen, `dplyr::group_by()` und `summarise()` zur Aggregation von Daten nach Gruppen, **vektorisierte Berechnungen** zur eleganten Kombination mehrerer Kostenkomponenten sowie formatierte Tabellen mit `kableExtra`. Diese Werkzeuge werden Sie in den folgenden Kapiteln — insbesondere bei der Standortplanung und der Bestandsplanung unter Unsicherheit — regelmäßig wiederverwenden: Immer dann, wenn Rohdaten zunächst aufbereitet, nach einem Merkmal gruppiert, zu Kennzahlen verdichtet und anschließend präsentationsfähig aufbereitet werden müssen, ist die Kombination aus Pipe, `group_by()`/`summarise()` und `kableExtra` das Standardwerkzeug der angewandten Datenanalyse in R.
+On the R side, you have learned four new tools: the **pipe operator** `|>` for readable chaining of operations, `dplyr::group_by()` and `summarise()` for aggregating data by groups, **vectorised calculations** for elegantly combining several cost components, and formatted tables with `kableExtra`. You will use these tools regularly in the following chapters — especially in facility location planning and inventory planning under uncertainty: whenever raw data first have to be prepared, grouped by a characteristic, condensed into key figures and then prepared for presentation, the combination of pipe, `group_by()`/`summarise()` and `kableExtra` is the standard tool of applied data analysis in R.
 
-Inhaltlich bildet dieses Kapitel das Scharnier zwischen der strategischen Positionierung aus Kapitel [-@sec-strategic-fit] und den quantitativen Planungsmodellen der folgenden Kapitel: Das hier eingeführte Zielsystem und die Grundidee der Kostenabwägung ziehen sich als roter Faden durch das gesamte weitere Buch — sei es bei der Wahl von Lagerstandorten, bei der Bestimmung optimaler Bestellmengen oder bei der Festlegung von Sicherheitsbeständen unter Nachfrageunsicherheit.
+In terms of content, this chapter forms the link between the strategic positioning from Chapter [-@sec-strategic-fit] and the quantitative planning models of the following chapters: the system of objectives introduced here and the basic idea of the cost trade-off run like a common thread through the rest of the book — whether in the choice of warehouse locations, the determination of optimal order quantities or the setting of safety stocks under demand uncertainty.
 
-Logistikkosten müssen systemisch erfasst werden. Relevante Kosten entstehen in Beschaffung, Transport, Umschlag, Lagerung, Fehlmengen, Rücknahme und Koordination. Für Nachhaltigkeitsentscheidungen ist es zusätzlich notwendig, Emissionen und andere Umweltwirkungen sichtbar zu machen.
+Logistics costs must be captured systemically. Relevant costs arise in procurement, transport, transhipment, warehousing, shortages, take-back and coordination. For sustainability decisions, it is also necessary to make emissions and other environmental impacts visible.
 
-Drei Modellierungslogiken sind besonders wichtig:
+Three modelling approaches are particularly important:
 
-- Kosten- und Emissionsziele können getrennt als Mehrzielproblem formuliert werden.
-- Ein CO₂-Preis oder Gewichtungsparameter kann Emissionen in eine gemeinsame Zielfunktion überführen.
-- Ein Emissionsbudget kann als Nebenbedingung festgelegt werden, während die Kosten minimiert werden.
+- Cost and emission objectives can be formulated separately as a multi-objective problem.
+- A CO₂ price or weighting parameter can convert emissions into a common objective function.
+- An emission budget can be set as a constraint while costs are minimised.
 
-Mit der Fallstudie der SushiFresh GmbH wurde schließlich ein Geschäftsmodell eingeführt, an dem sich Strategic Fit und Zielkonflikte konkret zeigen: hohe implizierte Unsicherheit bei zugleich kaum lagerfähiger Ware, Zielkonflikte zwischen Frische, Verfügbarkeit, Kosten und Abfall sowie die Grundsatzfrage zentraler oder dezentraler Produktion. Die folgenden Kapitel wenden diese Ideen auf Standort- und Netzwerkentscheidungen an. Sie zeigen, wie räumliche Struktur, Kapazität, Transport und Service formal modelliert und unter erweiterten Zielsystemen bewertet werden können.
+Finally, the SushiFresh GmbH case study introduced a business model that illustrates strategic fit and trade-offs in concrete terms: high implied uncertainty combined with goods that can hardly be stored, trade-offs between freshness, availability, cost and waste, and the fundamental question of centralised or decentralised production. The following chapters apply these ideas to location and network decisions. They show how spatial structure, capacity, transport and service can be formally modelled and evaluated under extended systems of objectives.
 
 
 ::: {.kontrollfragen}
-**Kontrollfragen**
+**Review questions**
 
-1. Nennen Sie die sechs traditionellen Zielgrößen der Logistik und erläutern Sie jeweils in einem Satz, was sie messen.
-2. Was versteht man unter einem Zielkonflikt, und warum lässt er sich nicht "auflösen", sondern nur durch Abwägung handhaben?
-3. Erläutern Sie anhand eines Beispiels den Zielkonflikt zwischen Lieferbereitschaft und Bestandskosten.
-4. Erläutern Sie anhand des Tetraeders, weshalb ein Logistiksystem nicht gleichzeitig maximale Qualität, Geschwindigkeit, Flexibilität und minimale Kosten erreichen kann.
-5. Skizzieren Sie für zwei der vier Beispiele "Transportmittel, Lageranzahl, Sicherheitsbestand, Losgröße" jeweils die beiden gegenläufigen Kostenkomponenten.
-6. Warum ist die Transparenz realer Kostenfunktionen in der Logistik häufig eingeschränkt? Nennen Sie mindestens zwei Gründe.
-7. Nennen Sie mindestens vier Logistikkostenarten und ordnen Sie diese den vier Abwägungsbeispielen aus Frage 5 zu.
-8. Erläutern Sie am Beispiel der Bananenwertschöpfungskette, warum ein hoher Anteil des Endpreises nicht bei den Produzent:innen, sondern bei Handel und Distribution verbleibt.
-9. Was zeigt das Apple-iPod-Beispiel über die Verteilung von Kosten und Wertschöpfung in globalen Supply Chains, und weshalb reicht eine isolierte Betrachtung einzelner Wertschöpfungsstufen nicht aus?
-10. Unter welchen Bedingungen kann eine Zentralisierung gleichzeitig Kosten, Emissionen und Verderb reduzieren — und wann ist dies eher unwahrscheinlich?
-11. Ordnen Sie die SushiFresh GmbH in das Raster aus implizierter Unsicherheit und Reaktionsfähigkeit ein. Warum kann das Unternehmen Reaktionsfähigkeit nicht über Fertigwarenbestände herstellen, und welche Hebel bleiben ihm?
-12. Unterscheiden Sie komplementäre, indifferente und konkurrierende Zielbeziehungen. Warum treten echte Zielkonflikte nur auf der Effizienzgrenze auf?
+1. Name the six traditional target variables of logistics and explain in one sentence each what they measure.
+2. What is meant by a trade-off (goal conflict), and why can it not be "resolved", but only handled by weighing up?
+3. Using an example, explain the trade-off between delivery readiness and inventory holding costs.
+4. Using the tetrahedron, explain why a logistics system cannot simultaneously achieve maximum quality, speed and flexibility and minimum cost.
+5. For two of the four examples "mode of transport, number of warehouses, safety stock, lot size", outline the two opposing cost components in each case.
+6. Why is the transparency of real cost functions in logistics often limited? Give at least two reasons.
+7. Name at least four types of logistics costs and assign them to the four trade-off examples from question 5.
+8. Using the example of the banana value chain, explain why a large share of the final price remains not with the producers, but with trade and distribution.
+9. What does the Apple iPod example show about the distribution of costs and value added in global supply chains, and why is an isolated view of individual value creation stages insufficient?
+10. Under what conditions can centralisation simultaneously reduce costs, emissions and spoilage — and when is this rather unlikely?
+11. Position SushiFresh GmbH in the grid of implied uncertainty and responsiveness. Why can the company not achieve responsiveness through finished-goods inventories, and which levers remain available to it?
+12. Distinguish between complementary, indifferent and competing relationships between objectives. Why do genuine trade-offs occur only on the efficient frontier?
 :::
-
-

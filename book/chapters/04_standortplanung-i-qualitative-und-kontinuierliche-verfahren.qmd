@@ -1,14 +1,14 @@
-# Standortplanung I – Qualitative und kontinuierliche Verfahren {#sec-standort-1}
+# Facility Location Planning I – Qualitative and Continuous Methods {#sec-standort-1}
 
 ::: {.lernziele}
-**Lernziele**
+**Learning objectives**
 
-- Standortentscheidungen im strategischen Supply-Chain-Design **einordnen** und von operativen Entscheidungen **abgrenzen**,
-- qualitative Standortfaktoren systematisch **erfassen und bewerten**,
-- die Nutzwertanalyse und den Analytic Hierarchy Process (AHP) **erläutern und auf ein Fallbeispiel anwenden**,
-- die Eigenschaften unterschiedlicher Distanzmetriken (euklidisch, Manhattan, geografisch) **erläutern** und diese in R **berechnen**,
-- das Center-of-Gravity-Verfahren und den Weiszfeld-Algorithmus **herleiten, selbst programmieren und interpretieren**,
-- grundlegende R-Kontrollstrukturen (Schleifen, Matrizen, `apply`-Funktionen, eigene Funktionen mit Abbruchkriterium) **anwenden**.
+- **Classify** location decisions within strategic supply chain design and **distinguish** them from operational decisions,
+- systematically **capture and evaluate** qualitative location factors,
+- **explain** the scoring model (utility analysis) and the Analytic Hierarchy Process (AHP) **and apply them to a case example**,
+- **explain** the properties of different distance metrics (Euclidean, Manhattan, geographic) and **compute** them in R,
+- **derive, programme and interpret** the centre-of-gravity method and the Weiszfeld algorithm yourself,
+- **apply** basic R control structures (loops, matrices, `apply` functions, custom functions with a stopping criterion).
 :::
 
 ```{r}
@@ -17,7 +17,7 @@
 #| warning: false
 #| message: false
 
-# Hilfsfunktionen aus R/scm_functions.R einbinden (u.a. center_of_gravity(),
+# Load helper functions from R/scm_functions.R (incl. center_of_gravity(),
 # weiszfeld(), haversine(), ahp_priority_vector(), ahp_consistency())
 source("../R/scm_functions.R")
 
@@ -26,44 +26,44 @@ library(knitr)
 library(kableExtra)
 ```
 
-## Standortentscheidungen im strategischen Supply-Chain-Design
+## Location decisions in strategic supply chain design
 
-Kapitel [-@sec-logistikkosten] hat gezeigt, dass sich Supply-Chain-Entscheidungen an einem Zielsystem ausrichten, das zwischen Kosten, Servicegrad und weiteren Zielgrößen vermittelt, und dass Logistikkosten in erheblichem Umfang von der räumlichen Struktur eines Netzwerks abhängen. Genau an dieser räumlichen Struktur setzt dieses Kapitel an: Es geht um die Frage, **wo** ein Unternehmen seine Werke, Lager, Umschlagpunkte oder Verkaufsstandorte ansiedeln sollte, damit das Netzwerk als Ganzes den Zielkonflikt aus Kosten und Service möglichst gut löst.
+Chapter [-@sec-logistikkosten] showed that supply chain decisions are guided by a system of objectives that mediates between costs, service level and other target variables, and that logistics costs depend to a considerable extent on the spatial structure of a network. This chapter starts precisely from that spatial structure: the question is **where** a company should locate its plants, warehouses, transshipment points or sales outlets so that the network as a whole resolves the trade-off between cost and service as well as possible.
 
-Standortentscheidungen gehören zur **strategischen Netzwerkplanung** und unterscheiden sich in mehreren Punkten grundlegend von operativen Entscheidungen wie der Bestellmengenplanung, die in späteren Kapiteln behandelt wird. Erstens sind sie in aller Regel **kapitalintensiv und langfristig bindend**: Ein Werk oder ein Zentrallager lässt sich nicht ohne Weiteres verlegen, wenn sich Nachfragestrukturen ändern. Zweitens ist der Entscheidungsraum **mehrdimensional** – neben Transport- und Baukosten spielen Arbeitsmarkt, Infrastruktur, Steuern, politische Stabilität oder Nähe zu Kunden eine Rolle, und diese Kriterien lassen sich nicht immer in einer gemeinsamen Einheit (z. B. Euro) ausdrücken. Drittens sind viele der relevanten Informationen **unsicher oder subjektiv einzuschätzen**, etwa die künftige Entwicklung eines regionalen Arbeitsmarkts oder die "Standortqualität" im weichen Sinne. Diese drei Eigenschaften – Irreversibilität, Mehrdimensionalität und Unsicherheit – begründen, warum die Standortplanung ein eigenständiges Methodenspektrum entwickelt hat, das deutlich über eine einfache Kostenvergleichsrechnung hinausgeht [@kik2022standortplanung].
+Location decisions belong to **strategic network planning** and differ fundamentally in several respects from operational decisions such as order quantity planning, which is covered in later chapters. First, they are as a rule **capital-intensive and binding in the long term**: a plant or a central warehouse cannot easily be relocated when demand patterns change. Second, the decision space is **multidimensional** – besides transport and construction costs, the labour market, infrastructure, taxes, political stability or proximity to customers play a role, and these criteria cannot always be expressed in a common unit (e.g. euros). Third, much of the relevant information is **uncertain or has to be assessed subjectively**, such as the future development of a regional labour market or “location quality” in the soft sense. These three properties – irreversibility, multidimensionality and uncertainty – explain why facility location planning has developed its own range of methods that goes well beyond a simple cost comparison [@kik2022standortplanung].
 
-Der Standortplanungsprozess verläuft typischerweise in mehreren Phasen mit sinkendem Aggregationsgrad: Auf einer ersten, globalen Ebene werden Kontinente oder Länder anhand weniger, stark aggregierter Faktoren (z. B. Marktzugang, Lohnniveau, politisches Risiko) vorselektiert. Auf einer zweiten, regionalen Ebene wird der Suchraum auf Wirtschaftsräume oder Regionen eingegrenzt, wobei die Anforderungen bereits deutlich präziser formuliert werden können. Erst auf einer dritten, lokalen Ebene wird ein konkreter Standort – ein Grundstück, eine Gemeinde, eine Kreuzung im Verkehrsnetz – bestimmt [@chopra2025supply].
+The facility location planning process typically runs through several phases with a decreasing level of aggregation: at a first, global level, continents or countries are pre-selected on the basis of a few highly aggregated factors (e.g. market access, wage level, political risk). At a second, regional level, the search space is narrowed down to economic areas or regions, where the requirements can already be formulated much more precisely. Only at a third, local level is a concrete site determined – a plot of land, a municipality, a junction in the transport network [@chopra2025supply].
 
-![Phasen der Standortwahl von der globalen bis zur lokalen Ebene [@chopra2025supply]](../images/image61.jpeg){#fig-phasen-standortwahl width="85%"}
+![Phases of location selection from the global to the local level [@chopra2025supply]](../images/image61.png){#fig-phasen-standortwahl width="85%"}
 
 ::: {.vertiefung}
-**Theorie-Vertiefung: Die Supply Chain Planning Matrix**
+**In depth (theory): The Supply Chain Planning Matrix**
 
-Die Vorlesung ordnet die Standortplanung in die **Supply Chain Planning Matrix** ein [@stadtler2000supply]. Die Matrix spannt zwei Dimensionen auf: horizontal die Prozesse der Wertschöpfung (Beschaffung, Produktion, Distribution, Absatz), vertikal den Planungshorizont (lang-, mittel- und kurzfristig). In jeder Zelle stehen typische Planungsaufgaben — etwa Materialprogramm und Lieferantenwahl (langfristig, Beschaffung), Hauptproduktionsprogrammplanung (mittelfristig, Produktion) oder Tourenplanung (kurzfristig, Distribution). Die langfristige Zeile über alle Prozesse hinweg heißt **strategische Netzwerkplanung**: Sie legt fest, welche Standorte es gibt, welche Kapazität sie haben und welche Transportverbindungen zwischen ihnen bestehen.
+The lecture places facility location planning within the **Supply Chain Planning Matrix** [@stadtler2000supply]. The matrix spans two dimensions: horizontally the value creation processes (procurement, production, distribution, sales), vertically the planning horizon (long, medium and short term). Each cell contains typical planning tasks — such as materials programme and supplier selection (long term, procurement), master production scheduling (medium term, production) or vehicle routing (short term, distribution). The long-term row across all processes is called **strategic network planning**: it determines which sites exist, what capacity they have and which transport links connect them.
 
-Zwei Eigenschaften dieser Matrix sind für das Verständnis der folgenden Kapitel wichtig. Erstens wirken Entscheidungen **top-down**: Die strategische Netzwerkplanung setzt den Rahmen, innerhalb dessen mittelfristige Mengen- und kurzfristige Ablaufplanung stattfinden. Ein ungünstig gelegenes Lager kann durch noch so gute Tourenplanung nicht ausgeglichen werden. Zweitens gibt es eine **Rückkopplung bottom-up**: Um Standorte sinnvoll zu bewerten, müssen die späteren operativen Kosten (Transporte, Bestände) zumindest näherungsweise antizipiert werden. Standortmodelle arbeiten deshalb mit aggregierten Größen — durchschnittlichen Tagesnachfragen, Transportkostensätzen je Kilometer —, die die operative Ebene vereinfacht abbilden. Die Kapitel [-@sec-unsicherheit-pooling] bis [-@sec-bullwhip] zeigen später, welche zusätzlichen Effekte (Bestände, Unsicherheit, Bullwhip) auf dieser vereinfachten Ebene noch nicht sichtbar sind.
+Two properties of this matrix are important for understanding the following chapters. First, decisions act **top-down**: strategic network planning sets the framework within which medium-term quantity planning and short-term scheduling take place. A poorly located warehouse cannot be compensated for by even the best vehicle routing. Second, there is **bottom-up feedback**: in order to evaluate sites sensibly, the later operational costs (transport, inventory) must be anticipated at least approximately. Location models therefore work with aggregated quantities — average daily demand, transport cost rates per kilometre — that represent the operational level in simplified form. Chapters [-@sec-unsicherheit-pooling] to [-@sec-bullwhip] will later show which additional effects (inventory, uncertainty, bullwhip) are not yet visible at this simplified level.
 :::
 
-Die Folien heben außerdem hervor, warum die Bewertung von Standorten so schwierig ist: Standortentscheidungen sind **kurzfristig irreversibel** und erzeugen **Pfadabhängigkeiten** (spätere Entscheidungen bauen auf dem einmal gewählten Netz auf), sie sind **mehrdimensional** (ihre Auswirkungen auf das Zielsystem aus Kapitel [-@sec-logistikkosten] sind schwer zu überblicken) und sie sind **subjektiv** (die Einschätzung weicher Faktoren schwankt zwischen Entscheidern, und deren Bedeutung wird unterschiedlich gewichtet).
+The slides also highlight why evaluating sites is so difficult: location decisions are **irreversible in the short term** and create **path dependencies** (later decisions build on the network once chosen), they are **multidimensional** (their effects on the system of objectives from Chapter [-@sec-logistikkosten] are hard to oversee) and they are **subjective** (the assessment of soft factors varies between decision-makers, and their importance is weighted differently).
 
-Entsprechend breit ist das Spektrum der **Methoden der Standortplanung** [@kik2022standortplanung]. *Qualitative Verfahren* sind heuristische, meist umfragebasierte Verfahren, die ein Stimmungsbild und individuelle Einschätzungen zusammenführen. Unter den *quantitativen Verfahren* verlangt die **Optimierung** einen klar abgegrenzten Entscheidungsraum (die Optionen) und ein eindimensionales Zielsystem (z. B. Kosten); die **Simulation** kann komplexe, mehrdimensionale Wirkungszusammenhänge abbilden, ist aber aufwendig und schwer übertragbar; **spieltheoretische** Ansätze antizipieren das Verhalten von Konkurrenten, etwa um den Absatz eines Einzelhandelsstandorts zu maximieren; und die **Investitionsrechnung** bewertet Standorte ausschließlich anhand monetärer Größen über die Nutzungsdauer. Dieses und das folgende Kapitel behandeln qualitative Verfahren sowie Optimierungsmodelle, weil beide in der Praxis am häufigsten kombiniert werden.
+Correspondingly broad is the range of **facility location planning methods** [@kik2022standortplanung]. *Qualitative methods* are heuristic, mostly survey-based methods that bring together an overall picture of opinion and individual assessments. Among the *quantitative methods*, **optimisation** requires a clearly delimited decision space (the options) and a one-dimensional system of objectives (e.g. costs); **simulation** can represent complex, multidimensional cause-and-effect relationships but is laborious and hard to transfer; **game-theoretic** approaches anticipate the behaviour of competitors, for example to maximise the sales of a retail site; and **investment appraisal** evaluates sites solely on the basis of monetary quantities over their useful life. This chapter and the next cover qualitative methods and optimisation models, because these two are most frequently combined in practice.
 
-Für die eigentliche Bewertung von Standorten (oder Standortregionen) stehen grundsätzlich zwei Klassen von Verfahren zur Verfügung. **Qualitative Verfahren** sind heuristische, häufig umfragebasierte Bewertungsansätze, die ein Stimmungsbild aus mehreren, meist auch weichen Kriterien zusammenführen; sie eignen sich besonders für die Vorauswahl zwischen einer begrenzten Zahl diskreter Alternativen. **Quantitative Verfahren** formulieren die Standortsuche dagegen als Optimierungsproblem mit einer expliziten Zielfunktion. In diesem Kapitel behandeln wir aus der qualitativen Familie die **Nutzwertanalyse** und den **Analytic Hierarchy Process (AHP)**; anschließend wenden wir uns den **kontinuierlichen** quantitativen Verfahren zu, bei denen der Standort nicht aus einer vorgegebenen Liste ausgewählt, sondern als beliebiger Punkt einer Ebene bestimmt wird. Die **diskreten** quantitativen Verfahren, bei denen aus einer endlichen Menge potenzieller Standorte eine kostenminimale Teilmenge auszuwählen ist, folgen in Kapitel [-@sec-standort-2].
+For the actual evaluation of sites (or location regions), two classes of methods are available in principle. **Qualitative methods** are heuristic, often survey-based evaluation approaches that combine an overall picture from several, usually also soft, criteria; they are particularly suitable for pre-selection among a limited number of discrete alternatives. **Quantitative methods**, by contrast, formulate the location search as an optimisation problem with an explicit objective function. In this chapter, we cover the **scoring model (utility analysis)** and the **Analytic Hierarchy Process (AHP)** from the qualitative family; we then turn to **continuous** quantitative methods, in which the site is not selected from a given list but determined as an arbitrary point in a plane. The **discrete** quantitative methods, in which a cost-minimal subset has to be selected from a finite set of potential sites, follow in Chapter [-@sec-standort-2].
 
-Welche Standortfaktoren dabei überhaupt relevant sind, hängt stark vom Einzelfall ab. Grob lassen sie sich in **harte** Faktoren (Transportkosten, Löhne, Steuern, Grundstückspreise – direkt monetär bewertbar) und **weiche** Faktoren (Lebensqualität, Image der Region, Verfügbarkeit qualifizierter Arbeitskräfte, politische Stabilität) einteilen. Weiche Faktoren entziehen sich einer unmittelbaren Kostenrechnung, beeinflussen die Standortqualität aber ebenso stark – und genau für ihre systematische Erfassung sind qualitative Bewertungsverfahren gemacht.
+Which location factors are relevant at all depends heavily on the individual case. Roughly, they can be divided into **hard** factors (transport costs, wages, taxes, land prices – directly measurable in monetary terms) and **soft** factors (quality of life, image of the region, availability of skilled labour, political stability). Soft factors defy direct cost accounting but influence location quality just as strongly – and qualitative evaluation methods are designed precisely for capturing them systematically.
 
-![Beispielhafte Standortfaktoren auf regionaler Ebene [@lahner2020regionaloekonomie]](../images/image63.png){#fig-standortfaktoren width="80%"}
+![Examples of location factors at regional level [@lahner2020regionaloekonomie]](../images/image63.png){#fig-standortfaktoren width="80%"}
 
-### Die Fallstudie dieses Kapitels: SushiFresh GmbH
+### The case study of this chapter: SushiFresh GmbH
 
-Alle Verfahren dieses Kapitels wenden wir durchgängig auf ein und dasselbe, durchgehende Fallbeispiel an, das uns auch in den folgenden Kapiteln zur Netzwerk- und Bestandsplanung begleiten wird: die **SushiFresh GmbH**, ein fiktiver regionaler Hersteller frischer Sushi-Boxen im Rhein-Main-Gebiet. SushiFresh beliefert täglich sechs Supermarkt-Filialen mit unterschiedlicher, aber weitgehend bekannter Nachfrage:
+We apply all methods in this chapter consistently to one and the same continuous case example, which will also accompany us in the following chapters on network and inventory planning: **SushiFresh GmbH**, a fictitious regional producer of fresh sushi boxes in the Rhine-Main area. SushiFresh supplies six supermarket stores every day with differing but largely known demand:
 
 ```{r}
 #| label: ch4-sushifresh-filialen
 #| echo: true
 
-# Sechs beliefte Filialen mit Koordinaten (WGS84), mittlerer Tagesnachfrage
-# mu (in Sushi-Boxen) und deren Standardabweichung sigma
+# Six supplied stores with coordinates (WGS84), mean daily demand
+# mu (in sushi boxes) and its standard deviation sigma
 filialen <- tibble(
   Filiale = c("Wiesbaden", "Mainz", "Frankfurt", "Ruesselsheim", "Darmstadt", "Offenbach"),
   lat   = c(50.0782, 50.0000, 50.1109, 49.9904, 49.8728, 50.0956),
@@ -71,65 +71,66 @@ filialen <- tibble(
   mu    = c(120, 150, 280, 90, 110, 95),
   sigma = c(25, 30, 55, 20, 24, 22)
 )
-filialen
+filialen |> rename(Store = Filiale)   # English column name for display
 ```
 
-Die Geschäftsführung erwägt, zusätzlich zur bestehenden Auslieferung eine eigene Produktionsstätte im Rhein-Main-Gebiet zu errichten, und hat dafür drei Gewerbegrundstücke als Kandidatenstandorte identifiziert:
+In addition to the existing deliveries, management is considering building its own production facility in the Rhine-Main area and has identified three commercial plots as candidate sites:
 
 ```{r}
 #| label: ch4-sushifresh-standorte
 #| echo: true
 
-# Drei Kandidatenstandorte fuer die neue Produktionsstaette
+# Three candidate sites for the new production facility
 standorte <- tibble(
   Standort = c("Wiesbaden-Erbenheim", "Mainz-Hechtsheim", "Raunheim"),
   lat = c(50.0632, 49.9698, 50.0000),
   lon = c(8.2999,  8.2831,  8.4650),
   Fixkosten = c(180000, 210000, 260000)
 )
-standorte
+standorte |> rename(Site = Standort, `Fixed costs` = Fixkosten)   # English column names for display
 
-# Transportkostensatz je Box und Kilometer (wird spaeter noch gebraucht)
+# Transport cost rate per box and kilometre (needed again later)
 transportkostensatz <- 0.02
 ```
 
-Wiesbaden-Erbenheim ist ein Gewerbegebiet mit direktem Anschluss an A66/A3 und vergleichsweise günstigen Grundstückspreisen; Mainz-Hechtsheim liegt an A60/A63 und in Rheinnähe, was die Anlieferung von Fisch begünstigt, ist aber teurer; Raunheim schließlich liegt nahe dem Frankfurter Flughafen mit sehr guter Anbindung an A3/A5, verlangt aber die höchsten Gewerbemieten. Die Spalte `Fixkosten` enthält die einmaligen Investitions- und Erschließungskosten der Grundstücke (Einrichtung, Kühltechnik, Produktionsausstattung); in Kapitel [-@sec-standort-2] werden sie auf eine Nutzungsdauer von fünf Jahren verteilt und so in jährliche Fixkosten umgerechnet. Die sechs Filialen fragen zusammen `r sum(filialen$mu)` Sushi-Boxen pro Tag nach; Frankfurt ist mit 280 Boxen die mit Abstand größte Filiale – sie wird uns in Kapitel [-@sec-newsvendor] als Beispiel für die Newsvendor-Formel wiederbegegnen. In diesem Kapitel geht es zunächst darum, wie SushiFresh die drei Kandidatenstandorte systematisch bewerten und wie das Unternehmen – unabhängig von den drei vorgegebenen Grundstücken – rein rechnerisch den transportkostenminimalen Punkt im Absatzgebiet bestimmen kann.
+Wiesbaden-Erbenheim is a business park with direct access to the A66/A3 and comparatively low land prices; Mainz-Hechtsheim is located on the A60/A63 and close to the Rhine, which favours the delivery of fish, but is more expensive; finally, Raunheim lies close to Frankfurt Airport with very good connections to the A3/A5 but charges the highest commercial rents. The column `Fixkosten` contains the one-off investment and development costs of the plots (fit-out, refrigeration technology, production equipment); in Chapter [-@sec-standort-2] they are spread over a useful life of five years and thus converted into annual fixed costs. Together, the six stores demand `r sum(filialen$mu)` sushi boxes per day; with 280 boxes, Frankfurt is by far the largest store – we will meet it again in Chapter [-@sec-newsvendor] as an example for the newsvendor formula. This chapter first addresses how SushiFresh can systematically evaluate the three candidate sites and how the company – independently of the three given plots – can determine, purely by calculation, the point in the sales area that minimises transport costs.
 
-## Qualitative Standortbewertung
+## Qualitative location evaluation
 
-### Die Nutzwertanalyse
+### The scoring model (utility analysis)
 
 ::: {.definition}
-**Definition: Nutzwertanalyse**
+**Definition: Scoring model (utility analysis)**
 
-Die **Nutzwertanalyse (NWA)** ist ein additives Multikriterien-Bewertungsverfahren. Für jede Alternative $j$ wird über alle Kriterien $k=1,\dots,K$ ein **Gesamtnutzwert** $N_j$ als gewichtete Summe der Teilnutzwerte $w_{jk}$ gebildet:
+The **scoring model (utility analysis, German *Nutzwertanalyse*, NWA)** is an additive multi-criteria evaluation method. For each alternative $j$, an **overall utility value** $N_j$ is formed across all criteria $k=1,\dots,K$ as the weighted sum of the partial utility values $w_{jk}$:
 $$
 N_j = \sum_{k=1}^{K} g_k \cdot w_{jk}, \qquad \sum_{k=1}^{K} g_k = 1,
 $$
-wobei $g_k$ das Gewicht des Kriteriums $k$ und $w_{jk}$ die (meist auf einer Punkteskala, z. B. 0–10, vergebene) Bewertung der Alternative $j$ bezüglich Kriterium $k$ ist.
+where $g_k$ is the weight of criterion $k$ and $w_{jk}$ is the rating of alternative $j$ with respect to criterion $k$ (usually awarded on a points scale, e.g. 0–10).
 :::
 
-Die Nutzwertanalyse folgt einem klar strukturierten, fünfstufigen Vorgehen: Zunächst werden die relevanten Bewertungskriterien festgelegt, danach ihre Gewichte bestimmt (z. B. durch Expertenschätzung oder Paarvergleich). Anschließend werden die Alternativen je Kriterium bewertet, die gewichteten Teilnutzwerte zum Gesamtnutzwert aggregiert und die Alternativen schließlich nach diesem Gesamtnutzwert in eine Rangfolge gebracht.
+The scoring model follows a clearly structured, five-step procedure: first, the relevant evaluation criteria are defined, then their weights are determined (e.g. by expert estimation or pairwise comparison). Next, the alternatives are rated for each criterion, the weighted partial utility values are aggregated into the overall utility value, and finally the alternatives are ranked according to this overall utility value.
 
-Diese additive Struktur macht die Nutzwertanalyse einfach anzuwenden und leicht nachvollziehbar – birgt aber eine methodische Schwäche, die man sich am besten an einem Zahlenbeispiel klarmacht.
+This additive structure makes the scoring model simple to apply and easy to follow – but it also harbours a methodological weakness that is best illustrated with a numerical example.
 
 ::: callout-note
-## Fallbeispiel: Produktionsstandort für SushiFresh
 
-Die Geschäftsleitung von SushiFresh bewertet die drei Kandidatenstandorte Wiesbaden-Erbenheim, Mainz-Hechtsheim und Raunheim anhand von drei – hier aus Vereinfachungsgründen gleich gewichteten – Kriterien: **Transportnähe** zu den sechs Filialen, **Mietkosten** und **Fachkräfteverfügbarkeit**. Wiesbaden-Erbenheim ist bei den Mietkosten am stärksten (niedrigste Fixkosten), Raunheim bei der Transportnähe zum Filialnetz, während Mainz-Hechtsheim bei der Fachkräfteverfügbarkeit vorn liegt – dort gibt es einen guten Zugang zu gastronomischen und lebensmitteltechnischen Ausbildungsstätten.
+## Case example: Production site for SushiFresh
+
+SushiFresh management evaluates the three candidate sites Wiesbaden-Erbenheim, Mainz-Hechtsheim and Raunheim on the basis of three criteria – weighted equally here for simplicity: **transport proximity** to the six stores, **rental costs** and **availability of skilled labour**. Wiesbaden-Erbenheim is strongest on rental costs (lowest fixed costs), Raunheim on transport proximity to the store network, while Mainz-Hechtsheim leads on the availability of skilled labour – it offers good access to training institutions in catering and food technology.
 :::
 
 ```{r}
 #| label: ch4-nwa-tabelle
 #| echo: true
 
-# Rohdaten der Fallstudie: drei Kriterien, gleich gewichtet (1/3 je Kriterium),
-# Bewertungen der drei Kandidatenstandorte auf einer Skala von 0 (schlecht) bis 10 (gut)
+# Raw data of the case study: three criteria, equally weighted (1/3 per criterion),
+# ratings of the three candidate sites on a scale from 0 (poor) to 10 (good)
 nwa <- tibble(
   Kriterium = c(
-    "Transportnaehe",
-    "Mietkosten",
-    "Fachkraefteverfuegbarkeit"
+    "Transport proximity",
+    "Rental costs",
+    "Skilled labour availability"
   ),
   Gewicht = c(1/3, 1/3, 1/3),
   `WI-Erbenheim`  = c(5, 8, 2),
@@ -137,7 +138,7 @@ nwa <- tibble(
   Raunheim        = c(8, 2, 5)
 )
 
-# Gesamtnutzwert je Standort: Summe aus Gewicht * Bewertung ueber alle Kriterien
+# Overall utility value per site: sum of weight * rating across all criteria
 nutzwert <- c(
   `WI-Erbenheim`  = sum(nwa$Gewicht * nwa$`WI-Erbenheim`),
   `MZ-Hechtsheim` = sum(nwa$Gewicht * nwa$`MZ-Hechtsheim`),
@@ -152,7 +153,7 @@ nutzwert
 
 nwa_tab <- bind_rows(
   nwa,
-  tibble(Kriterium = "Nutzwert", Gewicht = NA,
+  tibble(Kriterium = "Utility value", Gewicht = NA,
          `WI-Erbenheim` = nutzwert["WI-Erbenheim"],
          `MZ-Hechtsheim` = nutzwert["MZ-Hechtsheim"],
          Raunheim = nutzwert["Raunheim"])
@@ -162,50 +163,80 @@ nwa_tab |>
     Gewicht = ifelse(is.na(Gewicht), "", sprintf("%.2f", Gewicht)),
     across(c(`WI-Erbenheim`, `MZ-Hechtsheim`, Raunheim), ~ sprintf("%.1f", .x))
   ) |>
-  kable(col.names = c("Kriterium", "Gewichtung", "WI-Erbenheim", "MZ-Hechtsheim", "Raunheim"),
+  kable(col.names = c("Criterion", "Weight", "WI-Erbenheim", "MZ-Hechtsheim", "Raunheim"),
         align = "lccc") |>
   kable_styling(full_width = FALSE)
 ```
 
-Das Ergebnis ist auf den ersten Blick überraschend: **Alle drei Standorte erreichen exakt denselben Gesamtnutzwert von `r sprintf("%.1f", nutzwert[1])`** – obwohl ihre Stärken-Schwächen-Profile völlig unterschiedlich sind: Wiesbaden-Erbenheim punktet bei den Mietkosten, verliert aber bei der Fachkräfteverfügbarkeit; Mainz-Hechtsheim punktet bei den Fachkräften, verliert aber bei der Transportnähe; Raunheim punktet bei der Transportnähe, verliert aber bei den Mietkosten. Der Grund für das identische Ergebnis liegt in der additiven Verrechnung: Eine schwache Bewertung bei einem Kriterium kann durch eine entsprechend starke Bewertung bei einem anderen Kriterium **kompensiert** werden. Diese **Kompensierbarkeit** ist die zentrale methodische Schwäche der Nutzwertanalyse. Sie wirft mehrere Folgeprobleme auf:
+At first glance, the result is surprising: **all three sites achieve exactly the same overall utility value of `r sprintf("%.1f", nutzwert[1])`** – even though their strength–weakness profiles are completely different: Wiesbaden-Erbenheim scores on rental costs but loses on the availability of skilled labour; Mainz-Hechtsheim scores on skilled labour but loses on transport proximity; Raunheim scores on transport proximity but loses on rental costs. The reason for the identical result lies in the additive aggregation: a weak rating on one criterion can be **compensated** by a correspondingly strong rating on another criterion. This **compensability** is the central methodological weakness of the scoring model. It raises several follow-on problems:
 
-- Das additive Modell ist nur eingeschränkt interpretierbar, weil es implizit unterstellt, dass die Kriterien **nutzenunabhängig** sind – dass sich also der Nutzenbeitrag eines Kriteriums nicht dadurch ändert, wie gut oder schlecht andere Kriterien ausfallen. Diese Annahme ist in der Praxis oft fraglich.
-- Die Ergebnisse reagieren empfindlich auf die gewählte Gewichtung; kleine Verschiebungen der Gewichte $g_k$ können die Rangfolge der Alternativen umkehren.
-- Es besteht die Gefahr der **Zielaufspaltung**: Ein an sich zusammenhängendes Ziel wird in viele Einzelkriterien zerlegt, deren Gewichte kaum noch nachvollziehbar festzulegen sind.
+- The additive model can only be interpreted to a limited extent, because it implicitly assumes that the criteria are **utility-independent** – i.e. that the utility contribution of one criterion does not change depending on how well or badly other criteria turn out. In practice, this assumption is often questionable.
+- The results are sensitive to the chosen weighting; small shifts in the weights $g_k$ can reverse the ranking of the alternatives.
+- There is a risk of **objective splitting**: an objective that is actually coherent is broken down into many individual criteria whose weights can hardly be set in a comprehensible way.
 
-Diese Schwächen motivieren ein Verfahren, das die Kriterien- und Alternativengewichte systematischer – über **paarweise Vergleiche** statt über direkt geschätzte Punktwerte – ableitet: den Analytic Hierarchy Process.
+These weaknesses motivate a method that derives the criteria and alternative weights more systematically – via **pairwise comparisons** instead of directly estimated scores: the Analytic Hierarchy Process.
 
-### Der Analytic Hierarchy Process (AHP)
+### The Analytic Hierarchy Process (AHP)
 
 ::: {.definition}
 **Definition: Analytic Hierarchy Process**
 
-Der **Analytic Hierarchy Process (AHP)** ist ein mehrstufiges Multikriterien-Entscheidungsverfahren, das Prioritäten – sowohl für Kriterien als auch für Alternativen – aus **paarweisen Vergleichen** ableitet. Anstatt Punktwerte direkt zu schätzen, beurteilt der Entscheider jeweils zwei Elemente gegeneinander ("Wie viel wichtiger ist A gegenüber B?") auf einer festgelegten Skala. Aus der resultierenden **Paarvergleichsmatrix** wird anschließend ein Prioritätsvektor abgeleitet, der als Rangfolge bzw. Gewichtung interpretiert werden kann.
+The **Analytic Hierarchy Process (AHP)** is a multi-level multi-criteria decision method that derives priorities – for criteria as well as for alternatives – from **pairwise comparisons**. Instead of estimating scores directly, the decision-maker assesses two elements against each other at a time (“How much more important is A than B?”) on a defined scale. From the resulting **pairwise comparison matrix**, a priority vector is then derived that can be interpreted as a ranking or weighting.
 :::
 
-Der AHP läuft in fünf Schritten ab: (1) paarweise Vergleiche zwischen allen Alternativen je Bewertungskriterium bilden, (2) daraus für jedes Kriterium ein Alternativenranking ableiten ("Synthese"), (3) paarweise Vergleiche zwischen allen Bewertungskriterien bilden, (4) daraus ein Ranking der Kriterien ableiten, und (5) beide Rankings zu einem Gesamt-Score je Alternative kombinieren.
+The AHP proceeds in five steps: (1) form pairwise comparisons between all alternatives for each evaluation criterion, (2) derive a ranking of the alternatives for each criterion from these (“synthesis”), (3) form pairwise comparisons between all evaluation criteria, (4) derive a ranking of the criteria from these, and (5) combine both rankings into an overall score per alternative.
 
-Paarweise Vergleiche werden üblicherweise auf einer neunstufigen Skala erfasst, die von "gleich wichtig" (Wert 1) bis "extrem bevorzugt" (Wert 9) reicht; der reziproke Wert $1/9$ bis $1$ drückt die umgekehrte Präferenzrichtung aus. Eine Paarvergleichsmatrix $A$ mit Einträgen $a_{ij}$ ("wie viel wichtiger ist $i$ gegenüber $j$?") ist also **reziprok**: $a_{ji} = 1/a_{ij}$, und die Diagonale enthält stets Einsen. Aus einer perfekt konsistenten Matrix ließe sich der Prioritätsvektor direkt aus einer einzigen Zeile oder Spalte ablesen; in der Praxis sind Experteneinschätzungen jedoch nie perfekt konsistent, weshalb der Prioritätsvektor über eine Mittelung – rechnerisch über den **dominanten Eigenvektor** der Matrix, approximiert z. B. über das geometrische Mittel der Zeilen – bestimmt wird.
+The steps follow a **bottom-up hierarchy** (@fig-ahp-hierarchy): first, the contribution of each alternative to each criterion is assessed; then the contribution of each criterion to the overall objective; finally, both are combined to identify the best alternative.
+
+::: {#fig-ahp-hierarchy}
+::: {.ahp-hierarchy}
+::: {.ahp-level}
+**Bottom level:** Determine how the alternatives contribute to the criteria.
+:::
+
+::: {.ahp-arrow}
+⇓
+:::
+
+::: {.ahp-level}
+**Medium level:** Determine how the evaluation criteria contribute to achieving the objective.
+:::
+
+::: {.ahp-arrow}
+⇓
+:::
+
+::: {.ahp-level}
+**Top level:** Determine the best of the given alternatives (objective).
+:::
+
+:::
+
+Bottom-up hierarchy of the AHP [after @klein2011planung, p. 361]
+:::
+
+Pairwise comparisons are usually recorded on a nine-point scale ranging from “equally important” (value 1) to “extremely preferred” (value 9); the reciprocal values $1/9$ to $1$ express the opposite direction of preference. A pairwise comparison matrix $A$ with entries $a_{ij}$ (“how much more important is $i$ than $j$?”) is therefore **reciprocal**: $a_{ji} = 1/a_{ij}$, and the diagonal always contains ones. From a perfectly consistent matrix, the priority vector could be read directly from a single row or column; in practice, however, expert assessments are never perfectly consistent, which is why the priority vector is determined by averaging – computationally via the **dominant eigenvector** of the matrix, approximated e.g. by the geometric mean of the rows.
 
 ::: callout-note
-## Fallbeispiel: AHP für den SushiFresh-Produktionsstandort
 
-Statt Punktwerte direkt zu schätzen, vergleicht die Geschäftsleitung von SushiFresh die drei Kandidatenstandorte Wiesbaden-Erbenheim, Mainz-Hechtsheim und Raunheim nun paarweise – sowohl untereinander je Kriterium als auch die drei Kriterien **Transportnähe**, **Mietkosten** und **Fachkräfteverfügbarkeit** gegeneinander.
+## Case example: AHP for the SushiFresh production site
+
+Instead of estimating scores directly, SushiFresh management now compares the three candidate sites Wiesbaden-Erbenheim, Mainz-Hechtsheim and Raunheim pairwise – both against each other for each criterion and the three criteria **transport proximity**, **rental costs** and **availability of skilled labour** against one another.
 :::
 
-Um die drei Paarvergleichsmatrizen (eine je Kriterium) und die Kriterienvergleichsmatrix in R abzubilden, brauchen wir eine Datenstruktur, die – anders als ein `data.frame` – von vornherein **rechteckig und rein numerisch** ist und sich mit den Regeln der linearen Algebra (Matrixmultiplikation, Transposition) verrechnen lässt: die **Matrix**.
+To represent the three pairwise comparison matrices (one per criterion) and the criteria comparison matrix in R, we need a data structure that – unlike a `data.frame` – is **rectangular and purely numeric** from the outset and can be processed using the rules of linear algebra (matrix multiplication, transposition): the **matrix**.
 
 ::: {.r-exkurs}
-**R-Exkurs: Matrizen in R**
+**R aside: Matrices in R**
 
-Eine Matrix wird mit `matrix()` erzeugt. Der Vektor mit den Werten wird dabei zeilen- oder spaltenweise in die gewünschte Form gebracht; `byrow = TRUE` sorgt dafür, dass die Werte zeilenweise (statt der R-Standardreihenfolge spaltenweise) eingefüllt werden. Mit `dimnames` lassen sich Zeilen- und Spaltennamen vergeben. Einzelne Elemente, ganze Zeilen oder Spalten werden über die eckige Klammer mit zwei Indizes `[Zeile, Spalte]` angesprochen – ein leerer Index steht dabei für "alle":
+A matrix is created with `matrix()`. The vector of values is arranged row-wise or column-wise into the desired shape; `byrow = TRUE` ensures that the values are filled in row by row (instead of R's default column-wise order). Row and column names can be assigned with `dimnames`. Individual elements, entire rows or columns are accessed via square brackets with two indices `[row, column]` – an empty index stands for “all”:
 
 ```{r}
 #| label: ch4-matrix-exkurs
 #| echo: true
 
-# 3x3-Matrix mit Zeilen- und Spaltennamen erzeugen: paarweiser Vergleich
-# der drei Kandidatenstandorte im Hinblick auf das Kriterium Transportnaehe
+# Create a 3x3 matrix with row and column names: pairwise comparison
+# of the three candidate sites with respect to the criterion transport proximity
 m <- matrix(
   c(1,   2,   1/2,
     1/2, 1,   1/3,
@@ -215,26 +246,26 @@ m <- matrix(
 )
 m
 
-# Einzelnes Element: Zeile 1, Spalte 2 -> "Wie stark wird WI-Erb ggue. MZ-Hech bevorzugt?"
+# Single element: row 1, column 2 -> "How strongly is WI-Erb preferred over MZ-Hech?"
 m[1, 2]
 
-# Gesamte 2. Zeile: Vergleich von MZ-Hech mit allen drei Standorten
+# Entire 2nd row: comparison of MZ-Hech with all three sites
 m[2, ]
 
-# Dimensionen der Matrix (Zeilen, Spalten)
+# Dimensions of the matrix (rows, columns)
 dim(m)
 ```
 
-Für zwei Matrizen `X` (Dimension $m \times n$) und `Y` (Dimension $n \times p$) berechnet der Operator `%*%` das **Matrixprodukt** $X\,Y$ (Dimension $m \times p$) im Sinne der linearen Algebra – anders als `X * Y`, das nur elementweise multipliziert. Wir nutzen `%*%` weiter unten gleich zweimal: einmal, um eine Distanzmatrix mit einem Nachfragevektor zu verrechnen, und einmal, um die Kriteriengewichte mit den Alternativenbewertungen zu einem AHP-Gesamt-Score zu kombinieren.
+For two matrices `X` (dimension $m \times n$) and `Y` (dimension $n \times p$), the operator `%*%` computes the **matrix product** $X\,Y$ (dimension $m \times p$) in the sense of linear algebra – unlike `X * Y`, which only multiplies element-wise. We use `%*%` twice below: once to combine a distance matrix with a demand vector, and once to combine the criteria weights with the ratings of the alternatives into an overall AHP score.
 :::
 
-Damit lassen sich die drei Paarvergleichsmatrizen aus dem Fallbeispiel unmittelbar in R nachbilden:
+This allows the three pairwise comparison matrices from the case example to be reproduced directly in R:
 
 ```{r}
 #| label: ch4-ahp-matrizen
 #| echo: true
 
-# Paarvergleiche der drei Kandidatenstandorte je Kriterium (Saaty-Skala 1-9 bzw. Kehrwerte)
+# Pairwise comparisons of the three candidate sites per criterion (Saaty scale 1-9 or reciprocals)
 transportnaehe <- matrix(
   c(1,   2,   1/2,
     1/2, 1,   1/3,
@@ -260,48 +291,48 @@ fachkraefte <- matrix(
 )
 ```
 
-Die Matrix `mietkosten` spiegelt dabei unmittelbar die Fixkosten der drei Grundstücke wider (180.000 € / 210.000 € / 260.000 €): Wiesbaden-Erbenheim wird gegenüber Raunheim mit dem Wert 4 klar bevorzugt. Aus jeder dieser drei Matrizen liefert `ahp_priority_vector()` aus `R/scm_functions.R` den zugehörigen Prioritätsvektor (die relativen Standortpräferenzen je Kriterium). Anstatt die Funktion dreimal einzeln aufzurufen, bündeln wir die drei Matrizen in einer **Liste** und wenden die Funktion mit `sapply()` auf jedes Listenelement an.
+The matrix `mietkosten` (rental costs) directly reflects the fixed costs of the three plots (€180,000 / €210,000 / €260,000): Wiesbaden-Erbenheim is clearly preferred over Raunheim with a value of 4. For each of these three matrices, `ahp_priority_vector()` from `R/scm_functions.R` returns the corresponding priority vector (the relative site preferences per criterion). Instead of calling the function three times individually, we bundle the three matrices in a **list** and apply the function to each list element with `sapply()`.
 
 ::: {.r-exkurs}
-**R-Exkurs: `sapply()` und `apply()`**
+**R aside: `sapply()` and `apply()`**
 
-`sapply(X, FUN)` wendet eine Funktion `FUN` auf jedes Element von `X` an und vereinfacht ("simplify") das Ergebnis, wo möglich, zu einem Vektor oder einer Matrix. Ist `X` – wie hier – eine **Liste von Matrizen** und liefert `FUN` für jedes Element einen Vektor gleicher Länge zurück, entsteht als Ergebnis eine Matrix, in der jede Spalte einem Listenelement entspricht. `sapply()` erspart damit eine manuell geschriebene Schleife, wenn dieselbe Funktion wiederholt auf mehrere Objekte angewendet werden soll.
+`sapply(X, FUN)` applies a function `FUN` to each element of `X` and simplifies the result to a vector or matrix where possible. If `X` – as here – is a **list of matrices** and `FUN` returns a vector of the same length for each element, the result is a matrix in which each column corresponds to one list element. `sapply()` thus saves writing a loop by hand when the same function is to be applied repeatedly to several objects.
 
-Eng verwandt ist `apply(X, MARGIN, FUN)`, das eine Funktion zeilenweise (`MARGIN = 1`) oder spaltenweise (`MARGIN = 2`) auf eine **einzelne** Matrix anwendet. Intern nutzt `ahp_priority_vector()` genau dieses Muster, um für jede Zeile einer Paarvergleichsmatrix das geometrische Mittel zu berechnen – eine gängige, numerisch stabile Näherung an die eigentlich exakte Eigenvektor-Methode.
+Closely related is `apply(X, MARGIN, FUN)`, which applies a function row-wise (`MARGIN = 1`) or column-wise (`MARGIN = 2`) to a **single** matrix. Internally, `ahp_priority_vector()` uses exactly this pattern to compute the geometric mean for each row of a pairwise comparison matrix – a common, numerically stable approximation of the actually exact eigenvector method.
 
 ```{r}
 #| label: ch4-ahp-sapply
 #| echo: true
 
-# Liste aller drei Kriterienmatrizen
+# List of all three criteria matrices
 kriterien_matrizen <- list(
-  Transportnaehe = transportnaehe,
-  Mietkosten     = mietkosten,
-  Fachkraefte    = fachkraefte
+  Transport      = transportnaehe,
+  Rent           = mietkosten,
+  Skilled_labour = fachkraefte
 )
 
-# sapply() wendet ahp_priority_vector() auf jede Matrix der Liste an und
-# liefert die drei Praeferenzvektoren als gemeinsame Matrix (Standorte x Kriterien) zurueck
+# sapply() applies ahp_priority_vector() to each matrix in the list and
+# returns the three preference vectors as a joint matrix (sites x criteria)
 praeferenz_matrix <- sapply(kriterien_matrizen, ahp_priority_vector)
 praeferenz_matrix
 ```
 :::
 
-Die Tabelle `praeferenz_matrix` zeigt: Raunheim dominiert klar bei der Transportnähe (ca. 54 %), Wiesbaden-Erbenheim bei den Mietkosten (ca. 57 %), Mainz-Hechtsheim sehr deutlich bei der Fachkräfteverfügbarkeit (ca. 74 %) – die drei Standorte spielen also, wie schon in der Nutzwertanalyse, jeweils eine unterschiedliche Stärke aus. Damit ist Schritt 2 des AHP (Synthese je Kriterium) abgeschlossen; es fehlt noch das Ranking der drei Kriterien selbst (Schritt 3 und 4), wofür wiederum eine Paarvergleichsmatrix – diesmal zwischen den Kriterien statt zwischen den Standorten – benötigt wird.
+The table `praeferenz_matrix` shows: Raunheim clearly dominates on transport proximity (approx. 54%), Wiesbaden-Erbenheim on rental costs (approx. 57%), and Mainz-Hechtsheim very clearly on the availability of skilled labour (approx. 74%) – so, as in the scoring model, each of the three sites plays to a different strength. This completes step 2 of the AHP (synthesis per criterion); what is still missing is the ranking of the three criteria themselves (steps 3 and 4), which again requires a pairwise comparison matrix – this time between the criteria rather than between the sites.
 
 ```{r}
 #| label: ch4-ahp-kriterien
 #| echo: true
 
-# Paarweiser Vergleich der drei Bewertungskriterien untereinander
+# Pairwise comparison of the three evaluation criteria with one another
 kriterien_vergleich <- matrix(
   c(1,   3,   2,
     1/3, 1,   1/5,
     1/2, 5,   1),
   nrow = 3, byrow = TRUE,
   dimnames = list(
-    c("Transportnaehe", "Mietkosten", "Fachkraefte"),
-    c("Transportnaehe", "Mietkosten", "Fachkraefte")
+    c("Transport", "Rent", "Skilled_labour"),
+    c("Transport", "Rent", "Skilled_labour")
   )
 )
 
@@ -309,15 +340,15 @@ kriterien_gewichte <- ahp_priority_vector(kriterien_vergleich)
 kriterien_gewichte
 ```
 
-Transportnähe erhält mit rund `r sprintf("%.0f", kriterien_gewichte["Transportnaehe"]*100)` % das mit Abstand höchste Gewicht, gefolgt von Fachkräfteverfügbarkeit (ca. `r sprintf("%.0f", kriterien_gewichte["Fachkraefte"]*100)` %); Mietkosten spielen mit rund `r sprintf("%.0f", kriterien_gewichte["Mietkosten"]*100)` % eine vergleichsweise untergeordnete Rolle. Bevor wir diese Gewichte weiterverwenden, prüfen wir, ob die zugrundeliegende Paarvergleichsmatrix überhaupt **konsistent** genug ist, um belastbare Schlüsse zuzulassen. Konsistenz bedeutet dabei **Transitivität der Intensitäten**: Wer Transportnähe dreimal so wichtig findet wie Mietkosten ($a_{TM}=3$) und Fachkräfte fünfmal so wichtig wie Mietkosten ($a_{FM}=5$), müsste Transportnähe folgerichtig nur $3/5 = 0{,}6$-mal so wichtig finden wie Fachkräfte. Tatsächlich wurde aber $a_{TF}=2$ angegeben – Transportnähe also doppelt so wichtig wie Fachkräfte. Eine perfekt konsistente Matrix erfüllt $a_{ik} = a_{ij}\cdot a_{jk}$ für alle $i,j,k$; je stärker diese Bedingung verletzt ist, desto größer wird der größte Eigenwert der Matrix gegenüber $n$. Formal wird dazu der **Konsistenzindex**
+With around `r sprintf("%.0f", kriterien_gewichte["Transport"]*100)`%, transport proximity receives by far the highest weight, followed by availability of skilled labour (approx. `r sprintf("%.0f", kriterien_gewichte["Skilled_labour"]*100)`%); with around `r sprintf("%.0f", kriterien_gewichte["Rent"]*100)`%, rental costs play a comparatively minor role. Before we use these weights further, we check whether the underlying pairwise comparison matrix is **consistent** enough at all to allow robust conclusions. Consistency here means **transitivity of intensities**: anyone who considers transport proximity three times as important as rental costs ($a_{TM}=3$) and skilled labour five times as important as rental costs ($a_{FM}=5$) should logically consider transport proximity only $3/5 = 0.6$ times as important as skilled labour. In fact, however, $a_{TF}=2$ was stated – i.e. transport proximity twice as important as skilled labour. A perfectly consistent matrix satisfies $a_{ik} = a_{ij}\cdot a_{jk}$ for all $i,j,k$; the more strongly this condition is violated, the larger the largest eigenvalue of the matrix becomes relative to $n$. Formally, the **consistency index**
 $$
 CI = \frac{\bar{\lambda} - n}{n - 1}
 $$
-berechnet, wobei $n$ die Anzahl der Kriterien und $\bar{\lambda}$ der (approximierte) größte Eigenwert der Matrix ist, den man erhält, indem man das Produkt aus Matrix und Prioritätsvektor komponentenweise durch den Prioritätsvektor teilt und den Durchschnitt bildet. Bezogen auf einen zufällig erzeugten **Random Index** $RI$ (tabelliert nach Saaty in Abhängigkeit von $n$) ergibt sich die **Konsistenzrate**
+is computed for this purpose, where $n$ is the number of criteria and $\bar{\lambda}$ is the (approximated) largest eigenvalue of the matrix, obtained by dividing the product of the matrix and the priority vector component-wise by the priority vector and taking the average. Relative to a randomly generated **random index** $RI$ (tabulated by Saaty as a function of $n$), this yields the **consistency ratio**
 $$
 CR = \frac{CI}{RI}.
 $$
-Als Faustregel gilt eine Matrix bei $CR < 0{,}10$ als hinreichend konsistent; bei größeren Werten sollten die paarweisen Vergleiche überarbeitet werden.
+As a rule of thumb, a matrix is considered sufficiently consistent if $CR < 0.10$; for larger values, the pairwise comparisons should be revised.
 
 ```{r}
 #| label: ch4-ahp-konsistenz
@@ -327,14 +358,15 @@ konsistenz <- ahp_consistency(kriterien_vergleich, kriterien_gewichte)
 konsistenz
 ```
 
-Mit $CI \approx `r sprintf("%.3f", konsistenz$CI)`$ und $CR \approx `r sprintf("%.2f", konsistenz$CR)`$ liegt die Kriterienmatrix **über** der 10-%-Schwelle. Die oben beschriebene Intransitivität zwischen Transportnähe, Fachkräften und Mietkosten ist also zu groß, als dass man die Gewichte ungeprüft übernehmen sollte. In der Praxis würde man die Entscheider bitten, ihre Vergleiche zu überdenken – etwa den Vergleich Transportnähe gegenüber Fachkräften von 2 auf 1/2 zu korrigieren, was die Matrix nahezu konsistent machen würde. Für das Lehrbeispiel rechnen wir mit den Originalurteilen der Vorlesung weiter, behalten diesen Vorbehalt aber im Hinterkopf: Er zeigt gerade den Nutzen des AHP, der Inkonsistenzen – anders als die Nutzwertanalyse – überhaupt sichtbar macht.
+With $CI \approx `r sprintf("%.3f", konsistenz$CI)`$ and $CR \approx `r sprintf("%.2f", konsistenz$CR)`$, the criteria matrix lies **above** the 10% threshold. The intransitivity between transport proximity, skilled labour and rental costs described above is therefore too large for the weights to be adopted unchecked. In practice, one would ask the decision-makers to reconsider their comparisons – for instance, correcting the comparison of transport proximity versus skilled labour from 2 to 1/2, which would make the matrix almost consistent. For the teaching example, we continue calculating with the original judgements from the lecture but keep this caveat in mind: it shows precisely the benefit of the AHP, which – unlike the scoring model – makes inconsistencies visible in the first place.
 
 ::: {.callout-note}
-## Hinweis zu den Vorlesungsfolien
-Auf den Folien wird der Konsistenzwert $CI = (\bar{P}-n)/(n-1) \approx 0{,}08$ berechnet. Dieser Wert ist der **Konsistenzindex** $CI$. Für das Urteil "konsistent/inkonsistent" muss er noch durch den Random Index $RI = 0{,}58$ (für $n=3$) geteilt werden; erst die resultierende Konsistenzrate $CR \approx 0{,}14$ wird mit der 10-%-Schwelle verglichen.
+
+## Note on the lecture slides
+On the slides, the consistency value $CI = (\bar{P}-n)/(n-1) \approx 0.08$ is calculated. This value is the **consistency index** $CI$. For the verdict “consistent/inconsistent”, it still has to be divided by the random index $RI = 0.58$ (for $n=3$); only the resulting consistency ratio $CR \approx 0.14$ is compared with the 10% threshold.
 :::
 
-Im letzten Schritt werden die Standort-Kriterien-Matrix und der Kriteriengewichtsvektor mit dem Matrixprodukt `%*%` zu einem **Gesamt-Score je Standort** verrechnet – genau die Operation, die im R-Exkurs zu Matrizen angekündigt wurde:
+In the last step, the site–criteria matrix and the criteria weight vector are combined into an **overall score per site** using the matrix product `%*%` – exactly the operation announced in the R aside on matrices:
 
 ```{r}
 #| label: ch4-ahp-scores
@@ -344,74 +376,74 @@ scores <- praeferenz_matrix %*% kriterien_gewichte
 scores
 ```
 
-**Mainz-Hechtsheim** erzielt mit einem Score von rund `r sprintf("%.3f", scores["MZ-Hech", 1])` den höchsten Wert, vor Raunheim (`r sprintf("%.3f", scores["Raunheim", 1])`) und Wiesbaden-Erbenheim (`r sprintf("%.3f", scores["WI-Erb", 1])`). Das Ergebnis ist auf den ersten Blick überraschend, denn das mit Abstand höchste Kriteriengewicht hat die Transportnähe, bei der Raunheim klar führt. Ausschlaggebend ist die **Stärke** der Präferenz bei den Fachkräften: Mainz-Hechtsheim wird dort gegenüber Wiesbaden-Erbenheim als "stark bevorzugt" (7) eingestuft und erhält rund 74 % des Kriteriengewichts – bei einem Kriteriengewicht der Fachkräfte von rund 38 % reicht das, um den Rückstand bei der Transportnähe mehr als auszugleichen. Der Vorsprung vor Raunheim ist allerdings knapp, und angesichts der festgestellten Inkonsistenz der Kriterienmatrix wäre eine Sensitivitätsanalyse der Gewichte (siehe Kontrollfragen) vor einer endgültigen Empfehlung angebracht.
+**Mainz-Hechtsheim** achieves the highest value with a score of around `r sprintf("%.3f", scores["MZ-Hech", 1])`, ahead of Raunheim (`r sprintf("%.3f", scores["Raunheim", 1])`) and Wiesbaden-Erbenheim (`r sprintf("%.3f", scores["WI-Erb", 1])`). At first glance, the result is surprising, since by far the highest criterion weight belongs to transport proximity, where Raunheim clearly leads. The decisive factor is the **strength** of the preference on skilled labour: there, Mainz-Hechtsheim is rated as “strongly preferred” (7) over Wiesbaden-Erbenheim and receives around 74% of the criterion weight – with a criterion weight for skilled labour of around 38%, this is enough to more than make up for the deficit on transport proximity. The lead over Raunheim is narrow, however, and in view of the inconsistency found in the criteria matrix, a sensitivity analysis of the weights (see review questions) would be advisable before a final recommendation.
 
-Im Vergleich zur Nutzwertanalyse hat der AHP zwei wesentliche Vorzüge: Erstens erhöht das paarweise Vergleichen die Transparenz, weil Entscheider jeweils nur zwei Elemente statt eines vollständigen Rankings gegeneinander abwägen müssen. Zweitens bietet der AHP der Voreingenommenheit einzelner Bewertungen weniger Angriffsfläche als die NWA, weil sich irrationale bzw. widersprüchliche Urteile über den Konsistenzindex explizit aufdecken lassen – ein Diagnosewerkzeug, das der Nutzwertanalyse fehlt und das im Fallbeispiel tatsächlich anschlägt. Ob sich die qualitative Empfehlung zugunsten von Mainz-Hechtsheim auch bei einer rein quantitativen Kostenbetrachtung bestätigt, ist an dieser Stelle bewusst offen – wir kommen am Ende dieses Kapitels und dann noch einmal ausführlich in Kapitel [-@sec-standort-2] darauf zurück.
+Compared with the scoring model, the AHP has two major advantages: first, pairwise comparison increases transparency, because decision-makers only have to weigh two elements against each other at a time instead of a complete ranking. Second, the AHP offers less scope for bias in individual assessments than the scoring model, because irrational or contradictory judgements can be explicitly uncovered via the consistency index – a diagnostic tool that the scoring model lacks and that actually triggers in the case example. Whether the qualitative recommendation in favour of Mainz-Hechtsheim is also confirmed by a purely quantitative cost analysis is deliberately left open at this point – we will return to it at the end of this chapter and then again in detail in Chapter [-@sec-standort-2].
 
 ::: {.vertiefung}
-**Theorie-Vertiefung: Warum der Eigenvektor? – Die Rechenwege des AHP**
+**In depth (theory): Why the eigenvector? – Computational approaches of the AHP**
 
-Die Idee des AHP [@saaty1980analytic] lässt sich am besten vom Idealfall her verstehen. Angenommen, die "wahren" Gewichte der Alternativen seien $w_1,\dots,w_n$ und der Entscheider urteile fehlerfrei. Dann gäbe er als Paarvergleich genau die Verhältnisse $a_{ij} = w_i/w_j$ an. Multipliziert man eine solche Matrix mit dem Gewichtsvektor, erhält man
+The idea of the AHP [@saaty1980analytic] is best understood starting from the ideal case. Suppose the “true” weights of the alternatives are $w_1,\dots,w_n$ and the decision-maker judges without error. Then, as pairwise comparisons, they would state exactly the ratios $a_{ij} = w_i/w_j$. Multiplying such a matrix by the weight vector gives
 $$
 (A\,w)_i = \sum_{j=1}^n \frac{w_i}{w_j}\, w_j = n\, w_i \qquad\Longleftrightarrow\qquad A\,w = n\,w .
 $$
-Der Gewichtsvektor ist also ein **Eigenvektor** der Paarvergleichsmatrix zum Eigenwert $n$. Weil die Matrix in diesem Idealfall den Rang 1 hat, sind alle übrigen Eigenwerte null, und $n$ ist der größte Eigenwert $\lambda_{\max}$. Reale Urteile sind nicht perfekt konsistent; dann ist $\lambda_{\max} > n$, und Saaty schlägt vor, den zum größten Eigenwert gehörenden Eigenvektor als "bestmöglichen" Gewichtsvektor zu verwenden. Die Abweichung $\lambda_{\max} - n$ misst zugleich, wie stark die Urteile vom konsistenten Idealfall abweichen – daraus leitet sich der Konsistenzindex $CI = (\lambda_{\max}-n)/(n-1)$ ab. Der Random Index $RI$ ist der durchschnittliche $CI$-Wert zufällig ausgefüllter reziproker Matrizen gleicher Größe; die Konsistenzrate $CR = CI/RI$ vergleicht die beobachtete Inkonsistenz also mit der eines "würfelnden" Entscheiders.
+The weight vector is therefore an **eigenvector** of the pairwise comparison matrix for the eigenvalue $n$. Because the matrix has rank 1 in this ideal case, all other eigenvalues are zero, and $n$ is the largest eigenvalue $\lambda_{\max}$. Real judgements are not perfectly consistent; then $\lambda_{\max} > n$, and Saaty proposes using the eigenvector belonging to the largest eigenvalue as the “best possible” weight vector. The deviation $\lambda_{\max} - n$ at the same time measures how strongly the judgements deviate from the consistent ideal case – from this, the consistency index $CI = (\lambda_{\max}-n)/(n-1)$ is derived. The random index $RI$ is the average $CI$ value of randomly filled reciprocal matrices of the same size; the consistency ratio $CR = CI/RI$ thus compares the observed inconsistency with that of a decision-maker “rolling dice”.
 
-In der Praxis wird der Eigenvektor häufig **approximiert**. Zwei Verfahren sind verbreitet:
+In practice, the eigenvector is often **approximated**. Two methods are common:
 
-1. **Spaltennormierung und Zeilenmittel** (Rechenweg der Vorlesungsfolien): Jede Spalte wird durch ihre Spaltensumme geteilt, anschließend wird über jede Zeile gemittelt. Im konsistenten Fall ist jede normierte Spalte bereits exakt der Gewichtsvektor, das Mitteln gleicht bei Inkonsistenz die Abweichungen aus.
-2. **Geometrisches Zeilenmittel** (verwendet in `ahp_priority_vector()`): Für jede Zeile wird $\left(\prod_j a_{ij}\right)^{1/n}$ gebildet und anschließend normiert. Auch dieses Verfahren liefert im konsistenten Fall exakt $w$ und ist zudem invariant gegenüber der Transposition (Kehrwertbildung) der Urteile.
+1. **Column normalisation and row mean** (the approach on the lecture slides): each column is divided by its column sum, and the average is then taken across each row. In the consistent case, each normalised column is already exactly the weight vector; in the case of inconsistency, averaging evens out the deviations.
+2. **Geometric row mean** (used in `ahp_priority_vector()`): for each row, $\left(\prod_j a_{ij}\right)^{1/n}$ is formed and then normalised. This method also yields exactly $w$ in the consistent case and is moreover invariant to transposition (taking reciprocals) of the judgements.
 
-Bei nahezu konsistenten Matrizen liefern beide Verfahren und der exakte Eigenvektor praktisch identische Werte; bei stärkeren Inkonsistenzen weichen sie in der dritten Nachkommastelle voneinander ab. Der folgende Code rechnet den Weg der Folien für die Kriterienmatrix nach und vergleicht ihn mit dem geometrischen Mittel und dem exakten Eigenvektor, den `eigen()` liefert:
+For nearly consistent matrices, both methods and the exact eigenvector yield practically identical values; with stronger inconsistencies, they differ in the third decimal place. The following code reproduces the approach on the slides for the criteria matrix and compares it with the geometric mean and the exact eigenvector returned by `eigen()`:
 
 ```{r}
 #| label: ch4-ahp-rechenwege
 
-# 1) Spaltennormierung und Zeilenmittel (Rechenweg der Folien)
+# 1) Column normalisation and row mean (approach on the slides)
 spalten_normiert <- sweep(kriterien_vergleich, 2, colSums(kriterien_vergleich), "/")
 w_spalten <- rowMeans(spalten_normiert)
 
-# 2) Geometrisches Zeilenmittel (ahp_priority_vector)
+# 2) Geometric row mean (ahp_priority_vector)
 w_geo <- ahp_priority_vector(kriterien_vergleich)
 
-# 3) Exakter Eigenvektor zum groessten Eigenwert
+# 3) Exact eigenvector for the largest eigenvalue
 ev    <- eigen(kriterien_vergleich)
 w_eig <- Re(ev$vectors[, 1]) / sum(Re(ev$vectors[, 1]))
 
-round(cbind(Spaltennormierung = w_spalten, Geometrisch = w_geo, Eigenvektor = w_eig), 3)
-Re(ev$values[1])   # groesster Eigenwert lambda_max (> n = 3 wegen Inkonsistenz)
+round(cbind(`Column normalisation` = w_spalten, `Geometric mean` = w_geo, Eigenvector = w_eig), 3)
+Re(ev$values[1])   # largest eigenvalue lambda_max (> n = 3 due to inconsistency)
 ```
 :::
 
-## Kontinuierliche Standortplanung: das Steiner-Weber-Modell
+## Continuous facility location planning: the Steiner–Weber model
 
-Sowohl die Nutzwertanalyse als auch der AHP setzen voraus, dass bereits eine **überschaubare Menge diskreter Alternativen** vorliegt, zwischen denen zu wählen ist – bei SushiFresh die drei konkret verfügbaren Gewerbegrundstücke. Häufig stellt sich die Standortfrage jedoch anders: Gesucht ist nicht die beste unter mehreren vorgegebenen Adressen, sondern **derjenige Punkt in der Ebene**, der die Transportkosten zu einer Menge von Kundenstandorten minimiert – bei SushiFresh also derjenige Punkt im Rhein-Main-Gebiet, der die Gesamtdistanz zu den sechs Filialen minimiert, unabhängig davon, ob dort überhaupt ein Grundstück verfügbar ist. Diese Fragestellung behandelt die **kontinuierliche Standortplanung**, deren klassisches Modell auf Alfred Weber zurückgeht und in der Literatur meist als **Steiner-Weber-Modell** bezeichnet wird [@cooper1968locational; @thonemann2023operations].
+Both the scoring model and the AHP presuppose that a **manageable set of discrete alternatives** is already available to choose from – at SushiFresh, the three commercial plots actually available. Often, however, the location question arises differently: what is sought is not the best of several given addresses, but **the point in the plane** that minimises transport costs to a set of customer locations – at SushiFresh, the point in the Rhine-Main area that minimises the total distance to the six stores, regardless of whether a plot is available there at all. This question is addressed by **continuous facility location planning**, whose classic model goes back to Alfred Weber and is usually referred to in the literature as the **Steiner–Weber model** [@cooper1968locational; @thonemann2023operations].
 
-Das Modell trifft vier vereinfachende Annahmen: Es gibt eine homogene Ebene (das Absatzgebiet), in der endlich viele Kundenstandorte liegen; für jeden Kundenstandort ist eine Nachfragemenge gegeben, die vollständig zu bedienen ist; die Transportkosten hängen linear von Entfernung und transportierter Menge ab; und die zeitliche Dimension wird ausgeblendet. Unter diesen Annahmen lautet die Zielfunktion
+The model makes four simplifying assumptions: there is a homogeneous plane (the sales area) containing a finite number of customer locations; for each customer location, a demand quantity is given that must be served in full; transport costs depend linearly on distance and quantity transported; and the time dimension is disregarded. Under these assumptions, the objective function is
 $$
 \min_{(x,y)}\; Z(x,y) = \sum_{i=1}^{n} a_i \cdot d\big((x,y),(u_i,v_i)\big),
 $$
-wobei $(x,y)$ die gesuchten Koordinaten des neuen Standorts sind, $(u_i, v_i)$ die Koordinaten von Kundenstandort $i$, $a_i$ dessen Nachfrage (bei SushiFresh: Boxen pro Tag) und $d(\cdot)$ ein noch zu wählendes **Distanzmaß**.
+where $(x,y)$ are the sought coordinates of the new site, $(u_i, v_i)$ the coordinates of customer location $i$, $a_i$ its demand (at SushiFresh: boxes per day) and $d(\cdot)$ a **distance measure** still to be chosen.
 
-Die Wahl von $d(\cdot)$ ist keineswegs nebensächlich, sondern bestimmt sowohl die Rechenmethode als auch das Ergebnis. Für Standorte innerhalb eines Landes oder einer Region, in der Transportwege näherungsweise "als Krähe fliegt" verlaufen, eignet sich die **euklidische Distanz**
+The choice of $d(\cdot)$ is by no means secondary; it determines both the computational method and the result. For sites within a country or region in which transport routes run approximately “as the crow flies”, the **Euclidean distance** is suitable:
 $$
 d^{\text{eukl}}\big((x,y),(u_i,v_i)\big) = \sqrt{(x-u_i)^2 + (y-v_i)^2}.
 $$
-In Innenstädten mit rechtwinkligem Straßenraster oder bei innerbetrieblichen Transporten entlang orthogonaler Gänge ist die **Manhattan-Distanz** (auch Rechtwinkel- oder $L_1$-Distanz) oft realistischer:
+In city centres with a rectangular street grid or for in-plant transport along orthogonal aisles, the **Manhattan distance** (also rectilinear or $L_1$ distance) is often more realistic:
 $$
 d^{\text{man}}\big((x,y),(u_i,v_i)\big) = |x-u_i| + |y-v_i|.
 $$
-Für die tatsächliche Netzplanung wiederum sind **Straßendistanzen** – die kürzesten Wege in einem realen Verkehrsnetz – am genauesten, aber auch am aufwendigsten zu berechnen, da sie ein digitales Straßennetz sowie einen Routing-Dienst voraussetzen. Der folgende Code zeigt beispielhaft, wie sich diese drei Distanzmaße zwischen dem Kandidatenstandort Wiesbaden-Erbenheim und der Filiale Frankfurt mit den Paketen `sf`, `osrm` und `leaflet` berechnen und auf einer interaktiven Karte vergleichen lassen. Da die Straßendistanz einen Online-Routing-Dienst (OSRM) sowie den Abruf von Kartenkacheln voraussetzt, ist der Chunk mit `eval: false` versehen und wird beim Rendern nicht ausgeführt.
+For actual network planning, in turn, **road distances** – the shortest paths in a real transport network – are the most accurate, but also the most laborious to compute, as they require a digital road network and a routing service. The following code shows by way of example how these three distance measures between the candidate site Wiesbaden-Erbenheim and the Frankfurt store can be computed with the packages `sf`, `osrm` and `leaflet` and compared on an interactive map. Since the road distance requires an online routing service (OSRM) and the retrieval of map tiles, the chunk is marked `eval: false` and is not executed during rendering.
 
 ```{r}
 #| label: ch4-distanzen-karte
 #| echo: true
 #| eval: false
 
-# Hinweis: Dieser Chunk benoetigt Internetzugang (OpenStreetMap-Kartenkacheln
-# und den OSRM-Routing-Dienst fuer die Strassendistanz) und wird daher beim
-# Rendern des Buchs nicht ausgefuehrt (eval: false) - er dient nur der
-# Illustration, wie man die drei Distanzmasse in der Praxis vergleicht.
+# Note: this chunk requires internet access (OpenStreetMap map tiles
+# and the OSRM routing service for the road distance) and is therefore not
+# executed when rendering the book (eval: false) - it only serves to
+# illustrate how the three distance measures are compared in practice.
 
 library(sf)
 library(osrm)
@@ -422,10 +454,10 @@ standort_wi <- st_as_sf(data.frame(id = "Wiesbaden-Erbenheim", lon = 8.2999, lat
 filiale_ffm <- st_as_sf(data.frame(id = "Frankfurt", lon = 8.6821, lat = 50.1109),
                          coords = c("lon", "lat"), crs = 4326)
 
-# Kuerzester Weg im realen Strassennetz ueber den OSRM-Dienst
+# Shortest path in the real road network via the OSRM service
 route <- osrmRoute(src = standort_wi, dst = filiale_ffm)
 
-# Interaktive Karte: Strassenroute in Rot, Standort/Filiale als Marker
+# Interactive map: road route in red, site/store as markers
 leaflet() |>
   addProviderTiles(providers$OpenStreetMap.Mapnik) |>
   addPolylines(data = route, color = "red") |>
@@ -433,9 +465,9 @@ leaflet() |>
   addCircleMarkers(data = filiale_ffm, color = "purple")
 ```
 
-In der Praxis liegt die Straßendistanz zwischen zwei Punkten fast immer über der euklidischen und meist auch über der Manhattan-Distanz, da reale Straßennetze weder geradlinig noch streng orthogonal verlaufen. Für die folgenden Herleitungen beschränken wir uns – wie es die Literatur zum Steiner-Weber-Modell überwiegend tut – auf euklidische und Manhattan-Distanzen, weil sich für beide geschlossene bzw. effizient iterative Lösungsverfahren angeben lassen [@daskin2013network; @drezner2002facility].
+In practice, the road distance between two points is almost always greater than the Euclidean and usually also greater than the Manhattan distance, since real road networks are neither straight nor strictly orthogonal. For the following derivations, we restrict ourselves – as the literature on the Steiner–Weber model predominantly does – to Euclidean and Manhattan distances, because closed-form or efficient iterative solution methods can be given for both [@daskin2013network; @drezner2002facility].
 
-Für die numerischen Beispiele dieses Abschnitts verwenden wir durchgängig den bereits eingeführten SushiFresh-Datensatz mit den sechs Filialen. Da Center of Gravity und Weiszfeld-Algorithmus ursprünglich für **ebene** (kartesische) Koordinaten hergeleitet sind, behandeln wir Längen- und Breitengrad hier zunächst näherungsweise als planare $x$-/$y$-Koordinaten ($x = $ Längengrad, $y = $ Breitengrad) – eine bewusste didaktische Vereinfachung, deren Grenzen wir am Ende dieses Abschnitts mit der Haversine-Formel explizit sichtbar machen.
+For the numerical examples in this section, we consistently use the SushiFresh data set with the six stores introduced above. Since the centre of gravity and the Weiszfeld algorithm were originally derived for **planar** (Cartesian) coordinates, we initially treat longitude and latitude here approximately as planar $x$/$y$ coordinates ($x = $ longitude, $y = $ latitude) – a deliberate didactic simplification whose limits we make explicitly visible at the end of this section using the haversine formula.
 
 ```{r}
 #| label: ch4-filialen-plot
@@ -444,59 +476,59 @@ Für die numerischen Beispiele dieses Abschnitts verwenden wir durchgängig den 
 #| fig-height: 4.5
 #| fig-align: center
 
-# Blasendiagramm: Position = Filiale, Blasengroesse = Nachfrage
+# Bubble chart: position = store, bubble size = demand
 ggplot(filialen, aes(x = lon, y = lat)) +
   geom_point(aes(size = mu), color = "#c97a2b", alpha = 0.85) +
   geom_text(aes(label = Filiale), vjust = -1.2, size = 3.2) +
-  labs(x = "Laengengrad", y = "Breitengrad", size = "Nachfrage a (Boxen/Tag)") +
+  labs(x = "Longitude", y = "Latitude", size = "Demand a (boxes/day)") +
   theme_minimal(base_size = 12)
 ```
 
-### Center of Gravity: die quadratische Näherung
+### Centre of gravity: the quadratic approximation
 
-Der einfachste Zugang zum Steiner-Weber-Problem ergibt sich, wenn man in der Zielfunktion nicht die (nicht differenzierbare) euklidische Distanz selbst, sondern ihr **Quadrat** minimiert:
+The simplest approach to the Steiner–Weber problem is obtained if, in the objective function, one minimises not the (non-differentiable) Euclidean distance itself but its **square**:
 $$
 \min_{(x,y)}\; \tilde{Z}(x,y) = \sum_{i=1}^{n} a_i \left[(x-u_i)^2 + (y-v_i)^2\right].
 $$
-Diese Zielfunktion ist in $x$ und $y$ separierbar und überall differenzierbar, sodass sich das Minimum direkt über die notwendigen Optimalitätsbedingungen bestimmen lässt. Die partielle Ableitung nach $x$ lautet
+This objective function is separable in $x$ and $y$ and differentiable everywhere, so the minimum can be determined directly via the necessary optimality conditions. The partial derivative with respect to $x$ is
 $$
 \frac{\partial \tilde{Z}}{\partial x} = \sum_{i=1}^{n} 2\,a_i\,(x - u_i) \stackrel{!}{=} 0
 \quad\Longleftrightarrow\quad
 x \sum_{i=1}^{n} a_i = \sum_{i=1}^{n} a_i\, u_i,
 $$
-und analog für $y$. Aufgelöst nach $x$ bzw. $y$ ergibt sich das **Center of Gravity (CoG)**:
+and analogously for $y$. Solving for $x$ and $y$ yields the **centre of gravity (CoG)**:
 
 ::: {.definition}
-**Definition: Center of Gravity**
+**Definition: Centre of gravity**
 $$
 x^{CoG} = \frac{\displaystyle\sum_{i=1}^{n} a_i\, u_i}{\displaystyle\sum_{i=1}^{n} a_i},
 \qquad
 y^{CoG} = \frac{\displaystyle\sum_{i=1}^{n} a_i\, v_i}{\displaystyle\sum_{i=1}^{n} a_i}.
 $$
-Das Center of Gravity ist der **nachfragegewichtete Schwerpunkt** aller Kundenstandorte und minimiert die Summe der gewichteten *quadrierten* euklidischen Distanzen.
+The centre of gravity is the **demand-weighted centroid** of all customer locations and minimises the sum of the weighted *squared* Euclidean distances.
 :::
 
-Da diese Herleitung im Kern nur aus drei Rechenschritten besteht – Gesamtnachfrage bilden, gewichtete Koordinatensummen bilden, dividieren –, lässt sie sich unmittelbar und ohne Hilfsmittel in R nachvollziehen:
+Since this derivation essentially consists of only three computational steps – calculating total demand, forming weighted coordinate sums, dividing – it can be reproduced in R directly and without any aids:
 
 ```{r}
 #| label: ch4-cog-manual
 #| echo: true
 
-# Schritt 1: Gesamtnachfrage ueber alle Filialen aufsummieren
+# Step 1: sum up total demand across all stores
 gesamtnachfrage <- sum(filialen$mu)
 
-# Schritt 2: nachfragegewichtete Summe von Laengen- und Breitengrad bilden
+# Step 2: form the demand-weighted sum of longitude and latitude
 gewichtete_summe_lon <- sum(filialen$mu * filialen$lon)
 gewichtete_summe_lat <- sum(filialen$mu * filialen$lat)
 
-# Schritt 3: Division durch die Gesamtnachfrage liefert den Schwerpunkt
+# Step 3: dividing by total demand yields the centroid
 cog_lon <- gewichtete_summe_lon / gesamtnachfrage
 cog_lat <- gewichtete_summe_lat / gesamtnachfrage
 
 c(lon = cog_lon, lat = cog_lat)
 ```
 
-Zur Kontrolle liefert die fertige Funktion `center_of_gravity()` aus `R/scm_functions.R` – die dieselbe Rechnung kapselt, aber ein `data.frame` mit Spalten `x`, `y`, `demand` erwartet – dasselbe Ergebnis:
+As a check, the ready-made function `center_of_gravity()` from `R/scm_functions.R` – which encapsulates the same calculation but expects a `data.frame` with columns `x`, `y`, `demand` – returns the same result:
 
 ```{r}
 #| label: ch4-cog-check
@@ -505,67 +537,67 @@ Zur Kontrolle liefert die fertige Funktion `center_of_gravity()` aus `R/scm_func
 center_of_gravity(data.frame(x = filialen$lon, y = filialen$lat, demand = filialen$mu))
 ```
 
-Das Center of Gravity liegt bei $(x^{CoG}, y^{CoG}) \approx (`r sprintf("%.4f", cog_lon)`; `r sprintf("%.4f", cog_lat)`)$ – geografisch ungefähr zwischen Frankfurt und Rüsselsheim, deutlich östlich der drei Kandidatenstandorte. Es ist attraktiv, weil es sich **ohne Iteration** in geschlossener Form berechnen lässt. Es löst aber, genau genommen, nicht das ursprüngliche Steiner-Weber-Problem, sondern nur dessen quadrierte Variante – und die beiden Optima müssen nicht identisch sein. Insbesondere reagiert das CoG empfindlicher auf weit entfernte Ausreißer-Kunden, weil quadrierte Distanzen große Abstände überproportional stark gewichten. Für die *tatsächliche*, nicht quadrierte Zielfunktion braucht es ein anderes Verfahren.
+The centre of gravity lies at $(x^{CoG}, y^{CoG}) \approx (`r sprintf("%.4f", cog_lon)`; `r sprintf("%.4f", cog_lat)`)$ – geographically roughly between Frankfurt and Rüsselsheim, well to the east of the three candidate sites. It is attractive because it can be computed in closed form **without iteration**. Strictly speaking, however, it does not solve the original Steiner–Weber problem, only its squared variant – and the two optima need not be identical. In particular, the CoG is more sensitive to distant outlier customers, because squared distances weight large distances disproportionately. For the *actual*, non-squared objective function, a different method is needed.
 
-### Der Weiszfeld-Algorithmus: iterative Lösung des echten Problems
+### The Weiszfeld algorithm: iterative solution of the true problem
 
-Um das ursprüngliche Problem mit linearen (nicht quadrierten) euklidischen Distanzen zu lösen, bilden wir erneut die notwendige Optimalitätsbedingung, diesmal für
+To solve the original problem with linear (non-squared) Euclidean distances, we again form the necessary optimality condition, this time for
 $$
 Z(x,y) = \sum_{i=1}^{n} a_i \sqrt{(x-u_i)^2+(y-v_i)^2}.
 $$
-Die partielle Ableitung nach $x$ ist
+The partial derivative with respect to $x$ is
 $$
 \frac{\partial Z}{\partial x} = \sum_{i=1}^{n} a_i\, \frac{x - u_i}{d_i(x,y)} \stackrel{!}{=} 0,
 \qquad d_i(x,y) = \sqrt{(x-u_i)^2+(y-v_i)^2}.
 $$
-Anders als bei der quadrierten Zielfunktion taucht $x$ hier auch im Nenner (über $d_i$) auf, sodass sich die Gleichung **nicht** direkt nach $x$ auflösen lässt. Der Ausweg besteht darin, die $d_i$ in einem gegebenen Iterationsschritt als *bekannt* (nämlich aus der vorherigen Iteration) zu behandeln und die Gleichung dann nach $x$ aufzulösen. Mit der Abkürzung
+Unlike with the squared objective function, $x$ here also appears in the denominator (via $d_i$), so the equation **cannot** be solved directly for $x$. The way out is to treat the $d_i$ in a given iteration step as *known* (namely from the previous iteration) and then solve the equation for $x$. With the abbreviation
 $$
 g_i(x,y) = \frac{a_i}{d_i(x,y)}
 $$
-ergibt sich die **Update-Regel des Weiszfeld-Algorithmus**:
+this yields the **update rule of the Weiszfeld algorithm**:
 $$
 x_{t+1} = \frac{\displaystyle\sum_{i=1}^n u_i\, g_i(x_t,y_t)}{\displaystyle\sum_{i=1}^n g_i(x_t,y_t)},
 \qquad
 y_{t+1} = \frac{\displaystyle\sum_{i=1}^n v_i\, g_i(x_t,y_t)}{\displaystyle\sum_{i=1}^n g_i(x_t,y_t)}.
 $$
-Bemerkenswert ist, dass diese Update-Regel formal wie ein Center-of-Gravity-Update aussieht – nur dass anstelle der festen Nachfragegewichte $a_i$ die *iterationsabhängigen* Gewichte $g_i(x_t,y_t)$ verwendet werden. Kunden, die **nahe** am aktuellen Standort liegen und eine **hohe** Nachfrage haben, erhalten dabei ein hohes Gewicht $g_i$ und ziehen den nächsten Standort stärker in ihre Richtung. Man beginnt sinnvollerweise mit dem Center of Gravity als Startlösung $(x_0,y_0)$ und wiederholt die Update-Regel so lange, bis sich die Position von einer Iteration zur nächsten kaum noch ändert.
+It is remarkable that this update rule formally looks like a centre-of-gravity update – except that the *iteration-dependent* weights $g_i(x_t,y_t)$ are used instead of the fixed demand weights $a_i$. Customers who are **close** to the current site and have **high** demand receive a high weight $g_i$ and pull the next site more strongly in their direction. It makes sense to start with the centre of gravity as the initial solution $(x_0,y_0)$ and to repeat the update rule until the position hardly changes from one iteration to the next.
 
-Um diesen iterativen Ablauf in R zu programmieren, benötigen wir eine Kontrollstruktur, die einen Rechenblock mehrfach wiederholt: die **Schleife**.
+To programme this iterative procedure in R, we need a control structure that repeats a block of calculations several times: the **loop**.
 
 ::: {.r-exkurs}
-**R-Exkurs: `for`- und `while`-Schleifen**
+**R aside: `for` and `while` loops**
 
-Eine `for`-Schleife wiederholt einen Codeblock für jedes Element eines Vektors – sie eignet sich, wenn die **Anzahl der Durchläufe von vornherein bekannt** ist (z. B. "einmal je Kandidatenstandort"):
+A `for` loop repeats a code block for each element of a vector – it is suitable when the **number of iterations is known in advance** (e.g. “once per candidate site”):
 
 ```{r}
 #| label: ch4-loop-exkurs
 #| echo: true
 
-# for-Schleife: fester Durchlauf ueber eine bekannte Anzahl von Werten -
-# hier ueber die drei Kandidatenstandorte
+# for loop: fixed pass over a known number of values -
+# here over the three candidate sites
 for (i in seq_len(nrow(standorte))) {
-  cat("Standort:", standorte$Standort[i],
-      "- Fixkosten:", standorte$Fixkosten[i], "EUR/Jahr\n")
+  cat("Site:", standorte$Standort[i],
+      "- Fixed costs:", standorte$Fixkosten[i], "EUR/year\n")
 }
 
-# while-Schleife: Wiederholung, solange eine Bedingung erfuellt ist -
-# die Anzahl der Durchlaeufe steht vorab nicht fest
+# while loop: repetition as long as a condition is met -
+# the number of iterations is not fixed in advance
 schritt <- 1
 wert <- 100
 while (wert > 1) {
-  wert <- wert / 2      # Wert in jedem Schritt halbieren
+  wert <- wert / 2      # halve the value in each step
   schritt <- schritt + 1
 }
-cat("Nach", schritt, "Schritten liegt der Wert unter 1:", round(wert, 4), "\n")
+cat("After", schritt, "steps the value is below 1:", round(wert, 4), "\n")
 ```
 
-Eine `while`-Schleife prüft vor jedem Durchlauf eine logische Bedingung und wiederholt den Codeblock, solange diese `TRUE` ist – sie passt daher besser, wenn **nicht im Voraus feststeht**, wie viele Schritte nötig sind, sondern nur, *wann* abgebrochen werden soll. Genau diese Situation liegt beim Weiszfeld-Algorithmus vor: Wir wissen nicht im Voraus, nach wie vielen Iterationen die Lösung hinreichend konvergiert ist. In der Praxis kombiniert man daher meist beide Prinzipien: eine `for`-Schleife mit einer festen *Obergrenze* an Iterationen als Sicherheitsnetz, kombiniert mit einem `if`-Abbruch (`break` bzw. `return`), sobald das eigentliche Konvergenzkriterium erfüllt ist. Das folgende R-Exkurs zeigt, wie sich ein solches Muster in eine eigene Funktion verpacken lässt.
+A `while` loop checks a logical condition before each pass and repeats the code block as long as it is `TRUE` – it is therefore a better fit when it is **not known in advance** how many steps are needed, only *when* to stop. This is exactly the situation with the Weiszfeld algorithm: we do not know in advance after how many iterations the solution will have converged sufficiently. In practice, both principles are therefore usually combined: a `for` loop with a fixed *upper limit* on iterations as a safety net, combined with an `if` exit (`break` or `return`) as soon as the actual convergence criterion is met. The following R aside shows how such a pattern can be wrapped in a custom function.
 :::
 
 ::: {.r-exkurs}
-**R-Exkurs: eine Funktion mit mehreren Parametern und Kontrollfluss**
+**R aside: a function with several parameters and control flow**
 
-Bislang haben wir in diesem Buch vor allem Funktionen mit ein oder zwei Argumenten geschrieben. Iterative Verfahren wie Weiszfeld benötigen dagegen typischerweise mehrere Parameter: die Eingabedaten, einen optionalen Startwert, eine Toleranzschwelle für das Abbruchkriterium und eine maximale Anzahl an Iterationen als Sicherheitsnetz, falls die Toleranz nie unterschritten wird. Solche optionalen Parameter erhalten in der Funktionsdefinition einen **Standardwert** (z. B. `tol = 1e-6`), der nur überschrieben wird, wenn beim Aufruf explizit ein anderer Wert übergeben wird.
+So far in this book, we have mainly written functions with one or two arguments. Iterative methods such as Weiszfeld, by contrast, typically require several parameters: the input data, an optional starting value, a tolerance threshold for the stopping criterion and a maximum number of iterations as a safety net in case the tolerance is never reached. Such optional parameters are given a **default value** in the function definition (e.g. `tol = 1e-6`), which is only overridden if a different value is explicitly passed when calling the function.
 
 ```{r}
 #| label: ch4-weiszfeld-function
@@ -573,55 +605,55 @@ Bislang haben wir in diesem Buch vor allem Funktionen mit ein oder zwei Argument
 
 weiszfeld_manual <- function(daten, x0 = NULL, y0 = NULL,
                               tol = 1e-6, max_iter = 100) {
-  # daten:    data.frame mit Spalten u, v (Koordinaten) und a (Nachfrage)
-  # x0, y0:   Startkoordinaten; falls NULL wird das Center of Gravity verwendet
-  # tol:      Toleranzschwelle fuer das Abbruchkriterium (Konvergenz)
-  # max_iter: maximale Anzahl an Iterationen als Sicherheitsnetz
+  # daten:    data.frame with columns u, v (coordinates) and a (demand)
+  # x0, y0:   starting coordinates; if NULL, the centre of gravity is used
+  # tol:      tolerance threshold for the stopping criterion (convergence)
+  # max_iter: maximum number of iterations as a safety net
 
-  # Ohne Vorgabe: Center of Gravity als Startloesung verwenden
+  # If not specified: use the centre of gravity as the initial solution
   if (is.null(x0)) x0 <- sum(daten$a * daten$u) / sum(daten$a)
   if (is.null(y0)) y0 <- sum(daten$a * daten$v) / sum(daten$a)
 
   x <- x0
   y <- y0
 
-  # for-Schleife mit fester Obergrenze max_iter als Sicherheitsnetz
+  # for loop with fixed upper limit max_iter as a safety net
   for (t in 1:max_iter) {
 
-    # Distanz vom aktuellen Standort (x,y) zu jeder Filiale
+    # distance from the current site (x,y) to each store
     d <- sqrt((x - daten$u)^2 + (y - daten$v)^2)
 
-    # Division durch 0 vermeiden, falls der Standort exakt auf einer Filiale liegt
+    # avoid division by 0 if the site lies exactly on a store
     d[d < 1e-10] <- 1e-10
 
-    # Iterationsgewichte g_i = a_i / d_i gemaess Weiszfeld-Update-Regel
+    # iteration weights g_i = a_i / d_i according to the Weiszfeld update rule
     g <- daten$a / d
 
-    # aktualisierte Koordinaten als gewichtetes Mittel mit Gewichten g_i
+    # updated coordinates as weighted mean with weights g_i
     x_neu <- sum(daten$u * g) / sum(g)
     y_neu <- sum(daten$v * g) / sum(g)
 
-    # zurueckgelegte Strecke zwischen zwei aufeinanderfolgenden Iterationen
+    # distance moved between two successive iterations
     delta <- sqrt((x_neu - x)^2 + (y_neu - y)^2)
 
     x <- x_neu
     y <- y_neu
 
-    # Kontrollfluss: Abbruch, sobald die Aenderung hinreichend klein ist
+    # control flow: stop as soon as the change is sufficiently small
     if (delta < tol) {
-      return(list(x = x, y = y, iterationen = t, konvergiert = TRUE))
+      return(list(x = x, y = y, iterations = t, converged = TRUE))
     }
   }
 
-  # Falls die Schleife ohne Konvergenz durchlaufen wurde
-  list(x = x, y = y, iterationen = max_iter, konvergiert = FALSE)
+  # In case the loop ran through without convergence
+  list(x = x, y = y, iterations = max_iter, converged = FALSE)
 }
 ```
 
-Der `if`-Block im Inneren der Schleife ist der eigentliche **Kontrollfluss**: Er prüft nach jedem Iterationsschritt, ob das Abbruchkriterium erfüllt ist, und beendet die Funktion in diesem Fall vorzeitig über `return()` – andernfalls läuft die Schleife weiter, bis entweder Konvergenz eintritt oder `max_iter` erreicht ist.
+The `if` block inside the loop is the actual **control flow**: after each iteration step, it checks whether the stopping criterion is met and, if so, terminates the function early via `return()` – otherwise the loop continues until either convergence occurs or `max_iter` is reached.
 :::
 
-Wenden wir `weiszfeld_manual()` auf den SushiFresh-Filialdatensatz an (dazu übergeben wir Längengrad als `u`, Breitengrad als `v` und die Nachfrage als `a`):
+Let us apply `weiszfeld_manual()` to the SushiFresh store data set (passing longitude as `u`, latitude as `v` and demand as `a`):
 
 ```{r}
 #| label: ch4-weiszfeld-run
@@ -634,7 +666,7 @@ ergebnis <- weiszfeld_manual(
 ergebnis
 ```
 
-Der Algorithmus konvergiert nach `r ergebnis$iterationen` Iterationen auf den Standort $(x,y) \approx (`r sprintf("%.4f", ergebnis$x)`; `r sprintf("%.4f", ergebnis$y)`)$ – deutlich näher an Frankfurt als das Center of Gravity. Zur Kontrolle liefert die vorgefertigte Funktion `weiszfeld()` aus `R/scm_functions.R` (die intern denselben Algorithmus implementiert, zusätzlich aber den Verlauf aller Iterationen protokolliert) ein identisches Ergebnis:
+The algorithm converges after `r ergebnis$iterations` iterations to the site $(x,y) \approx (`r sprintf("%.4f", ergebnis$x)`; `r sprintf("%.4f", ergebnis$y)`)$ – considerably closer to Frankfurt than the centre of gravity. As a check, the ready-made function `weiszfeld()` from `R/scm_functions.R` (which implements the same algorithm internally but additionally logs the course of all iterations) returns an identical result:
 
 ```{r}
 #| label: ch4-weiszfeld-check
@@ -642,31 +674,31 @@ Der Algorithmus konvergiert nach `r ergebnis$iterationen` Iterationen auf den St
 
 weiszfeld_check <- weiszfeld(data.frame(x = filialen$lon, y = filialen$lat, demand = filialen$mu))
 c(x = weiszfeld_check$x, y = weiszfeld_check$y,
-  iterationen = weiszfeld_check$iterations, konvergiert = weiszfeld_check$converged)
+  iterations = weiszfeld_check$iterations, converged = weiszfeld_check$converged)
 ```
 
-Das bestätigt die theoretische Erwartung: Das CoG ist eine schnell berechenbare, aber eben nur approximative Lösung; der iterative Weiszfeld-Algorithmus löst das eigentliche Steiner-Weber-Problem und verschiebt den Standort im Vergleich zum CoG spürbar in Richtung Frankfurt – der mit Abstand nachfragestärksten Filiale (280 von 845 Boxen/Tag). Wie stark sich das tatsächlich auf die *reale* (geografische) Distanz zu jeder einzelnen Filiale auswirkt, prüfen wir im nächsten Abschnitt mit der Haversine-Formel.
+This confirms the theoretical expectation: the CoG is a solution that can be computed quickly but is only approximate; the iterative Weiszfeld algorithm solves the actual Steiner–Weber problem and, compared with the CoG, noticeably shifts the site towards Frankfurt – by far the store with the highest demand (280 of 845 boxes/day). How strongly this actually affects the *real* (geographic) distance to each individual store is examined in the next section using the haversine formula.
 
-Wie der Algorithmus sich dem Optimum nähert, zeigt die Vorlesung mit einem bewusst weit entfernten Startpunkt $(x_0, y_0) = (8{,}75;\ 49{,}85)$ südöstlich von Darmstadt. Um den Weg nachzuvollziehen, protokollieren wir diesmal jede Iteration:
+The lecture shows how the algorithm approaches the optimum using a deliberately distant starting point $(x_0, y_0) = (8.75;\ 49.85)$ south-east of Darmstadt. To trace the path, this time we log every iteration:
 
 ```{r}
 #| label: ch4-weiszfeld-verlauf
-#| fig-cap: "Iterationsverlauf des Weiszfeld-Algorithmus von einem entfernten Startpunkt"
+#| fig-cap: "Iteration path of the Weiszfeld algorithm from a distant starting point"
 
 daten_w <- data.frame(u = filialen$lon, v = filialen$lat, a = filialen$mu)
-x <- 8.75; y <- 49.85                      # entfernter Startpunkt wie in der Vorlesung
+x <- 8.75; y <- 49.85                      # distant starting point as in the lecture
 verlauf <- tibble(t = 0, x = x, y = y)
 
 for (t in 1:15) {
   d <- sqrt((x - daten_w$u)^2 + (y - daten_w$v)^2)
-  g <- daten_w$a / d                        # Iterationsgewichte
+  g <- daten_w$a / d                        # iteration weights
   x <- sum(daten_w$u * g) / sum(g)
   y <- sum(daten_w$v * g) / sum(g)
   verlauf <- add_row(verlauf, t = t, x = x, y = y)
 }
 
 verlauf |>
-  mutate(Schrittweite = sqrt((x - lag(x))^2 + (y - lag(y))^2)) |>
+  mutate(`Step size` = sqrt((x - lag(x))^2 + (y - lag(y))^2)) |>
   head(6) |>
   kable(digits = 4)
 
@@ -675,55 +707,55 @@ ggplot(filialen, aes(lon, lat)) +
   geom_text(aes(label = Filiale), vjust = -1.2, size = 3) +
   geom_path(data = verlauf, aes(x, y), colour = "#d11f2f") +
   geom_point(data = verlauf, aes(x, y), colour = "#d11f2f", shape = 4, size = 2.5) +
-  labs(x = "Laengengrad", y = "Breitengrad", size = "Nachfrage") +
+  labs(x = "Longitude", y = "Latitude", size = "Demand") +
   theme_minimal(base_size = 12)
 ```
 
-Bereits der erste Schritt überbrückt den größten Teil der Entfernung; danach werden die Schritte rasch kleiner. Die letzten Nachkommastellen stabilisieren sich allerdings nur langsam: Bis die Toleranz von $10^{-6}$ unterschritten ist, benötigt der Algorithmus mehrere Dutzend Iterationen (siehe oben). Das ist typisch für den Weiszfeld-Algorithmus, wenn das Optimum nahe an einem nachfragestarken Kunden liegt – hier Frankfurt –, weil dessen Iterationsgewicht $g_i = a_i/d_i$ bei kleiner werdender Distanz stark wächst und die Schritte immer kürzer werden.
+The very first step already bridges most of the distance; after that, the steps quickly become smaller. The last decimal places, however, stabilise only slowly: before the tolerance of $10^{-6}$ is reached, the algorithm needs several dozen iterations (see above). This is typical of the Weiszfeld algorithm when the optimum lies close to a high-demand customer – here Frankfurt – because its iteration weight $g_i = a_i/d_i$ grows strongly as the distance decreases and the steps become ever shorter.
 
 ::: {.vertiefung}
-**Theorie-Vertiefung: Warum konvergiert der Weiszfeld-Algorithmus?**
+**In depth (theory): Why does the Weiszfeld algorithm converge?**
 
-Die Zielfunktion $Z(x,y) = \sum_i a_i\, d_i(x,y)$ ist als Summe gewichteter euklidischer Normen **konvex**: Jede einzelne Distanzfunktion $d_i$ ist ein "Kegel" mit Spitze im Kundenstandort, und eine nichtnegativ gewichtete Summe konvexer Funktionen ist wieder konvex. Daraus folgt, dass jedes lokale Minimum zugleich ein globales Minimum ist — es gibt keine "Fallen", in denen ein Verfahren hängen bleiben könnte. Liegen die Kundenstandorte nicht alle auf einer Geraden, ist $Z$ sogar strikt konvex und das Optimum eindeutig.
+As a sum of weighted Euclidean norms, the objective function $Z(x,y) = \sum_i a_i\, d_i(x,y)$ is **convex**: each individual distance function $d_i$ is a “cone” with its apex at the customer location, and a non-negatively weighted sum of convex functions is again convex. It follows that every local minimum is also a global minimum — there are no “traps” in which a method could get stuck. If the customer locations do not all lie on a straight line, $Z$ is even strictly convex and the optimum is unique.
 
-Der Algorithmus geht auf @weiszfeld1937point zurück. Man kann zeigen, dass jeder Iterationsschritt den Zielfunktionswert **nicht erhöht**: Die Update-Regel minimiert in jedem Schritt eine quadratische Hilfsfunktion, die $Z$ im aktuellen Punkt berührt und überall oberhalb von $Z$ liegt (*Majorisierungsprinzip*). Das Minimum der Hilfsfunktion ist gerade das gewichtete Mittel mit den Gewichten $g_i = a_i/d_i$ — also die Update-Regel. Da der Zielfunktionswert monoton fällt und nach unten beschränkt ist, konvergiert das Verfahren. Eine Sonderbehandlung ist nur nötig, wenn eine Iteration exakt auf einen Kundenstandort fällt ($d_i = 0$, Division durch null); in der Praxis fängt man diesen Fall wie in `weiszfeld_manual()` durch eine kleine Untergrenze für $d_i$ ab.
+The algorithm goes back to @weiszfeld1937point. It can be shown that each iteration step **does not increase** the objective function value: in each step, the update rule minimises a quadratic auxiliary function that touches $Z$ at the current point and lies above $Z$ everywhere (*majorisation principle*). The minimum of the auxiliary function is precisely the weighted mean with the weights $g_i = a_i/d_i$ — i.e. the update rule. Since the objective function value decreases monotonically and is bounded below, the method converges. Special treatment is only necessary if an iteration falls exactly on a customer location ($d_i = 0$, division by zero); in practice, this case is caught, as in `weiszfeld_manual()`, by a small lower bound for $d_i$.
 
-Interessant ist auch die ökonomische Interpretation der Optimalitätsbedingung $\sum_i a_i (x-u_i)/d_i = 0$ (und analog für $y$): Jeder Kunde "zieht" den Standort mit einer Kraft der Stärke $a_i$ in seine Richtung, **unabhängig von seiner Entfernung**. Im Optimum heben sich alle Zugkräfte auf. Das erklärt den Unterschied zum Center of Gravity: Dort wächst die Zugkraft eines Kunden mit seiner Entfernung (Ableitung von $d_i^2$ ist $2 d_i$), sodass weit entfernte Kunden das Ergebnis überproportional beeinflussen.
+The economic interpretation of the optimality condition $\sum_i a_i (x-u_i)/d_i = 0$ (and analogously for $y$) is also interesting: each customer “pulls” the site in their direction with a force of strength $a_i$, **regardless of their distance**. At the optimum, all pulling forces cancel each other out. This explains the difference from the centre of gravity: there, a customer's pulling force grows with their distance (the derivative of $d_i^2$ is $2 d_i$), so that distant customers influence the result disproportionately.
 :::
 
-### Manhattan-Distanzen: der gewichtete Median
+### Manhattan distances: the weighted median
 
-Wird statt der euklidischen die Manhattan-Distanz zugrunde gelegt, ändert sich die Struktur des Problems grundlegend – zu ihrem Vorteil. Die Zielfunktion
+If the Manhattan distance is used instead of the Euclidean distance, the structure of the problem changes fundamentally – to its advantage. The objective function
 $$
 Z(x,y) = \sum_{i=1}^n a_i \left(|x-u_i| + |y-v_i|\right)
-= \underbrace{\sum_{i=1}^n a_i |x-u_i|}_{\text{hängt nur von } x \text{ ab}} \; + \; \underbrace{\sum_{i=1}^n a_i |y-v_i|}_{\text{hängt nur von } y \text{ ab}}
+= \underbrace{\sum_{i=1}^n a_i |x-u_i|}_{\text{depends only on } x} \; + \; \underbrace{\sum_{i=1}^n a_i |y-v_i|}_{\text{depends only on } y}
 $$
-ist additiv **separierbar** in $x$ und $y$: Die optimale $x$-Koordinate lässt sich unabhängig von der optimalen $y$-Koordinate bestimmen und umgekehrt. Für jede der beiden Teilsummen gilt ein klassisches Ergebnis der Optimierung: Die Summe gewichteter absoluter Abweichungen $\sum_i a_i |x - u_i|$ wird durch den **gewichteten Median** der $u_i$ minimiert – also durch denjenigen Wert, bei dem mindestens die Hälfte der (nach $u_i$ sortierten, kumulierten) Nachfrage erreicht ist.
+is additively **separable** in $x$ and $y$: the optimal $x$ coordinate can be determined independently of the optimal $y$ coordinate and vice versa. For each of the two partial sums, a classic result of optimisation applies: the sum of weighted absolute deviations $\sum_i a_i |x - u_i|$ is minimised by the **weighted median** of the $u_i$ – i.e. by the value at which at least half of the (cumulative, sorted by $u_i$) demand is reached.
 
 ::: {.definition}
-**Definition: Gewichteter Median als Steiner-Weber-Lösung unter Manhattan-Distanz**
+**Definition: Weighted median as the Steiner–Weber solution under Manhattan distance**
 
-Sortiere die Kunden aufsteigend nach ihrer $u_i$-Koordinate und bestimme die kumulierte Nachfrage $A_j = \sum_{i=1}^{j} a_i$. Die optimale $x$-Koordinate ist die $u_i$-Koordinate des ersten Kunden, für den $A_j \geq \tfrac{1}{2}\sum_{i=1}^n a_i$ gilt. Für $y$ verfährt man analog mit den $v_i$-Koordinaten.
+Sort the customers in ascending order of their $u_i$ coordinate and determine the cumulative demand $A_j = \sum_{i=1}^{j} a_i$. The optimal $x$ coordinate is the $u_i$ coordinate of the first customer for whom $A_j \geq \tfrac{1}{2}\sum_{i=1}^n a_i$ holds. For $y$, proceed analogously with the $v_i$ coordinates.
 :::
 
-Warum gerade der gewichtete Median? Man überlege sich, was passiert, wenn der Standort auf der $x$-Achse um ein kleines Stück $\Delta$ nach rechts verschoben wird. Alle Kunden links des Standorts rücken um $\Delta$ weiter weg, alle Kunden rechts davon um $\Delta$ näher heran. Die Zielfunktion ändert sich also um $\Delta \cdot (A_{\text{links}} - A_{\text{rechts}})$, wobei $A_{\text{links}}$ und $A_{\text{rechts}}$ die Nachfragesummen links und rechts des Standorts sind. Eine Verschiebung nach rechts lohnt sich, solange rechts mehr Nachfrage liegt als links. Sobald links mindestens die Hälfte der Gesamtnachfrage liegt, bringt eine weitere Verschiebung keinen Vorteil mehr — genau das ist der gewichtete Median. Bemerkenswert ist, dass dabei nur die **Reihenfolge** der Kunden auf der Achse und ihre Nachfragemengen eine Rolle spielen, nicht aber die genauen Abstände: Ein Kunde, der sehr weit entfernt liegt, verschiebt den Median nicht stärker als ein naher Kunde mit derselben Nachfrage.
+Why the weighted median in particular? Consider what happens if the site is shifted a small distance $\Delta$ to the right on the $x$ axis. All customers to the left of the site move $\Delta$ further away, all customers to the right of it move $\Delta$ closer. The objective function thus changes by $\Delta \cdot (A_{\text{left}} - A_{\text{right}})$, where $A_{\text{left}}$ and $A_{\text{right}}$ are the demand totals to the left and right of the site. A shift to the right pays off as long as there is more demand on the right than on the left. As soon as at least half of the total demand lies on the left, a further shift brings no further advantage — that is exactly the weighted median. It is remarkable that only the **order** of the customers on the axis and their demand quantities matter, not the exact distances: a customer who is very far away does not shift the median more strongly than a nearby customer with the same demand.
 
 
 ```{r}
 #| label: ch4-manhattan-median
 #| echo: true
 
-# Gewichteter Median: kleinster Wert, bei dem die kumulierte Nachfrage
-# mindestens die Haelfte der Gesamtnachfrage erreicht
+# Weighted median: smallest value at which the cumulative demand
+# reaches at least half of the total demand
 gewichteter_median <- function(werte, gewichte) {
-  reihenfolge <- order(werte)          # Sortierindex (aufsteigend) ermitteln
-  werte <- werte[reihenfolge]          # Werte in dieser Reihenfolge sortieren
-  gewichte <- gewichte[reihenfolge]    # Gewichte im gleichen Muster mitsortieren
+  reihenfolge <- order(werte)          # determine sort index (ascending)
+  werte <- werte[reihenfolge]          # sort values in this order
+  gewichte <- gewichte[reihenfolge]    # sort weights in the same pattern
 
-  kumuliert <- cumsum(gewichte)        # laufende (kumulierte) Summe der Gewichte
-  schwelle <- sum(gewichte) / 2        # halbe Gesamtnachfrage
+  kumuliert <- cumsum(gewichte)        # running (cumulative) sum of weights
+  schwelle <- sum(gewichte) / 2        # half of total demand
 
-  werte[which(kumuliert >= schwelle)[1]]  # erster Wert, der die Schwelle erreicht
+  werte[which(kumuliert >= schwelle)[1]]  # first value that reaches the threshold
 }
 
 manhattan_lon <- gewichteter_median(filialen$lon, filialen$mu)
@@ -731,27 +763,27 @@ manhattan_lat <- gewichteter_median(filialen$lat, filialen$mu)
 c(lon = manhattan_lon, lat = manhattan_lat)
 ```
 
-Die Manhattan-Lösung $(x,y) \approx (`r sprintf("%.4f", manhattan_lon)`; `r sprintf("%.4f", manhattan_lat)`)$ übernimmt auf der $x$-Achse den Längengrad von Darmstadt und auf der $y$-Achse den Breitengrad von Wiesbaden – ein typisches Merkmal des gewichteten Medians: Er liefert auf **jeder Koordinatenachse einzeln** stets den Wert eines existierenden Kundenstandorts, muss aber, weil $x$- und $y$-Koordinate unabhängig voneinander bestimmt werden, insgesamt nicht mit einer einzigen realen Filiale zusammenfallen. Center of Gravity und Weiszfeld-Optimum fallen dagegen praktisch nie exakt mit einem Kundenstandort zusammen, da bei ihnen beide Koordinaten gemeinsam aus allen Filialen gemittelt werden. Welches Distanzmaß angemessen ist, entscheidet letztlich die reale Transportstruktur im Absatzgebiet – nicht der rechnerische Aufwand des jeweiligen Verfahrens.
+The Manhattan solution $(x,y) \approx (`r sprintf("%.4f", manhattan_lon)`; `r sprintf("%.4f", manhattan_lat)`)$ takes the longitude of Darmstadt on the $x$ axis and the latitude of Wiesbaden on the $y$ axis – a typical feature of the weighted median: on **each coordinate axis individually**, it always yields the value of an existing customer location, but because the $x$ and $y$ coordinates are determined independently of each other, it need not coincide overall with a single real store. The centre of gravity and the Weiszfeld optimum, by contrast, practically never coincide exactly with a customer location, since in their case both coordinates are averaged jointly from all stores. Which distance measure is appropriate is ultimately decided by the real transport structure in the sales area – not by the computational effort of the respective method.
 
-## Geografische Distanzen: Realitätscheck mit der Haversine-Formel
+## Geographic distances: reality check with the haversine formula
 
-Center of Gravity, Weiszfeld-Algorithmus und der gewichtete Median setzen implizit voraus, dass die Koordinaten $(u_i, v_i)$ **kartesische** Koordinaten in einer Ebene sind, auf der euklidische bzw. Manhattan-Distanzen sinnvoll interpretierbar sind. Wie oben angekündigt, haben wir diese Annahme im gesamten Abschnitt bewusst vereinfachend getroffen, obwohl Breiten- und Längengrad (WGS84) tatsächlich Koordinaten auf einer **gekrümmten** Erdoberfläche sind, auf der ein Grad geografischer Länge je nach Breitengrad einer unterschiedlichen Kilometerzahl entspricht. Eine naive euklidische Distanzberechnung auf Basis von Grad-Koordinaten wäre daher spätestens bei überregionalen Entfernungen irreführend – im Rhein-Main-Gebiet mit seinen kurzen Distanzen ist der Fehler zwar klein, sollte aber nicht unhinterfragt bleiben.
+The centre of gravity, the Weiszfeld algorithm and the weighted median implicitly assume that the coordinates $(u_i, v_i)$ are **Cartesian** coordinates in a plane on which Euclidean or Manhattan distances can be meaningfully interpreted. As announced above, we deliberately made this simplifying assumption throughout the section, even though latitude and longitude (WGS84) are actually coordinates on a **curved** surface of the earth, on which one degree of longitude corresponds to a different number of kilometres depending on the latitude. A naive Euclidean distance calculation based on degree coordinates would therefore be misleading at the latest for supra-regional distances – in the Rhine-Main area with its short distances, the error is small, but it should not go unquestioned.
 
-Für den exakten Vergleich verwendet man die **Haversine-Formel**, die den Großkreisabstand – die kürzeste Verbindung zweier Punkte auf einer Kugeloberfläche – aus geografischen Koordinaten berechnet:
+For an exact comparison, the **haversine formula** is used, which calculates the great-circle distance – the shortest connection between two points on the surface of a sphere – from geographic coordinates:
 
 ::: {.definition}
-**Definition: Haversine-Distanz**
+**Definition: Haversine distance**
 
-Für zwei Punkte mit geografischer Breite/Länge $(\varphi_1,\lambda_1)$ und $(\varphi_2,\lambda_2)$ (im Bogenmaß) berechnet sich der Großkreisabstand als
+For two points with geographic latitude/longitude $(\varphi_1,\lambda_1)$ and $(\varphi_2,\lambda_2)$ (in radians), the great-circle distance is calculated as
 $$
 d^{\text{hav}} = 2R \cdot \arctan2\!\left(\sqrt{a},\, \sqrt{1-a}\right),
 \qquad
 a = \sin^2\!\left(\frac{\Delta\varphi}{2}\right) + \cos(\varphi_1)\cos(\varphi_2)\sin^2\!\left(\frac{\Delta\lambda}{2}\right),
 $$
-mit $R \approx 6\,371\,\text{km}$ als mittlerem Erdradius, $\Delta\varphi = \varphi_2-\varphi_1$ und $\Delta\lambda = \lambda_2-\lambda_1$.
+with $R \approx 6{,}371\,\text{km}$ as the mean radius of the earth, $\Delta\varphi = \varphi_2-\varphi_1$ and $\Delta\lambda = \lambda_2-\lambda_1$.
 :::
 
-Die Funktion `haversine(lat1, lon1, lat2, lon2)` aus `R/scm_functions.R` implementiert genau diese Formel und gibt die Distanz in Kilometern zurück. Als erste Anwendung berechnen wir die Distanz zwischen dem Kandidatenstandort Wiesbaden-Erbenheim und der Filiale Frankfurt:
+The function `haversine(lat1, lon1, lat2, lon2)` from `R/scm_functions.R` implements exactly this formula and returns the distance in kilometres. As a first application, we calculate the distance between the candidate site Wiesbaden-Erbenheim and the Frankfurt store:
 
 ```{r}
 #| label: ch4-haversine-beispiel
@@ -760,16 +792,16 @@ Die Funktion `haversine(lat1, lon1, lat2, lon2)` aus `R/scm_functions.R` impleme
 haversine(50.0632, 8.2999, 50.1109, 8.6821)
 ```
 
-### Distanzmatrix zwischen den Kandidatenstandorten und den Filialen
+### Distance matrix between the candidate sites and the stores
 
-Mit derselben Funktion lässt sich die vollständige Distanzmatrix zwischen allen drei Kandidatenstandorten und allen sechs Filialen berechnen. Da `haversine()` vektorisiert ist (sie akzeptiert Vektoren gleicher Länge für `lat1`/`lon1`), können wir sie mit `sapply()` einmal je Filiale auf den kompletten Vektor der drei Standort-Koordinaten anwenden und erhalten direkt eine Matrix mit einer Zeile je Standort und einer Spalte je Filiale:
+The same function can be used to calculate the complete distance matrix between all three candidate sites and all six stores. Since `haversine()` is vectorised (it accepts vectors of equal length for `lat1`/`lon1`), we can apply it with `sapply()` once per store to the complete vector of the three site coordinates and directly obtain a matrix with one row per site and one column per store:
 
 ```{r}
 #| label: ch4-distanzmatrix
 #| echo: true
 
-# sapply() ueber die sechs Filialen: haversine() wird je Filiale vektorisiert
-# auf alle drei Standorte gleichzeitig angewendet -> 3x6-Distanzmatrix
+# sapply() over the six stores: for each store, haversine() is applied vectorised
+# to all three sites at once -> 3x6 distance matrix
 distanzmatrix <- sapply(seq_len(nrow(filialen)), function(j) {
   haversine(standorte$lat, standorte$lon, filialen$lat[j], filialen$lon[j])
 })
@@ -778,7 +810,7 @@ colnames(distanzmatrix) <- filialen$Filiale
 round(distanzmatrix, 1)
 ```
 
-Diese Distanzmatrix erlaubt es, die im AHP nur qualitativ beurteilte Transportnähe quantitativ zu untermauern. Multipliziert man die Distanzmatrix mit dem Nachfragevektor der Filialen – wieder über das Matrixprodukt `%*%` –, erhält man je Standort die nachfragegewichtete Gesamtdistanz zu allen sechs Filialen:
+This distance matrix makes it possible to back up quantitatively the transport proximity that was only assessed qualitatively in the AHP. Multiplying the distance matrix by the demand vector of the stores – again via the matrix product `%*%` – yields, for each site, the demand-weighted total distance to all six stores:
 
 ```{r}
 #| label: ch4-distanzmatrix-gewichtet
@@ -788,11 +820,11 @@ gewichtete_gesamtdistanz <- distanzmatrix %*% filialen$mu
 gewichtete_gesamtdistanz
 ```
 
-Raunheim weist mit rund `r sprintf("%.0f", gewichtete_gesamtdistanz["Raunheim", 1])` Box-Kilometern die **geringste** gewichtete Gesamtdistanz zu den sechs Filialen auf, deutlich vor Wiesbaden-Erbenheim (`r sprintf("%.0f", gewichtete_gesamtdistanz["Wiesbaden-Erbenheim", 1])`) und Mainz-Hechtsheim (`r sprintf("%.0f", gewichtete_gesamtdistanz["Mainz-Hechtsheim", 1])`). Diese rein quantitative Kennzahl bestätigt damit die Rangfolge, die der AHP für das Kriterium Transportnähe (Schritt 2) allein aus qualitativen Paarvergleichen abgeleitet hatte – ein schönes Beispiel dafür, wie sich qualitative Experteneinschätzungen und quantitative Nachrechnung gegenseitig plausibilisieren können.
+With around `r sprintf("%.0f", gewichtete_gesamtdistanz["Raunheim", 1])` box-kilometres, Raunheim has the **lowest** weighted total distance to the six stores, well ahead of Wiesbaden-Erbenheim (`r sprintf("%.0f", gewichtete_gesamtdistanz["Wiesbaden-Erbenheim", 1])`) and Mainz-Hechtsheim (`r sprintf("%.0f", gewichtete_gesamtdistanz["Mainz-Hechtsheim", 1])`). This purely quantitative indicator thus confirms the ranking that the AHP had derived for the criterion transport proximity (step 2) solely from qualitative pairwise comparisons – a nice example of how qualitative expert assessments and quantitative recalculation can mutually validate each other.
 
-### Realitätscheck für Center of Gravity und Weiszfeld-Optimum
+### Reality check for the centre of gravity and the Weiszfeld optimum
 
-Zum Abschluss prüfen wir, wie **realistisch** die beiden kontinuierlichen Optima aus dem vorigen Abschnitt tatsächlich sind, wenn wir die eingangs gemachte planare Vereinfachung aufheben und die echte, sphärische Haversine-Distanz zu jeder Filiale berechnen:
+Finally, we examine how **realistic** the two continuous optima from the previous section actually are when we drop the planar simplification made at the outset and calculate the true, spherical haversine distance to each store:
 
 ```{r}
 #| label: ch4-realitaetscheck
@@ -806,8 +838,8 @@ weiszfeld_dist <- sapply(seq_len(nrow(filialen)), function(j) {
 })
 
 realitaetscheck <- tibble(
-  Filiale = filialen$Filiale,
-  Nachfrage = filialen$mu,
+  Store = filialen$Filiale,
+  Demand = filialen$mu,
   `CoG (km)` = round(cog_dist, 1),
   `Weiszfeld (km)` = round(weiszfeld_dist, 1)
 )
@@ -816,29 +848,29 @@ realitaetscheck |>
   kable_styling(full_width = FALSE)
 ```
 
-Das Bild ist aufschlussreich: Zur nachfragestärksten Filiale Frankfurt (280 Boxen/Tag) liegt das Weiszfeld-Optimum mit rund `r sprintf("%.1f", weiszfeld_dist[filialen$Filiale == "Frankfurt"])` km deutlich näher als das Center of Gravity mit rund `r sprintf("%.1f", cog_dist[filialen$Filiale == "Frankfurt"])` km – umgekehrt entfernt sich das Weiszfeld-Optimum von den kleineren, weiter westlich liegenden Filialen Wiesbaden und Mainz merklich stärker als das CoG. Der Weiszfeld-Algorithmus "zieht" den Standort also gezielt in Richtung der großen Einzelfiliale Frankfurt, während das Center of Gravity als reiner arithmetischer Mittelwert weniger empfindlich auf einzelne große Nachfrageschwerpunkte reagiert, dafür aber auch weniger nah an ihnen liegt. Das ist keine allgemeine Überlegenheit des einen oder anderen Verfahrens, sondern ein guter Diskussionsanlass: Wie stark ein Standortverfahren auf einzelne große Nachfrager reagieren *soll*, ist letztlich eine Frage der Robustheit gegenüber Nachfrageschwankungen und Ausreißern – nicht allein eine Frage der Optimalität im Modell.
+The picture is revealing: at around `r sprintf("%.1f", weiszfeld_dist[filialen$Filiale == "Frankfurt"])` km, the Weiszfeld optimum lies considerably closer to the highest-demand store, Frankfurt (280 boxes/day), than the centre of gravity at around `r sprintf("%.1f", cog_dist[filialen$Filiale == "Frankfurt"])` km – conversely, the Weiszfeld optimum moves noticeably further away than the CoG from the smaller stores further west, Wiesbaden and Mainz. The Weiszfeld algorithm thus deliberately “pulls” the site towards the large individual store in Frankfurt, whereas the centre of gravity, as a pure arithmetic mean, reacts less sensitively to individual large demand concentrations but, in return, also lies less close to them. This is not a general superiority of one method or the other, but a good starting point for discussion: how strongly a location method *should* react to individual large customers is ultimately a question of robustness against demand fluctuations and outliers – not solely a question of optimality within the model.
 
-Damit schließt sich der Kreis zu den drei diskreten Kandidatenstandorten: Weder das Center of Gravity noch das Weiszfeld-Optimum liegen auf einem der drei tatsächlich verfügbaren Grundstücke – sie zeigen lediglich, in welche Richtung des Absatzgebiets sich eine Produktionsstätte "ideal" verschieben würde. Die eigentliche Standortentscheidung bleibt bei SushiFresh also eine **diskrete** Wahl zwischen den drei Kandidaten, für die der AHP in diesem Kapitel – knapp – Mainz-Hechtsheim empfohlen hat, während Raunheim bei der Transportnähe klar vorne liegt. Ob sich diese qualitative Einschätzung auch bei einer reinen Kostenbetrachtung bestätigt, untersuchen wir in Kapitel [-@sec-standort-2]: Dort formulieren wir mit dem Warehouse-Location-Problem ein quantitatives Optimierungsmodell, das neben den Transportkosten auch die Fixkosten der Grundstücke explizit berücksichtigt und die Menge der Kandidaten um zwei weitere Standorte erweitert – und das, wie sich zeigen wird, nicht zwangsläufig zum selben Ergebnis kommen muss wie die hier vorgenommene qualitative Bewertung.
+This brings us full circle to the three discrete candidate sites: neither the centre of gravity nor the Weiszfeld optimum lies on one of the three plots actually available – they merely show in which direction of the sales area a production facility would “ideally” shift. The actual location decision at SushiFresh therefore remains a **discrete** choice between the three candidates, for which the AHP in this chapter – narrowly – recommended Mainz-Hechtsheim, while Raunheim is clearly ahead on transport proximity. Whether this qualitative assessment is also confirmed by a pure cost analysis is examined in Chapter [-@sec-standort-2]: there, with the warehouse location problem, we formulate a quantitative optimisation model that explicitly takes into account not only transport costs but also the fixed costs of the plots, and extends the set of candidates by two further sites – and which, as will become apparent, need not necessarily arrive at the same result as the qualitative evaluation carried out here.
 
-## Zusammenfassung
+## Summary
 
-Dieses Kapitel hat zwei grundsätzlich verschiedene Zugänge zur Standortplanung gegenübergestellt, durchgängig am Beispiel der SushiFresh GmbH und ihrer Suche nach einem Produktionsstandort im Rhein-Main-Gebiet. **Qualitative Verfahren** – die Nutzwertanalyse und der Analytic Hierarchy Process – bewerten eine begrenzte Menge diskreter Alternativen (bei SushiFresh: drei Kandidatengrundstücke) anhand mehrerer, auch weicher Kriterien. Die Nutzwertanalyse ist einfach anzuwenden, leidet aber unter der Kompensierbarkeit ihrer additiven Struktur, die im Extremfall dazu führen kann, dass Alternativen mit völlig unterschiedlichem Profil denselben Gesamtnutzwert erhalten – wie im Fallbeispiel, in dem alle drei Standorte exakt den Nutzwert 5,0 erreichten. Der AHP begegnet dieser Schwäche, indem er Kriterien- und Alternativengewichte aus paarweisen Vergleichen ableitet und über den Konsistenzindex eine explizite Qualitätskontrolle der Experteneinschätzungen ermöglicht; im Fallbeispiel empfahl er – bei einer allerdings nicht ganz konsistenten Kriterienmatrix – knapp den Standort Mainz-Hechtsheim.
+This chapter has contrasted two fundamentally different approaches to facility location planning, consistently using the example of SushiFresh GmbH and its search for a production site in the Rhine-Main area. **Qualitative methods** – the scoring model and the Analytic Hierarchy Process – evaluate a limited set of discrete alternatives (at SushiFresh: three candidate plots) on the basis of several criteria, including soft ones. The scoring model is simple to apply but suffers from the compensability of its additive structure, which in extreme cases can lead to alternatives with completely different profiles receiving the same overall utility value – as in the case example, in which all three sites achieved exactly the utility value 5.0. The AHP counters this weakness by deriving criteria and alternative weights from pairwise comparisons and by enabling explicit quality control of the expert assessments via the consistency index; in the case example – with a criteria matrix that was, however, not entirely consistent – it narrowly recommended the Mainz-Hechtsheim site.
 
-**Kontinuierliche Verfahren** gehen einen Schritt weiter und suchen den optimalen Standort nicht unter vorgegebenen Alternativen, sondern als beliebigen Punkt einer Ebene. Das Center of Gravity liefert dafür eine schnelle, geschlossene Näherungslösung, die allerdings nur die quadrierte Zielfunktion exakt minimiert. Der Weiszfeld-Algorithmus löst iterativ das eigentliche, auf linearen euklidischen Distanzen basierende Problem und zog den SushiFresh-Standort spürbar in Richtung der nachfragestarken Filiale Frankfurt. Bei Manhattan-Distanzen vereinfacht sich das Problem sogar auf die Berechnung eines gewichteten Medians je Koordinate. Für großräumige, geografische Anwendungsfälle schließlich liefert die Haversine-Formel ein realistischeres Distanzmaß als die naive euklidische Distanz auf Grad-Koordinaten – und bestätigte im Fallbeispiel sowohl die AHP-Rangfolge bei der Transportnähe als auch die Robustheits-Unterschiede zwischen Center of Gravity und Weiszfeld-Optimum.
+**Continuous methods** go one step further and search for the optimal site not among given alternatives but as an arbitrary point in a plane. The centre of gravity provides a fast, closed-form approximate solution for this, which, however, only exactly minimises the squared objective function. The Weiszfeld algorithm iteratively solves the actual problem based on linear Euclidean distances and noticeably pulled the SushiFresh site towards the high-demand Frankfurt store. With Manhattan distances, the problem even simplifies to calculating a weighted median per coordinate. Finally, for large-scale geographic applications, the haversine formula provides a more realistic distance measure than the naive Euclidean distance on degree coordinates – and in the case example confirmed both the AHP ranking on transport proximity and the differences in robustness between the centre of gravity and the Weiszfeld optimum.
 
-Beiden Verfahrensfamilien ist gemeinsam, dass sie den Standort entweder aus einer *gegebenen* Alternativenliste wählen oder als *beliebigen* Punkt im Raum bestimmen. In der Praxis ist die Menge realistischer Standorte jedoch oft weder völlig frei wählbar noch auf wenige, von Hand vorausgewählte Alternativen beschränkt, sondern besteht aus einer größeren, aber endlichen Menge in Frage kommender Grundstücke oder Gebäude. Für diesen Fall – die **diskrete Standortplanung** mit Warehouse-Location-Modellen und Netzwerkplanungsheuristiken – wird in Kapitel [-@sec-standort-2] das methodische Instrumentarium um exakte und heuristische Optimierungsverfahren erweitert. Dort greifen wir die SushiFresh-Fallstudie wieder auf und prüfen, ob sich die knappe AHP-Empfehlung zugunsten von Mainz-Hechtsheim auch unter einer expliziten Kostenrechnung bestätigt.
+Both families of methods have in common that they either select the site from a *given* list of alternatives or determine it as an *arbitrary* point in space. In practice, however, the set of realistic sites is often neither completely freely selectable nor limited to a few alternatives preselected by hand, but consists of a larger but finite set of eligible plots or buildings. For this case – **discrete facility location planning** with warehouse location models and network planning heuristics – Chapter [-@sec-standort-2] extends the methodological toolkit with exact and heuristic optimisation methods. There, we return to the SushiFresh case study and examine whether the narrow AHP recommendation in favour of Mainz-Hechtsheim is also confirmed by an explicit cost calculation.
 
 ::: {.kontrollfragen}
-**Kontrollfragen**
+**Review questions**
 
-1. Erläutern Sie den fünfstufigen Ablauf der Nutzwertanalyse und nennen Sie zwei ihrer methodischen Schwächen.
-2. Warum können bei der Nutzwertanalyse Alternativen mit völlig unterschiedlichen Stärken-Schwächen-Profilen denselben Gesamtnutzwert erreichen?
-3. Beschreiben Sie die fünf Schritte des AHP-Verfahrens. Welche Rolle spielt dabei die Paarvergleichsmatrix?
-4. Wie wird der Konsistenzindex (CI) einer Paarvergleichsmatrix berechnet, und ab welchem Schwellenwert der Konsistenzrate (CR) gilt eine Matrix üblicherweise als hinreichend konsistent?
-5. Leiten Sie die Formel für das Center of Gravity aus der Minimierung der gewichteten quadrierten euklidischen Distanzen her.
-6. Warum liefert der Weiszfeld-Algorithmus in der Regel eine bessere (kostenminimalere) Lösung als das Center of Gravity, obwohl beide auf euklidischen Distanzen basieren? Was bedeutet das im SushiFresh-Beispiel konkret für die Filiale Frankfurt?
-7. Worin unterscheidet sich die Bestimmung des optimalen Standorts unter Manhattan-Distanzen von der Bestimmung unter euklidischen Distanzen?
-8. Warum ist die direkte Anwendung euklidischer Distanzen auf geografische Koordinaten (Breiten-/Längengrad) problematisch, und welche Alternative bietet die Haversine-Formel?
-9. Der AHP empfiehlt im Fallbeispiel knapp den Standort Mainz-Hechtsheim. Nennen Sie zwei Gründe, warum eine rein kostenbasierte Betrachtung (wie in Kapitel [-@sec-standort-2]) zu einem anderen Ergebnis kommen könnte.
-10. Ändern Sie im R-Code den Vergleich "Transportnähe gegenüber Fachkräften" von 2 auf 1/2. Wie verändern sich Konsistenzrate und Rangfolge der Standorte? Interpretieren Sie das Ergebnis.
+1. Explain the five-step procedure of the scoring model and name two of its methodological weaknesses.
+2. Why can alternatives with completely different strength–weakness profiles achieve the same overall utility value in the scoring model?
+3. Describe the five steps of the AHP. What role does the pairwise comparison matrix play?
+4. How is the consistency index (CI) of a pairwise comparison matrix calculated, and below which threshold of the consistency ratio (CR) is a matrix usually considered sufficiently consistent?
+5. Derive the formula for the centre of gravity from the minimisation of the weighted squared Euclidean distances.
+6. Why does the Weiszfeld algorithm generally provide a better (lower-cost) solution than the centre of gravity, even though both are based on Euclidean distances? What does this mean specifically for the Frankfurt store in the SushiFresh example?
+7. How does determining the optimal site under Manhattan distances differ from determining it under Euclidean distances?
+8. Why is the direct application of Euclidean distances to geographic coordinates (latitude/longitude) problematic, and what alternative does the haversine formula offer?
+9. In the case example, the AHP narrowly recommends the Mainz-Hechtsheim site. Give two reasons why a purely cost-based analysis (as in Chapter [-@sec-standort-2]) could arrive at a different result.
+10. In the R code, change the comparison “transport proximity versus skilled labour” from 2 to 1/2. How do the consistency ratio and the ranking of the sites change? Interpret the result.
 :::

@@ -5,7 +5,7 @@
 #| warning: false
 #| message: false
 
-# Funktionen aus scm_functions.R einbinden
+# Load functions from scm_functions.R
 source("../R/scm_functions.R")
 
 library(tidyverse)
@@ -17,54 +17,70 @@ library(plotly)
 ```
 
 
-# Grundlagen des SCM - Kosten & Management
+# SCM Fundamentals – Costs & Management
 
 
-## Grundlagen des Supply Chain Managements {#slide-52}
+## Fundamentals of Supply Chain Management {#slide-52}
 
-- Aufgaben, Begriffe und Konzepte
-- Ziele & Zielkonflikte
-- **Kosten & Management**
+- Tasks, terms and concepts
+- Objectives & trade-offs
+- **Costs & management**
 
-## Lernziele {#learning-objectives-goals-costs}
+## Learning objectives {#learning-objectives-goals-costs}
 
-Nach dieser Einheit können Sie …
+After this unit you will be able to …
 
-- zentrale ökonomische, ökologische und soziale Ziele des Supply Chain Managements **benennen**,
-- Zielkonflikte zwischen Service, Beständen, Transport, Kosten und Nachhaltigkeit **analysieren**,
-- wesentliche Komponenten von Logistikkosten **erläutern und quantifizieren**,
-- geeignete Kennzahlen zur Bewertung logistischer Entscheidungen **auswählen und interpretieren**.
+- **name** the key economic, ecological and social objectives of supply chain management,
+- **analyse** trade-offs between service, inventory, transport, costs and sustainability,
+- **explain and quantify** the main components of logistics costs,
+- **select and interpret** suitable metrics for evaluating logistics decisions.
 
-**Literatur zur Vertiefung**
+**Further reading**
 
-- **Zielsysteme und Kostenmodelle:** [@guenther2012produktion, Kapitel 1–3].
-- **Leistungs- und Kostenperspektive der Distributionslogistik:** [@tripp2024distributions, Kapitel 1–4].
-- **Nachhaltigkeit als Unternehmensziel:** [@dyckhoff2008nachhaltige, Kapitel 1–3].
+- **Systems of objectives and cost models:** [@guenther2012produktion, chap. 1–3].
+- **Performance and cost perspective of distribution logistics:** [@tripp2024distributions, chap. 1–4].
+- **Sustainability as a corporate objective:** [@dyckhoff2008nachhaltige, chap. 1–3].
 
-## Arten von Zielen im Unternehmen {#slide-53}
+## Types of objectives in the company {#slide-53}
 
 ::::::: columns
 :::: {.column width="50%"}
 ::: large-text
-**Ebenen im Managementsystem**
+**Levels in the management system**
 :::
 
-![](images/image45.png) [@dyckhoff1998grundzuege]
+```{r}
+#| echo: false
+#| fig-width: 9
+#| fig-height: 6.6
+#| out-width: "100%"
+plot_management_pyramid(base_size = 14)
+```
+
+[@dyckhoff1998grundzuege]
 ::::
 
 :::: {.column width="50%"}
 ::: large-text
-**Ziele im Managementsystem**
+**Objectives in the management system**
 :::
 
-![](images/image46.png)
+```{r}
+#| echo: false
+#| fig-width: 8
+#| fig-height: 6.4
+#| out-width: "100%"
+plot_objective_types(base_size = 13)
+```
+
+[@buscher2013produktion, p. 12]
 ::::
 :::::::
 
-## Ziele in Logistik und SCM {#slide-54}
+## Objectives in logistics and SCM {#slide-54}
 
 ::: slide-subtitle
-Traditionelle Zielmetriken
+Traditional target metrics
 :::
 
 :::::: columns
@@ -93,10 +109,10 @@ Traditionelle Zielmetriken
   }
 ]
 
-% Fläche eng auf das Diagramm beschränken
+% Restrict the area tightly to the diagram
 \useasboundingbox (-3.70,-3.95) rectangle (3.70,3.95);
 
-% Zentrum
+% Centre
 \node[
   circle,
   fill=black!35,
@@ -104,29 +120,29 @@ Traditionelle Zielmetriken
   minimum size=4cm,
   align=center,
   font=\LARGE\bfseries
-] (center) at (0,0) {Zielgrößen};
+] (center) at (0,0) {Target\\variables};
 
-% Sechs Zielgrößen im Kreis
+% Six target variables in a circle
 \node[target, fill=green!100!black, text=black] (loyalty)
-  at (0,2.55) {Liefertreue};
+  at (0,2.55) {Delivery\\reliability};
 
 \node[target, fill=orange!85!yellow, text=black] (quality)
-  at (2.20,1.28) {Lieferqualität};
+  at (2.20,1.28) {Delivery\\quality};
 
 \node[target, fill=blue!85!violet!50!white, text=black] (information)
   at (2.20,-1.28) {Information};
 
 \node[target, fill=red, text=black] (costs)
-  at (0,-2.55) {Kosten};
+  at (0,-2.55) {Costs};
 
 \node[target, fill=green!60!black, text=black] (flexibility)
-  at (-2.20,-1.28) {Flexibilität};
+  at (-2.20,-1.28) {Flexibility};
 
 \node[target, fill=green!85!yellow, text=black] (leadtime)
-  at (-2.20,1.28) {Lieferzeit};
+  at (-2.20,1.28) {Delivery\\time};
 
-% Kreisförmige Verbindungspfeile zwischen Zentrum und Außenkreis
-% Die gekrümmten Pfeile bilden den zyklischen Charakter der Vorlage ab.
+% Circular connecting arrows between centre and outer ring
+% The curved arrows reflect the cyclical character of the original.
 \draw[arrow] (center.north) to (loyalty.south);
 \draw[arrow] (center.north east) to (quality.west);
 \draw[arrow] (center.south east) to (information.west);
@@ -139,25 +155,25 @@ Traditionelle Zielmetriken
 
 :::: {.column width="50%"}
 ::: small-text
-- **Lieferzeit**: Zeitspanne zwischen Auftragserteilung und Auftragserfüllung
-- **Liefertreue**: Verhältnis zwischen zugesagtem und tatsächlichem Liefertermin
-- **Lieferqualität**: Anteil qualitativ und quantitativ korrekt ausgeführter Aufträge
-- **Flexibilität/Resilienz**: Realisierbarkeit kurzfristiger Mengen-, Termin- und Spezifikationsänderungen
-- **Information**: Qualität und Transparenz der Information in allen Phasen der Auftragsabwicklung
-- **Kosten**: Effizienz aller Logistikaktivitäten, Gesamtkosten der logistischen Aktivitäten
+- **Delivery time**: time span between order placement and order fulfilment
+- **Delivery reliability**: relationship between promised and actual delivery date
+- **Delivery quality**: share of orders executed correctly in terms of quality and quantity
+- **Flexibility/resilience**: feasibility of short-term changes in quantity, dates and specifications
+- **Information**: quality and transparency of information in all phases of order processing
+- **Costs**: efficiency of all logistics activities, total costs of logistics activities
 :::
 ::::
 ::::::
 
-## Zieldimensionen {#slide-55}
+## Target dimensions {#slide-55}
 
 ::: slide-subtitle
-Konflikte & Profile
+Conflicts & profiles
 :::
 
 :::::: columns
 ::: {.column width="50%"}
-**Zieldimensionen**
+**Target dimensions**
 
 ```{r}
 #| echo: false
@@ -167,22 +183,22 @@ Konflikte & Profile
 
 library(plotly)
 
-# Vier Ecken des Tetraeders
-# 1–3: Grundfläche; 4: Spitze
+# Four vertices of the tetrahedron
+# 1–3: base; 4: apex
 punkte <- data.frame(
   ziel = c(
-    "Qualität",
-    "Geschwindigkeit",
-    "Kosten",
-    "Flexibilität / Resilienz"
+    "Quality",
+    "Speed",
+    "Costs",
+    "Flexibility / resilience"
   ),
   x = c(-3.8,  0.0,  3.8,  0.0),
   y = c(-2.2,  3.2, -2.2,  0.0),
   z = c( 0.0,  0.0,  0.0,  4.2)
 )
 
-# Vier Dreiecksflächen:
-# Grundfläche (0,1,2) und die drei Seitenflächen zur Spitze (3).
+# Four triangular faces:
+# base (0,1,2) and the three side faces to the apex (3).
 faces_i <- c(0, 0, 0, 1)
 faces_j <- c(1, 2, 3, 2)
 faces_k <- c(2, 3, 1, 3)
@@ -202,7 +218,7 @@ fig <- plot_ly() |>
     flatshading = TRUE,
     showscale = FALSE,
     hoverinfo = "skip",
-    name = "Zielkonflikt"
+    name = "Trade-off"
   ) |>
   add_trace(
     type = "scatter3d",
@@ -236,10 +252,10 @@ fig <- plot_ly() |>
     y = punkte$y,
     z = punkte$z,
     text = c(
-      "Qualität",
-      "Geschwindigkeit",
-      "Kosten",
-      "Flexibilität<br>/ Resilienz"
+      "Quality",
+      "Speed",
+      "Costs",
+      "Flexibility<br>/ resilience"
     ),
     textposition = c(
       "bottom left",
@@ -279,7 +295,7 @@ fig
 
 :::: {.column width="50%"}
 ::: {.fragment .fade-up}
-**Zielprofile**
+**Target profiles**
 
 ```{r}
 #| echo: false
@@ -295,25 +311,25 @@ to_polygon <- function(top, right, bottom, left, name, color, dash = "solid") {
   data.frame(
     x = c(0, right, 0, -left, 0),
     y = c(top, 0, -bottom, 0, top),
-    label = c("kurze Lieferzeiten", "hohe Lieferzuverlässigkeit",
-              "große Lieferflexibilität", "niedrige Logistikkosten",
-              "kurze Lieferzeiten"),
+    label = c("short delivery times", "high delivery reliability",
+              "high delivery flexibility", "low logistics costs",
+              "short delivery times"),
     profile = name,
     color = color,
     dash = dash
   )
 }
 
-p_red <- to_polygon(5.8, 8.7, 5.8, 1.8, "Profil 1", "#e53935", "solid")
-p_blue <- to_polygon(7.6, 3.2, 8.6, 3.2, "Profil 2", "#3f51b5", "solid")
-p_yellow <- to_polygon(9.3, 4.9, 1.5, 5.0, "Profil 3", "#e6df2a", "solid")
-p_black <- to_polygon(3.6, 1.5, 3.6, 8.2, "Profil 4", "#333333", "dash")
+p_red <- to_polygon(5.8, 8.7, 5.8, 1.8, "Profile 1", "#e53935", "solid")
+p_blue <- to_polygon(7.6, 3.2, 8.6, 3.2, "Profile 2", "#3f51b5", "solid")
+p_yellow <- to_polygon(9.3, 4.9, 1.5, 5.0, "Profile 3", "#e6df2a", "solid")
+p_black <- to_polygon(3.6, 1.5, 3.6, 8.2, "Profile 4", "#333333", "dash")
 
 profiles <- list(p_red, p_blue, p_yellow, p_black)
 
 fig <- plot_ly()
 
-# Achsen
+# Axes
 fig <- fig |>
   add_segments(
     x = -scale_max, xend = scale_max,
@@ -330,7 +346,7 @@ fig <- fig |>
     showlegend = FALSE
   )
 
-# Pfeilspitzen
+# Arrowheads
 arrow_len <- 0.7
 arrow_w   <- 0.28
 
@@ -356,7 +372,7 @@ for (i in 1:nrow(arrow_df)) {
     )
 }
 
-# Profile
+# Profiles
 for (p in profiles) {
   fig <- fig |>
     add_trace(
@@ -374,37 +390,37 @@ for (p in profiles) {
     )
 }
 
-# Achsenbeschriftungen
+# Axis labels
 fig <- fig |>
   add_annotations(
     x = 0, y = scale_max + 1.0,
-    text = "kurze Lieferzeiten",
+    text = "short delivery times",
     showarrow = FALSE,
     font = list(size = 18, color = "#222")
   ) |>
   add_annotations(
     x = scale_max + 1.8, y = 0,
-    text = "hohe<br>Lieferzuverlässigkeit",
+    text = "high<br>delivery reliability",
     showarrow = FALSE,
     xanchor = "left",
     font = list(size = 18, color = "#222")
   ) |>
   add_annotations(
     x = 0, y = -scale_max - 1.25,
-    text = "große Lieferflexibilität",
+    text = "high delivery flexibility",
     showarrow = FALSE,
     font = list(size = 18, color = "#222")
   ) |>
   add_annotations(
     x = -scale_max - 2.2, y = 0.1,
-    text = "niedrige<br>Logistikkosten",
+    text = "low<br>logistics costs",
     showarrow = FALSE,
     xanchor = "right",
     font = list(size = 18, color = "#222")
   ) |>
   add_annotations(
     x = 15, y = 9.7,
-    text = "mögliche<br>Zielprofile<br>eines<br>Systems",
+    text = "possible<br>target profiles<br>of a<br>system",
     showarrow = FALSE,
     align = "left",
     xanchor = "left",
@@ -450,10 +466,10 @@ fig
 ::::
 ::::::
 
-## Logistikkosten {#slide-56}
+## Logistics costs {#slide-56}
 
 ::: slide-subtitle
-Abwägungsentscheidungen in Logistik und SCM
+Trade-off decisions in logistics and SCM
 :::
 
 :::::::: columns
@@ -472,7 +488,7 @@ make_cost_tradeoff_plot <- function(
   y_gesamt,
   y_kurve1,
   y_kurve2,
-  label_gesamt = "Gesamtkosten",
+  label_gesamt = "Total costs",
   label_kurve1,
   label_kurve2,
   anno_gesamt,
@@ -536,7 +552,7 @@ make_cost_tradeoff_plot <- function(
         fixedrange = TRUE
       ),
       yaxis = list(
-        title = "Kosten",
+        title = "Costs",
         showline = TRUE,
         linewidth = 1.5,
         linecolor = "black",
@@ -593,7 +609,8 @@ y.g <- y.1 + y.2
 ```
 
 ::: panel-tabset
-### Transportmittel
+
+### Mode of transport
 
 ```{r}
 #| echo: false
@@ -602,25 +619,25 @@ y.g <- y.1 + y.2
 #| out-width: "100%"
 
 make_cost_tradeoff_plot(
-  titel = "Entscheidung über das<br>Transportmittel",
+  titel = "Decision on the<br>mode of transport",
   x_titel = "",
   x_vals = x.val,
   y_gesamt = y.g,
   y_kurve1 = y.1,
   y_kurve2 = y.2,
-  label_kurve1 = "Transport-<br>kosten",
-  label_kurve2 = "Lagerkosten",
+  label_kurve1 = "Transport<br>costs",
+  label_kurve2 = "Inventory costs",
   anno_gesamt = list(x = 1.50, y = 0.95, ax = 55, ay = -30),
   anno_kurve1 = list(x = 2.8, y = 0.75, ax = 60, ay = 20),
   anno_kurve2 = list(x = 1.9, y = 0.55, ax = 55, ay = -30),
   x_tickvals = c(1, 2, 3),
-  x_ticktext = c("Zug", "Lkw", "Flugzeug<br>(am schnellsten und<br>zuverlässigsten)"),
+  x_ticktext = c("Train", "Truck", "Aircraft<br>(fastest and<br>most reliable)"),
   x_range = c(0.8, 4),
   y_range = c(0, 2)
 )
 ```
 
-### Anzahl der Lager
+### Number of warehouses
 
 ```{r}
 #| echo: false
@@ -629,14 +646,14 @@ make_cost_tradeoff_plot(
 #| out-width: "100%"
 
 make_cost_tradeoff_plot(
-  titel = "Entscheidung über die<br>Anzahl der Lager",
-  x_titel = "Anzahl Lager",
+  titel = "Decision on the<br>number of warehouses",
+  x_titel = "Number of warehouses",
   x_vals = x.val,
   y_gesamt = y.g,
   y_kurve1 = y.1,
   y_kurve2 = y.2,
-  label_kurve1 = "Kosten der<br>Lagerhaltung und<br>Versorgung der Lager",
-  label_kurve2 = "Transportkosten<br>der Auslieferung",
+  label_kurve1 = "Costs of<br>warehousing and<br>supplying the warehouses",
+  label_kurve2 = "Transport costs<br>of delivery",
   anno_gesamt = list(x = 1.50, y = 0.95, ax = 55, ay = -30),
   anno_kurve1 = list(x = 3.2, y = 0.95, ax = 60, ay = 20),
   anno_kurve2 = list(x = 1.9, y = 0.55, ax = 55, ay = -30),
@@ -647,7 +664,7 @@ make_cost_tradeoff_plot(
 )
 ```
 
-### Sicherheitsbestand
+### Safety stock
 
 ```{r}
 #| echo: false
@@ -656,14 +673,14 @@ make_cost_tradeoff_plot(
 #| out-width: "100%"
 
 make_cost_tradeoff_plot(
-  titel = "Entscheidung über den<br>Sicherheitsbestand",
-  x_titel = "Sicherheitsbestand",
+  titel = "Decision on the<br>safety stock",
+  x_titel = "Safety stock",
   x_vals = x.val,
   y_gesamt = y.g,
   y_kurve1 = y.1,
   y_kurve2 = y.2,
-  label_kurve1 = "Lagerkosten",
-  label_kurve2 = "Fehlmengen-<br>kosten",
+  label_kurve1 = "Inventory costs",
+  label_kurve2 = "Shortage<br>costs",
   anno_gesamt = list(x = 1.50, y = 0.95, ax = 55, ay = -30),
   anno_kurve1 = list(x = 3.2, y = 0.95, ax = 60, ay = 20),
   anno_kurve2 = list(x = 1.9, y = 0.55, ax = 55, ay = -30),
@@ -674,7 +691,7 @@ make_cost_tradeoff_plot(
 )
 ```
 
-### Losgröße
+### Lot size
 
 ```{r}
 #| echo: false
@@ -683,14 +700,14 @@ make_cost_tradeoff_plot(
 #| out-width: "100%"
 
 make_cost_tradeoff_plot(
-  titel = "Entscheidung über die<br>Losgröße",
-  x_titel = "Losgröße",
+  titel = "Decision on the<br>lot size",
+  x_titel = "Lot size",
   x_vals = x.val,
   y_gesamt = y.g,
   y_kurve1 = y.1,
   y_kurve2 = y.2,
-  label_kurve1 = "Lagerkosten",
-  label_kurve2 = "Rüstkosten",
+  label_kurve1 = "Inventory costs",
+  label_kurve2 = "Set-up costs",
   anno_gesamt = list(x = 1.50, y = 0.95, ax = 55, ay = -30),
   anno_kurve1 = list(x = 3.2, y = 0.95, ax = 60, ay = 20),
   anno_kurve2 = list(x = 1.9, y = 0.55, ax = 55, ay = -30),
@@ -706,32 +723,34 @@ make_cost_tradeoff_plot(
 ::::: {.column width="40%"}
 :::: {.fragment .fade-up}
 ::: small-text
-- In vielen Teilbereichen der Logistik widerstreitende Kostenkomponenten $\rightarrow$ Kostenoptimum existiert (zumindest theoretisch)
-- Logistikmanagement heißt u.a. Entscheidungen über Logistiksysteme treffen
-- Transparenz der Kostenfunktionen z.T. stark eingeschränkt
-  - Datenverfügbarkeit
-  - Intertemporale Zurechenbarkeit
-  - Kostenträgerschaft
-  - Stochastizität
+- Conflicting cost components in many areas of logistics $\rightarrow$ a cost optimum exists (at least in theory)
+- Logistics management means, among other things, making decisions about logistics systems
+- Transparency of cost functions is sometimes severely limited
+  - Data availability
+  - Intertemporal attributability
+  - Cost object assignment
+  - Stochasticity
 :::
 ::::
 :::::
 ::::::::
 
-## Logistikkosten {#slide-57}
+## Logistics costs {#slide-57}
 
 ::: slide-subtitle
-Beispiele
+Examples
 :::
 
 ::: callout-note
-## Logistikkosten
 
-bewerteter Verzehr von Sachgütern und Dienstleistungen zum Zweck der Erbringung logistischer Dienstleistungen.
+## Logistics costs
+
+valued consumption of goods and services for the purpose of providing logistics services.
 :::
 
 ::: panel-tabset
-### Bananen
+
+### Bananas
 
 ![](images/image51.png)
 
@@ -743,7 +762,7 @@ bewerteter Verzehr von Sachgütern und Dienstleistungen zum Zweck der Erbringung
 ## Supply Chain Costing {#slide-58}
 
 ::: slide-subtitle
-Beispiel -- Apple Video IPod 30 GB
+Example -- Apple Video iPod 30 GB
 :::
 
 ::: {.r-stretch .tikz-slide}
@@ -756,20 +775,20 @@ Beispiel -- Apple Video IPod 30 GB
   font=\sffamily\footnotesize
 ]
 
-% Hintergrund
+% Background
 %\fill[gray!10] (-0.2,-0.2) rectangle (13.35,7.35);
 
-% Farben
+% Colours
 \definecolor{band}{RGB}{121,169,186}
 \definecolor{boxfill}{RGB}{191,210,220}
 \definecolor{linecol}{RGB}{80,74,70}
 
-% Oberer Prozessbalken
+% Upper process bar
 \foreach \pos/\prozess in {
-  0.3/{Beschaffung},
-  3.0/{Produktion},
+  0.3/{Procurement},
+  3.0/{Production},
   5.6/{Distribution},
-  8.2/{Absatz}
+  8.2/{Sales}
 } {
   \fill[band]
     (\pos,6.5) --
@@ -786,14 +805,14 @@ Beispiel -- Apple Video IPod 30 GB
   ] at (\pos+1.45,7) {\prozess};
 }
 
-% Kundenbox
+% Customer box
 \draw[line width=0.3pt, draw=linecol]
   (11.2,6.6) rectangle (13.15,7.4);
 
 \node[font=\fontsize{12}{14}\selectfont]
-  at (12.18,7) {Kunden};
+  at (12.18,7) {Customers};
 
-% Kostenpositionen links
+% Cost items on the left
 \node[
   anchor=east,
   font=\fontsize{12}{14}\selectfont
@@ -825,7 +844,7 @@ Beispiel -- Apple Video IPod 30 GB
 \draw[line width=0.6pt, draw=linecol]
   (0.05,1.35) -- (10.3,1.35);
 
-% Zulieferer
+% Suppliers
 \foreach \ypos/\land/\komponente in {
   5.60/{Japan}/{Hard drive+Display},
   4.55/{Korea}/{Memory},
@@ -851,7 +870,7 @@ Beispiel -- Apple Video IPod 30 GB
   ] at (1.71,\ypos+0.18) {\komponente};
 }
 
-% Montage in China
+% Assembly in China
 \draw[
   fill=boxfill,
   draw=linecol,
@@ -870,7 +889,7 @@ Beispiel -- Apple Video IPod 30 GB
   font=\fontsize{12}{14}\selectfont
 ] at (4.38,3.48) {\$4};
 
-% Distribution in den USA
+% Distribution in the USA
 \draw[
   fill=boxfill,
   draw=linecol,
@@ -885,7 +904,7 @@ Beispiel -- Apple Video IPod 30 GB
   font=\fontsize{10}{12}\selectfont
 ] at (6.85,4.23) {distribution};
 
-% Einzelhandel
+% Retail
 \draw[
   fill=boxfill,
   draw=linecol,
@@ -915,7 +934,7 @@ Beispiel -- Apple Video IPod 30 GB
   font=\fontsize{10}{12}\selectfont
 ] at (9.40,4.53) {Apple};
 
-% Endkunde
+% End customer
 \draw[
   fill=boxfill,
   draw=linecol,
@@ -926,7 +945,7 @@ Beispiel -- Apple Video IPod 30 GB
   font=\fontsize{10}{12}\selectfont
 ] at (12.20,5.00) {USA};
 
-% Materialfluss: Zulieferer -> China
+% Material flow: suppliers -> China
 \draw[->, line width=0.35pt, draw=linecol]
   (2.80,5.95) -- (3.55,4.42);
 
@@ -939,7 +958,7 @@ Beispiel -- Apple Video IPod 30 GB
 \draw[->, line width=0.35pt, draw=linecol]
   (2.80,2.82) -- (3.55,4.42);
 
-% Zentraler Material- und Absatzfluss
+% Central material and sales flow
 \draw[->, line width=0.35pt, draw=linecol]
   (5.25,4.42) -- (6.00,4.42);
 
@@ -955,7 +974,7 @@ Beispiel -- Apple Video IPod 30 GB
 \draw[->, line width=0.35pt, draw=linecol]
   (10.25,4.72) -- (11.82,5.00);
 
-% Distributionskosten
+% Distribution costs
 \draw[line width=0.6pt, draw=linecol]
   (6.10,3.55) -- (10.25,3.55);
 
@@ -963,13 +982,13 @@ Beispiel -- Apple Video IPod 30 GB
   font=\fontsize{12}{14}\selectfont
 ] at (8.30,3.05) {\$75};
 
-% Verkaufspreis und Produktbild
+% Sales price and product image
 \node[
   anchor=west,
   font=\fontsize{12}{14}\selectfont
-] at (10.85,3.80) {Verkaufspreis: \$299};
+] at (10.85,3.80) {Sales price: \$299};
 
-% Passe den Pfad an den tatsächlichen Ablageort an.
+% Adjust the path to the actual file location.
 %\node[
 %  anchor=north west,
 %  inner sep=0pt
@@ -981,18 +1000,18 @@ Beispiel -- Apple Video IPod 30 GB
 %  ]{images/image52.jpeg}
 %};
 
-% Untere Kennzahlen
+% Lower key figures
 \node[
   font=\fontsize{14}{16}\selectfont
 ] at (6.10,0.95) {
-  Herstellungskosten (von Apple): \textbf{\$219}
+  Manufacturing costs (for Apple): \textbf{\$219}
 };
 
 \node[
   font=\fontsize{14}{16}\selectfont
 ] at (6.10,0.25) {
-  Deckungsbeitrag Apple: absolut: \textbf{\$80},
-  relativ: \textbf{26\%}
+  Apple contribution margin: absolute: \textbf{\$80},
+  relative: \textbf{26\%}
 };
 
 \end{tikzpicture}
@@ -1004,35 +1023,36 @@ Beispiel -- Apple Video IPod 30 GB
 ## Sustainable Supply Chain management {#slide-59}
 
 ::: slide-subtitle
-Nachhaltigkeit als Zieldimension
+Sustainability as a target dimension
 :::
 
 ::: callout-note
-## Definition Nachhaltigkiet (Versuch)
 
-Ein Gesellschaftssystem wird als nachhaltig bezeichnet, wenn es intra- als intergenerativ gerecht angesehen werden kann. Gerecht heisst „die Bedürfnisse der Gegenwart befriedigt, ohne zu riskieren, dass künftige Generationen ihre eigenen Bedürfnisse nicht befriedigen können" [@hauff1987zukunft]
+## Definition of sustainability (an attempt)
+
+A social system is described as sustainable if it can be regarded as fair both intra- and intergenerationally. Fair means that it “meets the needs of the present without compromising the ability of future generations to meet their own needs” [@hauff1987zukunft]
 :::
 
 ::::: columns
 ::: {.column width="50%"}
-**Nachhaltigkeit & nachhaltige Entwicklung**
+**Sustainability & sustainable development**
 
 ![](images/image53.png)
 :::
 
 ::: {.column width="50%"}
-**Mögliche Zieldimensionen**
+**Possible target dimensions**
 
-![](images/image54.png "Inhaltsplatzhalter 13")
+![](images/image54.png "Content placeholder 13")
 :::
 :::::
 
 [@baumast2013nachhaltigkeitsmanagement]
 
-## Ökologischer strategic fit {#slide-60a}
+## Ecological strategic fit {#slide-60a}
 
 ::: slide-subtitle
-Ökologieorientierung und Betroffenheit [@guenther2008oekologieorientiertes]
+Ecological orientation and exposure [@guenther2008oekologieorientiertes]
 :::
 
 ::::::: columns
@@ -1043,13 +1063,13 @@ Ein Gesellschaftssystem wird als nachhaltig bezeichnet, wenn es intra- als inter
 
 :::: {.column width="42%"}
 ::: {#info-panel}
-<h3>Ökologieresistenz</h3>
+<h3>Ecological resistance</h3>
 
-<p>Hohe Betroffenheit, aber geringe Ökologieorientierung. Typisch sind verzögernde oder minimalistische Reaktionsmuster.</p>
+<p>High exposure but low ecological orientation. Delaying or minimalist response patterns are typical.</p>
 
 <ul>
 
-<li><b>SKW Piesteritz</b> (Chemie)<br> nur regulatorische Mindestanpassung; ökologische Investitionen werden verschoben, Lobbyismus<br></li>
+<li><b>SKW Piesteritz</b> (chemicals)<br> only minimum regulatory adjustment; ecological investments are postponed, lobbying<br></li>
 
 </ul>
 :::
@@ -1060,56 +1080,56 @@ Ein Gesellschaftssystem wird als nachhaltig bezeichnet, wenn es intra- als inter
 <script id="eco-json" type="application/json">
 {
   "resistenz": {
-    "title": "Ökologieresistenz",
-    "intro": "Hohe Betroffenheit, aber geringe Ökologieorientierung. Typisch sind verzögernde oder minimalistische Reaktionsmuster.",
+    "title": "Ecological resistance",
+    "intro": "High exposure but low ecological orientation. Delaying or minimalist response patterns are typical.",
     "examples": [
       {
         "name": "SKW Piesteritz",
-        "sector": "Chemie",
-        "points": ["nur regulatorische Mindestanpassung; ökologische Investitionen werden verschoben, Lobbyismus"]
+        "sector": "chemicals",
+        "points": ["only minimum regulatory adjustment; ecological investments are postponed, lobbying"]
       }
     ]
   },
   "adaption": {
-    "title": "Ökologieadaption",
-    "intro": "Hohe Betroffenheit und aktive Anpassung an ökologische Anforderungen zur Sicherung von Resilienz und Wettbewerbsfähigkeit.",
+    "title": "Ecological adaptation",
+    "intro": "High exposure and active adaptation to ecological requirements to secure resilience and competitiveness.",
     "examples": [
       {
         "name": "EON",
-        "sector": "Energie",
-        "points": ["Ausbau erneuerbarer Erzeugungsanlagen","Inestitionen in intelligentes Stromnetz"]
+        "sector": "energy",
+        "points": ["expansion of renewable generation capacity","investment in a smart power grid"]
       },
       {
         "name": "Stegra",
-        "sector": "Stahlindustrie",
-        "points": ["Implementierung neuer Technologie (DRI-EAF-Werk mit erneuerbarem Strom und grünem Wasserstoff)"]
+        "sector": "steel industry",
+        "points": ["implementation of new technology (DRI-EAF plant using renewable electricity and green hydrogen)"]
       }
     ]
   },
   "ignoranz": {
-    "title": "Ökologieignoranz",
-    "intro": "Niedrige Betroffenheit und geringe strategische Relevanz ökologischer Themen.",
+    "title": "Ecological ignorance",
+    "intro": "Low exposure and low strategic relevance of ecological issues.",
     "examples": [
       {
         "name": "Volkswagen",
-        "sector": "Automobilindustrie",
-        "points": ["Diesel-Skandal", "Lobbyismus gegen Flottengrenzwerte","verschlafene E-Strategie"]
+        "sector": "automotive industry",
+        "points": ["diesel scandal", "lobbying against fleet emission limits","belated EV strategy"]
       }
     ]
   },
   "offensive": {
-    "title": "Ökologieoffensive",
-    "intro": "Hohe Ökologieorientierung. Nachhaltigkeit wird aktiv als Innovations- und Wettbewerbschance genutzt.",
+    "title": "Ecological offensive",
+    "intro": "High ecological orientation. Sustainability is actively used as an opportunity for innovation and competition.",
     "examples": [
       {
         "name": "Patagonia",
-        "sector": "Outdoor",
-        "points": ["Reparaturservice", "Kreislaufansätze", "nachhaltigkeitsgetriebene Positionierung"]
+        "sector": "outdoor",
+        "points": ["repair service", "circular approaches", "sustainability-driven positioning"]
       },
       {
         "name": "IKEA",
-        "sector": "Einzelhandel",
-        "points": ["erneuerbare Energien", "nachhaltige Materialien"]
+        "sector": "retail",
+        "points": ["renewable energy", "sustainable materials"]
       }
     ]
   }
@@ -1197,46 +1217,46 @@ document.addEventListener("DOMContentLoaded", function () {
       <polygon points="70,40 62,55 78,55" fill="#333"></polygon>
 
       <text x="390" y="545" text-anchor="middle" font-size="26" font-weight="700" fill="#333">
-        Ökologieorientierung
+        Ecological orientation
       </text>
       <text x="20" y="280" transform="rotate(-90 20 280)" text-anchor="middle"
             font-size="24" font-weight="700" fill="#333">
-        Betroffenheit
+        Exposure
       </text>
 
-      <text x="100" y="525" font-size="18" fill="#333">niedrig</text>
-      <text x="615" y="525" font-size="18" fill="#333">hoch</text>
-      <text x="18" y="485" font-size="18" fill="#333">niedrig</text>
-      <text x="10" y="70" font-size="18" fill="#333">hoch</text>
+      <text x="100" y="525" font-size="18" fill="#333">low</text>
+      <text x="615" y="525" font-size="18" fill="#333">high</text>
+      <text x="18" y="485" font-size="18" fill="#333">low</text>
+      <text x="10" y="70" font-size="18" fill="#333">high</text>
 
-      <g class="quad active" data-key="resistenz" tabindex="0" role="button" aria-label="Ökologieresistenz">
+      <g class="quad active" data-key="resistenz" tabindex="0" role="button" aria-label="Ecological resistance">
         <rect x="80" y="50" width="300" height="210" fill="#d9d9d9" stroke="#ffffff" stroke-width="6" rx="4"></rect>
         <text x="230" y="150" text-anchor="middle" font-size="30" fill="#333" pointer-events="none">
-          <tspan x="230" dy="0">Ökologie-</tspan>
-          <tspan x="230" dy="38">resistenz</tspan>
+          <tspan x="230" dy="0">Ecological</tspan>
+          <tspan x="230" dy="38">resistance</tspan>
         </text>
       </g>
 
-      <g class="quad" data-key="adaption" tabindex="0" role="button" aria-label="Ökologieadaption">
+      <g class="quad" data-key="adaption" tabindex="0" role="button" aria-label="Ecological adaptation">
         <rect x="390" y="50" width="300" height="210" fill="#d9d9d9" stroke="#ffffff" stroke-width="6" rx="4"></rect>
         <text x="540" y="150" text-anchor="middle" font-size="30" fill="#333" pointer-events="none">
-          <tspan x="540" dy="0">Ökologie-</tspan>
-          <tspan x="540" dy="38">adaption</tspan>
+          <tspan x="540" dy="0">Ecological</tspan>
+          <tspan x="540" dy="38">adaptation</tspan>
         </text>
       </g>
 
-      <g class="quad" data-key="ignoranz" tabindex="0" role="button" aria-label="Ökologieignoranz">
+      <g class="quad" data-key="ignoranz" tabindex="0" role="button" aria-label="Ecological ignorance">
         <rect x="80" y="270" width="300" height="210" fill="#d9d9d9" stroke="#ffffff" stroke-width="6" rx="4"></rect>
         <text x="230" y="370" text-anchor="middle" font-size="30" fill="#333" pointer-events="none">
-          <tspan x="230" dy="0">Ökologie-</tspan>
-          <tspan x="230" dy="38">ignoranz</tspan>
+          <tspan x="230" dy="0">Ecological</tspan>
+          <tspan x="230" dy="38">ignorance</tspan>
         </text>
       </g>
 
-      <g class="quad" data-key="offensive" tabindex="0" role="button" aria-label="Ökologieoffensive">
+      <g class="quad" data-key="offensive" tabindex="0" role="button" aria-label="Ecological offensive">
         <rect x="390" y="270" width="300" height="210" fill="#d9d9d9" stroke="#ffffff" stroke-width="6" rx="4"></rect>
         <text x="540" y="370" text-anchor="middle" font-size="30" fill="#333" pointer-events="none">
-          <tspan x="540" dy="0">Ökologie-</tspan>
+          <tspan x="540" dy="0">Ecological</tspan>
           <tspan x="540" dy="38">offensive</tspan>
         </text>
       </g>
@@ -1285,7 +1305,7 @@ document.addEventListener("DOMContentLoaded", function () {
 </script>
 ```
 
-## Dimensionen ökologischer SCM-Strategien {#slide-oeko-matrix}
+## Dimensions of ecological SCM strategies {#slide-oeko-matrix}
 
 ::: slide-subtitle
 [@dyckhoff2008nachhaltige]
@@ -1310,390 +1330,390 @@ document.addEventListener("DOMContentLoaded", function () {
 (function () {
   const ecoData = {
     "handlungsregeln_1": {
-      title: "Gesunderhaltung ökologischer Systeme",
-      subtitle: "Handlungsregel",
-      intro: "Ökonomische Aktivität soll natürliche Systeme so nutzen, dass ihre Funktionsfähigkeit dauerhaft erhalten bleibt.",
+      title: "Keeping ecological systems healthy",
+      subtitle: "Rule of action",
+      intro: "Economic activity should use natural systems in such a way that their functioning is permanently preserved.",
       examples: [
         {
-          name: "IKEA – Forstwirtschaft und Holzbeschaffung",
-          sector: "Einzelhandel / Möbel",
+          name: "IKEA – forestry and timber sourcing",
+          sector: "Retail / furniture",
           points: [
-            "Einsatz zertifizierter oder recycelter Holzquellen",
-            "Schutz von Waldökosystemen als Beschaffungsanforderung",
-            "Relevant für Biodiversität, Böden und Wasserkreisläufe"
+            "Use of certified or recycled wood sources",
+            "Protection of forest ecosystems as a sourcing requirement",
+            "Relevant for biodiversity, soils and water cycles"
           ]
         },
         {
-          name: "REWE – biodiversitätsfreundliche Beschaffung",
-          sector: "Lebensmitteleinzelhandel",
+          name: "REWE – biodiversity-friendly sourcing",
+          sector: "Food retail",
           points: [
-            "Förderung biodiversitätsfreundlicher Produktion",
-            "Ökologische Systemstabilität wird Teil der Sortimentspolitik",
-            "Beispiel für naturbezogene Beschaffungsstandards"
+            "Promotion of biodiversity-friendly production",
+            "Ecological system stability becomes part of the assortment policy",
+            "Example of nature-related sourcing standards"
           ]
         }
       ]
     },
 
     "handlungsregeln_2": {
-      title: "Beachtung der Aufnahmefähigkeit ökologischer Systeme",
-      subtitle: "Handlungsregel",
-      intro: "Emissionen und Reststoffe dürfen die Belastungs- und Regenerationsgrenzen von Luft, Wasser und Böden nicht überschreiten.",
+      title: "Respecting the absorptive capacity of ecological systems",
+      subtitle: "Rule of action",
+      intro: "Emissions and residues must not exceed the load and regeneration limits of air, water and soil.",
       examples: [
         {
-          name: "Kommunale Kläranlagen",
-          sector: "Wasserwirtschaft",
+          name: "Municipal sewage treatment plants",
+          sector: "Water management",
           points: [
-            "Abwasserreinigung orientiert sich an Aufnahmegrenzen von Gewässern",
-            "Technik und Betrieb zielen auf Schadstoffminderung vor Einleitung",
-            "Klassisches Beispiel für kapazitätsorientierten Umweltschutz"
+            "Wastewater treatment is guided by the absorptive limits of water bodies",
+            "Technology and operations aim to reduce pollutants before discharge",
+            "Classic example of capacity-oriented environmental protection"
           ]
         },
         {
-          name: "Chemiepark mit Emissionsmonitoring",
-          sector: "Chemische Industrie",
+          name: "Chemical park with emissions monitoring",
+          sector: "Chemical industry",
           points: [
-            "Kontinuierliche Überwachung von Luft- und Abwasseremissionen",
-            "Produktionssteuerung reagiert auf Grenzwerte",
-            "Ökologische Tragfähigkeit wird zur Betriebsrestriktion"
+            "Continuous monitoring of air and wastewater emissions",
+            "Production control responds to limit values",
+            "Ecological carrying capacity becomes an operating constraint"
           ]
         }
       ]
     },
 
     "handlungsregeln_3": {
-      title: "Ausgewogene Nutzung regenerierbarer Ressourcen",
-      subtitle: "Handlungsregel",
-      intro: "Regenerierbare Ressourcen sollen nur so genutzt werden, dass ihre natürliche Erneuerung nicht überfordert wird.",
+      title: "Balanced use of renewable resources",
+      subtitle: "Rule of action",
+      intro: "Renewable resources should only be used in such a way that their natural regeneration is not overstrained.",
       examples: [
         {
-          name: "Fischerei mit Fangquoten",
-          sector: "Ernährungswirtschaft",
+          name: "Fishing with catch quotas",
+          sector: "Food industry",
           points: [
-            "Entnahmemengen orientieren sich an Reproduktionsvermögen",
-            "Übernutzung soll vermieden werden",
-            "Anschauliches Beispiel für regenerative Ressourcen"
+            "Extraction volumes are based on reproductive capacity",
+            "Overuse is to be avoided",
+            "Illustrative example of renewable resources"
           ]
         },
         {
-          name: "Nachhaltige Holzwirtschaft",
-          sector: "Forstwirtschaft",
+          name: "Sustainable timber industry",
+          sector: "Forestry",
           points: [
-            "Holzeinschlag wird am Nachwuchs des Waldes orientiert",
-            "Langfristige Bestandsstabilität ist Teil der Planung",
-            "Verbindet Ressourcennutzung mit Generationengerechtigkeit"
+            "Logging is aligned with the forest's regrowth",
+            "Long-term stock stability is part of planning",
+            "Links resource use with intergenerational equity"
           ]
         }
       ]
     },
 
     "handlungsregeln_4": {
-      title: "Ausgewogene Nutzung nicht-regenerierbarer Ressourcen",
-      subtitle: "Handlungsregel",
-      intro: "Nicht-regenerierbare Ressourcen sollen sparsam eingesetzt, substituiert und möglichst lange im Kreislauf gehalten werden.",
+      title: "Balanced use of non-renewable resources",
+      subtitle: "Rule of action",
+      intro: "Non-renewable resources should be used sparingly, substituted and kept in the loop for as long as possible.",
       examples: [
         {
-          name: "Aluminium-Recycling",
-          sector: "Verpackungswirtschaft",
+          name: "Aluminium recycling",
+          sector: "Packaging industry",
           points: [
-            "Sekundäraluminium senkt Primärrohstoffbedarf",
-            "Materialkreisläufe reduzieren den Verbrauch endlicher Ressourcen",
-            "Alltagsnahes Beispiel"
+            "Secondary aluminium reduces demand for primary raw materials",
+            "Material cycles reduce the consumption of finite resources",
+            "Everyday example"
           ]
         },
         {
-          name: "Refurbishment von IT-Geräten",
-          sector: "Elektronik / IT",
+          name: "Refurbishment of IT equipment",
+          sector: "Electronics / IT",
           points: [
-            "Längere Nutzungsdauer spart Metalle und seltene Rohstoffe",
-            "Wiederverwendung ersetzt einen Teil der Neuproduktion",
-            "Ressourcenschonung durch Lebensdauerverlängerung"
+            "Longer service life saves metals and rare raw materials",
+            "Reuse replaces part of new production",
+            "Resource conservation through extended service life"
           ]
         }
       ]
     },
 
     "strategie_suffizienz": {
-      title: "Suffizienz",
-      subtitle: "Grundstrategie",
-      intro: "Suffizienz zielt auf geringeren absoluten Ressourcenverbrauch durch weniger, langsameren oder bedarfsgerechteren Konsum.",
+      title: "Sufficiency",
+      subtitle: "Basic strategy",
+      intro: "Sufficiency aims at lower absolute resource consumption through less, slower or more needs-based consumption.",
       examples: [
         {
-          name: "Patagonia – Reparatur statt Neukauf",
-          sector: "Bekleidung",
+          name: "Patagonia – repair instead of buying new",
+          sector: "Apparel",
           points: [
-            "Reparaturservice und Kommunikation gegen Überkonsum",
-            "Nutzungsdauerverlängerung statt Absatzmaximierung",
-            "Klassischer Fall suffizienzorientierter Praxis"
+            "Repair service and communication against overconsumption",
+            "Extending service life instead of maximising sales",
+            "Classic case of sufficiency-oriented practice"
           ]
         },
         {
-          name: "Sharing-Modelle",
-          sector: "Dienstleistung / Kommunen",
+          name: "Sharing models",
+          sector: "Services / municipalities",
           points: [
-            "Produkte werden gemeinschaftlich statt individuell genutzt",
-            "Weniger Neuanschaffungen bei gleicher Funktion",
-            "Suffizienz durch Nutzungsintensivierung"
+            "Products are used collectively rather than individually",
+            "Fewer new purchases for the same function",
+            "Sufficiency through more intensive use"
           ]
         }
       ]
     },
 
     "strategie_effizienz": {
-      title: "Effizienz",
-      subtitle: "Grundstrategie",
-      intro: "Effizienz bedeutet, mit weniger Energie- und Materialeinsatz dieselbe oder eine höhere Leistung zu erzielen.",
+      title: "Efficiency",
+      subtitle: "Basic strategy",
+      intro: "Efficiency means achieving the same or a higher output with less energy and material input.",
       examples: [
         {
-          name: "DHL – Tourenoptimierung",
-          sector: "Logistik",
+          name: "DHL – route optimisation",
+          sector: "Logistics",
           points: [
-            "Bessere Routenplanung reduziert Kraftstoffverbrauch pro Sendung",
-            "Gleiche Transportleistung mit geringerem Ressourceneinsatz",
-            "Typisches Logistikbeispiel"
+            "Better route planning reduces fuel consumption per shipment",
+            "Same transport output with lower resource input",
+            "Typical logistics example"
           ]
         },
         {
-          name: "LED-Umrüstung in Filialnetzen",
-          sector: "Handel",
+          name: "LED retrofit in store networks",
+          sector: "Retail",
           points: [
-            "Gleiche Beleuchtungsleistung bei geringerem Stromeinsatz",
-            "Schnell verständliches Standardbeispiel für Effizienz",
-            "Technische Verbesserung ohne Verzichtslogik"
+            "Same lighting output with lower electricity input",
+            "Easily understood standard example of efficiency",
+            "Technical improvement without a logic of renunciation"
           ]
         }
       ]
     },
 
     "strategie_konsistenz": {
-      title: "Konsistenz",
-      subtitle: "Grundstrategie",
-      intro: "Konsistenz versucht, Stoff- und Energieströme naturverträglich zu gestalten, etwa durch Kreisläufe und erneuerbare Energien.",
+      title: "Consistency",
+      subtitle: "Basic strategy",
+      intro: "Consistency seeks to make material and energy flows compatible with nature, e.g. through cycles and renewable energy.",
       examples: [
         {
-          name: "Interface – Teppichfliesen im Kreislauf",
-          sector: "Bodenbeläge",
+          name: "Interface – circular carpet tiles",
+          sector: "Floor coverings",
           points: [
-            "Rücknahme- und Recyclingansätze für Materialien",
-            "Fokus auf kreislauffähige Produktgestaltung",
-            "Lehrbuchnahes Beispiel"
+            "Take-back and recycling approaches for materials",
+            "Focus on circular product design",
+            "Textbook-like example"
           ]
         },
         {
-          name: "Grünstromnutzung im Betrieb",
-          sector: "Energie / Immobilien",
+          name: "Use of green electricity in operations",
+          sector: "Energy / real estate",
           points: [
-            "Ersatz fossiler Energieträger durch erneuerbare Quellen",
-            "Anpassung der Versorgung an ökologische Systemlogik",
-            "Konsistenz statt bloßer Einsparung"
+            "Replacing fossil fuels with renewable sources",
+            "Aligning supply with ecological system logic",
+            "Consistency rather than mere savings"
           ]
         }
       ]
     },
 
     "prinzip_verantwortung": {
-      title: "Verantwortungsprinzip",
-      subtitle: "Grundprinzip",
-      intro: "Verursacher ökologischer Wirkungen sollen Verantwortung für Folgen, Prävention und Kompensation übernehmen.",
+      title: "Responsibility principle",
+      subtitle: "Basic principle",
+      intro: "Those who cause ecological impacts should take responsibility for consequences, prevention and compensation.",
       examples: [
         {
-          name: "Herstellerverantwortung bei Verpackungen",
-          sector: "Konsumgüter",
+          name: "Producer responsibility for packaging",
+          sector: "Consumer goods",
           points: [
-            "Hersteller tragen Mitverantwortung für Sammlung und Verwertung",
-            "Kosten werden nicht vollständig externalisiert",
-            "Anschauliches Beispiel"
+            "Producers share responsibility for collection and recovery",
+            "Costs are not fully externalised",
+            "Illustrative example"
           ]
         },
         {
-          name: "CO2-Bilanzierung in Unternehmen",
-          sector: "Branchenübergreifend",
+          name: "Corporate carbon accounting",
+          sector: "Cross-industry",
           points: [
-            "Emissionen werden der eigenen Wertschöpfung zugerechnet",
-            "Transparenz schafft Grundlage für Reduktion",
-            "Verantwortung wird mess- und steuerbar"
+            "Emissions are attributed to the company's own value creation",
+            "Transparency creates the basis for reduction",
+            "Responsibility becomes measurable and manageable"
           ]
         }
       ]
     },
 
     "prinzip_kooperation": {
-      title: "Kooperationsprinzip",
-      subtitle: "Grundprinzip",
-      intro: "Ökologische Probleme werden über Zusammenarbeit besser gelöst als durch isoliertes Einzelhandeln.",
+      title: "Cooperation principle",
+      subtitle: "Basic principle",
+      intro: "Ecological problems are better solved through collaboration than through isolated individual action.",
       examples: [
         {
-          name: "Brancheninitiativen für nachhaltige Lieferketten",
-          sector: "Textil / Handel",
+          name: "Industry initiatives for sustainable supply chains",
+          sector: "Textiles / retail",
           points: [
-            "Gemeinsame Standards mit Lieferanten und Prüforganisationen",
-            "Koordination reduziert Informations- und Kontrollprobleme",
-            "Ökologische Wirkung entsteht durch kollektives Handeln"
+            "Common standards with suppliers and auditing organisations",
+            "Coordination reduces information and control problems",
+            "Ecological impact arises from collective action"
           ]
         },
         {
-          name: "Industriesymbiose in Industrieparks",
-          sector: "Industrie",
+          name: "Industrial symbiosis in industrial parks",
+          sector: "Industry",
           points: [
-            "Abwärme oder Nebenprodukte eines Werks werden von anderen genutzt",
-            "Kooperation ersetzt lineare Entsorgung",
-            "Umwelt- und Kostenvorteile greifen zusammen"
+            "Waste heat or by-products of one plant are used by others",
+            "Cooperation replaces linear disposal",
+            "Environmental and cost benefits go hand in hand"
           ]
         }
       ]
     },
 
     "prinzip_kreislauf": {
-      title: "Kreislaufprinzip",
-      subtitle: "Grundprinzip",
-      intro: "Materialien sollen möglichst lange im Umlauf gehalten und wiederverwendet oder wiederverwertet werden.",
+      title: "Circularity principle",
+      subtitle: "Basic principle",
+      intro: "Materials should be kept in circulation for as long as possible and reused or recycled.",
       examples: [
         {
-          name: "Pfandsystem für Getränkeverpackungen",
-          sector: "Handel / Getränke",
+          name: "Deposit system for beverage containers",
+          sector: "Retail / beverages",
           points: [
-            "Rückführung von Verpackungen in Wiederverwendung oder Recycling",
-            "Hohe Anschaulichkeit im Alltag",
-            "Kernidee geschlossener Stoffkreisläufe"
+            "Returning packaging to reuse or recycling",
+            "Highly tangible in everyday life",
+            "Core idea of closed material loops"
           ]
         },
         {
-          name: "Renault – Remanufacturing von Autoteilen",
-          sector: "Automobilindustrie",
+          name: "Renault – remanufacturing of car parts",
+          sector: "Automotive industry",
           points: [
-            "Wiederaufbereitung statt Neuproduktion bestimmter Komponenten",
-            "Rohstoff- und Energieeinsatz sinken",
-            "Kreislaufwirtschaft als industrielles Geschäftsmodell"
+            "Remanufacturing instead of new production of certain components",
+            "Raw material and energy input decrease",
+            "Circular economy as an industrial business model"
           ]
         }
       ]
     },
 
     "prinzip_funktion": {
-      title: "Prinzip der Funktionsorientierung",
-      subtitle: "Grundprinzip",
-      intro: "Nicht das physische Produkt steht im Zentrum, sondern die gewünschte Funktion oder Dienstleistung.",
+      title: "Principle of function orientation",
+      subtitle: "Basic principle",
+      intro: "The focus is not on the physical product but on the desired function or service.",
       examples: [
         {
-          name: "Carsharing statt Autobesitz",
-          sector: "Mobilität",
+          name: "Car sharing instead of car ownership",
+          sector: "Mobility",
           points: [
-            "Nutzung der Mobilitätsfunktion statt Eigentum am Fahrzeug",
-            "Höhere Auslastung je Fahrzeug",
-            "Weniger Materialbedarf pro Nutzungseinheit"
+            "Using the mobility function instead of owning the vehicle",
+            "Higher utilisation per vehicle",
+            "Lower material requirement per unit of use"
           ]
         },
         {
-          name: "Licht als Dienstleistung",
-          sector: "Gebäudetechnik",
+          name: "Light as a service",
+          sector: "Building services",
           points: [
-            "Kund:innen kaufen Beleuchtungsfunktion statt Lampenbestand",
-            "Anbieter haben Anreiz für langlebige Systeme",
-            "Funktion ersetzt mengenorientierten Produktverkauf"
+            "Customers buy a lighting function instead of a stock of lamps",
+            "Providers have an incentive for durable systems",
+            "Function replaces volume-oriented product sales"
           ]
         }
       ]
     },
 
     "konzept_entstofflichung": {
-      title: "Entstofflichung",
-      subtitle: "Konzept",
-      intro: "Materielle Prozesse oder Produkte werden teilweise durch digitale oder immaterielle Lösungen ersetzt.",
+      title: "Dematerialisation",
+      subtitle: "Concept",
+      intro: "Material processes or products are partly replaced by digital or intangible solutions.",
       examples: [
         {
-          name: "Digitale Rechnungen und Dokumente",
-          sector: "Unternehmenspraxis",
+          name: "Digital invoices and documents",
+          sector: "Business practice",
           points: [
-            "Weniger Papier, Druck und physische Archivierung",
-            "Administrative Prozesse werden materialärmer",
-            "Einfach verständliches Beispiel"
+            "Less paper, printing and physical archiving",
+            "Administrative processes become less material-intensive",
+            "Easily understood example"
           ]
         },
         {
-          name: "Streaming statt physischer Datenträger",
-          sector: "Medienwirtschaft",
+          name: "Streaming instead of physical media",
+          sector: "Media industry",
           points: [
-            "Weniger CDs, DVDs und physische Distribution",
-            "Teilweise Verlagerung von Material- zu Datenströmen",
-            "Alltagsnahes Beispiel"
+            "Fewer CDs, DVDs and less physical distribution",
+            "Partial shift from material flows to data flows",
+            "Everyday example"
           ]
         }
       ]
     },
 
     "konzept_energieeffizienz": {
-      title: "Energieeffizienzsteigerung",
-      subtitle: "Konzept",
-      intro: "Dieselbe Leistung wird mit geringerem Energieeinsatz erbracht.",
+      title: "Increasing energy efficiency",
+      subtitle: "Concept",
+      intro: "The same output is achieved with less energy input.",
       examples: [
         {
-          name: "Wärmerückgewinnung in der Industrie",
-          sector: "Produktion",
+          name: "Heat recovery in industry",
+          sector: "Production",
           points: [
-            "Abwärme wird in Prozesse zurückgeführt",
-            "Primärenergiebedarf sinkt",
-            "Technikbeispiel mit direktem Praxisbezug"
+            "Waste heat is fed back into processes",
+            "Primary energy demand falls",
+            "Technical example with direct practical relevance"
           ]
         },
         {
-          name: "LED-Umrüstung im Einzelhandel",
-          sector: "Handel",
+          name: "LED retrofit in retail",
+          sector: "Retail",
           points: [
-            "Deutlich geringerer Strombedarf bei gleicher Beleuchtungsfunktion",
-            "Kurze Amortisationszeiten in vielen Fällen",
-            "Klassisches Einstiegsbeispiel"
+            "Significantly lower electricity demand for the same lighting function",
+            "Short payback periods in many cases",
+            "Classic introductory example"
           ]
         }
       ]
     },
 
     "konzept_entflechtung": {
-      title: "Entflechtung",
-      subtitle: "Konzept",
-      intro: "Problematische Kopplungen von Wachstum, Verkehr, Emissionen oder Ressourcenverbrauch sollen gelockert werden.",
+      title: "Decoupling",
+      subtitle: "Concept",
+      intro: "Problematic links between growth, traffic, emissions or resource consumption are to be loosened.",
       examples: [
         {
-          name: "Homeoffice und Videokonferenzen",
-          sector: "Dienstleistungen",
+          name: "Working from home and video conferencing",
+          sector: "Services",
           points: [
-            "Weniger Pendel- und Geschäftsverkehr bei gleicher Arbeitsfunktion",
-            "Verkehrsaufwand wird teilweise entkoppelt",
-            "Anschauliches Gegenwartsbeispiel"
+            "Less commuting and business travel for the same work function",
+            "Transport effort is partly decoupled",
+            "Illustrative present-day example"
           ]
         },
         {
-          name: "Regionale Beschaffung zur Transportvermeidung",
-          sector: "Lebensmittel / Industrie",
+          name: "Regional sourcing to avoid transport",
+          sector: "Food / industry",
           points: [
-            "Wertschöpfung wird weniger transportintensiv organisiert",
-            "Leistung und Verkehrsaufwand werden partiell entkoppelt",
-            "Praxisnah im SCM-Kontext"
+            "Value creation is organised in a less transport-intensive way",
+            "Output and transport effort are partially decoupled",
+            "Practical in the SCM context"
           ]
         }
       ]
     },
 
     "konzept_entschleunigung": {
-      title: "Entschleunigung",
-      subtitle: "Konzept",
-      intro: "Langsamere, planbarere und langlebigere Nutzungs- und Produktionsmuster können ökologische Belastungen reduzieren.",
+      title: "Deceleration",
+      subtitle: "Concept",
+      intro: "Slower, more predictable and longer-lasting patterns of use and production can reduce ecological burdens.",
       examples: [
         {
-          name: "Slow Fashion",
-          sector: "Bekleidung",
+          name: "Slow fashion",
+          sector: "Apparel",
           points: [
-            "Längere Kollektionszyklen und langlebigere Produkte",
-            "Weniger Trenddruck und geringere Austauschfrequenz",
-            "Beispiel gegen Überhitzung des Konsums"
+            "Longer collection cycles and more durable products",
+            "Less trend pressure and lower replacement frequency",
+            "Example countering overheated consumption"
           ]
         },
         {
-          name: "Bahn statt Flug bei Geschäftsreisen",
-          sector: "Unternehmensmobilität",
+          name: "Rail instead of air for business travel",
+          sector: "Corporate mobility",
           points: [
-            "Langsameres Verkehrsmittel mit meist geringerer Klimawirkung",
-            "Planung ersetzt reine Beschleunigungslogik",
-            "Entschleunigung als Managemententscheidung"
+            "Slower mode of transport, usually with a lower climate impact",
+            "Planning replaces a pure logic of acceleration",
+            "Deceleration as a management decision"
           ]
         }
       ]
@@ -1702,42 +1722,42 @@ document.addEventListener("DOMContentLoaded", function () {
 
   const rowConfig = [
     {
-      label: "Handlungs-<br>regeln",
+      label: "Rules of<br>action",
       cols: 4,
       items: [
-        { key: "handlungsregeln_1", html: "Gesunderhaltung<br>ökologischer Systeme" },
-        { key: "handlungsregeln_2", html: "Beachtung der<br>Aufnahmefähigkeit<br>ökologischer Systeme" },
-        { key: "handlungsregeln_3", html: "Ausgewogene Nutzung<br>regenerierbarer Ressourcen" },
-        { key: "handlungsregeln_4", html: "Ausgewogene Nutzung<br>nicht-regenerierbarer Ressourcen" }
+        { key: "handlungsregeln_1", html: "Keeping ecological<br>systems healthy" },
+        { key: "handlungsregeln_2", html: "Respecting the<br>absorptive capacity<br>of ecological systems" },
+        { key: "handlungsregeln_3", html: "Balanced use of<br>renewable resources" },
+        { key: "handlungsregeln_4", html: "Balanced use of<br>non-renewable resources" }
       ]
     },
     {
-      label: "Grund-<br>strategien",
+      label: "Basic<br>strategies",
       cols: 3,
       items: [
-        { key: "strategie_suffizienz", html: "Suffizienz" },
-        { key: "strategie_effizienz", html: "Effizienz" },
-        { key: "strategie_konsistenz", html: "Konsistenz" }
+        { key: "strategie_suffizienz", html: "Sufficiency" },
+        { key: "strategie_effizienz", html: "Efficiency" },
+        { key: "strategie_konsistenz", html: "Consistency" }
       ]
     },
     {
-      label: "Grund-<br>prinzipien",
+      label: "Basic<br>principles",
       cols: 4,
       items: [
-        { key: "prinzip_verantwortung", html: "Verantwortungs-<br>prinzip" },
-        { key: "prinzip_kooperation", html: "Kooperations-<br>prinzip" },
-        { key: "prinzip_kreislauf", html: "Kreislaufprinzip" },
-        { key: "prinzip_funktion", html: "Prinzip der<br>Funktions-<br>orientierung" }
+        { key: "prinzip_verantwortung", html: "Responsibility<br>principle" },
+        { key: "prinzip_kooperation", html: "Cooperation<br>principle" },
+        { key: "prinzip_kreislauf", html: "Circularity principle" },
+        { key: "prinzip_funktion", html: "Principle of<br>function<br>orientation" }
       ]
     },
     {
-      label: "Konzepte",
+      label: "Concepts",
       cols: 4,
       items: [
-        { key: "konzept_entstofflichung", html: "Entstofflichung" },
-        { key: "konzept_energieeffizienz", html: "Energieeffizienz-<br>steigerung" },
-        { key: "konzept_entflechtung", html: "Entflechtung" },
-        { key: "konzept_entschleunigung", html: "Entschleunigung" }
+        { key: "konzept_entstofflichung", html: "Dematerialisation" },
+        { key: "konzept_energieeffizienz", html: "Increasing energy<br>efficiency" },
+        { key: "konzept_entflechtung", html: "Decoupling" },
+        { key: "konzept_entschleunigung", html: "Deceleration" }
       ]
     }
   ];
@@ -1948,15 +1968,15 @@ document.addEventListener("DOMContentLoaded", function () {
 </style>
 ```
 
-## Nachhaltigkeit {#slide-61}
+## Sustainability {#slide-61}
 
 ::: slide-subtitle
-Allgemeine Konzepte (Ellen MacArthur Foundation)
+General concepts (Ellen MacArthur Foundation)
 :::
 
 ::::: columns
 ::: {.column width="50%"}
-**Nachhlatigkeitspyramide**
+**Sustainability pyramid**
 
 ```{tikz}
 %| fig-align: center
@@ -1983,25 +2003,29 @@ Allgemeine Konzepte (Ellen MacArthur Foundation)
 :::
 
 ::: {.column width="50%"}
-**Kreislaufwirtschaft** ![](images/image57.png)
+**Circular economy** ![](images/image57.png)
 :::
 :::::
 
 ## Circular Supply Chain {#slide-circular-supply-chain-overview}
 
 ::: slide-subtitle
-Zusammenhang von linearer, reverser und zirkulärer Supply Chain
+Relationship between linear, reverse and circular supply chains
 :::
 
 ![](images/clipboard-1258714443.png)
 
 ::: callout-note
+
 ## Sustainable SCM
 
-bezeichnet die Planung, Ausführung und Kontrolle von Geschäftsprozessen unter Berücksichtigung ökonomischer, ökologischer und sozialer Ziele um die langfristige Wettbewerbsfähigkeit der Supply Chain sicherzustellen.
+refers to the planning, execution and control of business processes taking into account economic, ecological and social objectives in order to ensure the long-term competitiveness of the supply chain.
 :::
 
 ## Sustainable Supply Chain Management {#slide-sustainable-circular-scm}
+::: slide-subtitle
+Circularity & sustainability concepts
+:::
 
 :::::: columns
 ::: {.column width="63%"}
@@ -2011,17 +2035,17 @@ bezeichnet die Planung, Ausführung und Kontrolle von Geschäftsprozessen unter 
 :::: {.column width="37%"}
 ::: small-text
 - **Circular Product Design**
-  - Recyclingfähigkeit
-  - Wiederverwendung
+  - Recyclability
+  - Reuse
   - Recycled content
 - **Sustainable logistics**
-  - Gewichtsreduktion
-  - Distanzreduktion
-  - Transportvermeidung
+  - Weight reduction
+  - Distance reduction
+  - Transport avoidance
 - **Circular production**
-  - Erneuerbare Energie
-  - Verwendung von Produktionsabfällen
-  - Kreislaufführung von Betriebs- und Hilfsstoffen
+  - Renewable energy
+  - Use of production waste
+  - Recirculation of operating supplies and auxiliary materials
 :::
 ::::
 ::::::
@@ -2029,7 +2053,7 @@ bezeichnet die Planung, Ausführung und Kontrolle von Geschäftsprozessen unter 
 ## Sustainable SCM {#slide-63}
 
 ::: slide-subtitle
-Planungsaufgaben 
+Planning tasks 
 :::
 
 ![](images/image58.png)
@@ -2037,7 +2061,7 @@ Planungsaufgaben
 
 ## Circular Supply Chain Management {auto-animate=true}
 ::: slide-subtitle
-Normstrategien
+Generic strategies
 :::
 
 ::: {.r-stretch}
@@ -2056,8 +2080,8 @@ make_matrix_plot <- function(show_quadrants = FALSE,
                              highlight_right = FALSE) {
 
   items <- data.frame(
-    name = c("Bekleidung", "Möbel", "Verpackungen", "Stahl",
-             "Smartphones", "Computer", "Autos", "Haushaltsgeräte"),
+    name = c("Clothing", "Furniture", "Packaging", "Steel",
+             "Smartphones", "Computers", "Cars", "Household appliances"),
     x = c(-7.2, -5.9, -6.6, -8.1, 4.3, 5.5, 6.6, 4.6),
     y = c(7.2, 0.9, -3.9, -7.1, 6.6, 4.8, -1.0, -6.3)
   )
@@ -2153,39 +2177,39 @@ make_matrix_plot <- function(show_quadrants = FALSE,
   ann <- list(
     list(
       x = 0, y = 9.25,
-      text = "Kunden-<br>präferenzen",
+      text = "Customer<br>preferences",
       showarrow = FALSE,
       font = list(size = 20, color = txt_col)
     ),
     list(
       x = 0.4, y = 8.15,
-      text = "<i>dynamisch</i>",
+      text = "<i>dynamic</i>",
       showarrow = FALSE,
       xanchor = "left",
       font = list(size = 15, color = txt_col)
     ),
     list(
       x = 0.4, y = -8.55,
-      text = "<i>statisch</i>",
+      text = "<i>static</i>",
       showarrow = FALSE,
       xanchor = "left",
       font = list(size = 15, color = txt_col)
     ),
     list(
       x = -8.95, y = -0.7,
-      text = "<i>niedrig</i>",
+      text = "<i>low</i>",
       showarrow = FALSE,
       font = list(size = 15, color = txt_col)
     ),
     list(
       x = 8.2, y = 0.85,
-      text = "<i>hoch</i>",
+      text = "<i>high</i>",
       showarrow = FALSE,
       font = list(size = 15, color = txt_col)
     ),
     list(
       x = 9.2, y = 0.1,
-      text = "Produkt-<br>komplexität",
+      text = "Product<br>complexity",
       showarrow = FALSE,
       xanchor = "left",
       font = list(size = 20, color = txt_col)
@@ -2254,7 +2278,7 @@ make_matrix_plot(show_quadrants = FALSE, show_items = FALSE)
 
 ## Circular Supply Chain Management {auto-animate=true}
 ::: slide-subtitle
-Normstrategien
+Generic strategies
 :::
 
 ::: {.r-stretch}
@@ -2271,7 +2295,7 @@ make_matrix_plot(show_quadrants = TRUE, show_items = FALSE)
 
 ## Circular Supply Chain Management {auto-animate=true}
 ::: slide-subtitle
-Normstrategien
+Generic strategies
 :::
 
 ::: {.r-stretch}
@@ -2288,7 +2312,7 @@ make_matrix_plot(show_quadrants = TRUE, show_items = TRUE)
 
 ## Circular Supply Chain Management {auto-animate=true}
 ::: slide-subtitle
-Normstrategien
+Generic strategies
 :::
 
 ::: {.r-stretch}
@@ -2306,69 +2330,68 @@ make_matrix_plot(show_quadrants = TRUE, show_items = TRUE, highlight_right = TRU
 
 ---
 
-## Fallbeispiel SushiFresh GmbH {#slide-sushifresh-idee}
+## Case example SushiFresh GmbH {#slide-sushifresh-idee}
 ::: slide-subtitle
-Die Geschäftsidee
+The business idea
 :::
 
 :::: {.columns}
 ::: {.column width="55%"}
-**SushiFresh GmbH** ist ein Start-up, das **täglich frisch hergestellte Sushi-Boxen** in einer deutschen Metropolregion anbietet.
+**SushiFresh GmbH** is a start-up offering **sushi boxes freshly made every day** in a German metropolitan region.
 
-- **Versprechen:** „Heute gefertigt, heute verkauft" – Sushi in Restaurantqualität, aber ohne Wartezeit
-- **Produktion:** eine zentrale Küche, Fertigung in den frühen Morgenstunden
-- **Absatzkanal:** Supermärkte (Regalverkauf)
-- **Sortiment:** ca. 12 Boxen (klassisch, vegetarisch, vegan)
+- **Promise:** “Made today, sold today” – restaurant-quality sushi, but without the wait
+- **Production:** one central kitchen, production in the early morning hours
+- **Sales channel:** supermarkets (shelf sales)
+- **Range:** approx. 12 boxes (classic, vegetarian, vegan)
 :::
 
 ::: {.column width="45%"}
 ::: {.callout-note}
-## Eckdaten 
 
-- Haltbarkeit: max. 24–36 Stunden
-- Kühlkette: durchgehend 0–4 °C
-- Zutaten: Reis, Nori, Gemüse (regional), Lachs und Thunfisch (Import)
-- Nachfrage: stark schwankend (Wochentag, Wetter, Events)
-- Verkaufsstart: Wachstum von 3 auf 30 Verkaufsstellen geplant
+## Key facts 
+
+- Shelf life: max. 24–36 hours
+- Cold chain: continuously 0–4 °C
+- Ingredients: rice, nori, vegetables (regional), salmon and tuna (imported)
+- Demand: highly volatile (weekday, weather, events)
+- Market launch: growth from 3 to 30 points of sale planned
 :::
 :::
 ::::
 
 ---
 
-## Fallbeispiel SushiFresh GmbH {#slide-sushifresh-fragen}
+## Case example SushiFresh GmbH {#slide-sushifresh-fragen}
 ::: slide-subtitle
-Diskussion
+Discussion
 :::
 
 :::: {.columns .smaller-text}
 ::: {.column width="50%"}
-**Leitfragen: Strategische Position**
+**Guiding questions: strategic position**
 
 ::: {.fragment}
-- Welche **Kundengruppen** und Bedürfnisse steuern die Positionierung – Preis, Frische, Bequemlichkeit oder Nachhaltigkeit?
-- Wie unterscheidet sich SushiFresh von **Wettbewerbern** (Restaurants, Lieferdienste, Supermarkt-Sushi)?
-- Welche **Zielkonflikte** entstehen (Frische vs. Kosten vs. Ausschuss vs. Umwelt)?
-- Wo liegt das Unternehmen zwischen **Effizienz und Reaktionsfähigkeit**? Welche Zielgrößen sind strategisch wichtig?
+- Which **customer groups** and needs drive the positioning – price, freshness, convenience or sustainability?
+- How does SushiFresh differ from **competitors** (restaurants, delivery services, supermarket sushi)?
+- Which **trade-offs** arise (freshness vs. costs vs. waste vs. environment)?
+- Where does the company sit between **efficiency and responsiveness**? Which target variables are strategically important?
 :::
 :::
 
 ::: {.column width="50%"}
 ::: {.fragment}
-**Leitfragen: Supply-Chain-Struktur**
+**Guiding questions: supply chain structure**
 
-- Wie geht die Supply Chain mit **schwankender Nachfrage** und schnell verderblicher Ware um?
-- Wie lassen sich **Kühlkette und Frische** über die gesamte Kette sichern?
-- Welche **Stufen und Partner** gehören zur Supply Chain (Lieferanten, Küche, Logistik, Handel)?
-- Wie sollte die Supply Chain strukturiert werden **Zentralität vs. Dezentralität**?
-- Welche **Wertschöpfungstiefe** könnte SushiFresh anstreben? (z.B. eigene Logistik?)
+- How does the supply chain deal with **volatile demand** and highly perishable goods?
+- How can the **cold chain and freshness** be ensured along the entire chain?
+- Which **stages and partners** belong to the supply chain (suppliers, kitchen, logistics, retail)?
+- How should the supply chain be structured: **centralisation vs. decentralisation**?
+- What **depth of value creation** could SushiFresh aim for? (e.g. in-house logistics?)
 
 :::
 :::
 ::::
 
 ::: {.fragment}
-> **Ziel:** Erstellen Sie eine strategische Analyse des Geschäftsmodells von SushiFresh. Leiten Sie eine geeignete Struktur der Supply Chain ab.
+> **Objective:** Prepare a strategic analysis of SushiFresh's business model. Derive a suitable supply chain structure.
 :::
-
-

@@ -1,179 +1,179 @@
-# Das Newsvendor-Modell {#sec-newsvendor}
+# The Newsvendor Model {#sec-newsvendor}
 
 ::: {.lernziele}
-**Lernziele**
+**Learning objectives**
 
-Nach diesem Kapitel können Sie...
+After this chapter you will be able to...
 
-- das **Newsvendor-Problem** als typische Einperioden-Bestellmengenentscheidung unter Nachfrageunsicherheit einordnen und von mehrperiodigen Bestandsproblemen abgrenzen,
-- **Unterdeckungs-** und **Überdeckungskosten** aus einer gegebenen Erlös- und Kostenstruktur herleiten,
-- die **kritische Verhältniszahl (Critical Ratio)** aus einer Grenzkostenbetrachtung ableiten und ökonomisch interpretieren,
-- die optimale Bestellmenge sowohl bei **diskreter** als auch bei **stetiger (normalverteilter)** Nachfrage berechnen,
-- den Zusammenhang zwischen kritischer Verhältniszahl und **Servicegrad** erklären,
-- eine eigene, mehrzeilige R-Funktion schreiben, die ein komplettes Entscheidungsmodell kapselt,
-- numerische Wurzelfindung (`uniroot()`) und Optimierung (`optimize()`) als Alternative zu geschlossenen Lösungsformeln einsetzen,
-- eine Sensitivitätsanalyse durch Vektorisierung eines Modells über einen Parametervektor durchführen und deren Ergebnis grafisch aufbereiten.
+- classify the **newsvendor problem** as a typical single-period order quantity decision under demand uncertainty and distinguish it from multi-period inventory problems,
+- derive **underage** and **overage costs** from a given revenue and cost structure,
+- derive the **critical ratio** from a marginal cost analysis and interpret it economically,
+- calculate the optimal order quantity for both **discrete** and **continuous (normally distributed)** demand,
+- explain the relationship between the critical ratio and the **service level**,
+- write your own multi-line R function that encapsulates a complete decision model,
+- use numerical root finding (`uniroot()`) and optimisation (`optimize()`) as an alternative to closed-form solutions,
+- carry out a sensitivity analysis by vectorising a model over a parameter vector and present the results graphically.
 :::
 
-## Einperiodige Entscheidungen unter Unsicherheit
+## Single-period decisions under uncertainty
 
-In Kapitel [-@sec-unsicherheit-pooling] haben wir gelernt, wie sich Nachfrageunsicherheit mit Wahrscheinlichkeitsverteilungen beschreiben lässt und wie man mit `rnorm()`, `dnorm()`, `pnorm()` und `qnorm()` Aussagen über normalverteilte Zufallsgrößen trifft. Auch das Prinzip der Monte-Carlo-Simulation mit `replicate()` und die empirische Verteilungsfunktion `ecdf()` wurden dort eingeführt. In diesem Kapitel nutzen wir genau dieses Instrumentarium, um eine der zentralen Entscheidungssituationen des Supply Chain Managements zu lösen: die Frage, wie viel von einem Produkt bestellt oder produziert werden soll, wenn die Nachfrage erst *nach* der Entscheidung bekannt wird und eine Korrektur der Menge während der Verkaufsperiode nicht mehr möglich ist.
+In Chapter [-@sec-unsicherheit-pooling] we learned how demand uncertainty can be described with probability distributions and how to make statements about normally distributed random variables using `rnorm()`, `dnorm()`, `pnorm()` and `qnorm()`. The principle of Monte Carlo simulation with `replicate()` and the empirical distribution function `ecdf()` were also introduced there. In this chapter we use exactly this toolkit to solve one of the central decision situations of supply chain management: the question of how much of a product should be ordered or produced when demand only becomes known *after* the decision and the quantity can no longer be corrected during the selling period.
 
-Dieses Problem heißt **Newsvendor-Modell** (auch *Newsboy-Problem* oder *Einperioden-Bestandsmodell*), benannt nach dem klassischen Beispiel eines Zeitungsverkäufers, der jeden Morgen entscheiden muss, wie viele Exemplare einer Tageszeitung er einkauft, bevor er die tatsächliche Nachfrage des Tages kennt. Die mathematische Struktur des Problems wurde bereits in den 1950er-Jahren von @arrow1951optimal formal untersucht und ist seither eines der am häufigsten verwendeten Modelle der Bestandsplanung [@cachon2024matching; @silver2017inventory]. Charakteristisch für alle Anwendungen ist:
+This problem is called the **newsvendor model** (also *newsboy problem* or *single-period inventory model*), named after the classic example of a newspaper seller who has to decide every morning how many copies of a daily newspaper to buy before knowing the actual demand of the day. The mathematical structure of the problem was formally studied as early as the 1950s by @arrow1951optimal and has since been one of the most frequently used models in inventory planning [@cachon2024matching; @silver2017inventory]. All applications share the following characteristics:
 
-- Es wird **eine einzige Bestell- oder Produktionsentscheidung** vor Beginn der Verkaufsperiode getroffen.
-- **Innerhalb der Periode** ist keine Nachbestellung möglich — Angebot und Nachfrage treffen erst am Ende der Periode endgültig aufeinander.
-- Die Nachfrage der Periode ist zum Entscheidungszeitpunkt **unsicher**, aber ihre Verteilung ist bekannt (z. B. aus historischen Verkaufsdaten geschätzt).
-- Nicht verkaufte Einheiten haben am Ende der Periode einen **geringeren Wert** als ursprünglich kalkuliert (Rabattverkauf, Entsorgung, Rückgabe an den Hersteller) — und zu wenig bestellte Einheiten führen zu **entgangenem Deckungsbeitrag**.
+- **A single order or production decision** is made before the start of the selling period.
+- **Within the period** no reordering is possible — supply and demand only finally meet at the end of the period.
+- Demand in the period is **uncertain** at the time of the decision, but its distribution is known (e.g. estimated from historical sales data).
+- Unsold units have a **lower value** at the end of the period than originally calculated (discount sale, disposal, return to the manufacturer) — and ordering too few units leads to **lost contribution margin**.
 
-Damit ist das Newsvendor-Modell das mikroökonomische Fundament für sehr viel weitreichendere Fragestellungen: Wie hoch sollte der Sicherheitsbestand in einem mehrperiodigen Lager sein? Wie groß sollte die Kapazität einer Fertigungslinie sein? Wie viele Zimmer sollte ein Hotel für eine bestimmte Nacht anbieten? Wir werden in diesem Kapitel sehen, dass alle diese Fragen im Kern dieselbe formale Struktur besitzen.
+This makes the newsvendor model the microeconomic foundation for much more far-reaching questions: How high should the safety stock be in a multi-period warehouse? How large should the capacity of a production line be? How many rooms should a hotel offer for a particular night? We will see in this chapter that all these questions essentially share the same formal structure.
 
-## Fallbeispiel: Sushi-Boxen im Supermarkt
+## Case example: sushi boxes in the supermarket
 
-Zur Veranschaulichung begleiten wir das gesamte Kapitel mit einem durchgehenden Beispiel: Die **SushiFresh GmbH**, ein regionaler Hersteller frischer Sushi-Boxen im Rhein-Main-Gebiet, beliefert täglich mehrere Supermarkt-Filialen mit frisch produzierten Sushi-Boxen. Der zeitliche Ablauf eines Verkaufstages sieht für jede Filiale wie folgt aus:
+For illustration, we accompany the entire chapter with a running example: **SushiFresh GmbH**, a regional producer of fresh sushi boxes in the Rhine-Main area, supplies several supermarket stores every day with freshly produced sushi boxes. The timeline of a selling day looks as follows for each store:
 
-1. **7 Uhr:** Die Sushi-Boxen werden frisch vorbereitet und vor Ladenöffnung an die jeweilige Filiale geliefert.
-2. **8 Uhr:** Der Verkauf im Supermarkt beginnt. Nachlieferungen während des Tages sind ausgeschlossen — die produzierte Menge ist für den gesamten Tag fix.
-3. **19 Uhr:** Nicht verkaufte Boxen werden von SushiFresh wieder abgeholt.
-4. **20 Uhr:** Die Restware wird rabattiert verkauft, gespendet oder entsorgt — ein regulärer Verkauf am Folgetag ist aus Gründen der Lebensmittelsicherheit nicht mehr zulässig.
+1. **7 a.m.:** The sushi boxes are freshly prepared and delivered to the respective store before opening.
+2. **8 a.m.:** Sales in the supermarket begin. Replenishment during the day is ruled out — the quantity produced is fixed for the whole day.
+3. **7 p.m.:** Unsold boxes are collected again by SushiFresh.
+4. **8 p.m.:** The leftover goods are sold at a discount, donated or disposed of — regular sale on the following day is no longer permitted for food safety reasons.
 
-Die zentrale unternehmerische Entscheidung fällt bereits am Morgen, lange bevor die tatsächliche Tagesnachfrage der jeweiligen Filiale bekannt ist: **Wie viele Sushi-Boxen sollte SushiFresh je Filiale produzieren?**
+The central business decision is made in the morning, long before the actual daily demand of the respective store is known: **How many sushi boxes should SushiFresh produce per store?**
 
-### Erlös- und Kostenstruktur
+### Revenue and cost structure
 
-Für eine einzelne Sushi-Box gelten folgende, vereinfachte Werte:
+The following simplified values apply to a single sushi box:
 
-| Größe | Bedeutung | Wert |
+| Quantity | Meaning | Value |
 |---|---|---:|
-| Verkaufspreis $p$ | Erlös je verkaufter Sushi-Box | 10 € |
-| Herstell- und Lieferkosten $c$ | Kosten je vorbereiteter Sushi-Box | 5 € |
-| Restwert $v$ | Erlös bei Abendrabatt bzw. Verwertung | 2 € |
+| Selling price $p$ | Revenue per sushi box sold | €10 |
+| Production and delivery costs $c$ | Costs per prepared sushi box | €5 |
+| Salvage value $v$ | Revenue from evening discount or disposal | €2 |
 
-Für ökonomisch sinnvolle Anwendungen des Modells muss stets $p > c > v$ gelten: Läge der Restwert $v$ nicht unterhalb der Herstellkosten $c$, gäbe es keinen Anreiz, die Bestellmenge überhaupt zu begrenzen — man könnte beliebig viel produzieren, da selbst unverkaufte Ware immer noch mindestens kostendeckend verwertet würde. Läge umgekehrt der Verkaufspreis $p$ nicht oberhalb der Herstellkosten $c$, würde sich der Verkauf grundsätzlich nicht lohnen.
+For economically meaningful applications of the model, $p > c > v$ must always hold: if the salvage value $v$ were not below the production cost $c$, there would be no incentive to limit the order quantity at all — one could produce any amount, since even unsold goods would still be recovered at least at cost. Conversely, if the selling price $p$ were not above the production cost $c$, selling would not be worthwhile in principle.
 
-Aus diesen drei Größen leiten wir zwei zentrale Kostenkategorien ab, die im weiteren Verlauf des Kapitels immer wieder auftauchen:
+From these three quantities we derive two central cost categories that will appear again and again throughout the chapter:
 
 ::: {.definition}
-**Definition: Unterdeckungs- und Überdeckungskosten**
+**Definition: underage and overage costs**
 
-Die **Unterdeckungskosten** $c^u$ (*underage cost*) entsprechen dem entgangenen Deckungsbeitrag je Einheit, die nicht verkauft werden konnte, weil zu wenig bestellt wurde:
+The **underage costs** $c^u$ (*underage cost*) correspond to the lost contribution margin per unit that could not be sold because too little was ordered:
 $$c^u = p - c$$
 
-Die **Überdeckungskosten** $c^o$ (*overage cost*) entsprechen dem Verlust je Einheit, die am Ende der Periode nicht verkauft wurde:
+The **overage costs** $c^o$ (*overage cost*) correspond to the loss per unit that was not sold at the end of the period:
 $$c^o = c - v$$
 
-Für unser Sushi-Beispiel ergibt sich: $c^u = 10 - 5 = 5\ \text{€}$ und $c^o = 5 - 2 = 3\ \text{€}$.
+For our sushi example this gives: $c^u = 10 - 5 = 5\ \text{€}$ and $c^o = 5 - 2 = 3\ \text{€}$.
 :::
 
-Beide Größen sind *Opportunitätskosten* — es fließt kein Geld in Höhe von $c^u$ oder $c^o$ tatsächlich ab, sondern es handelt sich um entgangenen bzw. verlorenen Deckungsbeitrag im Vergleich zur jeweils bestmöglichen Entscheidung. Genau dieses Spannungsfeld zwischen "zu wenig" und "zu viel" bestellen ist der Kern des Newsvendor-Problems.
+Both quantities are *opportunity costs* — no money in the amount of $c^u$ or $c^o$ actually flows out; rather, they represent forgone or lost contribution margin compared with the best possible decision in each case. Precisely this tension between ordering "too little" and "too much" is the core of the newsvendor problem.
 
-## Herleitung der Gewinnfunktion
+## Deriving the profit function
 
-Bezeichnen wir mit $D$ die (zufällige) Tagesnachfrage und mit $q$ die vom Lieferanten festgelegte Bestellmenge, lassen sich zwei Situationen unterscheiden.
+If we denote the (random) daily demand by $D$ and the order quantity set by the supplier by $q$, two situations can be distinguished.
 
-**Fall 1 — Überdeckung ($q > D$):** Es wird mehr produziert als nachgefragt. Verkauft werden genau $D$ Einheiten, während $q - D$ Einheiten zum Restwert verwertet werden müssen. Der Deckungsbeitrag beträgt
+**Case 1 — overage ($q > D$):** More is produced than demanded. Exactly $D$ units are sold, while $q - D$ units must be recovered at the salvage value. The contribution margin is
 $$P(D,q) = D \cdot c^u - (q - D) \cdot c^o.$$
 
-**Fall 2 — Unterdeckung ($q < D$):** Es wird weniger produziert als nachgefragt. Da nicht mehr Ware zur Verfügung steht, als produziert wurde, werden genau $q$ Einheiten verkauft — die überschießende Nachfrage $D - q$ bleibt unbedient und der zugehörige Deckungsbeitrag geht verloren. Es gilt
+**Case 2 — underage ($q < D$):** Less is produced than demanded. Since no more goods are available than were produced, exactly $q$ units are sold — the excess demand $D - q$ remains unserved and the associated contribution margin is lost. We have
 $$P(D,q) = q \cdot c^u.$$
 
-Beide Fälle lassen sich mithilfe der *positiven Teil*-Funktion $(x)^+ := \max(x,0)$ zu einer einzigen, für beliebige Werte von $D$ und $q$ gültigen Gewinnfunktion zusammenfassen:
+Using the *positive part* function $(x)^+ := \max(x,0)$, both cases can be combined into a single profit function valid for any values of $D$ and $q$:
 $$
 P(D,q) = c^u \cdot \min(D,q) - c^o \cdot (q-D)^+.
 $$
 
-Da $\min(D,q) = D - (D-q)^+$ gilt (die verkaufte Menge entspricht der Nachfrage abzüglich der nicht bedienten Fehlmenge), lässt sich die Gewinnfunktion äquivalent auch so schreiben:
+Since $\min(D,q) = D - (D-q)^+$ holds (the quantity sold equals demand minus the unserved shortage), the profit function can equivalently be written as:
 $$
-P(D,q) = \underbrace{D \cdot c^u}_{\text{maximal möglicher DB}} - \underbrace{(D-q)^+ \cdot c^u}_{\text{Fehlmengenkosten}} - \underbrace{(q-D)^+ \cdot c^o}_{\text{Überbestandskosten}}.
+P(D,q) = \underbrace{D \cdot c^u}_{\text{maximum possible CM}} - \underbrace{(D-q)^+ \cdot c^u}_{\text{shortage costs}} - \underbrace{(q-D)^+ \cdot c^o}_{\text{overstock costs}}.
 $$
 
-Diese Schreibweise macht die ökonomische Logik besonders deutlich: Ausgehend vom größtmöglichen Deckungsbeitrag $D \cdot c^u$, den man erzielen würde, wenn man die Nachfrage exakt träfe, werden zwei Arten von Kosten abgezogen — die Fehlmengenkosten bei zu geringer und die Überbestandskosten bei zu hoher Bestellmenge. Da $D$ zum Entscheidungszeitpunkt eine Zufallsvariable ist, betrachten wir den **Erwartungswert** über alle möglichen Nachfragerealisationen:
+This notation makes the economic logic particularly clear: starting from the largest possible contribution margin $D \cdot c^u$, which would be achieved if demand were met exactly, two types of cost are deducted — the shortage costs when the order quantity is too low and the overstock costs when it is too high. Since $D$ is a random variable at the time of the decision, we consider the **expected value** over all possible demand realisations:
 $$
 E[P(q)] = \mu \cdot c^u - c^u \cdot E\big[(D-q)^+\big] - c^o \cdot E\big[(q-D)^+\big],
 $$
-wobei $\mu = E[D]$ der Erwartungswert der Nachfrage ist. Da der erste Term $\mu \cdot c^u$ nicht von $q$ abhängt, ist die Maximierung des erwarteten Gewinns äquivalent zur Minimierung der erwarteten Fehlmengen- und Überbestandskosten:
+where $\mu = E[D]$ is the expected demand. Since the first term $\mu \cdot c^u$ does not depend on $q$, maximising the expected profit is equivalent to minimising the expected shortage and overstock costs:
 $$
 \min_q\ E[C(q)] = c^u \cdot E\big[(D-q)^+\big] + c^o \cdot E\big[(q-D)^+\big].
 $$
 
 ::: {.fallstudie}
-**Fallstudie: Erwarteter Deckungsbeitrag bei $q = 40$ Boxen (Rechenweg der Vorlesung)**
+**Case study: expected contribution margin for $q = 40$ boxes (calculation from the lecture)**
 
-Bevor die Optimierung allgemein gelöst wird, lohnt es sich, eine einzelne Produktionsmenge von Hand durchzurechnen. SushiFresh schätzt für eine kleine Filiale vier Nachfrageszenarien (30, 40, 50 oder 60 Boxen mit Wahrscheinlichkeiten 0,20 / 0,35 / 0,30 / 0,15). Werden $q = 40$ Boxen produziert, ergibt sich je Szenario:
+Before the optimisation is solved in general, it is worth working through a single production quantity by hand. For a small store, SushiFresh estimates four demand scenarios (30, 40, 50 or 60 boxes with probabilities 0.20 / 0.35 / 0.30 / 0.15). If $q = 40$ boxes are produced, each scenario yields:
 
-| Nachfrage $D$ | $P(D=d)$ | Überbestand $(q-D)^+$ | Fehlmenge $(D-q)^+$ | $P(D,q) = c^u\min(D,q) - c^o (q-D)^+$ |
+| Demand $D$ | $P(D=d)$ | Overstock $(q-D)^+$ | Shortage $(D-q)^+$ | $P(D,q) = c^u\min(D,q) - c^o (q-D)^+$ |
 |---:|---:|---:|---:|---:|
-| 30 | 0,20 | 10 | 0 | $5\cdot 30 - 3\cdot 10 = 120$ € |
-| 40 | 0,35 | 0 | 0 | $5\cdot 40 = 200$ € |
-| 50 | 0,30 | 0 | 10 | $5\cdot 40 = 200$ € |
-| 60 | 0,15 | 0 | 20 | $5\cdot 40 = 200$ € |
+| 30 | 0.20 | 10 | 0 | $5\cdot 30 - 3\cdot 10 = 120$ € |
+| 40 | 0.35 | 0 | 0 | $5\cdot 40 = 200$ € |
+| 50 | 0.30 | 0 | 10 | $5\cdot 40 = 200$ € |
+| 60 | 0.15 | 0 | 20 | $5\cdot 40 = 200$ € |
 
-Der erwartete Deckungsbeitrag beträgt damit $E[P \mid q=40] = 0{,}20\cdot 120 + 0{,}35\cdot 200 + 0{,}30\cdot 200 + 0{,}15\cdot 200 = 184$ €.
+The expected contribution margin is therefore $E[P \mid q=40] = 0.20\cdot 120 + 0.35\cdot 200 + 0.30\cdot 200 + 0.15\cdot 200 = 184$ €.
 :::
 
-Bevor wir diese Optimierung formal lösen, implementieren wir das Modell für den diskreten Fall selbst in R — das schärft das Verständnis der Formel erheblich mehr, als sie nur zu lesen.
+Before we solve this optimisation formally, we implement the model for the discrete case ourselves in R — this sharpens understanding of the formula far more than merely reading it.
 
 ::: {.r-exkurs}
-**R-Exkurs: Eine Modellfunktion kapseln**
+**R aside: encapsulating a model function**
 
-In Kapitel [-@sec-strategic-fit] haben Sie gelernt, eigene Funktionen mit `function()` zu schreiben. Bisher waren das meist kurze Hilfsfunktionen mit wenigen Zeilen. Für komplexere Modelle — wie das Newsvendor-Modell — lohnt es sich, das *gesamte* Berechnungsschema in einer einzigen, gut dokumentierten Funktion zu kapseln: Eingabeparameter hinein, alle Zwischengrößen berechnet, und am Ende ein strukturiertes Ergebnis (typischerweise eine `list()`) zurückgegeben. Genau nach diesem Muster ist auch die Funktion `newsvendor_normal()` in `R/scm_functions.R` aufgebaut, die wir später in diesem Kapitel noch verwenden werden.
+In Chapter [-@sec-strategic-fit] you learned how to write your own functions with `function()`. So far these were mostly short helper functions with a few lines. For more complex models — such as the newsvendor model — it is worth encapsulating the *entire* calculation scheme in a single, well-documented function: input parameters go in, all intermediate quantities are calculated, and at the end a structured result (typically a `list()`) is returned. The function `newsvendor_normal()` in `R/scm_functions.R`, which we will use later in this chapter, is built according to exactly this pattern.
 
-Wir bauen die diskrete Variante jetzt Schritt für Schritt selbst:
+We now build the discrete variant ourselves step by step:
 
 ```{r ch7-funktion-diskret}
 #| message: false
 library(tidyverse)  # dplyr, tibble, ggplot2, purrr
 
-#' Newsvendor-Modell bei diskreter Nachfrage
+#' Newsvendor model with discrete demand
 #'
-#' Berechnet fuer eine Menge diskreter Nachfrageszenarien den erwarteten
-#' Gewinn je Bestellmenge sowie die nach der Fraktilregel optimale
-#' Bestellmenge.
+#' Calculates, for a set of discrete demand scenarios, the expected
+#' profit per order quantity as well as the order quantity that is
+#' optimal according to the fractile rule.
 #'
-#' @param nachfrage           aufsteigend sortierter Vektor moeglicher
-#'                            Nachfragewerte (die Bestellmengen-Kandidaten)
-#' @param wahrscheinlichkeit  Vektor der zugehoerigen Eintrittswahrscheinlichkeiten
-#' @param verkaufspreis       Erloes je verkaufter Einheit (p)
-#' @param herstellkosten      Kosten je produzierter/beschaffter Einheit (bewusst
-#'                            nicht "c" genannt, da c() in R fuer Vektoren reserviert ist!)
-#' @param restwert            Erloes je nicht verkaufter Einheit (v)
-#' @return Liste mit Kostenparametern, vollstaendiger Ergebnistabelle und
-#'         optimaler Bestellmenge
+#' @param nachfrage           vector of possible demand values sorted in
+#'                            ascending order (the order quantity candidates)
+#' @param wahrscheinlichkeit  vector of the associated probabilities of occurrence
+#' @param verkaufspreis       revenue per unit sold (p)
+#' @param herstellkosten      cost per unit produced/procured (deliberately
+#'                            not called "c", since c() is reserved for vectors in R!)
+#' @param restwert            revenue per unsold unit (v)
+#' @return list with cost parameters, complete results table and
+#'         optimal order quantity
 newsvendor_diskret <- function(nachfrage, wahrscheinlichkeit,
                                 verkaufspreis, herstellkosten, restwert) {
 
-  # -- 1. Eingaben pruefen ---------------------------------------------------
+  # -- 1. Check inputs -------------------------------------------------------
   stopifnot(
     length(nachfrage) == length(wahrscheinlichkeit),
-    abs(sum(wahrscheinlichkeit) - 1) < 1e-8,   # Wahrscheinlichkeiten summieren zu 1
-    all(diff(nachfrage) > 0),                   # nachfrage muss aufsteigend sortiert sein
+    abs(sum(wahrscheinlichkeit) - 1) < 1e-8,   # probabilities sum to 1
+    all(diff(nachfrage) > 0),                   # nachfrage must be sorted in ascending order
     verkaufspreis > herstellkosten,
     herstellkosten > restwert
   )
 
-  # -- 2. Kostenparameter ableiten -------------------------------------------
-  cu <- verkaufspreis - herstellkosten   # Unterdeckungskosten c^u
-  co <- herstellkosten - restwert        # Ueberdeckungskosten c^o
-  cr <- cu / (cu + co)                   # kritische Verhaeltniszahl (critical ratio)
+  # -- 2. Derive cost parameters ---------------------------------------------
+  cu <- verkaufspreis - herstellkosten   # underage cost c^u
+  co <- herstellkosten - restwert        # overage cost c^o
+  cr <- cu / (cu + co)                   # critical ratio
 
-  # -- 3. erwarteter Gewinn fuer eine gegebene Bestellmenge q ----------------
-  # Innere Hilfsfunktion: nutzt die Variablen aus der umgebenden Funktion
-  # (cu, co, nachfrage, wahrscheinlichkeit) und ist deshalb nur lokal gueltig.
+  # -- 3. expected profit for a given order quantity q -----------------------
+  # Inner helper function: uses the variables of the enclosing function
+  # (cu, co, nachfrage, wahrscheinlichkeit) and is therefore only valid locally.
   gewinn_bei_q <- function(q) {
     gewinn_je_szenario <- cu * pmin(nachfrage, q) - co * pmax(q - nachfrage, 0)
-    sum(wahrscheinlichkeit * gewinn_je_szenario)  # Erwartungswert
+    sum(wahrscheinlichkeit * gewinn_je_szenario)  # expected value
   }
 
-  # -- 4. alle Nachfrageszenarien als Bestellmengen-Kandidaten durchrechnen --
+  # -- 4. evaluate all demand scenarios as order quantity candidates ---------
   erwarteter_gewinn <- vapply(nachfrage, gewinn_bei_q, numeric(1))
 
-  # -- 5. kumulierte Wahrscheinlichkeiten fuer die Fraktilregel --------------
+  # -- 5. cumulative probabilities for the fractile rule ---------------------
   kumuliert <- cumsum(wahrscheinlichkeit)
 
-  # -- 6. optimale Bestellmenge: kleinstes q mit F(q) >= kritischer Quote ----
+  # -- 6. optimal order quantity: smallest q with F(q) >= critical ratio -----
   q_stern <- nachfrage[min(which(kumuliert >= cr))]
 
-  # -- 7. Ergebnis als benannte Liste zurueckgeben ----------------------------
+  # -- 7. return result as a named list --------------------------------------
   list(
     cu             = cu,
     co             = co,
@@ -190,7 +190,7 @@ newsvendor_diskret <- function(nachfrage, wahrscheinlichkeit,
 }
 ```
 
-Nun wenden wir die Funktion auf ein bewusst kleines, vereinfachtes Miniaturbeispiel an — etwa einen Testverkauf in einer kleinen Filiale, für die noch keine verlässliche Verteilungsannahme getroffen werden kann. Aus Verkaufshistorie, Wochentag, Wetterprognose und aktuellen Aktionen wurden für diesen Testfall vier mögliche Nachfrageszenarien geschätzt:
+Now we apply the function to a deliberately small, simplified miniature example — for instance a test sale in a small store for which no reliable distributional assumption can yet be made. From sales history, day of the week, weather forecast and current promotions, four possible demand scenarios were estimated for this test case:
 
 ```{r ch7-sushi-anwendung}
 sushi <- newsvendor_diskret(
@@ -204,107 +204,107 @@ sushi <- newsvendor_diskret(
 sushi$tabelle |>
   knitr::kable(
     digits = c(0, 2, 2, 1),
-    col.names = c("Bestellmenge q", "P(D=q)", "F(q)", "E[Gewinn | q]")
+    col.names = c("Order quantity q", "P(D=q)", "F(q)", "E[Profit | q]")
   )
 ```
 
-Der erwartete Gewinn steigt zunächst von 30 auf 50 Sushi-Boxen an und fällt danach wieder — ein typisches Muster für Newsvendor-Probleme: Sowohl zu geringe als auch zu hohe Bestellmengen verringern den erwarteten Gewinn. Die Funktion identifiziert **`r sushi$q_stern`** Sushi-Boxen als optimale Bestellmenge mit einem erwarteten Gewinn von **`r round(sushi$gewinn_optimum, 1)`** € pro Tag. Im nächsten Abschnitt leiten wir her, *warum* genau diese Menge optimal ist.
+The expected profit initially rises from 30 to 50 sushi boxes and then falls again — a typical pattern for newsvendor problems: both too low and too high order quantities reduce the expected profit. The function identifies **`r sushi$q_stern`** sushi boxes as the optimal order quantity with an expected profit of **€`r round(sushi$gewinn_optimum, 1)`** per day. In the next section we derive *why* exactly this quantity is optimal.
 :::
 
-## Diskrete Nachfrage: Die Fraktilregel
+## Discrete demand: the fractile rule
 
-Warum wählt unsere Funktion gerade die kleinste Bestellmenge, deren kumulierte Wahrscheinlichkeit $F(q)$ eine bestimmte Schwelle überschreitet? Die Antwort liefert eine **Grenzbetrachtung**: Wir fragen uns, ob es sich lohnt, die Bestellmenge um eine zusätzliche Einheit zu erhöhen.
+Why does our function choose precisely the smallest order quantity whose cumulative probability $F(q)$ exceeds a certain threshold? The answer is provided by a **marginal analysis**: we ask whether it is worth increasing the order quantity by one additional unit.
 
-- Mit Wahrscheinlichkeit $1 - F(q)$ liegt die tatsächliche Nachfrage *über* $q$. In diesem Fall wird die zusätzliche Einheit verkauft und vermeidet eine Fehlmenge — der erwartete Grenzgewinn beträgt $c^u \cdot (1 - F(q))$.
-- Mit Wahrscheinlichkeit $F(q)$ liegt die Nachfrage bei höchstens $q$. In diesem Fall bleibt die zusätzliche Einheit unverkauft — der erwartete Grenzverlust beträgt $c^o \cdot F(q)$.
+- With probability $1 - F(q)$, actual demand lies *above* $q$. In this case the additional unit is sold and avoids a shortage — the expected marginal gain is $c^u \cdot (1 - F(q))$.
+- With probability $F(q)$, demand is at most $q$. In this case the additional unit remains unsold — the expected marginal loss is $c^o \cdot F(q)$.
 
-Es lohnt sich, die Bestellmenge zu erhöhen, solange der erwartete Grenzgewinn den erwarteten Grenzverlust übersteigt, also solange $c^u \cdot (1-F(q)) > c^o \cdot F(q)$ gilt. Am **Optimum** sind Grenzgewinn und Grenzverlust der letzten bestellten Einheit gerade ausgeglichen:
+It is worth increasing the order quantity as long as the expected marginal gain exceeds the expected marginal loss, i.e. as long as $c^u \cdot (1-F(q)) > c^o \cdot F(q)$ holds. At the **optimum**, the marginal gain and marginal loss of the last unit ordered are exactly balanced:
 
 ::: {.definition}
-**Definition: Kritische Verhältniszahl (Critical Ratio)**
+**Definition: critical ratio**
 
 $$
 c^u \cdot \big(1 - F(q^*)\big) = c^o \cdot F(q^*) \quad \Longleftrightarrow \quad F(q^*) = \underbrace{\frac{c^u}{c^u + c^o}}_{=: CR} \quad \Longleftrightarrow \quad q^* = F^{-1}(CR).
 $$
 
-Die **kritische Verhältniszahl** $CR$ gibt an, welcher Anteil der Nachfrageverteilung höchstens von der optimalen Bestellmenge abgedeckt werden sollte. Sie hängt ausschließlich vom *Verhältnis* der Unter- zu den Überdeckungskosten ab, nicht von deren absoluter Höhe.
+The **critical ratio** $CR$ indicates what proportion of the demand distribution should at most be covered by the optimal order quantity. It depends solely on the *ratio* of underage to overage costs, not on their absolute level.
 :::
 
-Für unser Sushi-Beispiel ergibt sich $CR = 5/(5+3) = 0{,}625$. Bei **diskreter** Nachfrage ist $F$ eine Treppenfunktion, sodass $F(q) = CR$ im Allgemeinen für kein einziges $q$ exakt erfüllt ist. Die korrekte Entscheidungsregel lautet deshalb: Wähle die **kleinste** Bestellmenge $q$, deren kumulierte Wahrscheinlichkeit $F(q)$ mindestens $CR$ erreicht.
+For our sushi example this gives $CR = 5/(5+3) = 0.625$. With **discrete** demand, $F$ is a step function, so that $F(q) = CR$ is in general not satisfied exactly for any single $q$. The correct decision rule is therefore: choose the **smallest** order quantity $q$ whose cumulative probability $F(q)$ reaches at least $CR$.
 
-| Nachfrage $D$ | $P(D=d)$ | $F(d)$ |
+| Demand $D$ | $P(D=d)$ | $F(d)$ |
 |---:|---:|---:|
-| 30 | 0,20 | 0,20 |
-| 40 | 0,35 | 0,55 |
-| 50 | 0,30 | 0,85 |
-| 60 | 0,15 | 1,00 |
+| 30 | 0.20 | 0.20 |
+| 40 | 0.35 | 0.55 |
+| 50 | 0.30 | 0.85 |
+| 60 | 0.15 | 1.00 |
 
-Da $F(40) = 0{,}55 < 0{,}625 \le F(50) = 0{,}85$, ist $q^* = 50$ Sushi-Boxen die optimale Bestellmenge — exakt das Ergebnis, das unsere Funktion `newsvendor_diskret()` im vorherigen Abschnitt bereits durch vollständiges Durchrechnen aller erwarteten Gewinne gefunden hat. Diese Übereinstimmung ist kein Zufall, sondern die Bestätigung, dass die Fraktilregel und das direkte Ausrechnen des erwarteten Gewinns *dasselbe* Optimierungsproblem lösen — einmal über eine geschlossene Entscheidungsregel, einmal über vollständige Enumeration.
+Since $F(40) = 0.55 < 0.625 \le F(50) = 0.85$, $q^* = 50$ sushi boxes is the optimal order quantity — exactly the result that our function `newsvendor_diskret()` already found in the previous section by fully computing all expected profits. This agreement is no coincidence but confirms that the fractile rule and direct computation of the expected profit solve the *same* optimisation problem — once via a closed-form decision rule, once via complete enumeration.
 
-Die kritische Verhältniszahl erlaubt zudem eine anschauliche Fallunterscheidung:
+The critical ratio also allows an intuitive distinction of cases:
 
-- **$c^u < c^o$:** Fehlmengen sind günstiger als Überbestände $\Rightarrow$ $CR < 0{,}5$ $\Rightarrow$ $q^*$ liegt **unterhalb** des Medians der Nachfrage — es lohnt sich, eher knapp zu bestellen.
-- **$c^u = c^o$:** Beide Fehlerarten sind gleich teuer $\Rightarrow$ $CR = 0{,}5$ $\Rightarrow$ $q^*$ entspricht dem **Median** der Nachfrage.
-- **$c^u > c^o$:** Fehlmengen sind teurer als Überbestände $\Rightarrow$ $CR > 0{,}5$ $\Rightarrow$ $q^*$ liegt **oberhalb** des Medians — es lohnt sich, eher großzügig zu bestellen.
+- **$c^u < c^o$:** shortages are cheaper than overstocks $\Rightarrow$ $CR < 0.5$ $\Rightarrow$ $q^*$ lies **below** the median of demand — it pays to order on the lean side.
+- **$c^u = c^o$:** both types of error are equally expensive $\Rightarrow$ $CR = 0.5$ $\Rightarrow$ $q^*$ equals the **median** of demand.
+- **$c^u > c^o$:** shortages are more expensive than overstocks $\Rightarrow$ $CR > 0.5$ $\Rightarrow$ $q^*$ lies **above** the median — it pays to order generously.
 
 ::: {.vertiefung}
-**Theorie-Vertiefung: Die Fraktilregel als Bedingung erster Ordnung**
+**In depth (theory): the fractile rule as a first-order condition**
 
-Die Grenzbetrachtung lässt sich für stetige Nachfrage mit Dichte $f$ und Verteilungsfunktion $F$ exakt formulieren. Die erwarteten Kosten lauten
+For continuous demand with density $f$ and distribution function $F$, the marginal analysis can be formulated exactly. The expected costs are
 $$
 E[C(q)] = c^u \int_q^{\infty} (d - q)\, f(d)\, \mathrm{d}d \;+\; c^o \int_{-\infty}^{q} (q - d)\, f(d)\, \mathrm{d}d .
 $$
-Differenziert man nach $q$ (Leibniz-Regel: Die Integranden verschwinden an der Grenze $d = q$, sodass nur die Ableitung der Integranden übrig bleibt), ergibt sich
+Differentiating with respect to $q$ (Leibniz rule: the integrands vanish at the boundary $d = q$, so only the derivative of the integrands remains) yields
 $$
 \frac{\mathrm{d}\,E[C(q)]}{\mathrm{d}q} = -c^u \int_q^{\infty} f(d)\,\mathrm{d}d + c^o \int_{-\infty}^{q} f(d)\,\mathrm{d}d = -c^u\,\big(1 - F(q)\big) + c^o\, F(q).
 $$
-Nullsetzen liefert $F(q^*) = c^u/(c^u+c^o)$ – genau die Fraktilregel. Die zweite Ableitung ist $(c^u + c^o)\,f(q) \geq 0$, die erwarteten Kosten sind also **konvex** in $q$, und die Bedingung erster Ordnung beschreibt tatsächlich ein Minimum. Die Ableitung hat zudem eine anschauliche Bedeutung: $1 - F(q)$ ist die Wahrscheinlichkeit, dass eine zusätzliche Einheit verkauft wird, $F(q)$ die Wahrscheinlichkeit, dass sie übrig bleibt. Die Grafiken der Vorlesung, in denen sich die Kurven der erwarteten Fehlmengen- und Überbestandskosten schneiden bzw. deren Steigungen ausgleichen, sind die geometrische Entsprechung dieser Gleichung.
+Setting this to zero gives $F(q^*) = c^u/(c^u+c^o)$ – exactly the fractile rule. The second derivative is $(c^u + c^o)\,f(q) \geq 0$, so the expected costs are **convex** in $q$, and the first-order condition indeed describes a minimum. The derivative also has an intuitive meaning: $1 - F(q)$ is the probability that an additional unit is sold, $F(q)$ the probability that it is left over. The graphs in the lecture, in which the curves of expected shortage and overstock costs intersect or their slopes balance out, are the geometric counterpart of this equation.
 :::
 
-## Stetige Nachfrage: Die Normalverteilung
+## Continuous demand: the normal distribution
 
-In der Praxis liegt Nachfrage selten in Form weniger diskreter Szenarien vor, sondern wird — wie in Kapitel [-@sec-unsicherheit-pooling] besprochen — häufig durch eine stetige Verteilung angenähert, meist die Normalverteilung $D \sim N(\mu, \sigma^2)$. Die SushiFresh GmbH beliefert inzwischen sechs Supermarkt-Filialen im Rhein-Main-Gebiet, deren Tagesnachfrage sich je nach Einzugsgebiet und Filialgröße deutlich unterscheidet. Wir betrachten im Folgenden die größte dieser Filialen, **Frankfurt**, für die aus der dokumentierten Verkaufshistorie eine Tagesnachfrage von $\mu = 280$ Boxen mit einer Standardabweichung von $\sigma = 55$ Boxen geschätzt wurde (bei unveränderter Kostenstruktur $c^u = 5\,$ €, $c^o = 3$ €, denn Verkaufspreis, Herstellkosten und Restwert sind produktbezogene und nicht filialspezifische Größen). Es handelt sich um dieselbe Filiale, die auch in Kapitel [-@sec-unsicherheit-pooling] im Kontext des Pooling-Effekts des Sicherheitsbestands über das SushiFresh-Filialnetz betrachtet wird.
+In practice, demand is rarely available in the form of a few discrete scenarios but — as discussed in Chapter [-@sec-unsicherheit-pooling] — is frequently approximated by a continuous distribution, usually the normal distribution $D \sim N(\mu, \sigma^2)$. SushiFresh GmbH now supplies six supermarket stores in the Rhine-Main area whose daily demand differs considerably depending on catchment area and store size. In the following we consider the largest of these stores, **Frankfurt**, for which a daily demand of $\mu = 280$ boxes with a standard deviation of $\sigma = 55$ boxes was estimated from the documented sales history (with an unchanged cost structure $c^u = 5\,$ €, $c^o = 3$ €, since selling price, production cost and salvage value are product-related rather than store-specific quantities). This is the same store that is also considered in Chapter [-@sec-unsicherheit-pooling] in the context of the pooling effect on safety stock across the SushiFresh store network.
 
-Da die Normalverteilung eine streng monoton wachsende, stetige Verteilungsfunktion $F$ besitzt, existiert die Umkehrfunktion $F^{-1}$ exakt — die Fraktilregel muss hier nicht mehr näherungsweise über eine Treppenfunktion, sondern kann direkt ausgewertet werden. Wie in Kapitel [-@sec-unsicherheit-pooling] gilt für die Standardisierung $Z = (D-\mu)/\sigma \sim N(0,1)$, sodass sich $q^*$ mit dem Quantil der Standardnormalverteilung ausdrücken lässt, das `qnorm()` liefert:
+Since the normal distribution has a strictly monotonically increasing, continuous distribution function $F$, the inverse function $F^{-1}$ exists exactly — the fractile rule no longer has to be evaluated approximately via a step function but can be evaluated directly. As in Chapter [-@sec-unsicherheit-pooling], the standardisation $Z = (D-\mu)/\sigma \sim N(0,1)$ holds, so that $q^*$ can be expressed using the quantile of the standard normal distribution returned by `qnorm()`:
 
 $$
 q^* = \mu + \sigma \cdot \Phi^{-1}(CR) = \mu + \sigma \cdot z^*, \qquad z^* = \Phi^{-1}(CR).
 $$
 
-Um auch die erwarteten Kosten am Optimum angeben zu können, benötigen wir die Erwartungswerte $E[(D-q)^+]$ und $E[(q-D)^+]$ für normalverteilte Nachfrage. Mit der **Einheits-Normalverlustfunktion** $L(z) = \varphi(z) - z\cdot(1-\Phi(z))$ — wobei $\varphi$ die Dichte der Standardnormalverteilung ist — lassen sich beide Erwartungswerte kompakt darstellen:
+To also be able to state the expected costs at the optimum, we need the expected values $E[(D-q)^+]$ and $E[(q-D)^+]$ for normally distributed demand. Using the **standard normal loss function** $L(z) = \varphi(z) - z\cdot(1-\Phi(z))$ — where $\varphi$ is the density of the standard normal distribution — both expected values can be expressed compactly:
 $$
 E\big[(D-q)^+\big] = \sigma \cdot L(z), \qquad E\big[(q-D)^+\big] = \sigma \cdot L(-z), \qquad z = \frac{q-\mu}{\sigma}.
 $$
-Setzt man dies in die erwartete Kostenfunktion ein und wertet sie an der Optimalstelle $z = z^*$ aus (wo $\Phi(z^*) = CR$ per Konstruktion gilt), heben sich die von $z^*$ abhängigen Terme gegenseitig auf, und es verbleibt die bemerkenswert einfache Formel
+Substituting this into the expected cost function and evaluating it at the optimum $z = z^*$ (where $\Phi(z^*) = CR$ holds by construction), the terms depending on $z^*$ cancel each other out, leaving the remarkably simple formula
 
 $$
 E\big[C(q^*)\big] = (c^u + c^o) \cdot \sigma \cdot \varphi(z^*).
 $$
 
 
-Genau diese beiden Formeln — für $q^*$ und $E[C(q^*)]$ — implementiert die Funktion `newsvendor_normal()` in `R/scm_functions.R`, die Sie zu Beginn dieses Kapitels bereits kennengelernt haben. Rechnen wir unser Beispiel nach:
+Exactly these two formulae — for $q^*$ and $E[C(q^*)]$ — are implemented by the function `newsvendor_normal()` in `R/scm_functions.R`, which you already encountered at the beginning of this chapter. Let us recalculate our example:
 
 ```{r ch7-normal-parameter}
-mu_nachfrage    <- 280  # Erwartungswert der Tagesnachfrage der Filiale Frankfurt (Boxen)
-sigma_nachfrage <- 55   # Standardabweichung der Tagesnachfrage der Filiale Frankfurt (Boxen)
+mu_nachfrage    <- 280  # expected daily demand of the Frankfurt store (boxes)
+sigma_nachfrage <- 55   # standard deviation of daily demand of the Frankfurt store (boxes)
 
-cu <- 5   # Unterdeckungskosten (wie im diskreten Fall)
-co <- 3   # Ueberdeckungskosten
+cu <- 5   # underage cost (as in the discrete case)
+co <- 3   # overage cost
 
-cr      <- cu / (cu + co)                 # kritische Verhaeltniszahl
-z_stern <- qnorm(cr)                      # Standardnormal-Quantil
+cr      <- cu / (cu + co)                 # critical ratio
+z_stern <- qnorm(cr)                      # standard normal quantile
 q_stern_normal <- mu_nachfrage + sigma_nachfrage * z_stern
 
-# erwartete Fehlmengen- und Ueberbestandskosten am Optimum
+# expected shortage and overstock costs at the optimum
 kosten_optimum <- (cu + co) * sigma_nachfrage * dnorm(z_stern)
 
 q_stern_normal
 kosten_optimum
 ```
 
-Mit $CR = 0{,}625$ ergibt sich $z^* = \Phi^{-1}(0{,}625) \approx 0{,}319$ und damit $q^* = 280 + 55 \cdot 0{,}319 \approx 297{,}5$ Sushi-Boxen. Da nur ganze Boxen produziert werden können, würde man in der Praxis auf $q^* = 298$ aufrunden. Die erwarteten Fehlmengen- und Überbestandskosten am Optimum betragen rund $166{,}8\,$€ pro Tag, sodass der erwartete Gewinn $E[P(q^*)] = \mu \cdot c^u - E[C(q^*)] \approx 280 \cdot 5 - 166{,}8 \approx 1233{,}2\,$€ pro Tag beträgt.
+With $CR = 0.625$ we obtain $z^* = \Phi^{-1}(0.625) \approx 0.319$ and thus $q^* = 280 + 55 \cdot 0.319 \approx 297.5$ sushi boxes. Since only whole boxes can be produced, in practice one would round up to $q^* = 298$. The expected shortage and overstock costs at the optimum amount to around €166.8 per day, so that the expected profit is $E[P(q^*)] = \mu \cdot c^u - E[C(q^*)] \approx 280 \cdot 5 - 166.8 \approx 1{,}233.2\,$€ per day.
 
-Zur Kontrolle vergleichen wir unser eigenes Ergebnis direkt mit der fertigen Funktion aus `R/scm_functions.R`:
+As a check, we compare our own result directly with the ready-made function from `R/scm_functions.R`:
 
 ```{r ch7-vergleich-funktion}
 source("../R/scm_functions.R")
@@ -314,15 +314,15 @@ ergebnis_fertig <- newsvendor_normal(
   p = 10, c = 5, s = 2
 )
 
-ergebnis_fertig$q_star       # sollte mit q_stern_normal uebereinstimmen
-ergebnis_fertig$exp_profit   # erwarteter Gewinn am Optimum
+ergebnis_fertig$q_star       # should match q_stern_normal
+ergebnis_fertig$exp_profit   # expected profit at the optimum
 ```
 
-Die folgende Abbildung veranschaulicht die Nachfrageverteilung zusammen mit der optimalen Bestellmenge: Die grün eingefärbte Fläche links von $q^*$ entspricht der kumulierten Wahrscheinlichkeit $F(q^*) = CR$, also dem Anteil der Tage, an denen die Bestellmenge ausreicht.
+The following figure illustrates the demand distribution together with the optimal order quantity: the green shaded area to the left of $q^*$ corresponds to the cumulative probability $F(q^*) = CR$, i.e. the proportion of days on which the order quantity is sufficient.
 
 ```{r}
 #| label: fig-newsvendor-normal
-#| fig-cap: "Dichte der normalverteilten Sushi-Nachfrage der Filiale Frankfurt mit optimaler Bestellmenge"
+#| fig-cap: "Density of the normally distributed sushi demand of the Frankfurt store with optimal order quantity"
 #| fig-width: 7
 #| fig-height: 4
 
@@ -353,24 +353,24 @@ ggplot(nachfrage_grid, aes(x = d, y = dichte)) +
     hjust = -0.1, colour = "#0B6E4F", fontface = "bold"
   ) +
   labs(
-    x = "Nachfrage D (Sushi-Boxen pro Tag)",
-    y = "Dichte f(D)",
-    title = "Kritische Verhältniszahl als Flächenanteil unter der Dichtefunktion"
+    x = "Demand D (sushi boxes per day)",
+    y = "Density f(D)",
+    title = "Critical ratio as an area under the density function"
   ) +
   theme_minimal(base_size = 13)
 ```
 
-Ein methodischer Exkurs sei an dieser Stelle erlaubt: Anstatt die Formel für $q^*$ direkt zu verwenden, ließe sich der erwartete Gewinn $E[P(q)]$ auch näherungsweise per **Monte-Carlo-Simulation** bestimmen — genau wie in Kapitel [-@sec-unsicherheit-pooling] eingeführt. Man würde mit `rnorm()` eine sehr große Zahl zufälliger Tagesnachfragen ziehen, für jede Ziehung den realisierten Gewinn gemäß der Gewinnfunktion $P(D,q)$ berechnen und anschließend über alle Wiederholungen mitteln (etwa mit `replicate()`). Für eine hinreichend große Anzahl von Simulationsläufen konvergiert dieser simulierte Mittelwert gegen den hier analytisch berechneten Erwartungswert $E[P(q)]$ — ein guter Plausibilitätstest, wenn eine geschlossene Formel wie hier verfügbar ist, und die einzige praktikable Lösung, wenn sie es nicht ist.
+A methodological digression is permitted at this point: instead of using the formula for $q^*$ directly, the expected profit $E[P(q)]$ could also be determined approximately by **Monte Carlo simulation** — exactly as introduced in Chapter [-@sec-unsicherheit-pooling]. One would draw a very large number of random daily demands with `rnorm()`, compute the realised profit for each draw according to the profit function $P(D,q)$ and then average over all replications (for instance with `replicate()`). For a sufficiently large number of simulation runs, this simulated mean converges to the expected value $E[P(q)]$ calculated analytically here — a good plausibility test when a closed-form formula is available, as here, and the only practicable solution when it is not.
 
-### Drei Fälle am Beispiel der Filiale Frankfurt
+### Three cases using the Frankfurt store as an example
 
-Die Fallunterscheidung aus dem diskreten Abschnitt lässt sich für die Filiale Frankfurt direkt quantifizieren. Die Vorlesung variiert dazu die Kostensätze so, dass Unterdeckung billiger, gleich teuer oder teurer ist als Überdeckung:
+The distinction of cases from the discrete section can be quantified directly for the Frankfurt store. To this end, the lecture varies the cost rates so that underage is cheaper than, equally expensive as or more expensive than overage:
 
 ```{r}
 #| label: ch7-drei-faelle
 
 faelle <- tibble(
-  Fall = c("1: c^u < c^o", "2: c^u = c^o", "3: c^u > c^o"),
+  Case = c("1: c^u < c^o", "2: c^u = c^o", "3: c^u > c^o"),
   cu   = c(1, 3, 5),
   co   = c(5, 3, 1)
 ) |>
@@ -378,26 +378,26 @@ faelle <- tibble(
     CR      = cu / (cu + co),
     z_stern = qnorm(CR),
     q_stern = mu_nachfrage + sigma_nachfrage * z_stern,
-    E_Kosten = (cu + co) * sigma_nachfrage * dnorm(z_stern)
+    E_Cost = (cu + co) * sigma_nachfrage * dnorm(z_stern)
   )
 
 faelle |> mutate(across(where(is.numeric), ~ round(.x, 2)))
 ```
 
-Im ersten Fall (Überbestände fünfmal so teuer wie Fehlmengen) produziert SushiFresh mit rund `r round(faelle$q_stern[1])` Boxen deutlich **unter** dem Erwartungswert von 280 Boxen und nimmt bewusst in Kauf, dass die Ware an rund `r round((1-faelle$CR[1])*100)` % der Tage vor Ladenschluss ausverkauft ist. Im symmetrischen Fall ist der Median – bei der Normalverteilung identisch mit dem Mittelwert – optimal. Im dritten Fall wird mit rund `r round(faelle$q_stern[3])` Boxen deutlich **über** dem Erwartungswert produziert. Wegen der Symmetrie der Normalverteilung liegen die Fälle 1 und 3 spiegelbildlich um $\mu$. Bemerkenswert ist, dass die minimalen erwarteten Kosten in Fall 1 und 3 gleich hoch sind: Sie hängen nur von $c^u + c^o$ und $\varphi(z^*)$ ab, und $\varphi$ ist symmetrisch.
+In the first case (overstocks five times as expensive as shortages), SushiFresh produces around `r round(faelle$q_stern[1])` boxes, clearly **below** the expected value of 280 boxes, and deliberately accepts that the goods will be sold out before closing time on around `r round((1-faelle$CR[1])*100)`% of days. In the symmetric case, the median – identical to the mean for the normal distribution – is optimal. In the third case, around `r round(faelle$q_stern[3])` boxes are produced, clearly **above** the expected value. Because of the symmetry of the normal distribution, cases 1 and 3 lie as mirror images around $\mu$. It is noteworthy that the minimum expected costs in cases 1 and 3 are equally high: they depend only on $c^u + c^o$ and $\varphi(z^*)$, and $\varphi$ is symmetric.
 
-## Numerische Optimierung als Alternative zur geschlossenen Lösung
+## Numerical optimisation as an alternative to the closed-form solution
 
-Für die Normalverteilung konnten wir $q^*$ bequem über `qnorm()` bestimmen, weil ihre Verteilungsfunktion eine bekannte Umkehrfunktion besitzt. Bei vielen praktisch relevanten Verteilungen — etwa einer Lognormal-, Gamma- oder empirisch aus Daten geschätzten Verteilung — existiert keine geschlossene Form für $F^{-1}$. In solchen Fällen hilft numerische  **Optimierung**, wie sie im folgenden Exkurs eingeführt wird.
+For the normal distribution we were able to determine $q^*$ conveniently via `qnorm()` because its distribution function has a known inverse. For many practically relevant distributions — for instance a lognormal, gamma or empirically estimated distribution — no closed form exists for $F^{-1}$. In such cases numerical **optimisation** helps, as introduced in the following aside.
 
 ::: {.r-exkurs}
-**R-Exkurs: `uniroot()` und `optimize()` statt analytischer Lösung**
+**R aside: `uniroot()` and `optimize()` instead of an analytical solution**
 
-Die Bedingung $F(q^*) = CR$ aus der Fraktilregel lässt sich als **Nullstellenproblem** auffassen: Gesucht ist der Wert $q$, für den die Funktion $g(q) = F(q) - CR$ gleich null wird. Die Funktion `uniroot()` findet genau eine solche Nullstelle in einem vorgegebenen Intervall — ganz ohne dass wir die Umkehrfunktion von $F$ explizit kennen müssten:
+The condition $F(q^*) = CR$ from the fractile rule can be viewed as a **root-finding problem**: we are looking for the value $q$ for which the function $g(q) = F(q) - CR$ becomes zero. The function `uniroot()` finds exactly such a root within a given interval — without us having to know the inverse function of $F$ explicitly:
 
 ```{r ch7-uniroot}
-# Zielfunktion: Differenz zwischen Verteilungsfunktion und kritischer Quote.
-# Bei Erfolg liefert uniroot() das q, fuer das diese Differenz null wird.
+# Objective function: difference between distribution function and critical ratio.
+# On success, uniroot() returns the q for which this difference becomes zero.
 zielfunktion_wurzel <- function(q) {
   pnorm(q, mean = mu_nachfrage, sd = sigma_nachfrage) - cr
 }
@@ -408,10 +408,10 @@ loesung_uniroot <- uniroot(
                mu_nachfrage + 4 * sigma_nachfrage)
 )
 
-loesung_uniroot$root   # sollte (nahezu) mit q_stern_normal uebereinstimmen
+loesung_uniroot$root   # should (almost) match q_stern_normal
 ```
 
-Alternativ lässt sich die erwartete Kostenfunktion $E[C(q)]$ auch **direkt minimieren**, ohne den Umweg über die Fraktilregel zu gehen — nützlich etwa, wenn man ausschließlich die Kostenfunktion kennt, nicht aber deren analytisches Minimum. `integrate()` berechnet dabei die Erwartungswerte $E[(D-q)^+]$ und $E[(q-D)^+]$ numerisch, und `optimize()` sucht anschließend das Minimum der Gesamtkostenfunktion:
+Alternatively, the expected cost function $E[C(q)]$ can also be **minimised directly** without the detour via the fractile rule — useful, for instance, when only the cost function is known but not its analytical minimum. `integrate()` computes the expected values $E[(D-q)^+]$ and $E[(q-D)^+]$ numerically, and `optimize()` then searches for the minimum of the total cost function:
 
 ```{r ch7-optimize}
 erwartete_kosten <- function(q) {
@@ -434,38 +434,38 @@ loesung_optimize <- optimize(
                mu_nachfrage + 4 * sigma_nachfrage)
 )
 
-loesung_optimize$minimum   # optimale Bestellmenge
-loesung_optimize$objective # minimale erwartete Kosten
+loesung_optimize$minimum   # optimal order quantity
+loesung_optimize$objective # minimum expected costs
 ```
 
-Beide numerischen Verfahren liefern (bis auf minimale Rundungsabweichungen) dasselbe Ergebnis wie die geschlossene Formel $q^* = \mu + \sigma \cdot \Phi^{-1}(CR)$. Der Vorteil dieser Herangehensweise zeigt sich, sobald man `dnorm()`/`pnorm()` durch die Dichte- bzw. Verteilungsfunktion einer beliebigen anderen Verteilung ersetzt — die Struktur des Codes bleibt unverändert, während eine analytische Herleitung für jede neue Verteilung von Neuem geleistet werden müsste.
+Both numerical methods yield (apart from minimal rounding deviations) the same result as the closed-form formula $q^* = \mu + \sigma \cdot \Phi^{-1}(CR)$. The advantage of this approach becomes apparent as soon as `dnorm()`/`pnorm()` are replaced by the density or distribution function of any other distribution — the structure of the code remains unchanged, whereas an analytical derivation would have to be carried out anew for each new distribution.
 :::
 
-## Kritische Verhältniszahl und Servicegrad
+## Critical ratio and service level
 
-Die kritische Verhältniszahl $CR = \Phi(z^*)$ besitzt eine zweite, sehr praxisnahe Interpretation: Sie entspricht genau der Wahrscheinlichkeit, dass die Nachfrage die Bestellmenge **nicht** übersteigt, also dem sogenannten **Zyklus-Servicegrad** ($\alpha$-Servicegrad) — dem Anteil der Perioden, in denen die gesamte Nachfrage aus der vorhandenen Menge gedeckt werden kann. Für unser Beispiel bedeutet $CR = 0{,}625$: An etwa 62,5 % aller Tage reicht die Bestellmenge $q^*$ aus, um die komplette Tagesnachfrage zu bedienen; an den übrigen rund 37,5 % der Tage kommt es zu einer (teilweisen) Fehlmenge.
+The critical ratio $CR = \Phi(z^*)$ has a second, very practical interpretation: it corresponds exactly to the probability that demand does **not** exceed the order quantity, i.e. the so-called **cycle service level** ($\alpha$ service level) — the proportion of periods in which the entire demand can be met from the available quantity. For our example, $CR = 0.625$ means: on about 62.5% of all days the order quantity $q^*$ is sufficient to serve the complete daily demand; on the remaining roughly 37.5% of days a (partial) shortage occurs.
 
-Dieser Zusammenhang ist der Grund, warum das Newsvendor-Modell weit über Einperiodenprobleme hinaus Bedeutung hat (die Vorlesung betont: es ist die Basis für die Berechnung kostenoptimaler Sicherheitsbestände in Lagerhaltungssystemen; in Kapitel [-@sec-bullwhip] wird daraus der Ziellagerbestand $S = \mu(l+1) + z_{CR}\,\sigma\sqrt{l+1}$ abgeleitet): Die **Sicherheitsbestände** mehrperiodiger Lagerhaltungssysteme werden in der Praxis sehr häufig genau nach diesem Prinzip bemessen — man legt einen gewünschten Servicegrad fest (z. B. 95 %) und bestimmt daraus über $z = \Phi^{-1}(\text{Servicegrad})$ den erforderlichen Sicherheitsbestandsfaktor, wie es bereits in Kapitel [-@sec-unsicherheit-pooling] im Kontext des Pooling-Effekts anklang. Der Unterschied zum Newsvendor-Modell besteht lediglich darin, *woher* der Zielwert der kritischen Quote stammt: im Newsvendor-Modell wird er aus Kosten hergeleitet ($CR = c^u/(c^u+c^o)$), in vielen operativen Lagerhaltungssystemen dagegen häufig direkt als Managemententscheidung vorgegeben. Zu beachten ist außerdem, dass der hier betrachtete Zyklus-Servicegrad (Wahrscheinlichkeit *keiner* Fehlmenge) nicht mit dem **Fill Rate** verwechselt werden darf, der den Anteil der *mengenmäßig* gedeckten Nachfrage misst und in aller Regel höher ausfällt als der Zyklus-Servicegrad.
+This relationship is the reason why the newsvendor model is important far beyond single-period problems (the lecture emphasises: it is the basis for calculating cost-optimal safety stocks in inventory systems; in Chapter [-@sec-bullwhip] the order-up-to level $S = \mu(l+1) + z_{CR}\,\sigma\sqrt{l+1}$ is derived from it): in practice, the **safety stocks** of multi-period inventory systems are very often dimensioned according to exactly this principle — a desired service level is set (e.g. 95%) and the required safety factor is determined from it via $z = \Phi^{-1}(\text{service level})$, as already hinted at in Chapter [-@sec-unsicherheit-pooling] in the context of the pooling effect. The only difference from the newsvendor model lies in *where* the target value of the critical ratio comes from: in the newsvendor model it is derived from costs ($CR = c^u/(c^u+c^o)$), whereas in many operational inventory systems it is frequently specified directly as a management decision. It should also be noted that the cycle service level considered here (probability of *no* shortage) must not be confused with the **fill rate**, which measures the proportion of demand met *in terms of quantity* and is as a rule higher than the cycle service level.
 
-## Sensitivitätsanalyse: Wie reagiert das Modell auf veränderte Parameter?
+## Sensitivity analysis: how does the model respond to changed parameters?
 
-Bislang haben wir das Newsvendor-Modell für feste Werte von $\mu$, $\sigma$, $p$, $c$ und $v$ gelöst. In der Praxis interessiert oft, **wie empfindlich** die optimale Entscheidung auf Veränderungen dieser Parameter reagiert — etwa wenn der Verkaufspreis saisonal schwankt oder die Nachfrageschätzung mit Unsicherheit behaftet ist. Genau dafür eignet sich die **Vektorisierung**, die Sie bereits aus Kapitel [-@sec-standort-1] (`sapply()`) und Kapitel [-@sec-standort-2] (`purrr::map()`) kennen: Statt das Modell für einen einzelnen Parameterwert auszuwerten, wenden wir es auf einen ganzen Vektor möglicher Werte an.
+So far we have solved the newsvendor model for fixed values of $\mu$, $\sigma$, $p$, $c$ and $v$. In practice, one is often interested in **how sensitively** the optimal decision reacts to changes in these parameters — for instance when the selling price fluctuates seasonally or the demand estimate is subject to uncertainty. **Vectorisation**, which you already know from Chapter [-@sec-standort-1] (`sapply()`) and Chapter [-@sec-standort-2] (`purrr::map()`), is ideal for exactly this: instead of evaluating the model for a single parameter value, we apply it to a whole vector of possible values.
 
 ::: {.r-exkurs}
-**R-Exkurs: Sensitivitätsanalyse durch Vektorisierung**
+**R aside: sensitivity analysis through vectorisation**
 
-Zunächst untersuchen wir, wie der erwartete Gewinn $E[P(q)]$ über ein feines Raster möglicher Bestellmengen verläuft — für die Filiale Frankfurt also für jede Menge zwischen 100 und 460 Boxen. Dazu kapseln wir die Gewinnformel aus dem Normalverteilungsfall in einer kleinen Funktion und werten sie mit `sapply()` für jeden Rasterpunkt aus:
+First, we examine how the expected profit $E[P(q)]$ behaves over a fine grid of possible order quantities — for the Frankfurt store, i.e. for every quantity between 100 and 460 boxes. To do so, we encapsulate the profit formula from the normal distribution case in a small function and evaluate it with `sapply()` for each grid point:
 
 ```{r}
 #| label: fig-newsvendor-sensitivitaet-q
-#| fig-cap: "Erwarteter Gewinn in Abhängigkeit von der Bestellmenge q"
+#| fig-cap: "Expected profit as a function of the order quantity q"
 #| fig-width: 7
 #| fig-height: 4
 
-# Modellfunktion: erwarteter Gewinn bei gegebenem q (Normalverteilungsfall)
+# Model function: expected profit for a given q (normal distribution case)
 erwarteter_gewinn_normal <- function(q, mu, sigma, cu, co) {
   z <- (q - mu) / sigma
-  L <- function(z) dnorm(z) - z * (1 - pnorm(z))  # Einheits-Normalverlustfunktion
+  L <- function(z) dnorm(z) - z * (1 - pnorm(z))  # standard normal loss function
   e_fehlmenge    <- sigma * L(z)
   e_ueberbestand <- sigma * L(-z)
   mu * cu - cu * e_fehlmenge - co * e_ueberbestand
@@ -473,7 +473,7 @@ erwarteter_gewinn_normal <- function(q, mu, sigma, cu, co) {
 
 q_raster <- seq(100, 460, by = 2)
 
-# sapply() wendet die Funktion auf jeden Wert des Rasters an
+# sapply() applies the function to each value of the grid
 gewinn_je_q <- sapply(
   q_raster, erwarteter_gewinn_normal,
   mu = mu_nachfrage, sigma = sigma_nachfrage, cu = cu, co = co
@@ -485,29 +485,29 @@ ggplot(sensitivitaet_q, aes(x = bestellmenge, y = erwarteter_gewinn)) +
   geom_line(colour = "#0B6E4F", linewidth = 1) +
   geom_vline(xintercept = q_stern_normal, linetype = "dashed", colour = "#D97B29") +
   labs(
-    x = "Bestellmenge q", y = "Erwarteter Gewinn E[P(q)] in €",
-    title = "Sensitivität des erwarteten Gewinns gegenüber der Bestellmenge"
+    x = "Order quantity q", y = "Expected profit E[P(q)] in €",
+    title = "Sensitivity of expected profit to the order quantity"
   ) +
   theme_minimal(base_size = 13)
 ```
 
-Die Kurve bestätigt anschaulich, was wir bereits analytisch hergeleitet hatten: Der erwartete Gewinn ist eine **konkave** Funktion der Bestellmenge mit eindeutigem Maximum bei $q^*$ — sowohl deutlich kleinere als auch deutlich größere Mengen verringern den erwarteten Gewinn.
+The curve vividly confirms what we had already derived analytically: the expected profit is a **concave** function of the order quantity with a unique maximum at $q^*$ — both significantly smaller and significantly larger quantities reduce the expected profit.
 
-In einem zweiten Schritt untersuchen wir, wie stark sich die *optimale* Bestellmenge selbst verändert, wenn sich der Verkaufspreis $p$ ändert (z. B. durch saisonale Rabattaktionen). Dazu nutzen wir `purrr::map_dbl()`, das — analog zu `sapply()` — eine Funktion über einen Vektor iteriert und garantiert einen numerischen Vektor zurückgibt:
+In a second step, we examine how much the *optimal* order quantity itself changes when the selling price $p$ changes (e.g. due to seasonal discount promotions). For this we use `purrr::map_dbl()`, which — analogous to `sapply()` — iterates a function over a vector and is guaranteed to return a numeric vector:
 
 ```{r}
 #| label: fig-newsvendor-sensitivitaet-preis
-#| fig-cap: "Optimale Bestellmenge in Abhängigkeit vom Verkaufspreis"
+#| fig-cap: "Optimal order quantity as a function of the selling price"
 #| fig-width: 7
 #| fig-height: 4
 
-herstellkosten <- 5   # bleibt konstant
-restwert       <- 2   # bleibt konstant
+herstellkosten <- 5   # remains constant
+restwert       <- 2   # remains constant
 preise         <- seq(6, 16, by = 0.5)
 
 q_stern_je_preis <- purrr::map_dbl(preise, function(p) {
-  cu_tmp <- p - herstellkosten          # Unterdeckungskosten aendert sich mit p
-  cr_tmp <- cu_tmp / (cu_tmp + co)      # co bleibt unveraendert
+  cu_tmp <- p - herstellkosten          # underage cost changes with p
+  cr_tmp <- cu_tmp / (cu_tmp + co)      # co remains unchanged
   mu_nachfrage + sigma_nachfrage * qnorm(cr_tmp)
 })
 
@@ -517,41 +517,41 @@ ggplot(sensitivitaet_preis, aes(x = preis, y = q_stern)) +
   geom_line(colour = "#0B6E4F", linewidth = 1) +
   geom_point(colour = "#0B6E4F") +
   labs(
-    x = "Verkaufspreis p in €", y = "Optimale Bestellmenge q*",
-    title = "Je höher der Preis, desto größer die optimale Bestellmenge"
+    x = "Selling price p in €", y = "Optimal order quantity q*",
+    title = "The higher the price, the larger the optimal order quantity"
   ) +
   theme_minimal(base_size = 13)
 ```
 
-Die Grafik zeigt einen intuitiven Zusammenhang: Steigt der Verkaufspreis $p$, steigen die Unterdeckungskosten $c^u = p - c$ und damit auch die kritische Verhältniszahl $CR$ — der Lieferant sollte also tendenziell **mehr** bestellen, weil eine Fehlmenge nun teurer geworden ist. Solche Sensitivitätsanalysen sind in der Praxis oft mindestens so wertvoll wie der einzelne Optimalwert selbst, weil sie zeigen, wie robust eine Entscheidung gegenüber Schätzfehlern oder Marktschwankungen ist.
+The graph shows an intuitive relationship: if the selling price $p$ rises, the underage cost $c^u = p - c$ rises and thus also the critical ratio $CR$ — the supplier should therefore tend to order **more**, because a shortage has now become more expensive. In practice, such sensitivity analyses are often at least as valuable as the single optimal value itself, because they show how robust a decision is to estimation errors or market fluctuations.
 :::
 
-## Anwendungsbereiche und Grenzen des Modells
+## Areas of application and limitations of the model
 
-Das Newsvendor-Modell entfaltet seinen größten Nutzen dort, wo eine **Bedarfsglättung durch Lagerhaltung nicht möglich** ist und die Kostenparameter $c^u$ und $c^o$ hinreichend gut geschätzt werden können [@thonemann2023operations]. Typische Anwendungsbereiche sind:
+The newsvendor model is most useful where **smoothing demand through inventory holding is not possible** and the cost parameters $c^u$ and $c^o$ can be estimated sufficiently well [@thonemann2023operations]. Typical areas of application are:
 
-- **Saison- und Aktionsartikel** (Weihnachtsartikel, Modewaren einer Saison), bei denen eine Nachbestellung innerhalb der Saison praktisch ausgeschlossen ist,
-- **Frischwaren mit kurzer Haltbarkeit** (wie unser Sushi-Beispiel, aber auch Backwaren, Blumen oder Fertiggerichte),
-- **Tickets für Veranstaltungen oder Verkehrsmittel**, deren Kapazität am Veranstaltungs- bzw. Abfahrtstag fix ist,
-- **Kapazitätsplanung** in der Fertigung, wenn Kapazität nur einmalig vor Beginn einer Periode festgelegt werden kann.
+- **Seasonal and promotional items** (Christmas items, fashion goods for one season), for which reordering within the season is practically ruled out,
+- **Fresh goods with a short shelf life** (like our sushi example, but also bakery products, flowers or ready meals),
+- **Tickets for events or means of transport**, whose capacity is fixed on the day of the event or departure,
+- **Capacity planning** in manufacturing, when capacity can only be set once before the start of a period.
 
-Darüber hinaus ist das Newsvendor-Modell — wie im vorigen Abschnitt gezeigt — die konzeptionelle Grundlage für die Berechnung kostenoptimaler Sicherheitsbestände in mehrperiodigen Lagerhaltungssystemen, was seine praktische Bedeutung weit über den Einzelfall der einmaligen Bestellentscheidung hinaushebt [@silver2017inventory].
+Beyond this, the newsvendor model — as shown in the previous section — is the conceptual basis for calculating cost-optimal safety stocks in multi-period inventory systems, which raises its practical importance far beyond the individual case of a one-off order decision [@silver2017inventory].
 
-Gleichwohl beruht das Modell auf einer Reihe von Annahmen, die in der Praxis kritisch zu prüfen sind: Es wird angenommen, dass die Nachfrageverteilung **bekannt und stationär** ist, dass der Entscheider **risikoneutral** ist (also ausschließlich den *erwarteten* Gewinn maximiert, ohne Risikoaversion gegenüber Verlusten zu berücksichtigen), dass keine **fixen Bestellkosten** anfallen und dass **eine** Bestellentscheidung tatsächlich die gesamte Periode abdeckt. Substitutionseffekte zwischen ähnlichen Produkten, Lerneffekte aus wiederholten Entscheidungen oder das Zusammenspiel mit vor- und nachgelagerten Stufen der Supply Chain — Themen, die uns im nächsten Kapitel zum Bullwhip-Effekt wieder begegnen werden — bleiben im Grundmodell unberücksichtigt und erfordern gegebenenfalls Erweiterungen [@cachon2024matching; @chopra2025supply].
+Nevertheless, the model rests on a number of assumptions that need to be examined critically in practice: it is assumed that the demand distribution is **known and stationary**, that the decision-maker is **risk-neutral** (i.e. maximises only the *expected* profit without taking risk aversion towards losses into account), that no **fixed ordering costs** are incurred and that **one** order decision actually covers the entire period. Substitution effects between similar products, learning effects from repeated decisions or the interplay with upstream and downstream stages of the supply chain — topics we will encounter again in the next chapter on the bullwhip effect — are not considered in the basic model and may require extensions [@cachon2024matching; @chopra2025supply].
 
-## Zusammenfassung
+## Summary
 
-Das Newsvendor-Modell beantwortet die Frage nach der optimalen Bestellmenge bei einer einmaligen Entscheidung unter unsicherer Nachfrage. Ausgangspunkt sind die Unterdeckungskosten $c^u = p - c$ und die Überdeckungskosten $c^o = c - v$, aus deren Verhältnis sich die kritische Verhältniszahl $CR = c^u/(c^u+c^o)$ ergibt. Diese entspricht sowohl dem Quantil der Nachfrageverteilung, das die optimale Bestellmenge festlegt ($q^* = F^{-1}(CR)$), als auch dem ökonomisch sinnvollen Servicegrad. Bei diskreter Nachfrage wird die kleinste Menge gewählt, deren kumulierte Wahrscheinlichkeit $CR$ mindestens erreicht; bei normalverteilter Nachfrage lässt sich $q^*$ direkt über $\mu + \sigma \cdot \Phi^{-1}(CR)$ berechnen. Methodisch haben Sie gelernt, ein vollständiges Entscheidungsmodell in einer eigenen R-Funktion zu kapseln, mit `uniroot()` und `optimize()` numerisch nach optimalen Lösungen zu suchen, wenn keine geschlossene Formel verfügbar ist, und mit vektorisierten Modellaufrufen (`sapply()`, `purrr::map_dbl()`) Sensitivitätsanalysen durchzuführen und grafisch darzustellen. Diese drei Techniken — eigene Modellfunktionen, numerische Optimierung und vektorisierte Sensitivitätsanalysen — werden uns in den folgenden Kapiteln immer wieder begegnen.
+The newsvendor model answers the question of the optimal order quantity for a one-off decision under uncertain demand. The starting point is the underage cost $c^u = p - c$ and the overage cost $c^o = c - v$, whose ratio yields the critical ratio $CR = c^u/(c^u+c^o)$. This corresponds both to the quantile of the demand distribution that determines the optimal order quantity ($q^* = F^{-1}(CR)$) and to the economically sensible service level. With discrete demand, the smallest quantity whose cumulative probability reaches at least $CR$ is chosen; with normally distributed demand, $q^*$ can be calculated directly via $\mu + \sigma \cdot \Phi^{-1}(CR)$. Methodologically, you have learned to encapsulate a complete decision model in your own R function, to search numerically for optimal solutions with `uniroot()` and `optimize()` when no closed-form formula is available, and to carry out and visualise sensitivity analyses with vectorised model calls (`sapply()`, `purrr::map_dbl()`). These three techniques — custom model functions, numerical optimisation and vectorised sensitivity analyses — will come up again and again in the following chapters.
 
 ::: {.kontrollfragen}
-**Kontrollfragen**
+**Review questions**
 
-1. Nennen Sie die vier charakteristischen Merkmale, die eine Entscheidungssituation zu einem Newsvendor-Problem machen. Warum eignet sich das Sushi-Beispiel dafür so gut?
-2. Definieren Sie Unterdeckungs- und Überdeckungskosten $c^u$ und $c^o$ anhand des Sushi-Beispiels in eigenen Worten. Warum handelt es sich dabei um Opportunitätskosten und nicht um tatsächliche Auszahlungen?
-3. Leiten Sie die kritische Verhältniszahl $CR = c^u/(c^u+c^o)$ mithilfe einer Grenzbetrachtung her (was passiert bei einer marginalen Erhöhung der Bestellmenge um eine Einheit?).
-4. Ein Zeitschriftenhändler kauft Exemplare für 2 € ein, verkauft sie für 5 € und kann unverkaufte Exemplare für 0,50 € an den Verlag zurückgeben. Die Tagesnachfrage folgt den Szenarien $\{20, 30, 40\}$ mit Wahrscheinlichkeiten $\{0{,}3;\ 0{,}5;\ 0{,}2\}$. Bestimmen Sie $c^u$, $c^o$, $CR$ und die optimale Bestellmenge.
-5. Warum liefert die Fraktilregel bei diskreter Nachfrage in der Regel keine exakte Gleichheit $F(q^*)=CR$, während sie es bei stetiger Nachfrage tut? Welche Entscheidungsregel gilt im diskreten Fall?
-6. Erklären Sie den Zusammenhang zwischen der kritischen Verhältniszahl und dem Zyklus-Servicegrad. Worin unterscheidet sich der Zyklus-Servicegrad vom Fill Rate?
-7. In welchen Situationen würden Sie `uniroot()` bzw. `optimize()` gegenüber einer analytischen Lösungsformel wie $q^* = \mu + \sigma \cdot \Phi^{-1}(CR)$ bevorzugen? Nennen Sie ein Beispiel für eine Nachfrageverteilung, bei der dies sinnvoll ist.
-8. Nennen Sie drei typische Anwendungsbereiche des Newsvendor-Modells sowie zwei zentrale Annahmen, die in der Praxis kritisch zu hinterfragen sind.
+1. Name the four characteristic features that make a decision situation a newsvendor problem. Why is the sushi example so well suited to this?
+2. Define the underage and overage costs $c^u$ and $c^o$ in your own words using the sushi example. Why are these opportunity costs and not actual cash outflows?
+3. Derive the critical ratio $CR = c^u/(c^u+c^o)$ using a marginal analysis (what happens if the order quantity is increased marginally by one unit?).
+4. A magazine retailer buys copies for €2, sells them for €5 and can return unsold copies to the publisher for €0.50. Daily demand follows the scenarios $\{20, 30, 40\}$ with probabilities $\{0.3;\ 0.5;\ 0.2\}$. Determine $c^u$, $c^o$, $CR$ and the optimal order quantity.
+5. Why does the fractile rule with discrete demand usually not yield an exact equality $F(q^*)=CR$, whereas it does with continuous demand? Which decision rule applies in the discrete case?
+6. Explain the relationship between the critical ratio and the cycle service level. How does the cycle service level differ from the fill rate?
+7. In which situations would you prefer `uniroot()` or `optimize()` to an analytical solution formula such as $q^* = \mu + \sigma \cdot \Phi^{-1}(CR)$? Give an example of a demand distribution for which this makes sense.
+8. Name three typical areas of application of the newsvendor model as well as two central assumptions that need to be questioned critically in practice.
 :::

@@ -5,11 +5,11 @@ project:
 
 book:
   title: "Supply Chain Management"
-  subtitle: "Begleitendes Lehrbuch zur Vorlesung"
+  subtitle: "Companion textbook to the lecture"
   author: "Prof. Dr. Thomas Kirschstein"
   date: last-modified
-  description: "Kursbegleitender Reader zur Vorlesung Supply Chain Management, Wintersemester 26/27"
-  page-footer: "Supply Chain Management — Lehrbuch"
+  description: "Course reader accompanying the lecture Supply Chain Management, winter semester 2026/27"
+  page-footer: "Supply Chain Management — Textbook"
   chapters:
     - index.qmd
     - chapters/01_einfuehrung-und-grundbegriffe-des-supply-chain-managements.qmd
@@ -23,7 +23,7 @@ book:
     - chapters/08_der-bullwhip-effekt-und-das-beergame.qmd
     - references.qmd
 
-lang: de
+lang: en
 
 format:
   html:
@@ -42,7 +42,7 @@ format:
     papersize: a4
     fontsize: 11pt
     geometry: margin=2.5cm
-    lang: de
+    lang: en
     toc: true
     number-sections: true
     prefer-html: true

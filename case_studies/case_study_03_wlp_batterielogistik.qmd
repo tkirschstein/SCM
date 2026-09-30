@@ -1,8 +1,8 @@
 ---
-title: "Fallstudie 3: Diskrete Standort- und Netzwerkplanung"
-subtitle: "Batterielogistik für die Automobilindustrie in Norddeutschland und Benelux"
-author: "Supply Chain Management – Gruppenarbeit"
-lang: de
+title: "Case Study 3: Discrete Facility Location and Network Planning"
+subtitle: "Battery logistics for the automotive industry in northern Germany and Benelux"
+author: "Supply Chain Management – Group Work"
+lang: en
 format:
   html:
     theme: cosmo
@@ -18,45 +18,46 @@ execute:
 ---
 
 ::: {.callout-note}
-## Steckbrief
+
+## Overview
 
 | | |
 |---|---|
-| **Thema** | Netzwerkdesign mit dem Warehouse Location Problem (WLP) |
-| **Vorlesungsbezug** | Kapitel 5 des Readers: unkapazitiertes und kapazitiertes WLP als MILP, Add-/Drop-Heuristik |
-| **Typ** | Datenbasierte Fallstudie: realistische Werks- und Standortkoordinaten, Mengen und Kosten realitätsnah geschätzt |
-| **Gruppengröße** | 3–6 Personen |
-| **Ergebnis** | Präsentation (30 Min.) + Diskussion (15 Min.), Foliensatz (PDF) und reproduzierbarer R-/Quarto-Code |
+| **Topic** | Network design with the warehouse location problem (WLP) |
+| **Link to the lecture** | Chapter 5 of the course reader: uncapacitated and capacitated WLP as a MILP, add/drop heuristic |
+| **Type** | Data-based case study: realistic plant and site coordinates, quantities and costs estimated realistically |
+| **Group size** | 3–6 people |
+| **Deliverable** | Presentation (30 min) + discussion (15 min), slide deck (PDF) and reproducible R/Quarto code |
 :::
 
-# Lernziele
+# Learning objectives
 
-Nach Bearbeitung der Fallstudie können Sie
+After working through this case study, you will be able to
 
-- aus Geodaten eine Transportkostenmatrix  aufbauen,
-- ein **unkapazitiertes (UFLP) und ein kapazitiertes WLP (CFLP)** als gemischt-ganzzahliges lineares Programm formulieren und in R lösen,
-- Konstruktions- und Verbesserungsheuristiken (Add, Drop) anwenden und ihre Lösungsqualität gegenüber dem Optimum bewerten,
-- für ein gegebenes Netz die Belieferung als **Transportproblem** planen ,
-- Netzwerkentscheidungen unter unsicheren Zukunftsszenarien robust gestalten.
+- build a transport cost matrix from geodata,
+- formulate an **uncapacitated (UFLP) and a capacitated WLP (CFLP)** as a mixed-integer linear programme and solve them in R,
+- apply construction and improvement heuristics (add, drop) and evaluate their solution quality against the optimum,
+- plan the supply for a given network as a **transportation problem**,
+- design network decisions robustly under uncertain future scenarios.
 
-# Ausgangslage
+# Initial situation
 
-Die **NordCell Logistics GmbH** (fiktiv) ist ein auf Gefahrgut spezialisierter Kontraktlogistiker. Sie hat den Zuschlag erhalten, Lithium-Ionen-Batteriemodule für zehn Fahrzeugwerke in Norddeutschland, NRW, Hessen und Benelux zu lagern, zu sequenzieren und *just in sequence* anzuliefern. Die Module kommen aus zwei Quellen:
+**NordCell Logistics GmbH** (fictitious) is a contract logistics provider specialising in dangerous goods. It has won the contract to store, sequence and deliver *just in sequence* lithium-ion battery modules for ten vehicle plants in northern Germany, North Rhine-Westphalia, Hesse and Benelux. The modules come from two sources:
 
-- **Importe aus Asien** über den Containerhafen **Hamburg** (60 % der Menge),
-- die **Zellfabrik in Salzgitter** (40 % der Menge).
+- **imports from Asia** via the container port of **Hamburg** (60% of the volume),
+- the **cell factory in Salzgitter** (40% of the volume).
 
-Lithium-Ionen-Batterien sind Gefahrgut der Klasse 9 (UN 3480/3481). Die Lager benötigen daher Brandabschnitte, Sprinkler- und Löschwasserrückhaltesysteme, eine Quarantänezone für beschädigte Module und behördliche Genehmigungen, was die **Fixkosten** eines Standorts erheblich erhöht. NordCell hat acht potenzielle Lagerstandorte in Gewerbe- und Logistikparks identifiziert und muss entscheiden,
+Lithium-ion batteries are class 9 dangerous goods (UN 3480/3481). The warehouses therefore require fire compartments, sprinkler and firewater retention systems, a quarantine zone for damaged modules and official permits, which considerably increases the **fixed costs** of a site. NordCell has identified eight potential warehouse locations in industrial and logistics parks and must decide
 
-1. **welche Lager eröffnet/umgerüstet werden** (strategische Entscheidung, Vertragslaufzeit 7-12 Jahre),
-2. **welches Werk aus welchem Lager beliefert wird** (taktische Planung, jährlich),
-3. wie robust dieses Netz gegenüber der unsicheren Hochlaufentwicklung der Elektromobilität ist.
+1. **which warehouses to open/convert** (strategic decision, contract term 7–12 years),
+2. **which plant is supplied from which warehouse** (tactical planning, annually),
+3. how robust this network is to the uncertain ramp-up of electric mobility.
 
-# Daten
+# Data
 
-Die Werksstandorte orientieren sich an realen Fahrzeugwerken. Die **Mengen und Kosten sind fiktiv**, aber in ihrer Größenordnung realitätsnah (1 MWh ≈ 6–7 t Batteriemodule inklusive Verpackung).
+The plant locations are based on real vehicle plants. The **quantities and costs are fictitious**, but realistic in order of magnitude (1 MWh ≈ 6–7 t of battery modules including packaging).
 
-## Werke (Senken) und Jahresbedarf
+## Plants (sinks) and annual demand
 
 ```{r}
 #| label: daten-werke
@@ -70,12 +71,12 @@ werke <- data.frame(
   d2027 = c(28000, 22000, 18500, 12000, 25000, 20000, 15000, 30000, 14000, 11000),
   d2030 = c(42000, 26000, 28000, 12000, 31000, 27000, 21000, 36000, 17000,  6000)
 )
-knitr::kable(werke, format.args = list(big.mark = ".", decimal.mark = ","),
-             col.names = c("#", "Werk", "Breite", "Länge",
-                           "Bedarf 2027 [MWh/a]", "Szenario 2030 [MWh/a]"))
+knitr::kable(werke, format.args = list(big.mark = ",", decimal.mark = "."),
+             col.names = c("#", "Plant", "Latitude", "Longitude",
+                           "Demand 2027 [MWh/yr]", "Scenario 2030 [MWh/yr]"))
 ```
 
-## Quellen
+## Sources
 
 ```{r}
 #| label: daten-quellen
@@ -85,10 +86,10 @@ quellen <- data.frame(
   lon    = c( 9.970, 10.400),
   anteil = c(0.60, 0.40)
 )
-knitr::kable(quellen, col.names = c("Quelle", "Breite", "Länge", "Mengenanteil"))
+knitr::kable(quellen, col.names = c("Source", "Latitude", "Longitude", "Volume share"))
 ```
 
-## Standortkandidaten
+## Candidate locations
 
 ```{r}
 #| label: daten-lager
@@ -98,52 +99,52 @@ lager <- data.frame(
            "Venlo (NL)", "Bremen GVZ", "Gent Hafen (BE)"),
   lat  = c(51.906, 50.804, 51.660, 52.320, 52.438, 51.370, 53.050, 51.100),
   lon  = c( 8.383,  6.493,  6.965, 10.230,  9.737,  6.170,  8.700,  3.780),
-  fix  = c(2400, 2600, 2500, 2300, 2700, 2800, 2600, 3000),   # T€/Jahr
-  kap  = c(90, 110, 80, 70, 100, 120, 90, 80) * 1000           # MWh/Jahr
+  fix  = c(2400, 2600, 2500, 2300, 2700, 2800, 2600, 3000),   # thousand €/year
+  kap  = c(90, 110, 80, 70, 100, 120, 90, 80) * 1000           # MWh/year
 )
-knitr::kable(lager, format.args = list(big.mark = ".", decimal.mark = ","),
-             col.names = c("#", "Standort", "Breite", "Länge",
-                           "Fixkosten [T€/a]", "Kapazität [MWh/a]"))
+knitr::kable(lager, format.args = list(big.mark = ",", decimal.mark = "."),
+             col.names = c("#", "Location", "Latitude", "Longitude",
+                           "Fixed costs [thousand €/yr]", "Capacity [MWh/yr]"))
 ```
 
 
-# Aufgaben
+# Tasks
 
-## Teil A – Datenaufbereitung
+## Part A – Data preparation
 
-**A1.** Ermitteln Sie Transportkostensätze für dei Batteriesysteme (in €/MWh$\cdot$km). Welche Annahmen liegen dabei zu grunde?
+**A1.** Determine transport cost rates for the battery systems (in €/MWh$\cdot$km). Which assumptions underlie them?
 
-**A2.** Stellen Sie Quellen, Lagerkandidaten und Werke auf einer Karte dar und berechnen Sie die Transportdistanzen, Transportkostenmatrix $c_{ij}$ (€/MWh) sowie die jährlichen Transportkosten. Vergleichen Sie für zwei Relationen die Haversine-Distanz × 1,2 mit der Straßendistanz eines Routenplaners.
+**A2.** Show sources, warehouse candidates and plants on a map and calculate the transport distances, the transport cost matrix $c_{ij}$ (€/MWh) and the annual transport costs. For two routes, compare the haversine distance × 1.2 with the road distance from a route planner.
 
-## Teil B – Unkapazitiertes WLP (Bedarf 2027)
+## Part B – Uncapacitated WLP (demand 2027)
 
-**B1.** Lösen Sie das Problem mit der **Add- oder Drop-Heuristik** (`add_heuristic_wlp()`, `drop_heuristic_wlp()`) und exakt mit `ompr` + GLPK. Wie weit liegt die Heuristik vom Optimum entfernt?
+**B1.** Solve the problem with the **add or drop heuristic** (`add_heuristic_wlp()`, `drop_heuristic_wlp()`) and exactly with `ompr` + GLPK. How far is the heuristic from the optimum?
 
-**B2.** Adaptieren Sie das MILP und bestimmen Sie die optimalen Gesamtkosten bei fest vorgegebener Anzahl offener Lager ($\sum_i y_i = k$, $k = 1, \dots, 4$). Welche Standorte werden jeweils eröffnet und welche Gesamtkosten ergeben sich?
+**B2.** Adapt the MILP and determine the optimal total costs for a fixed number of open warehouses ($\sum_i y_i = k$, $k = 1, \dots, 4$). Which locations are opened in each case and what total costs result?
 
-## Teil C – Kapazitiertes WLP und Transportproblem
+## Part C – Capacitated WLP and transportation problem
 
-**C1.** Erweitern Sie das Modell um die Lagerkapazitäten (CFLP). Wie ändert sich die Lösung? 
+**C1.** Extend the model to include the warehouse capacities (CFLP). How does the solution change?
 
-**C2.** Fixieren Sie die Lagerentscheidung aus C1 und lösen Sie das **Umladeproblem** für 2027. D. h. bestimmen Sie die transportkosten-optimalen Liefermengen von Quellen -> Lager -> Werke. 
+**C2.** Fix the warehouse decision from C1 and solve the **transshipment problem** for 2027, i.e. determine the transport-cost-optimal delivery quantities from sources -> warehouses -> plants.
 
-## Teil D – Szenarien, Empfehlung und Reflexion
+## Part D – Scenarios, recommendation and reflection
 
-**D1. Szenario 2030.** Lösen Sie das CFLP für das Szenario 2030. Ist das Netz aus 2027 noch zulässig bzw. optimal? Bestimmen Sie ein Netz, das für **beide Szenarien** gut ist, z. B. durch Minimierung der erwarteten Kosten (50 % / 50 %) oder des maximalen Bedauerns (*Minimax-Regret*).
+**D1. Scenario 2030.** Solve the CFLP for the 2030 scenario. Is the 2027 network still feasible or optimal? Determine a network that performs well in **both scenarios**, e.g. by minimising expected costs (50% / 50%) or maximum regret (*minimax regret*).
 
-**D2. Sensitivität.** Untersuchen Sie eine weitere Sensitivität: CO₂-Preis von 150 €/t, Wegfall der Zellfabrik Salzgitter oder Schließung des Werks VDL Nedcar Born.
+**D2. Sensitivity.** Examine one further sensitivity: a CO₂ price of €150/t, loss of the Salzgitter cell factory, or closure of the VDL Nedcar Born plant.
 
-**D3. Empfehlung.** Formulieren Sie eine Netzempfehlung für NordCell mit Kosten, Standorten, Risiken und Ausbauoptionen.
+**D3. Recommendation.** Formulate a network recommendation for NordCell covering costs, locations, risks and expansion options.
 
-**D4. Reflexion.** Beantworten Sie in der Präsentation die folgenden Fragen. Sie bilden den Ausgangspunkt der anschließenden Diskussion:
+**D4. Reflection.** Answer the following questions in your presentation. They form the starting point for the subsequent discussion:
 
-1. Die Kostenfunktion ist in der Nähe des Optimums flach. Was bedeutet das für die Aussagekraft des Optimums, und welche Rolle sollten qualitative Kriterien (vgl. Fallstudie 2) bei der endgültigen Auswahl spielen?
-2. Welche Modellannahme halten Sie für die kritischste (Luftlinie × Umwegfaktor, lineare Transportkosten, deterministische Nachfrage, geschätzte Fixkosten), und wie könnte sie Ihre Empfehlung verändern?
-3. Wann würden Sie in der Praxis eine Heuristik statt eines exakten Verfahrens einsetzen?
-4. Welche nicht modellierten Faktoren könnten die Entscheidung kippen, z. B. Genehmigungsverfahren für Gefahrgutlager, Arbeitsmarkt oder grenzüberschreitende Regulierung zwischen Deutschland, den Niederlanden und Belgien?
-5. Wie würden Sie das Ergebnis einer Geschäftsführung ohne Optimierungskenntnisse vermitteln, damit sie dem Modell vertraut, ohne es blind zu übernehmen?
+1. The cost function is flat near the optimum. What does this mean for the significance of the optimum, and what role should qualitative criteria (cf. Case Study 2) play in the final selection?
+2. Which model assumption do you consider the most critical (straight-line distance × detour factor, linear transport costs, deterministic demand, estimated fixed costs), and how could it change your recommendation?
+3. When would you use a heuristic instead of an exact method in practice?
+4. Which factors not modelled could tip the decision, e.g. permit procedures for dangerous goods warehouses, the labour market, or cross-border regulation between Germany, the Netherlands and Belgium?
+5. How would you communicate the result to a management team without knowledge of optimisation so that they trust the model without adopting it blindly?
 
-# Anhang: R-Startercode
+# Appendix: R starter code
 
 ```{r}
 #| label: starter
@@ -152,19 +153,19 @@ source("../R/scm_functions.R")   # haversine(), add_heuristic_wlp(), drop_heuris
 library(ompr); library(ompr.roi); library(ROI.plugin.glpk); library(dplyr)
 
 uf <- 1.2
-# Inbound-Kosten je MWh für jedes Lager (gewichtet über die Quellen)
+# Inbound costs per MWh for each warehouse (weighted over the sources)
 c_in <- sapply(seq_len(nrow(lager)), function(i)
   sum(quellen$anteil * 0.25 * uf *
         haversine(lager$lat[i], lager$lon[i], quellen$lat, quellen$lon)))
 
-# Outbound-Kosten je MWh (Lager x Werk)
+# Outbound costs per MWh (warehouse x plant)
 c_out <- outer(seq_len(nrow(lager)), seq_len(nrow(werke)), Vectorize(function(i, j)
   0.45 * uf * haversine(lager$lat[i], lager$lon[i], werke$lat[j], werke$lon[j])))
 
-C <- c_in + c_out                       # €/MWh, Matrix 8 x 10
+C <- c_in + c_out                       # €/MWh, matrix 8 x 10
 dimnames(C) <- list(lager$ort, werke$werk)
 
-# Unkapazitiertes WLP (Kosten in T€)
+# Uncapacitated WLP (costs in thousand €)
 d  <- werke$d2027
 f  <- lager$fix
 nI <- nrow(lager); nJ <- nrow(werke)
@@ -181,5 +182,5 @@ res <- solve_model(m, with_ROI(solver = "glpk"))
 objective_value(res)
 get_solution(res, y[i]) |> filter(value > 0.5)
 
-# CFLP: zusätzlich  sum_j d[j] * x[i,j] <= kap[i] * y[i]
+# CFLP: additionally  sum_j d[j] * x[i,j] <= kap[i] * y[i]
 ```

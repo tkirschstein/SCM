@@ -6,7 +6,7 @@
 #| warning: false
 #| message: false
 
-# Funktionen aus scm_functions.R einbinden
+# Load functions from scm_functions.R
 source("../R/scm_functions.R")
 
 library(tidyverse)
@@ -17,53 +17,53 @@ library(plotly)
 
 ```
 
-# Einführung & Organisatorisches
+# Introduction & Course Organisation
 
-## Organisatorisches {#slide-2}
+## Course organisation {#slide-2}
 
-Dozent: Prof. Dr. Thomas Kirschstein (HS RheinMain + Fraunhofer)
+Lecturer: Prof. Dr. Thomas Kirschstein (HS RheinMain + Fraunhofer)
 
-Unterlagen + Materialien: StudIP , ILIAS
+Documents + materials: StudIP , ILIAS
 
-Übungen: Werden im Kurs eingeflochen
+Exercises: integrated into the lectures
 
-Klausur: zusammen mit Distribution & BBA-Kurs
+Exam: together with Distribution & BBA course
 
-## Literatur {#slide-3}
+## Literature {#slide-3}
 
 
 ::: {#refs}
 :::
 
-## Aufbau der Vorlesung {#slide-4}
+## Structure of the lecture {#slide-4}
 
-1.  Grundlagen des Supply Chain Managements
-2.  Strategische Gestaltung von Supply Chains
-3.  Unsicherheits- und Risikomanagement in Supply Chains
+1.  Fundamentals of Supply Chain Management
+2.  Strategic Design of Supply Chains
+3.  Uncertainty and Risk Management in Supply Chains
 
 
-# Grundlagen des Supply Chain Managements 
+# Fundamentals of Supply Chain Management
 
-## Grundlagen des Supply Chain Managements {#slide-5}
+## Fundamentals of Supply Chain Management {#slide-5}
 
-- **Aufgaben, Begriffe und Konzepte**
-- Ziele & Zielkonflikte
-- Kosten & Management
+- **Tasks, terms and concepts**
+- Objectives & trade-offs
+- Costs & management
 
-## Lernziele {#learning-objectives-introduction}
+## Learning objectives {#learning-objectives-introduction}
 
-Nach dieser Einheit können Sie …
+After this unit you will be able to …
 
-- zentrale Begriffe, Akteure und Flüsse einer Supply Chain **erläutern**,
-- Supply Chain Management gegenüber Logistik und Beschaffung **abgrenzen**,
-- strategische, taktische und operative Entscheidungen in Supply Chains **unterscheiden**,
-- die Bedeutung von Koordination für Wertschöpfung und Wettbewerbsfähigkeit **beurteilen**.
+- **explain** key terms, actors and flows of a supply chain,
+- **distinguish** supply chain management from logistics and procurement,
+- **differentiate** between strategic, tactical and operational decisions in supply chains,
+- **assess** the importance of coordination for value creation and competitiveness.
 
-**Literatur zur Vertiefung**
+**Further reading**
 
-- **SCM-Grundlagen und Entscheidungsebenen:** Kapitel 1–3 in [@chopra2025supply].
-- **Strategien, Instrumente und Controlling im deutschsprachigen Kontext:** Kapitel 1–3 in [@werner2020supply].
-- **Fallorientierte Einführung in Supply-Chain-Strukturen:** Kapitel 1–3 in [@sople2011supply].
+- **SCM fundamentals and decision levels:** Chapters 1–3 in [@chopra2025supply].
+- **Strategies, instruments and controlling in the German-speaking context:** Chapters 1–3 in [@werner2020supply].
+- **Case-oriented introduction to supply chain structures:** Chapters 1–3 in [@sople2011supply].
 
 ## Supply chains in History {#slide-6}
 
@@ -71,9 +71,9 @@ Nach dieser Einheit können Sie …
 Cheops and building supply chains
 :::
 
-- Cheops pyramide building started about 2620 BC, ancient height : 147 m
+- Cheops pyramid building started about 2620 BC, ancient height: 147 m
 - 2.3 million stone blocks, avg. 2.5 t each
-- Required coordinated transport, tool inventory, and mass catering about 100,000 workers
+- Required coordinated transport, tool inventory, and mass catering for about 100,000 workers
 
 ::: {layout-ncol="2"}
 ![](images/image6.jpeg "Picture 8")
@@ -84,12 +84,12 @@ Cheops and building supply chains
 ## Supply chains in History {#slide-7}
 
 ::: slide-subtitle
-Hannibals invasion of Italy
+Hannibal's invasion of Italy
 :::
 
-- Invasion from Spain to Italy in 2nd Punic war\
+- Invasion from Spain to Italy in the 2nd Punic War\
 - 37 war elephants + 40,000 troops (incl. large cavalry)
-- Supply of troops and beasts need to be realized in hostile territory
+- Supply of troops and beasts had to be realised in hostile territory
 
 ::: {layout-ncol="2"}
 ![](images/image8.jpeg){width="542"}
@@ -100,12 +100,13 @@ Hannibals invasion of Italy
 
 ## Supply chains in History
 ::: slide-subtitle
-Toga praetexta: Rohstoffe, Purpur und Absatz
+Toga praetexta: raw materials, purple and sales
 :::
 
 :::::::: columns
 ::: {.column width="35%"}
-### Herstellungsprozess
+
+### Production process
 
 ```{mermaid}
 %%| fig-width: 7
@@ -122,19 +123,19 @@ Toga praetexta: Rohstoffe, Purpur und Absatz
 }}%%
 
 flowchart TB
-    A["Schafhaltung"] --> B["Schur und Sortierung<br/>der Rohwolle"]
-    B --> D["Spinnen zu Wollgarn"]
-    D --> E["Weben des weißen Wolltuchs"]
-    E --> F["Walken, Reinigen,<br/>Bleichen, Zuschneiden"]
-    F -->|"ca. 100 Sesterzen je Pfund"| H["Anbringen des Purpursaums<br/>Konfektion der Toga"]
+    A["Sheep farming"] --> B["Shearing and sorting<br/>of raw wool"]
+    B --> D["Spinning into wool yarn"]
+    D --> E["Weaving the white woollen cloth"]
+    E --> F["Fulling, cleaning,<br/>bleaching, cutting"]
+    F -->|"approx. 100 sesterces per pound"| H["Attaching the purple border<br/>Making up the toga"]
 
-    P2["Schneckenzucht"]
-    P2 --> P3["Drüsen entnehmen<br/>(Hypobranchialdrüse)"]
-    P3 --> P4["Drüsen salzen &<br/>über mehrere Tage erhitzen"]
-    P4 --> P7["Wolle / Wollpartien<br/>purpur färben"]
-    P7 -->|"4.000 Sesterzen je Pfund"| H
+    P2["Snail breeding"]
+    P2 --> P3["Extracting glands<br/>(hypobranchial gland)"]
+    P3 --> P4["Salting glands &<br/>heating over several days"]
+    P4 --> P7["Dyeing wool / wool batches<br/>purple"]
+    P7 -->|"4,000 sesterces per pound"| H
 
-    T["Gesamtwert: 400 - 1.200 Sesterzen je Toga"]
+    T["Total value: 400 - 1,200 sesterces per toga"]
 
     H ~~~ T
 
@@ -151,23 +152,24 @@ flowchart TB
 :::
 
 ::::: {.column width="25%"}
-![](https://upload.wikimedia.org/wikipedia/commons/thumb/a/a5/Roman_toga_diagram.svg/3840px-Roman_toga_diagram.svg.png){fig-alt="Darstellung und Drapierung einer römischen Toga, einschließlich Toga praetexta mit Purpursaum" width="99%"}
+![](https://upload.wikimedia.org/wikipedia/commons/thumb/a/a5/Roman_toga_diagram.svg/3840px-Roman_toga_diagram.svg.png){fig-alt="Illustration and draping of a Roman toga, including the toga praetexta with purple border" width="99%"}
 
 ::: smalltable
-| Produkt             |         Preis |
-|---------------------|--------------:|
-| Einfache weiße Toga |  12 Sesterzen |
-| Bessere weiße Toga  |  60 Sesterzen |
-| Toga praetexta      | 800 Sesterzen |
+| Product             |          Price |
+|---------------------|---------------:|
+| Simple white toga   |  12 sesterces  |
+| Better white toga   |  60 sesterces  |
+| Toga praetexta      | 800 sesterces  |
 :::
 
 ::: tiny-text
-$\rightarrow$ Jahressold einfacher Soldat: 1000 Sesterzen
+$\rightarrow$ Annual pay of a common soldier: 1,000 sesterces
 :::
 :::::
 
 ::: {.column width="40%"}
-### Rohstoff- und Absatzkarte
+
+### Raw material and sales map
 
 ```{r}
 library(leaflet)
@@ -176,8 +178,8 @@ library(sf)
 library(jsonlite)
 
 sichtbare_punkte <- data.frame(
-  name = c("Tarent", "Ostia", "Rom", "Tyros", "Milet"),
-  rolle = c("Schafwolle", "Empfangshafen", "Weiterverarbeitung und Absatz", "Purpurfarbstoff", "Schafwolle"),
+  name = c("Taranto", "Ostia", "Rome", "Tyre", "Miletus"),
+  rolle = c("Sheep's wool", "Receiving port", "Further processing and sales", "Purple dye", "Sheep's wool"),
   lat = c(40.4644, 41.7440, 41.8933, 33.2704, 37.5300),
   lng = c(17.2470, 12.2500, 12.4829, 35.2038, 27.2800),
   color = c("#2a6f97", "#b8860b", "#b8860b", "#7a3ea1", "#2a6f97")
@@ -185,9 +187,9 @@ sichtbare_punkte <- data.frame(
 
 osrm_route_sf <- function(coords, color, label) {
   coords <- as.matrix(coords)
-  if (!is.numeric(coords)) stop("coords muss numerisch sein.")
-  if (ncol(coords) != 2) stop("coords muss genau 2 Spalten haben: lon, lat.")
-  if (anyNA(coords)) stop("coords enthält NA-Werte. Bitte Koordinaten prüfen.")
+  if (!is.numeric(coords)) stop("coords must be numeric.")
+  if (ncol(coords) != 2) stop("coords must have exactly 2 columns: lon, lat.")
+  if (anyNA(coords)) stop("coords contains NA values. Please check coordinates.")
 
   coord_string <- paste(
     apply(coords, 1, function(x) sprintf("%.6f,%.6f", x[1], x[2])),
@@ -219,29 +221,29 @@ route_tarent_rom <- osrm_route_sf(
     12.4829, 41.8933
   ), byrow = TRUE, ncol = 2),
   color = "#2a6f97",
-  label = "Tarent → Rom: OSRM-gestützte Landroute"
+  label = "Taranto → Rome: OSRM-based land route"
 )
 
 route_milet_ostia <- manual_route_sf(
   matrix(c(
-    27.2800, 37.5300,  # Milet
-    24.8093, 35.2401,  # Kreta (nur Wegpunkt)
-    15.5540, 38.1938,  # Messina (nur Wegpunkt)
+    27.2800, 37.5300,  # Miletus
+    24.8093, 35.2401,  # Crete (waypoint only)
+    15.5540, 38.1938,  # Messina (waypoint only)
     12.2500, 41.7440   # Ostia
   ), byrow = TRUE, ncol = 2),
   color = "#2a6f97",
-  label = "Milet → Kreta → Messina → Ostia: Seeweg"
+  label = "Miletus → Crete → Messina → Ostia: sea route"
 )
 
 route_tyros_ostia <- manual_route_sf(
   matrix(c(
-    35.2038, 33.2704,  # Tyros
-    24.8093, 35.2401,  # Kreta (nur Wegpunkt)
-    15.5540, 38.1938,  # Messina (nur Wegpunkt)
+    35.2038, 33.2704,  # Tyre
+    24.8093, 35.2401,  # Crete (waypoint only)
+    15.5540, 38.1938,  # Messina (waypoint only)
     12.2500, 41.7440   # Ostia
   ), byrow = TRUE, ncol = 2),
   color = "#7a3ea1",
-  label = "Tyros → Kreta → Messina → Ostia: Seeweg"
+  label = "Tyre → Crete → Messina → Ostia: sea route"
 )
 
 route_ostia_rom <- manual_route_sf(
@@ -250,7 +252,7 @@ route_ostia_rom <- manual_route_sf(
     12.4829, 41.8933
   ), byrow = TRUE, ncol = 2),
   color = "#b8860b",
-  label = "Ostia → Rom: Weitertransport"
+  label = "Ostia → Rome: onward transport"
 )
 
 leaflet(width = "100%", height = "480px", options = leafletOptions(zoomControl = TRUE, dragging = TRUE)) |>
@@ -303,11 +305,11 @@ leaflet(width = "100%", height = "480px", options = leafletOptions(zoomControl =
     html = HTML(paste0(
       "<div style='background:rgba(255,255,255,0.94);padding:8px 10px;",
       "border:1px solid #bbb;border-radius:8px;font-size:12px;line-height:1.4;'>",
-      "<div style='margin-bottom:4px;'><b>Legende Wege</b></div>",
-      "<div><span style='display:inline-block;width:18px;height:0;border-top:3px dashed #2a6f97;margin-right:6px;vertical-align:middle'></span>Tarent → Rom: Landroute</div>",
-      "<div><span style='display:inline-block;width:18px;height:3px;background:#2a6f97;margin-right:6px;vertical-align:middle'></span>Milet → Ostia: Seeweg</div>",
-      "<div><span style='display:inline-block;width:18px;height:3px;background:#7a3ea1;margin-right:6px;vertical-align:middle'></span>Tyros → Ostia: Seeweg</div>",
-      "<div><span style='display:inline-block;width:18px;height:0;border-top:3px dashed #b8860b;margin-right:6px;vertical-align:middle'></span>Ostia → Rom: Weitertransport</div>",
+      "<div style='margin-bottom:4px;'><b>Route legend</b></div>",
+      "<div><span style='display:inline-block;width:18px;height:0;border-top:3px dashed #2a6f97;margin-right:6px;vertical-align:middle'></span>Taranto → Rome: land route</div>",
+      "<div><span style='display:inline-block;width:18px;height:3px;background:#2a6f97;margin-right:6px;vertical-align:middle'></span>Miletus → Ostia: sea route</div>",
+      "<div><span style='display:inline-block;width:18px;height:3px;background:#7a3ea1;margin-right:6px;vertical-align:middle'></span>Tyre → Ostia: sea route</div>",
+      "<div><span style='display:inline-block;width:18px;height:0;border-top:3px dashed #b8860b;margin-right:6px;vertical-align:middle'></span>Ostia → Rome: onward transport</div>",
       "</div>"
     )),
     position = "bottomright"
@@ -317,12 +319,10 @@ leaflet(width = "100%", height = "480px", options = leafletOptions(zoomControl =
 :::
 ::::::::
 
-
-
 ## Supply chains in History {#slide-8}
 
 ::: slide-subtitle
-Gewürzhandel im 15. Jahrhundert
+Spice trade in the 15th century
 :::
 
 :::::::: columns
@@ -340,51 +340,51 @@ Gewürzhandel im 15. Jahrhundert
 
 nodes <- tribble(
   ~id, ~label, ~lon, ~lat, ~type,
-  'ternate', 'Ternate', 127.40, 0.79, 'Produktion/Umschlag',
-  'malacca', 'Malakka', 102.25, 2.19, 'Emporium',
-  'calicut', 'Calicut/Kozhikode', 75.78, 11.25, 'Indischer Umschlag',
-  'aden', 'Aden', 45.03, 12.78, 'Arabischer Umschlag',
-  'jeddah', 'Jiddah', 39.17, 21.54, 'Rotes Meer',
-  'suez', 'Suez', 32.55, 29.97, 'Rotes Meer',
-  'cairo', 'Kairo', 31.24, 30.04, 'Karawanen-Umschlag',
-  'alexandria', 'Alexandria', 29.92, 31.20, 'Mediterraner Umschlag',
-  'venice', 'Venedig', 12.33, 45.44, 'Europa',
-  'mozambique', 'Mozambique Island', 40.73, -15.03, 'Ostafrika',
-  'malindi', 'Malindi', 40.12, -3.22, 'Ostafrika',
-  'lisbon', 'Lissabon', -9.14, 38.72, 'Europa'#,
-  #'antwerp', 'Antwerpen', 4.40, 51.22, 'Europa'
+  'ternate', 'Ternate', 127.40, 0.79, 'Production/transhipment',
+  'malacca', 'Malacca', 102.25, 2.19, 'Emporium',
+  'calicut', 'Calicut/Kozhikode', 75.78, 11.25, 'Indian transhipment',
+  'aden', 'Aden', 45.03, 12.78, 'Arabian transhipment',
+  'jeddah', 'Jeddah', 39.17, 21.54, 'Red Sea',
+  'suez', 'Suez', 32.55, 29.97, 'Red Sea',
+  'cairo', 'Cairo', 31.24, 30.04, 'Caravan transhipment',
+  'alexandria', 'Alexandria', 29.92, 31.20, 'Mediterranean transhipment',
+  'venice', 'Venice', 12.33, 45.44, 'Europe',
+  'mozambique', 'Mozambique Island', 40.73, -15.03, 'East Africa',
+  'malindi', 'Malindi', 40.12, -3.22, 'East Africa',
+  'lisbon', 'Lisbon', -9.14, 38.72, 'Europe'#,
+  #'antwerp', 'Antwerp', 4.40, 51.22, 'Europe'
 )
 
 routes <- list(
-  list(name='Vor 1498 See: Molukken-Malakka-Calicut', period='Vor 1498', mode='See', coords=list(
+  list(name='Before 1498 sea: Moluccas-Malacca-Calicut', period='Before 1498', mode='Sea', coords=list(
     c(127.40,0.79), c(126.2,0.2), c(124.8,-0.8), c(123.0,-1.8), c(121.0,-3.0), c(118.5,-4.4),
     c(116.0,-5.3), c(113.0,-5.9), c(110.0,-6.3), c(107.2,-6.0), c(105.0,-5.7), c(104.0,-3.2), c(103.0,-0.5), c(102.25,2.19),
     c(100.5,5.0), c(97.5,7.5), c(94.0,8.7), c(90.0,8.9), c(86.0,8.3), c(82.5,7.8), c(79.8,8.2), c(77.5,9.5), c(75.78,11.25)
   )),
-  list(name='Vor 1498 See: Calicut-Aden-Suez', period='Vor 1498', mode='See', coords=list(
+  list(name='Before 1498 sea: Calicut-Aden-Suez', period='Before 1498', mode='Sea', coords=list(
     c(75.78,11.25), c(73.5,10.8), c(70.0,11.0), c(66.0,11.5), c(62.0,12.1), c(58.0,12.4), c(54.0,12.5), c(50.0,12.6), c(47.0,12.7), c(45.03,12.78),
     c(43.5,12.6), c(42.8,13.6), c(42.0,15.2), c(41.3,17.0), c(40.4,19.2), c(39.17,21.54), c(37.3,24.0), c(35.4,26.2), c(33.7,28.2), c(32.55,29.97)
   )),
-  list(name='Vor 1498 Karawane: Suez-Kairo', period='Vor 1498', mode='Karawane', coords=list(
+  list(name='Before 1498 caravan: Suez-Cairo', period='Before 1498', mode='Caravan', coords=list(
     c(32.55,29.97), c(32.30,29.98), c(32.05,29.99), c(31.80,30.00), c(31.50,30.02), c(31.24,30.04)
   )),
-  list(name='Vor 1498 Karawane: Kairo-Alexandria', period='Vor 1498', mode='Karawane', coords=list(
+  list(name='Before 1498 caravan: Cairo-Alexandria', period='Before 1498', mode='Caravan', coords=list(
     c(31.24,30.04), c(30.95,30.25), c(30.60,30.45), c(30.25,30.70), c(29.92,31.20)
   )),
-  list(name='Vor 1498 See: Alexandria-Venedig', period='Vor 1498', mode='See', coords=list(
+  list(name='Before 1498 sea: Alexandria-Venice', period='Before 1498', mode='Sea', coords=list(
     c(29.92,31.20), c(27.0,32.3), c(24.5,33.6), c(22.0,35.0), c(19.5,36.5), c(17.5,38.5), c(15.5,40.8), c(13.5,43.0), c(12.33,45.44)
   )),
-  
-  list(name='Nach 1498 See: Lissabon-Mozambique-Malindi-Calicut', period='Nach 1498', mode='See', coords=list(
+
+  list(name='After 1498 sea: Lisbon-Mozambique-Malindi-Calicut', period='After 1498', mode='Sea', coords=list(
     c(-9.14,38.72), c(-11.0,35.5), c(-14.0,31.0), c(-17.5,25.0), c(-19.0,18.5), c(-18.0,12.0), c(-15.0,5.0), c(-11.0,-2.0), c(-5.0,-10.0), c(1.0,-18.0),
-    c(7.0,-24.0), c(12.0,-29.0), c(16.0,-33.0), 
+    c(7.0,-24.0), c(12.0,-29.0), c(16.0,-33.0),
     c(18.47,-34.36),  c(19.50,-34.72), c(21.00,-34.65), c(23.50,-34.6), c(26.00,-34.5), c(28.50,-34.3),
-    c(31.00,-33.8), c(33.20,-33.1), c(34.70,-31.8), c(36.00,-30.3), c(37.20,-28.4), c(38.10,-26.5), 
+    c(31.00,-33.8), c(33.20,-33.1), c(34.70,-31.8), c(36.00,-30.3), c(37.20,-28.4), c(38.10,-26.5),
     c(38.80,-24.5), c(39.10,-22.8), c(39.50,-21.0), c(39.95,-19.3),c(40.35,-17.6), c(40.55,-16.2),    c(40.73,-15.03),
     c(40.6,-13.0), c(40.5,-11.0), c(40.3,-9.0), c(40.1,-7.0), c(39.85,-5.2), c(39.6,-4.1), c(39.8,-3.7), c(39.95,-3.4), c(40.12,-3.22),
     c(43.0,-0.5), c(46.5,2.0), c(50.0,4.5), c(54.0,7.0), c(58.0,9.0), c(62.0,10.2), c(66.0,10.8), c(70.0,11.0), c(73.0,11.1), c(75.78,11.25)
   )),
-  list(name='Nach 1498 See: Molukken-Malakka-Calicut', period='Nach 1498', mode='See', coords=list(
+  list(name='After 1498 sea: Moluccas-Malacca-Calicut', period='After 1498', mode='Sea', coords=list(
     c(127.40,0.79), c(126.2,0.2), c(124.8,-0.8), c(123.0,-1.8), c(121.0,-3.0), c(118.5,-4.4),
     c(116.0,-5.3), c(113.0,-5.9), c(110.0,-6.3), c(107.2,-6.0), c(105.0,-5.7), c(104.0,-3.2), c(103.0,-0.5), c(102.25,2.19),
     c(100.5,5.0), c(97.5,7.5), c(94.0,8.7), c(90.0,8.9), c(86.0,8.3), c(82.5,7.8), c(79.8,8.2), c(77.5,9.5), c(75.78,11.25)
@@ -402,7 +402,7 @@ for (r in routes) {
   mat <- do.call(rbind, r$coords)
   lg <- paste(r$period, r$mode)
   show_leg <- if (!exists(lg, envir = legend_done, inherits = FALSE)) { assign(lg, TRUE, envir = legend_done); TRUE } else FALSE
-  line_style <- if (r$mode == 'Karawane') list(color='#8c510a', width=2, dash='dot') else if (r$mode == 'Landroute') list(color='#5f5f5f', width=2.5, dash='dash') else if (r$period == 'Vor 1498') list(color='#8c510a', width=3) else list(color='#01696f', width=3)
+  line_style <- if (r$mode == 'Caravan') list(color='#8c510a', width=2, dash='dot') else if (r$mode == 'Land route') list(color='#5f5f5f', width=2.5, dash='dash') else if (r$period == 'Before 1498') list(color='#8c510a', width=3) else list(color='#01696f', width=3)
   fig <- fig %>% add_trace(
     type='scattermapbox', mode='lines', lon=mat[,1], lat=mat[,2],
     line=line_style, name=lg, legendgroup=lg, showlegend=show_leg,
@@ -411,9 +411,9 @@ for (r in routes) {
 }
 
 node_palette <- c(
-  'Produktion/Umschlag'='#d73027', 'Emporium'='#fee08b', 'Indischer Umschlag'='#91bfdb',
-  'Arabischer Umschlag'='#74add1', 'Rotes Meer'='#4575b4', 'Karawanen-Umschlag'='#bdbdbd',
-  'Mediterraner Umschlag'='#b8e186', 'Europa'='#4dac26', 'Ostafrika'='#8073ac'
+  'Production/transhipment'='#d73027', 'Emporium'='#fee08b', 'Indian transhipment'='#91bfdb',
+  'Arabian transhipment'='#74add1', 'Red Sea'='#4575b4', 'Caravan transhipment'='#bdbdbd',
+  'Mediterranean transhipment'='#b8e186', 'Europe'='#4dac26', 'East Africa'='#8073ac'
 )
 for (tp in unique(nodes$type)) {
   d <- nodes %>% filter(type == tp)
@@ -426,7 +426,7 @@ for (tp in unique(nodes$type)) {
 }
 
 fig <- fig %>% layout(
-  title=NA, #list(text='Gewürzhandelsrouten: korrigierte Segmente vor und nach 1498')
+  title=NA, #list(text='Spice trade routes: corrected segments before and after 1498')
   legend=list(orientation='h', y=-0.1),
   mapbox=list(style='open-street-map', zoom=1, center=list(lon=40, lat=12)),
   margin=list(l=20, r=20, t=60, b=90),
@@ -441,10 +441,10 @@ fig
 
 :::: {.fragment .fade-up}
 ::: small-text
-- Magellan-Expedition der spanischen Krone von 1519 - 1522
-- Ziel: westlicher Seeweg zu Molukken
-- Start: 5 Schiffe / 260 Mann Besatzung
-- Ende: 1 Schiff / 18 Mann Besatzung
+- Magellan expedition of the Spanish Crown, 1519 - 1522
+- Goal: western sea route to the Moluccas
+- Start: 5 ships / 260 crew
+- End: 1 ship / 18 crew
 :::
 ::::
 :::::
@@ -460,24 +460,24 @@ library(tidyverse)
 library(plotly)
 library(scales)
 
-# Einheitlicher Vergleich in g Silber pro kg Pfeffer
+# Uniform comparison in g silver per kg pepper
 prices <- tribble(
   ~route, ~stage, ~value,
-  "Vor 1498", "Molukken", 1.5,
-  "Vor 1498", "Malakka", 4,
-  "Vor 1498", "Calicut", 8,
-  "Vor 1498", "Alexandria", 12.0,
-  "Vor 1498", "Venedig", 16.0,
-  "Vor 1498", "Europäische Konsumräume", 25.0,
+  "Before 1498", "Moluccas", 1.5,
+  "Before 1498", "Malacca", 4,
+  "Before 1498", "Calicut", 8,
+  "Before 1498", "Alexandria", 12.0,
+  "Before 1498", "Venice", 16.0,
+  "Before 1498", "European consumer markets", 25.0,
 )
 
 stage_order <- c(
-  "Molukken",
-  "Malakka",
+  "Moluccas",
+  "Malacca",
   "Calicut",
   "Alexandria",
-  "Venedig",
-  "Europäische Konsumräume"
+  "Venice",
+  "European consumer markets"
 )
 
 prices_plot <- prices %>%
@@ -488,12 +488,12 @@ p1 <- ggplot(prices_plot, aes(x = stage, y = value, fill = route)) +
   geom_text(aes(label = round(value, 1)),
             position = position_dodge(width = 0.8),
             vjust = -0.4, size = 3.5) +
-  scale_fill_manual(values = c("Vor 1498" = "#8c510a", "Nach 1498" = "#01696f")) +
+  scale_fill_manual(values = c("Before 1498" = "#8c510a", "After 1498" = "#01696f")) +
   labs(
-    title = "Preisniveaus im Gewürzhandel in Silberäquivalenten",
-    subtitle = "g Silber pro kg Pfeffer",
+    title = "Price levels in the spice trade in silver equivalents",
+    subtitle = "g silver per kg pepper",
     x = NULL,
-    y = "g Silber pro kg"
+    y = "g silver per kg"
   ) +
   theme_minimal(base_size = 12) +
   theme(axis.text.x = element_text(angle = 25, hjust = 1))
@@ -512,13 +512,13 @@ silver_per_maravedi <- 3.195 / 34
 
 costs <- tribble(
   ~Schritt, ~Maravedis, ~Typ,
-  "Schiffe, Takelage, Artillerie, Bewaffnung", -3912241, "Kosten",
-  "Proviant und Fässer", -1585551, "Kosten",
-  "Heuer für 237 Personen", -1154504, "Kosten",
-  "Tausch- und Handelswaren", -1679769, "Kosten",
-  "Sonstiger Bedarf", -415060, "Kosten",
-  "Erlös der Nelkenladung", 7888684, "Erlös",
-  "Weitere Waren", 1000000, "Erlös"
+  "Ships, rigging, artillery, arms", -3912241, "Costs",
+  "Provisions and barrels", -1585551, "Costs",
+  "Wages for 237 persons", -1154504, "Costs",
+  "Barter and trade goods", -1679769, "Costs",
+  "Other requirements", -415060, "Costs",
+  "Revenue from clove cargo", 7888684, "Revenue",
+  "Other goods", 1000000, "Revenue"
 ) %>%
   mutate(
     Silber_g = Maravedis * silver_per_maravedi,
@@ -548,12 +548,12 @@ p <- ggplot(waterfall) +
     label = round(Silber_kg, 1)
   ), size = 3.3) +
   scale_x_continuous(breaks = seq_along(waterfall$Schritt), labels = waterfall$Schritt) +
-  scale_fill_manual(values = c("Kosten" = "#b2182b", "Erlös" = "#1b7837")) +
+  scale_fill_manual(values = c("Costs" = "#b2182b", "Revenue" = "#1b7837")) +
   labs(
-    title = "Wirtschaftliche Bilanz der Magellan-Expedition",
-    subtitle = "Kosten und Erlösen in kg Silberäquivalent",
+    title = "Economic balance of the Magellan expedition",
+    subtitle = "Costs and revenues in kg silver equivalent",
     x = NULL,
-    y = "kg Silberäquivalent",
+    y = "kg silver equivalent",
     fill = NULL
   ) +
   theme_minimal(base_size = 12) +
@@ -566,11 +566,10 @@ p
 ::::
 ::::::::
 
-
-## Wozu Supply Chain Management? {#slide-9}
+## Why Supply Chain Management? {#slide-9}
 
 ::: slide-subtitle
-Kundennutzen entlang der Supply Chain
+Customer value along the supply chain
 :::
 
 ```{dot}
@@ -688,14 +687,14 @@ good -> consumption
 }
 ```
 
-## Logistiksysteme im Unternehmen {#slide-10}
+## Logistics systems in the company {#slide-10}
 
 ![](images/clipboard-1798916514.png)
 
-## Supply Chain Strukturen {#slide-11}
+## Supply chain structures {#slide-11}
 
 ::: slide-subtitle
-Netzwerkgedanke & Grundparadigma
+Network concept & basic paradigm
 :::
 
 ```{dot}
@@ -733,28 +732,28 @@ digraph scn_network {
     arrowsize = 0.8
   ]
 
-  // Knoten je Stufe (Spalte) und Akteur (Zeile)
+  // Nodes per stage (column) and actor (row)
   s1 [label = "Supplier"];     s2 [label = "Supplier"];     s3 [label = "Supplier"];
   m1 [label = "Manufacturer"]; m2 [label = "Manufacturer"]; m3 [label = "Manufacturer"];
   d1 [label = "Distributor"];  d2 [label = "Distributor"];  d3 [label = "Distributor"];
   r1 [label = "Retailer"];     r2 [label = "Retailer"];     r3 [label = "Retailer"];
   c1 [label = "Consumer"];     c2 [label = "Consumer"];     c3 [label = "Consumer"];
 
-  // gemeinsame Ranks je Stufe (Spalte)
+  // common ranks per stage (column)
   { rank = same; s1; s2; s3 }
   { rank = same; m1; m2; m3 }
   { rank = same; d1; d2; d3 }
   { rank = same; r1; r2; r3 }
   { rank = same; c1; c2; c3 }
 
-  // vertikale Reihenfolge innerhalb jeder Stufe erzwingen
+  // enforce vertical order within each stage
   s1 -> s2 -> s3 [style = invis, weight = 20]
   m1 -> m2 -> m3 [style = invis, weight = 20]
   d1 -> d2 -> d3 [style = invis, weight = 20]
   r1 -> r2 -> r3 [style = invis, weight = 20]
   c1 -> c2 -> c3 [style = invis, weight = 20]
 
-  // Horizontale Basisverbindungen (gleiche Reihe)
+  // Horizontal base connections (same row)
   s1 -> m1 [weight = 10]
   s2 -> m2 [weight = 10]
   s3 -> m3 [weight = 10]
@@ -771,31 +770,31 @@ digraph scn_network {
   r2 -> c2 [weight = 10]
   r3 -> c3 [weight = 10]
 
-  // Kreuzverbindungen zwischen Nachbarreihen: Supplier -> Manufacturer
+  // Cross-links between adjacent rows: Supplier -> Manufacturer
   s1 -> m2
   s2 -> m1
   s2 -> m3
   s3 -> m2
 
-  // Kreuzverbindungen: Manufacturer -> Distributor
+  // Cross-links: Manufacturer -> Distributor
   m1 -> d2
   m2 -> d1
   m2 -> d3
   m3 -> d2
 
-  // Kreuzverbindungen: Distributor -> Retailer
+  // Cross-links: Distributor -> Retailer
   d1 -> r2
   d2 -> r1
   d2 -> r3
   d3 -> r2
 
-  // Kreuzverbindungen: Retailer -> Consumer
+  // Cross-links: Retailer -> Consumer
   r1 -> c2
   r2 -> c1
   r2 -> c3
   r3 -> c2
 
-  // äußere Bögen: erste und letzte Zeile jeweils komplett vernetzt (Supplier <-> Consumer)
+  // outer arcs: first and last row each fully connected (Supplier <-> Consumer)
   //s1 -> c1 //[constraint = true]
   //s1 -> c2 [constraint = false]
   //s1 -> c3 [constraint = false]
@@ -807,20 +806,21 @@ digraph scn_network {
 }
 ```
 
-SCM-Gewinn = Kundenumsatz -- Gesamtkosten aller Prozesse/Partner = Summe der indi. Gewinne
+SCM profit = customer revenue -- total costs of all processes/partners = sum of indiv. profits
 
 . . .
 
-$\rightarrow$ **Optimierung der indiv . Gewinne führt i.d.R. nicht zur Optimierung des SCM-Gewinns !**
+$\rightarrow$ **Optimising indiv. profits does not, as a rule, optimise the SCM profit!**
 
 ## Transformation {#slide-12}
 
 ::: slide-subtitle
-Wertschöpfung in der Supply Chain
+Value creation in the supply chain
 :::
 
 :::::: columns
 ::: {.column width="40%"}
+
 ### Porter's value chain
 
 ![](images/clipboard-871463286.png)
@@ -833,25 +833,31 @@ Wertschöpfung in der Supply Chain
 ::::
 ::::::
 
-## Definitionen des SCM {#slide-13}
+## Definitions of SCM {#slide-13}
 
 ::: slide-subtitle
-Vielfalt & gemeinsamer Kern
+Diversity & common core
 :::
 
 ::: small-text
-[@stadtler2000supply, S. 9]: "*Supply Chain Management ist die Aufgabe, Organisationseinheiten entlang der Supply Chain zu integrieren , den Material-, Informations- und Geldfluss zu koordinieren und die Wettbewerbsfähigkeit der gesamten Supply Chain zu verbessern, um Kundenbedarfe zu erfüllen*." <br><br> [@hugos2018essentials]: „*Supply Chain Management is coordination of production , inventory , location , transportation , and information among the participants in a supply chain to achieve the best mix of responsiveness and efficiency for the market being served .*" <br><br> [@cscmp_definition]: „*Supply chain management encompasses the planning and management of all activities involved in sourcing and procurement, conversion, and all logistics management activities. Importantly, it also includes coordination and collaboration with channel partners, which can be suppliers, intermediaries, third party service providers, and customers. In essence, supply chain management integrates supply and demand management within and across companies .*"
+[@stadtler2000supply, p. 9]: "*Supply chain management is the task of integrating organisational units along the supply chain, coordinating the flows of materials, information and money, and improving the competitiveness of the entire supply chain in order to meet customer needs*." <br><br> [@hugos2018essentials]: “*Supply Chain Management is coordination of production , inventory , location , transportation , and information among the participants in a supply chain to achieve the best mix of responsiveness and efficiency for the market being served .*" <br><br> [@cscmp_definition]: “*Supply chain management encompasses the planning and management of all activities involved in sourcing and procurement, conversion, and all logistics management activities. Importantly, it also includes coordination and collaboration with channel partners, which can be suppliers, intermediaries, third party service providers, and customers. In essence, supply chain management integrates supply and demand management within and across companies .*"
 :::
 
-## Unternehmen und ihre Umwelt {#slide-14}
+## Companies and their environment {#slide-14}
 
 ::: slide-subtitle
-Offenes Unternehmensmodell
+Open model of the firm
 :::
 
 ::::: columns
 ::: {.column width="50%"}
-![](images/image15.png){width="760"}
+```{r}
+#| echo: false
+#| fig-width: 9
+#| fig-height: 6.3
+#| out-width: "100%"
+plot_open_firm_model(base_size = 13)
+```
 
 :::{.smaller-text}
 [@kummer2018grundzuge]
@@ -859,85 +865,78 @@ Offenes Unternehmensmodell
 :::
 
 ::: {.column width="50%"}
-- **Dispositive Ebene**: behandelt den Informationsfluss im und zwischen Unternehmen, Planungsprozesse, Entscheiden und Kontrollieren (Management i.e.S.)
-- **Finanzebene**: erfasst Geld- und Zahlungsströme innerhalb und außerhalb des Unternehmens
-- **Güterebene**: erfasst die Bewegung und den Bestand physischer Güter (Roh-, Hilfs- und Betriebsstoffe) innerhalb und zwischen Unternehmen
+- **Dispositive level**: covers the information flow within and between companies, planning processes, decision-making and control (management in the narrow sense)
+- **Financial level**: covers money and payment flows within and outside the company
+- **Goods level**: covers the movement and stock of physical goods (raw materials, auxiliary materials and supplies) within and between companies
 :::
 :::::
 
-## Flüsse in Supply Chains {#slide-15}
+## Flows in supply chains {#slide-15}
 
 ![](images/clipboard-35016753.png)
 
-## Supply Chain Strukturen {#slide-16}
+## Supply chain structures {#slide-16}
 
 ::: slide-subtitle
-Fokale Supply Chain
+Focal supply chain
 :::
 
 ![](images/clipboard-1428622780.png){fig-align="center" width="2428"}
 
 ::: small-text
-**Charakteristiken**:
+**Characteristics**:
 
-- Fokales Unternehmen an der Engpassposition → „kontrolliert" das Netzwerk (Akteure und Struktur)
-- Hohe Marktmacht → kontrolliert den Marktzugang
-- Häufig Koordinator → legt Standards und strategische Ziele fest
-- Beispiele: Automobilindustrie, Apple, ...
+- Focal company in the bottleneck position → “controls” the network (actors and structure)
+- High market power → controls market access
+- Often the coordinator → sets standards and strategic objectives
+- Examples: automotive industry, Apple, ...
 :::
 
-## Supply Chain Strukturen {#slide-17}
+## Supply chain structures {#slide-17}
 
 ::: slide-subtitle
-Polyzentrische Supply Chains
+Polycentric supply chains
 :::
 
 ![](images/clipboard-574717847.png){fig-align="center" width="2600"}
 
 ::: small-text
-**Charakteristiken**:
+**Characteristics**:
 
-- Verteilte und sich überschneidende Kompetenzen
-- Spezialisierung und Kooperation
-- Keine klare Standardisierung und eher egalitäre Verteilung der Marktmacht
-- Beispiele: IKEA, Neste, Unilever, ...
+- Distributed and overlapping competences
+- Specialisation and cooperation
+- No clear standardisation and a rather egalitarian distribution of market power
+- Examples: IKEA, Neste, Unilever, ...
 :::
 
-## Beispiele Für Supply Chains {#slide-19}
+## Examples of supply chains {#slide-19}
 
 ::: slide-subtitle
-Aufgabe
+Task
 :::
 
 :::::: {.column width="63%"}
 ::::: small-text
-Versuchen Sie die Struktur der Supply Chains insbesondere der Distributionsstruktur der folgenden Produkte zu beschreiben:
+Try to describe the structure of the supply chains, in particular the distribution structure, of the following products:
 
 ::: vspace-1
 :::
 
-- Eine Flasche Coca-Cola (Glas, 0,3 l)
-- T-Shirt von Patagonia
-- Gravel-Bike *Waldwiesel* von Urwahn
-- Rittersport Haselnuss
+- A bottle of Coca-Cola (glass, 0.3 l)
+- T-shirt from Patagonia
+- Gravel bike *Waldwiesel* from Urwahn
+- Ritter Sport Hazelnut
 
 ::: vspace-2
 :::
 
-Beschreiben Sie die wesentlichen Produktionsschritte durch Angabe der verwendeten Rohstoffe, Materialien und Bauteile sowie den erzeugten (Zwischen-)Produkt(-en). Ergänzen Sie die Darstellung durch Angabe der logistischen Prozesse, die die Fertigungsstufen verbinden.
+Describe the main production steps by specifying the raw materials, materials and components used as well as the (intermediate) product(s) created. Complement the description by specifying the logistics processes that link the production stages.
 
-Ordnen Sie die einzelnen Prozessschritte (Produktion und Logistik) räumlich zu.
+Assign the individual process steps (production and logistics) to locations.
 :::::
 ::::::
 
 :::: {.column width="37%"}
-<!-- ::: product-grid -->
-<!-- ![](images/image21.png){.product-image .chocolate} -->
-
-<!-- ![](images/image22.jpeg){.product-image .bottle} -->
-
-<!-- ![](images/image23.png){.product-image .shirt} -->
-<!-- ::: -->
 ![](images/image21.png){width="300"}
 ![](images/image23.png){width="200"}
 ![](images/image22.jpeg){width="150"}

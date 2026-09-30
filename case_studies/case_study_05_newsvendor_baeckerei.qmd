@@ -1,8 +1,8 @@
 ---
-title: "Fallstudie 5: Das Newsvendor-Modell in der Praxis"
-subtitle: "Tägliche Produktionsplanung einer französischen Bäckerei"
-author: "Supply Chain Management – Gruppenarbeit"
-lang: de
+title: "Case Study 5: The Newsvendor Model in Practice"
+subtitle: "Daily production planning at a French bakery"
+author: "Supply Chain Management – Group Work"
+lang: en
 format:
   html:
     theme: cosmo
@@ -18,113 +18,115 @@ execute:
 ---
 
 ::: {.callout-note}
-## Steckbrief
+
+## Overview
 
 | | |
 |---|---|
-| **Thema** | Einperiodige Bestandsplanung bei unsicherer Nachfrage für verderbliche Ware |
-| **Vorlesungsbezug** | Kapitel 7 des Readers: Newsvendor-Modell, kritisches Verhältnis, Unter- und Überbestandskosten, erwarteter Gewinn |
-| **Typ** | Datenbasierte Fallstudie mit **realen Kassendaten** einer französischen Bäckerei (Kaggle) |
-| **Gruppengröße** | 3–6 Personen |
-| **Ergebnis** | Präsentation (30 Min.) + Diskussion (15 Min.), Foliensatz (PDF) und reproduzierbarer R-/Quarto-Code |
+| **Topic** | Single-period inventory planning under uncertain demand for perishable goods |
+| **Link to the lecture** | Chapter 7 of the course reader: newsvendor model, critical ratio, underage and overage costs, expected profit |
+| **Type** | Data-based case study with **real point-of-sale data** from a French bakery (Kaggle) |
+| **Group size** | 3–6 people |
+| **Deliverable** | Presentation (30 min) + discussion (15 min), slide deck (PDF) and reproducible R/Quarto code |
 :::
 
-# Lernziele
+# Learning objectives
 
-Nach Bearbeitung der Fallstudie können Sie
+After working through this case study, you will be able to
 
-- aus Kassenbon-Daten tägliche Nachfragezeitreihen je Artikel erzeugen,
-- die Parameter des Newsvendor-Modells (Preis, Kosten, Restwert, Nachfrageverteilung) aus realen Daten und plausiblen Annahmen ableiten,
-- die optimale Produktionsmenge mit **Normalverteilung** und **empirischer Verteilung** bestimmen,
-- Nachfragesegmente (Wochentag, Saison) berücksichtigen und verschiedene Planungsregeln in einem **Backtest** vergleichen,
-- das Problem **zensierter Nachfrage** (Ausverkauf) erkennen und
-- ökonomische und ökologische Ziele (Lebensmittelabfall) gegeneinander abwägen.
+- generate daily demand time series per item from receipt data,
+- derive the parameters of the newsvendor model (price, costs, salvage value, demand distribution) from real data and plausible assumptions,
+- determine the optimal production quantity using the **normal distribution** and the **empirical distribution**,
+- take demand segments (weekday, season) into account and compare different planning rules in a **backtest**,
+- recognise the problem of **censored demand** (sell-outs), and
+- weigh economic and ecological objectives (food waste) against each other.
 
-# Ausgangslage
+# Initial situation
 
-Eine familiengeführte Bäckerei in Frankreich backt jeden Morgen Baguettes, Croissants, Pains au chocolat und weitere Backwaren. Die Ware wird am selben Tag verkauft; was abends übrig bleibt, kann nicht mehr regulär verkauft werden. Es wird gespendet, als Tierfutter abgegeben oder günstig über eine App gegen Lebensmittelverschwendung angeboten. Ist die Ware dagegen früh ausverkauft, gehen Umsätze verloren, und Stammkundschaft wandert zur Konkurrenz ab.
+A family-run bakery in France bakes baguettes, croissants, pains au chocolat and other baked goods every morning. The goods are sold on the same day; whatever is left over in the evening can no longer be sold at the regular price. It is donated, given away as animal feed or offered cheaply via an app against food waste. If, on the other hand, the goods sell out early, sales are lost and regular customers go to the competition.
 
-Die Backmengen legt bisher die Inhaberin nach Erfahrung fest, meist als feste Menge pro Wochentag. Sie möchte wissen, ob eine datenbasierte Planung den Gewinn steigern und gleichzeitig die Abfallmenge senken kann. Dafür stellt sie ihre Kassendaten von Januar 2021 bis September 2022 zur Verfügung.
+So far, the owner has set the baking quantities based on experience, usually as a fixed quantity per weekday. She would like to know whether data-based planning can increase profit and at the same time reduce the amount of waste. For this purpose, she provides her point-of-sale data from January 2021 to September 2022.
 
-# Daten
+# Data
 
-## Datensatz
+## Dataset
 
 **French bakery daily sales** (Kaggle): <https://www.kaggle.com/datasets/matthieugimbert/french-bakery-daily-sales>
 
-Die Datei `Bakery sales.csv` enthält rund 234.000 Kassenpositionen vom 01.01.2021 bis 30.09.2022 mit folgenden Spalten:
+The file `Bakery sales.csv` contains around 234,000 sales line items from 1 Jan 2021 to 30 Sep 2022 with the following columns:
 
-| Spalte | Bedeutung |
+| Column | Meaning |
 |---|---|
-| `date`, `time` | Datum und Uhrzeit des Verkaufs |
-| `ticket_number` | Bonnummer (ein Bon kann mehrere Positionen enthalten) |
-| `article` | Artikelbezeichnung (z. B. `TRADITIONAL BAGUETTE`, `CROISSANT`, `PAIN AU CHOCOLAT`, `BAGUETTE`, `COUPE`, `BANETTE`) |
-| `Quantity` | Menge (Achtung: auch negative Werte, d. h. Stornos und Rückgaben) |
-| `unit_price` | Stückpreis als Text, z. B. `"1,20 €"` (Dezimalkomma und Währungszeichen entfernen) |
+| `date`, `time` | Date and time of sale |
+| `ticket_number` | Receipt number (one receipt can contain several line items) |
+| `article` | Item name (e.g. `TRADITIONAL BAGUETTE`, `CROISSANT`, `PAIN AU CHOCOLAT`, `BAGUETTE`, `COUPE`, `BANETTE`) |
+| `Quantity` | Quantity (note: also negative values, i.e. cancellations and returns) |
+| `unit_price` | Unit price as text, e.g. `"1,20 €"` (remove decimal comma and currency symbol) |
 
 ::: {.callout-important}
-## Hinweise zur Datenaufbereitung
-- Bereinigen Sie `unit_price` und prüfen Sie Artikel mit leerem oder Platzhalternamen.
-- Behandeln Sie negative Mengen begründet (z. B. Saldierung mit dem Verkauf desselben Bons).
-- Prüfen Sie, an welchen Tagen die Bäckerei geschlossen ist (Ruhetage, Urlaub). Solche Tage sind keine Nachfrage von 0.
-- Die Preise ändern sich im Zeitverlauf (Inflation 2022). Verwenden Sie für jeden Zeitraum den jeweils gültigen Preis.
+
+## Notes on data preparation
+- Clean `unit_price` and check items with empty or placeholder names.
+- Handle negative quantities in a justified way (e.g. netting against the sale on the same receipt).
+- Check on which days the bakery is closed (rest days, holidays). Such days do not represent a demand of 0.
+- Prices change over time (inflation in 2022). For each period, use the price valid at that time.
 :::
 
-## Kostenannahmen
+## Cost assumptions
 
-Die Bäckerei hat die variablen Herstellkosten (Rohstoffe, Energie, variabler Lohnanteil) wie folgt geschätzt:
+The bakery has estimated the variable production costs (raw materials, energy, variable labour share) as follows:
 
-| Artikel | Variable Kosten 2021 [€/Stück] | Variable Kosten 2022 [€/Stück] | Restwert [€/Stück] |
+| Item | Variable costs 2021 [€/unit] | Variable costs 2022 [€/unit] | Salvage value [€/unit] |
 |---|---:|---:|---:|
-| TRADITIONAL BAGUETTE | 0,40 | 0,48 | 0,10 (Paniermehl, Tierfutter) |
-| CROISSANT | 0,38 | 0,45 | 0,30 (Verkauf über App zum Abend) |
-| PAIN AU CHOCOLAT | 0,42 | 0,50 | 0,30 (Verkauf über App zum Abend) |
+| TRADITIONAL BAGUETTE | 0.40 | 0.48 | 0.10 (breadcrumbs, animal feed) |
+| CROISSANT | 0.38 | 0.45 | 0.30 (sale via app in the evening) |
+| PAIN AU CHOCOLAT | 0.42 | 0.50 | 0.30 (sale via app in the evening) |
 
-Die Verkaufspreise entnehmen Sie den Daten. Für einen weiteren Artikel Ihrer Wahl treffen Sie eigene begründete Annahmen.
+Take the selling prices from the data. For one further item of your choice, make your own justified assumptions.
 
-# Aufgaben
+# Tasks
 
-## Teil A – Von Kassenbons zur Nachfragezeitreihe
+## Part A – From receipts to a demand time series
 
-**A1.** Bereiten Sie die Daten auf und erzeugen Sie für die drei Artikel der Kostentabelle eine tägliche Absatzzeitreihe. Dokumentieren Sie alle Bereinigungsschritte.
+**A1.** Prepare the data and generate a daily sales time series for the three items in the cost table. Document all cleaning steps.
 
-**A2.** Analysieren Sie Wochentagseffekte, Saisonalität und Trend und prüfen Sie die Verteilung der Tagesnachfrage (Histogramm, QQ-Plot). Welche Segmentierung, z. B. nach Wochentag, halten Sie für sinnvoll, und ist die Normalverteilungsannahme gerechtfertigt?
+**A2.** Analyse weekday effects, seasonality and trend, and examine the distribution of daily demand (histogram, QQ plot). Which segmentation, e.g. by weekday, do you consider sensible, and is the normal distribution assumption justified?
 
-## Teil B – Klassisches Newsvendor-Modell
+## Part B – Classic newsvendor model
 
-**B1.** Bestimmen Sie für die TRADITIONAL BAGUETTE mit den Daten von 2021 die Unterbestandskosten $c^u$, die Überbestandskosten $c^o$ und das kritische Verhältnis $CR = c^u/(c^u+c^o)$.
+**B1.** For the TRADITIONAL BAGUETTE, using the 2021 data, determine the underage cost $c^u$, the overage cost $c^o$ and the critical ratio $CR = c^u/(c^u+c^o)$.
 
-**B2.** Berechnen Sie die optimale Backmenge $q^*$ und den erwarteten Gewinn (a) unter Normalverteilungsannahme für alle Tage gemeinsam (`newsvendor_normal()`), (b) unter Normalverteilungsannahme je Wochentag und (c) mit dem empirischen CR-Quantil je Wochentag.
+**B2.** Calculate the optimal baking quantity $q^*$ and the expected profit (a) assuming a normal distribution for all days together (`newsvendor_normal()`), (b) assuming a normal distribution per weekday and (c) using the empirical CR quantile per weekday.
 
-**B3.** Wiederholen Sie die Rechnung für das Croissant. Warum unterscheidet sich der optimale Servicegrad so stark von dem der Baguette?
+**B3.** Repeat the calculation for the croissant. Why does the optimal service level differ so strongly from that of the baguette?
 
-## Teil C – Backtest
+## Part C – Backtest
 
-**C1.** Kalibrieren Sie die folgenden Planungsregeln mit den Daten von **2021** und testen Sie sie auf **Januar bis September 2022**:
+**C1.** Calibrate the following planning rules with the **2021** data and test them on **January to September 2022**:
 
-1. **Erfahrungsregel:** feste Menge je Wochentag = Mittelwert 2021 + 10 %,
-2. Newsvendor normalverteilt je Wochentag (B2b),
-3. Newsvendor empirisch je Wochentag (B2c).
+1. **Rule of thumb:** fixed quantity per weekday = 2021 mean + 10%,
+2. Newsvendor with normal distribution per weekday (B2b),
+3. Newsvendor with empirical distribution per weekday (B2c).
 
-Berechnen Sie für jede Regel den realisierten Gewinn, die Fehlmengen, die Abfallmenge und den erreichten α-Servicegrad. Optional: Entwickeln Sie eine eigene, bessere Regel.
+For each rule, calculate the realised profit, the shortages, the amount of waste and the α service level achieved. Optional: develop your own, better rule.
 
-## Teil D – Empfehlung und Reflexion
+## Part D – Recommendation and reflection
 
-**D1. Zensierte Nachfrage.** Die Kassendaten zeigen **Verkäufe, nicht Nachfrage**. Entwickeln Sie einen einfachen Indikator für Ausverkaufstage (z. B. Uhrzeit des letzten Verkaufs) und schätzen Sie, wie häufig Zensierung auftritt und in welche Richtung sie Ihr $q^*$ verzerrt.
+**D1. Censored demand.** The point-of-sale data show **sales, not demand**. Develop a simple indicator for sell-out days (e.g. time of the last sale) and estimate how often censoring occurs and in which direction it biases your $q^*$.
 
-**D2. Nachhaltigkeit.** Bestimmen Sie die gewinnmaximale Backmenge, wenn höchstens **5 %** der Produktion übrig bleiben dürfen, und quantifizieren Sie den entgangenen Gewinn gegenüber dem unbeschränkten Optimum.
+**D2. Sustainability.** Determine the profit-maximising baking quantity if at most **5%** of production may be left over, and quantify the profit forgone compared with the unconstrained optimum.
 
-**D3. Empfehlung.** Formulieren Sie eine praxistaugliche Empfehlung für die Inhaberin, z. B. als Tabelle »Backmenge je Wochentag«.
+**D3. Recommendation.** Formulate a practical recommendation for the owner, e.g. as a table “baking quantity per weekday”.
 
-**D4. Reflexion.** Beantworten Sie in der Präsentation die folgenden Fragen. Sie bilden den Ausgangspunkt der anschließenden Diskussion:
+**D4. Reflection.** Answer the following questions in your presentation. They form the starting point for the subsequent discussion:
 
-1. Warum schneidet das Newsvendor-Modell im Backtest besser oder schlechter ab als die Erfahrungsregel? Welches Wissen steckt in der »Erfahrung« der Inhaberin, das das Modell nicht kennt?
-2. Die Kosten und Restwerte sind Annahmen und stammen nicht aus den Daten. Wie stark hängt Ihre Empfehlung davon ab?
-3. Was bedeutet es für datengetriebene Entscheidungen allgemein, dass oft nur beobachtet wird, was verkauft wurde, und nicht, was nachgefragt wurde?
-4. Gewinn oder weniger Lebensmittelabfall: Wie sollte ein Unternehmen diesen Zielkonflikt entscheiden, und wer sollte die »Kosten der Nachhaltigkeit« tragen?
-5. Wären Ihre Ergebnisse auf eine Bäckerei in einem anderen Land übertragbar, etwa mit breiterem Sortiment und anderen Einkaufsgewohnheiten?
+1. Why does the newsvendor model perform better or worse than the rule of thumb in the backtest? What knowledge is contained in the owner's “experience” that the model does not know?
+2. The costs and salvage values are assumptions and do not come from the data. How strongly does your recommendation depend on them?
+3. What does it mean for data-driven decisions in general that often only what was sold is observed, and not what was demanded?
+4. Profit or less food waste: How should a company decide this trade-off, and who should bear the “costs of sustainability”?
+5. Would your results be transferable to a bakery in another country, for example with a broader range and different shopping habits?
 
-# Anhang: R-Startercode
+# Appendix: R starter code
 
 ```{r}
 #| label: starter
@@ -148,15 +150,15 @@ tagesabsatz <- bakery |>
   mutate(wochentag = lubridate::wday(date, label = TRUE, week_start = 1),
          jahr      = lubridate::year(date))
 
-# Beispiel: Newsvendor für die Baguette 2021 (alle Tage)
+# Example: newsvendor for the baguette 2021 (all days)
 b21 <- tagesabsatz |> filter(article == "TRADITIONAL BAGUETTE", jahr == 2021)
 newsvendor_normal(mu = mean(b21$menge), sigma = sd(b21$menge),
                   p = median(b21$preis), c = 0.40, s = 0.10)
 
-# Empirisches Quantil
+# Empirical quantile
 CR <- (median(b21$preis) - 0.40) / (median(b21$preis) - 0.10)
 quantile(b21$menge, CR, type = 1)
 
-# Realisierter Gewinn einer Menge q bei Nachfrage D
+# Realised profit of a quantity q given demand D
 gewinn <- function(q, D, p, c, s) p * pmin(q, D) + s * pmax(q - D, 0) - c * q
 ```

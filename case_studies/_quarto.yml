@@ -2,7 +2,7 @@ project:
   output-dir: ../docs/case_studies
   execute-dir: project
 
-lang: de
+lang: en
 
 execute:
   freeze: auto

@@ -1,26 +1,26 @@
-# Vorlesungsfolien
+# Lecture slides
 
-## Einzelne Vorlesung rendern
+## Rendering a single lecture
 
-Aus dem Verzeichnis `slides/` kann jede Datei in `lectures/` separat gerendert werden, zum Beispiel:
+From the `slides/` directory, each file in `lectures/` can be rendered separately, for example:
 
 ```bash
 quarto render lectures/06_unsicherheit-in-supply-chains-pooling.qmd
 ```
 
-## Gesamtausgabe rendern
+## Rendering the complete edition
 
-Die Datei `scm-komplett.qmd` bindet die acht Vorlesungseinheiten in ihrer numerischen Reihenfolge ein. Das Profil `full` beschränkt den Renderlauf auf diese Gesamtausgabe:
+The file `scm-komplett.qmd` includes the eight lecture units in numerical order. The `full` profile restricts the render run to this complete edition:
 
 ```bash
 cd slides
 quarto render --profile full
 ```
 
-Alternativ kann die Gesamtausgabe direkt erzeugt werden:
+Alternatively, the complete edition can be generated directly:
 
 ```bash
 quarto render scm-komplett.qmd
 ```
 
-Die Bibliografie wird projektweit über `_quarto.yml` aus `../literature/references.bib` bereitgestellt.
+The bibliography is provided project-wide via `_quarto.yml` from `../literature/!references.bib`.

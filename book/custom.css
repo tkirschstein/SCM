@@ -1,4 +1,4 @@
-/* Farbpalette passend zu den Vorlesungsfolien (siehe R/scm_functions.R -> cols) */
+/* Colour palette matching the lecture slides (see R/scm_functions.R -> cols) */
 :root {
   --scm-top: #0B6E4F;
   --scm-strat: #2D6A4F;
@@ -25,7 +25,7 @@ a:hover {
   color: var(--scm-atp);
 }
 
-/* Lernziele-Box zu Kapitelbeginn */
+/* Learning objectives box at the start of a chapter */
 .lernziele {
   background: #f0f7f4;
   border-left: 5px solid var(--scm-top);
@@ -44,7 +44,7 @@ a:hover {
   margin-bottom: 0;
 }
 
-/* Kontrollfragen-Box am Kapitelende */
+/* Review questions box at the end of a chapter */
 .kontrollfragen {
   background: #fdf3ea;
   border-left: 5px solid var(--scm-atp);
@@ -64,7 +64,7 @@ a:hover {
   margin-bottom: 0;
 }
 
-/* Merksatz / Definitions-Box */
+/* Key takeaway / definition box */
 .definition {
   background: #f4f6f7;
   border: 1px solid var(--scm-border);
@@ -78,7 +78,7 @@ a:hover {
   font-weight: 700;
 }
 
-/* R-Exkurs-Box: kurze Erklärungen von R-Grundlagen */
+/* R aside box: short explanations of R basics */
 .r-exkurs {
   background: #eef2fb;
   border-left: 5px solid var(--scm-mid);
@@ -94,7 +94,7 @@ a:hover {
   color: var(--scm-strat);
 }
 
-/* Fallstudien-Box: durchgängiges Fallbeispiel SushiFresh GmbH */
+/* Case study box: continuous case example SushiFresh GmbH */
 .fallstudie {
   background: #fff8e6;
   border-left: 5px solid #E9C46A;
@@ -109,7 +109,7 @@ a:hover {
   color: #8a6a00;
 }
 
-/* Theorie-Vertiefung: formale Hintergründe, Herleitungen, Einordnung */
+/* In-depth theory: formal background, derivations, context */
 .vertiefung {
   background: #f7f4fb;
   border-left: 5px solid #7a5ea8;
@@ -123,3 +123,22 @@ a:hover {
   font-weight: 700;
   color: #5b3f8a;
 }
+
+/* AHP bottom-up hierarchy (boxes connected by arrows) */
+.ahp-hierarchy {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 0.8em auto;
+}
+.ahp-hierarchy .ahp-level {
+  border: 2px solid #333333;
+  padding: 0.25em 0.9em;
+  background: #ffffff;
+  text-align: center;
+}
+.ahp-hierarchy .ahp-level p { margin: 0; }
+.ahp-hierarchy .ahp-arrow { font-size: 1.4em; line-height: 1.1; margin: 0.05em 0; }
+.ahp-hierarchy .ahp-arrow p { margin: 0; }
+.ahp-hierarchy .ahp-source { font-size: 0.75em; margin-top: 0.4em; color: #555555; }
+.ahp-hierarchy .ahp-source p { margin: 0; }

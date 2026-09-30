@@ -1,8 +1,8 @@
 ---
-title: "Fallstudie 1: Strategische Gestaltung von Supply Chains"
-subtitle: "Werner & Mertz und die Marke Frosch – Kreislaufwirtschaft als Wettbewerbsstrategie"
-author: "Supply Chain Management – Gruppenarbeit"
-lang: de
+title: "Case Study 1: Strategic Design of Supply Chains"
+subtitle: "Werner & Mertz and the Frosch brand – circular economy as a competitive strategy"
+author: "Supply Chain Management – Group Work"
+lang: en
 format:
   html:
     theme: cosmo
@@ -13,103 +13,105 @@ format:
 ---
 
 ::: {.callout-note}
-## Steckbrief
+
+## Overview
 
 | | |
 |---|---|
-| **Thema** | Strategische Gestaltung von Supply Chains, Strategic Fit, Nachhaltigkeit |
-| **Vorlesungsbezug** | Kapitel 1–3 der Vorlesungsmaterialien (Grundbegriffe, Strategic Fit, Ziele und Zielkonflikte, Nachhaltigkeit im SCM) |
-| **Typ** | Qualitative Fallstudie (Recherche und Argumentation, kein Datensatz erforderlich) |
-| **Gruppengröße** | 3–6 Personen |
-| **Ergebnis** | Präsentation (30 Min.) + Diskussion (15 Min.), Foliensatz als PDF |
+| **Topic** | Strategic design of supply chains, strategic fit, sustainability |
+| **Link to the lecture** | Chapters 1–3 of the lecture materials (basic concepts, strategic fit, objectives and trade-offs, sustainability in SCM) |
+| **Type** | Qualitative case study (research and argumentation, no dataset required) |
+| **Group size** | 3–6 people |
+| **Deliverable** | Presentation (30 min) + discussion (15 min), slide deck as PDF |
 :::
 
-# Lernziele
+# Learning objectives
 
-Nach Bearbeitung der Fallstudie können Sie
+After working through this case study, you will be able to
 
-- die Supply Chain eines realen Unternehmens als Netzwerk (fokales Unternehmen, Tier-n-Lieferanten, Kunden, Rückflüsse) modellieren,
-- Produkte und Märkte einordnen und die daraus folgende SC-Strategien ableiten,
-- den **Strategic Fit** zwischen Wettbewerbsstrategie und SC-Strategie anhand der SC-Treiber begründet beurteilen,
-- Zielkonflikte zwischen Kosten, Service und Nachhaltigkeit identifizieren und
-- eine Kreislauf-Supply-Chain (Closed-Loop) mit ihren spezifischen Risiken analysieren.
+- model the supply chain of a real company as a network (focal company, tier-n suppliers, customers, return flows),
+- classify products and markets and derive the resulting supply chain strategies,
+- assess the **strategic fit** between competitive strategy and supply chain strategy in a well-founded way using the supply chain drivers,
+- identify trade-offs between cost, service and sustainability, and
+- analyse a closed-loop supply chain and its specific risks.
 
-# Ausgangslage
+# Initial situation
 
-Die **Werner & Mertz GmbH** mit Sitz in Mainz ist ein Familienunternehmen, das 1867 als Wachswarenfabrik gegründet wurde und heute in fünfter Generation von Reinhard Schneider geführt wird. Bekannt wurde das Unternehmen zunächst mit der Schuhcreme **Erdal**. Seit 1986 vertreibt Werner & Mertz unter der Marke **Frosch** ökologisch positionierte Wasch-, Putz- und Reinigungsmittel. Frosch ist inzwischen die umsatzstärkste Marke des Unternehmens. Produziert wird im Wesentlichen in Mainz-Mombach und im österreichischen Hallein. Der Umsatz lag zuletzt bei rund einer halben Milliarde Euro (2024: ca. 611 Mio. €), beschäftigt sind gut 1.000 Mitarbeitende.
+**Werner & Mertz GmbH**, headquartered in Mainz, is a family business founded in 1867 as a wax goods factory and now run in the fifth generation by Reinhard Schneider. The company first became known for its shoe polish **Erdal**. Since 1986, Werner & Mertz has marketed ecologically positioned laundry, household and cleaning products under the **Frosch** brand. Frosch is now the company's highest-selling brand. Production takes place mainly in Mainz-Mombach and in Hallein, Austria. Revenue was recently around half a billion euros (2024: approx. €611 million), and the company employs just over 1,000 people.
 
-Frosch konkurriert im Drogerie- und Lebensmitteleinzelhandel mit globalen Konzernen wie Henkel, Procter & Gamble oder Unilever und mit den Handelsmarken von dm, Rossmann, Aldi oder Lidl. Das Unternehmen setzt dabei konsequent auf Umweltverträglichkeit als Differenzierungsmerkmal:
+Frosch competes in drugstore and grocery retail with global corporations such as Henkel, Procter & Gamble and Unilever, and with the private labels of dm, Rossmann, Aldi and Lidl. The company consistently relies on environmental compatibility as its differentiating feature:
 
-- **Recyclat-Initiative (seit 2012):** Gemeinsam mit Partnern aus Entsorgung, Recycling und Verpackungsherstellung (u. a. ALPLA, NABU, Fraunhofer-Institute) gewinnt Werner & Mertz Kunststoff aus dem Gelben Sack zurück und verarbeitet ihn zu neuen Flaschen. Der Anteil an Gelber-Sack-Material in den PET-Flaschen wurde schrittweise erhöht (2014: 20 %, 2021: 50 %, 2023: 75 %) und erreichte 2025 100 %. Im Juni 2025 feierte das Unternehmen die milliardste rPET-Flasche aus Recyclingmaterial. Inzwischen gibt es auch HDPE-Flaschen, Verschlüsse, Sprühköpfe und Standbodenbeutel aus Rezyklat.
-- **Zertifizierungen und Auszeichnungen:** Werner & Mertz ist seit 2003 EMAS-validiert, viele Frosch-Produkte sind *Cradle to Cradle Certified*. Außerdem erhielt das Unternehmen mehrere Deutsche Verpackungspreise und Deutsche Nachhaltigkeitspreise, und Reinhard Schneider wurde 2019 mit dem Deutschen Umweltpreis ausgezeichnet.
-- **Rohstoffe:** Tenside sollen verstärkt aus europäischen Pflanzen (z. B. Raps, Oliven, Leinsamen) statt aus tropischem Palm- oder Palmkernöl gewonnen werden.
+- **Recyclate Initiative (since 2012):** Together with partners from waste management, recycling and packaging manufacturing (including ALPLA, NABU and Fraunhofer institutes), Werner & Mertz recovers plastic from the Yellow Bag (Germany's household packaging waste collection) and processes it into new bottles. The share of Yellow Bag material in the PET bottles was increased step by step (2014: 20%, 2021: 50%, 2023: 75%) and reached 100% in 2025. In June 2025, the company celebrated its billionth rPET bottle made from recycled material. There are now also HDPE bottles, caps, spray heads and stand-up pouches made from recyclate.
+- **Certifications and awards:** Werner & Mertz has been EMAS-validated since 2003, and many Frosch products are *Cradle to Cradle Certified*. The company has also received several German Packaging Awards and German Sustainability Awards, and Reinhard Schneider was honoured with the German Environmental Award in 2019.
+- **Raw materials:** Surfactants are increasingly to be obtained from European plants (e.g. rapeseed, olives, linseed) instead of tropical palm or palm kernel oil.
 
-Die Geschäftsführung steht vor der Frage, **wie die Supply Chain in den nächsten fünf bis zehn Jahren weiterentwickelt werden soll**. Folgende Entwicklungen sind zu berücksichtigen:
+Management faces the question of **how the supply chain should be developed over the next five to ten years**. The following developments must be taken into account:
 
-1. Die EU-Verpackungsverordnung (PPWR) schreibt verbindliche Mindestrezyklatanteile vor. Dadurch steigt die Nachfrage nach hochwertigem Post-Consumer-Rezyklat europaweit, während das Angebot aus dem Gelben Sack begrenzt ist.
-2. Neuware (Virgin-PET) ist bei niedrigem Ölpreis oft günstiger als hochwertiges Rezyklat. Dadurch entsteht ein Kostennachteil gegenüber Wettbewerbern, die weniger konsequent vorgehen.
-3. Der Handel baut eigene »grüne« Handelsmarken auf, und die Preissensibilität der Konsumentinnen und Konsumenten schwankt mit der Konjunktur.
-4. Die Internationalisierung (u. a. Frankreich, Italien, Spanien, Nordamerika) wirft die Frage auf, ob weiterhin zentral aus Mainz/Hallein geliefert oder regional produziert bzw. abgefüllt werden soll.
+1. The EU Packaging and Packaging Waste Regulation (PPWR) prescribes binding minimum recycled content. As a result, demand for high-quality post-consumer recyclate is rising across Europe, while supply from the Yellow Bag is limited.
+2. Virgin material (virgin PET) is often cheaper than high-quality recyclate when oil prices are low. This creates a cost disadvantage compared with competitors that take a less consistent approach.
+3. Retailers are building their own “green” private labels, and consumers' price sensitivity fluctuates with the economic cycle.
+4. Internationalisation (including France, Italy, Spain and North America) raises the question of whether to continue supplying centrally from Mainz/Hallein or to produce or bottle regionally.
 
 ::: {.callout-important}
-## Hinweis zur Recherche
-Die Angaben oben sind ein Ausgangspunkt. Recherchieren Sie selbst aktuelle Informationen, z. B. Nachhaltigkeitsberichte, die Unternehmenswebsite, Presseartikel und Fachliteratur zur Kreislaufwirtschaft. Geben Sie alle Quellen an. Wo Informationen fehlen, treffen Sie **plausible, explizit gekennzeichnete Annahmen**.
+
+## Note on research
+The information above is a starting point. Research up-to-date information yourselves, e.g. sustainability reports, the company website, press articles and academic literature on the circular economy. Cite all sources. Where information is missing, make **plausible, explicitly labelled assumptions**.
 :::
 
-# Aufgaben
+# Tasks
 
-## Teil A – Die Supply Chain von Frosch verstehen
+## Part A – Understanding the Frosch supply chain
 
-**A1. Netzwerkmodell.** Skizzieren Sie die Supply Chain eines typischen Frosch-Produkts, z. B. des Frosch Essig-Reinigers in der 500-ml-Flasche, von den Rohstoffen bis zum Endkunden. Berücksichtigen Sie die Tier-Struktur (Tenside, Duftstoffe, Flaschen, Etiketten), die Distributionsstufen (Zentrallager des Handels, Filialen, Online-Handel) und den **Rückfluss** der Verpackungen (Haushalt → Gelber Sack → Sortierung → Recycling → Flaschenherstellung). Kennzeichnen Sie Material-, Informations- und Finanzflüsse. Handelt es sich um eine fokale oder eine polyzentrische Supply Chain?
+**A1. Network model.** Sketch the supply chain of a typical Frosch product, e.g. the Frosch vinegar cleaner in the 500 ml bottle, from raw materials to the end customer. Take into account the tier structure (surfactants, fragrances, bottles, labels), the distribution stages (retailers' central warehouses, stores, online retail) and the **return flow** of packaging (household → Yellow Bag → sorting → recycling → bottle manufacturing). Mark material, information and financial flows. Is this a focal or a polycentric supply chain?
 
-**A2. Produkt- und Nachfragecharakteristik.** Ordnen Sie typische Produkte des Frosch-Sortiments in das Strategic-Fit-Konzept ein und charakterisieren Sie die implizite Nachfrageunsicherheit anhand der Kriterien aus der Vorlesung. Unterscheiden sich einzelne Produktgruppen, z. B. Basisreiniger, Sondereditionen oder Nachfüllbeutel?
+**A2. Product and demand characteristics.** Classify typical products from the Frosch range within the strategic fit concept and characterise the implied demand uncertainty using the criteria from the lecture. Do individual product groups differ, e.g. basic cleaners, special editions or refill pouches?
 
-## Teil B – Strategic Fit
+## Part B – Strategic fit
 
-**B1. Wettbewerbsstrategie und SC-Treiber.** Beschreiben Sie die Wettbewerbsstrategie von Frosch (z. B. nach Porter). Analysieren Sie anschließend für die sechs SC-Treiber, wie Werner & Mertz sie heute (vermutlich) ausgestaltet und ob dies eher effizient oder reaktionsfähig ist:
+**B1. Competitive strategy and supply chain drivers.** Describe Frosch's competitive strategy (e.g. following Porter). Then analyse, for each of the six supply chain drivers, how Werner & Mertz (presumably) configures it today and whether this is more efficient or more responsive:
 
-| SC-Treiber | Ausgestaltung bei Frosch | effizient ↔ reaktionsfähig | Begründung |
+| Supply chain driver | Configuration at Frosch | efficient ↔ responsive | Justification |
 |---|---|---|---|
-| Anlagen/Standorte | | | |
-| Lagerbestand | | | |
-| Transport | | | |
+| Facilities/locations | | | |
+| Inventory | | | |
+| Transportation | | | |
 | Information | | | |
-| Beschaffung | | | |
-| Preisgestaltung | | | |
+| Sourcing | | | |
+| Pricing | | | |
 
-**B2. Beurteilung.** Positionieren Sie Frosch im Strategic-Fit-Diagramm (implizite Unsicherheit vs. Reaktionsfähigkeit). In welchen Marktsegmenten liegt ein Strategic Fit vor? Welche Rolle spielt die Beschaffungsseite (**Supply Uncertainty** bei Rezyklat)?
+**B2. Assessment.** Position Frosch in the strategic fit diagram (implied uncertainty vs. responsiveness). In which market segments is there a strategic fit? What role does the procurement side play (**supply uncertainty** for recyclate)?
 
-## Teil C – Zielkonflikte und Nachhaltigkeit
+## Part C – Trade-offs and sustainability
 
-**C1. Zielkonflikte.** Identifizieren Sie mindestens **zwei konkrete Zielkonflikte** der Supply Chain und veranschaulichen Sie einen davon qualitativ als Pareto-Front. Beispiele sind Rezyklatanteil ↔ Materialkosten und Verfügbarkeit oder zentrale Produktion ↔ Transportemissionen und Lieferzeit in Auslandsmärkten.
+**C1. Trade-offs.** Identify at least **two specific trade-offs** in the supply chain and illustrate one of them qualitatively as a Pareto front. Examples are recycled content ↔ material costs and availability, or centralised production ↔ transport emissions and delivery time in foreign markets.
 
-**C2. Closed-Loop-Supply-Chain.** Analysieren Sie die Rückführungskette: Wer sind die Akteure (Duales System, Sortierer, Recycler), welche Risiken bestehen (Menge, Qualität, Preis, Regulierung), und warum hat Werner & Mertz in die Initiative investiert, statt Rezyklat einfach am Markt zu kaufen (Make-or-Buy, vertikale Kooperation)?
+**C2. Closed-loop supply chain.** Analyse the return chain: Who are the actors (dual system, sorters, recyclers), what risks exist (quantity, quality, price, regulation), and why did Werner & Mertz invest in the initiative instead of simply buying recyclate on the market (make-or-buy, vertical cooperation)?
 
-**C3. Nachhaltigkeitsstrategie.** Ordnen Sie die Nachhaltigkeitsstrategie von Werner & Mertz in die Matrix aus der Vorlesung ein (defensiv, offensiv, …). Welche Planungsaufgaben aus Kapitel 3 werden besonders adressiert?
+**C3. Sustainability strategy.** Classify Werner & Mertz's sustainability strategy within the matrix from the lecture (defensive, offensive, …). Which planning tasks from Chapter 3 are particularly addressed?
 
-## Teil D – Empfehlung und Reflexion
+## Part D – Recommendation and reflection
 
-**D1. Strategische Empfehlung.** Wählen Sie **eine** der folgenden Optionen und bewerten Sie sie anhand der SC-Treiber, des Strategic Fit, der Zielkonflikte und der Risiken:
+**D1. Strategic recommendation.** Choose **one** of the following options and evaluate it in terms of the supply chain drivers, strategic fit, trade-offs and risks:
 
-1. **Rückwärtsintegration:** Beteiligung an bzw. Aufbau einer eigenen Sortier- oder Recyclinganlage zur Sicherung der Rezyklatversorgung.
-2. **Regionalisierung:** Aufbau einer Abfüllung in Südeuropa oder Nordamerika statt zentraler Belieferung aus Mainz und Hallein.
-3. **Nachfüllsysteme und Konzentrate:** Umstellung wesentlicher Teile des Sortiments auf Konzentrate und Nachfüllbeutel.
+1. **Backward integration:** Taking a stake in or building an own sorting or recycling plant to secure the supply of recyclate.
+2. **Regionalisation:** Setting up a bottling operation in southern Europe or North America instead of central supply from Mainz and Hallein.
+3. **Refill systems and concentrates:** Switching significant parts of the range to concentrates and refill pouches.
 
-Formulieren Sie eine klare Handlungsempfehlung mit Begründung.
+Formulate a clear recommendation for action with justification.
 
-**D2. Reflexion.** Beantworten Sie in der Präsentation die folgenden Fragen. Sie bilden den Ausgangspunkt der anschließenden Diskussion:
+**D2. Reflection.** Answer the following questions in your presentation. They form the starting point for the subsequent discussion:
 
-1. Ihre Analyse beruht weitgehend auf öffentlichen Informationen und Annahmen. Wie belastbar sind Ihre Aussagen, und welche internen Daten würden Sie benötigen, um sie abzusichern?
-2. Wo stößt das Strategic-Fit-Konzept an Grenzen, wenn Nachhaltigkeit und Beschaffungsunsicherheit im Zentrum stehen?
-3. Ist Nachhaltigkeit bei Frosch Teil der Wettbewerbsstrategie oder eine Restriktion für die SC-Strategie? Was folgt daraus für Unternehmen, die Nachhaltigkeit »nur« wegen Regulierung umsetzen?
-4. Welche Rolle spielen Werte und Eigentümerstruktur (Familienunternehmen) für SC-Entscheidungen, die sich kurzfristig ökonomisch nicht rechnen?
-5. Welche Erkenntnisse lassen sich auf internationale Märkte übertragen, in denen es kein vergleichbares Sammelsystem wie den Gelben Sack gibt?
+1. Your analysis is largely based on public information and assumptions. How robust are your statements, and which internal data would you need to validate them?
+2. Where does the strategic fit concept reach its limits when sustainability and supply uncertainty are at the centre?
+3. Is sustainability at Frosch part of the competitive strategy or a constraint on the supply chain strategy? What does this imply for companies that implement sustainability “only” because of regulation?
+4. What role do values and ownership structure (family business) play in supply chain decisions that do not pay off economically in the short term?
+5. Which insights can be transferred to international markets where there is no collection system comparable to the Yellow Bag?
 
 
-# Literatur und Quellen (Einstieg)
+# Literature and sources (starting points)
 
-- Werner & Mertz: Recyclat-Initiative, <https://werner-mertz.de/en/recyclate-initiative/>
+- Werner & Mertz: Recyclate Initiative, <https://werner-mertz.de/en/recyclate-initiative/>
 - Fisher, M. L. (1997): What Is the Right Supply Chain for Your Product? *Harvard Business Review* 75(2), 105–116.
-- Chopra, S.; Meindl, P.: *Supply Chain Management – Strategy, Planning, and Operation*, Kapitel 1–3.
+- Chopra, S.; Meindl, P.: *Supply Chain Management – Strategy, Planning, and Operation*, Chapters 1–3.
 - Porter, M. E. (1985): *Competitive Advantage*. New York: Free Press.
-- Reader zur Vorlesung, Kapitel 1–3.
+- Course reader for the lecture, Chapters 1–3.

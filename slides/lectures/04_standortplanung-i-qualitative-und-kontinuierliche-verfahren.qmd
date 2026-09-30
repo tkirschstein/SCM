@@ -5,7 +5,7 @@
 #| warning: false
 #| message: false
 
-# Funktionen aus scm_functions.R einbinden
+# Load functions from scm_functions.R
 source("../R/scm_functions.R")
 
 library(tidyverse)
@@ -23,31 +23,31 @@ library(knitr)
 ```
 
 
-# Strategische Gestaltung von Supply Chains
+# Strategic Design of Supply Chains
 
-## Strategische Gestaltung von Supply Chains {#slide-66}
+## Strategic Design of Supply Chains {#slide-66}
 
-- **Multikriterielle Standortplanung**
-- Kontinuierliche Standortplanung
-- Diskrete Standortplanung
+- **Multi-criteria facility location planning**
+- Continuous facility location planning
+- Discrete facility location planning
 
-## Lernziele {#learning-objectives-location-continuous}
+## Learning objectives {#learning-objectives-location-continuous}
 
-Nach dieser Einheit können Sie …
+After this unit you will be able to …
 
-- Standortentscheidungen im strategischen Supply-Chain-Design **einordnen**,
-- qualitative Standortfaktoren systematisch **erfassen und bewerten**,
-- das AHP-Verfahren und Nutzwertverfahren **erläutern und anwenden**,
-- die Eigenschaften unterschiedlicher Distanzmetriken **erläutern** und diese **berechnen**,
-- kontinuierliche Standortverfahren auf einfache Entscheidungsprobleme **anwenden und interpretieren**.
+- **classify** location decisions within strategic supply chain design,
+- systematically **capture and evaluate** qualitative location factors,
+- **explain and apply** the AHP method and the scoring model,
+- **explain** the properties of different distance metrics and **calculate** them,
+- **apply and interpret** continuous location methods for simple decision problems.
 
-**Literatur zur Vertiefung**
+**Further reading**
 
-- **Modellgestützte regionale Standortplanung und -entwicklung:** [@kik2022standortplanung].
-- **Standortplanung und kontinuierliche Entscheidungsmodelle:**  [@thonemann2023operations, Kapitel 3].
-- **Kontinuierliche Standortmodelle und lokale Gleichgewichte:** [@cooper1968locational].
+- **Model-based regional facility location planning and development:** [@kik2022standortplanung].
+- **Facility location planning and continuous decision models:**  [@thonemann2023operations, Chapter 3].
+- **Continuous location models and local equilibria:** [@cooper1968locational].
 
-## Planung im Supply Chain Management {#slide-67}
+## Planning in Supply Chain Management {#slide-67}
 
 ::: slide-subtitle
 Supply Chain Planning Matrix
@@ -55,10 +55,10 @@ Supply Chain Planning Matrix
 
 ![](images/clipboard-38068832.png)
 
-## Strategische Netzwerkplanung {#slide-71}
+## Strategic Network Planning {#slide-71}
 
 ::: slide-subtitle
-Zielstellung der Standortplanung
+Objective of facility location planning
 :::
 
 ::::::: columns
@@ -75,7 +75,7 @@ Zielstellung der Standortplanung
 library(plotly)
 
 top_boxes <- data.frame(
-  label = c("Beschaffung", "Produktion", "Distribution", "Absatz"),
+  label = c("Procurement", "Production", "Distribution", "Sales"),
   x0 = c(0.00, 2.00, 4.00, 6.00),
   x1 = c(2.00, 4.00, 6.00, 8.00),
   y0 = 9.25,
@@ -221,30 +221,30 @@ digraph network {
 :::::
 
 ::: {.column width="40%"}
-**Entscheidung über Standort von:**
+**Decision on the location of:**
 
-- Auslieferungslägern
-- Fabriken
-- Verkaufsstandorten
-- Versorgungslägern
+- distribution warehouses
+- factories
+- sales outlets
+- supply warehouses
 - ...
 :::
 :::::::
 
-## Strategische Netzwerkplanung {#slide-72}
+## Strategic Network Planning {#slide-72}
 
 ::: slide-subtitle
-Phasen der Standortwahl
+Phases of location selection
 :::
 
-![](images/image61.jpeg)
+![](images/image61.png)
 
 [@chopra2025supply]
 
-## Strategische Netzwerkplanung {#slide-73}
+## Strategic Network Planning {#slide-73}
 
 ::: slide-subtitle
-Standortplanungsprozess
+Facility location planning process
 :::
 
 ::::: columns
@@ -255,15 +255,15 @@ Standortplanungsprozess
 :::
 
 ::: {.column width="30%"}
-- Auf globaler Ebene Optionen meist überschaubar (Kontinent/Land) $\rightarrow$ Faktoren stark vereinfacht und aggregiert $\rightarrow$ unspezifisch, Ziel ist strategische Passfähigkeit
-- Auf regionaler Ebene Ziel optimalen Standort identifizieren $\rightarrow$ präzisere Anforderungen
+- At global level, options are usually limited (continent/country) $\rightarrow$ factors heavily simplified and aggregated $\rightarrow$ non-specific; goal is strategic fit
+- At regional level, goal is to identify the optimal location $\rightarrow$ more precise requirements
 :::
 :::::
 
-## Strategische Netzwerkplanung {#slide-74}
+## Strategic Network Planning {#slide-74}
 
 ::: slide-subtitle
-Standortfaktoren
+Location factors
 :::
 
 :::::: columns
@@ -275,18 +275,18 @@ Standortfaktoren
 
 :::: {.column width="30%"}
 ::: small-text
-- Bewertung von Standorten für Ansiedlungen oft schwierig
-- kurzfristig irreversible $\rightarrow$ Pfadabhängigkeiten
-- Mehrdimensional $\rightarrow$ Auswirkungen auf Zielsystem schwer zu überblicken
-- Subjektiv $\rightarrow$ Einschätzung zu weichen Faktoren oft schwankend & Bedeutung wird unterschiedlich gewichtet
+- Evaluating sites for new facilities is often difficult
+- irreversible in the short term $\rightarrow$ path dependencies
+- Multidimensional $\rightarrow$ effects on the system of objectives hard to oversee
+- Subjective $\rightarrow$ assessments of soft factors often vary & their importance is weighted differently
 :::
 ::::
 ::::::
 
-## Strategische Netzwerkplanung {#slide-75}
+## Strategic Network Planning {#slide-75}
 
 ::: slide-subtitle
-Methoden der Standortplanung
+Methods of facility location planning
 :::
 
 ::::::: columns
@@ -294,34 +294,34 @@ Methoden der Standortplanung
 ![](images/image64.png){width="800"}
 
 ::: small-text
-Merkmale von Optimierungsmodellen [@kik2022standortplanung] ![](images/image65.png){width="800"}
+[@kik2022standortplanung]
 :::
 ::::
 
 :::: {.column width="40%"}
 ::: small-text
-- Qualitative Verfahren $\rightarrow$ heuristische, meist umfragebasierte Verfahren $\rightarrow$ Stimmungsbild und Sammlung individueller Einschätzungen
-- Quantitative Verfahren
-  - Optimierung: Entscheidungsraum (Optionen) und eindimensionales Zielsystem nötig
-  - Simulation: komplex, schwer übertragbar,mehrdimensional
-  - Spielthorie: Antizipation des Konkurrentenverhalten $\rightarrow$ Absatzmaximierung
-  - Investitionsrechnung: ausschließlich monetäre Größen (Optimierung)
+- Qualitative methods $\rightarrow$ heuristic, mostly survey-based methods $\rightarrow$ snapshot of opinion and collection of individual assessments
+- Quantitative methods
+  - Optimisation: decision space (options) and one-dimensional system of objectives required
+  - Simulation: complex, hard to transfer, multidimensional
+  - Game theory: anticipation of competitor behaviour $\rightarrow$ sales maximisation
+  - Investment appraisal: exclusively monetary quantities (optimisation)
 :::
 ::::
 :::::::
 
-## Strategische Netzwerkplanung {#slide-sushifresh-intro}
+## Strategic Network Planning {#slide-sushifresh-intro}
 
 ::: slide-subtitle
-Fallstudie: SushiFresh GmbH
+Case study: SushiFresh GmbH
 :::
 
 ::::::: columns
 :::: {.column width="45%"}
 ::: small-text
-**SushiFresh GmbH** ist ein fiktiver regionaler Hersteller frischer Sushi-Boxen im Rhein-Main-Gebiet, der täglich sechs Supermarkt-Filialen beliefert. Diese Fallstudie begleitet uns durch dieses und die folgenden Kapitel.
+**SushiFresh GmbH** is a fictitious regional producer of fresh sushi boxes in the Rhine-Main region that supplies six supermarket stores every day. This case study accompanies us through this and the following chapters.
 
-SushiFresh prüft, ob sich zusätzlich zur Auslieferung eine **eigene Produktionsstätte** lohnt, und hat drei Kandidatengrundstücke identifiziert.
+SushiFresh is examining whether, in addition to delivery, an **own production facility** is worthwhile, and has identified three candidate sites.
 :::
 ::::
 
@@ -329,7 +329,7 @@ SushiFresh prüft, ob sich zusätzlich zur Auslieferung eine **eigene Produktion
 ```{r}
 #| echo: true
 
-# Sechs Filialen: Koordinaten, Tagesnachfrage mu und Standardabweichung sigma
+# Six stores: coordinates, daily demand mu and standard deviation sigma
 filialen <- tibble(
   Filiale = c("Wiesbaden", "Mainz", "Frankfurt", "Ruesselsheim", "Darmstadt", "Offenbach"),
   lat   = c(50.0782, 50.0000, 50.1109, 49.9904, 49.8728, 50.0956),
@@ -338,7 +338,7 @@ filialen <- tibble(
   sigma = c(25, 30, 55, 20, 24, 22)
 )
 
-# Drei Kandidatenstandorte fuer die Produktionsstaette
+# Three candidate locations for the production facility
 standorte <- tibble(
   Standort = c("Wiesbaden-Erbenheim", "Mainz-Hechtsheim", "Raunheim"),
   lat = c(50.0632, 49.9698, 50.0000),
@@ -346,55 +346,57 @@ standorte <- tibble(
   Fixkosten = c(180000, 210000, 260000)
 )
 
-sum(filialen$mu)  # Gesamtnachfrage: 845 Boxen/Tag
+sum(filialen$mu)  # Total demand: 845 boxes/day
 ```
 ::::
 :::::::
 
-## Qualitative Standortplanung {#slide-76}
+## Qualitative Facility Location Planning {#slide-76}
 
 ::: slide-subtitle
-Nutzwertanalyse
+Scoring model (utility analysis)
 :::
 
 ::::::: {.columns .v-center}
 :::: {.column width="42%"}
 ::: smaller-text
-### Vorgehen
 
-1.  Relevante Bewertungskriterien festlegen
-2.  Kriteriengewichte bestimmen
-3.  Alternativen je Kriterium bewerten
-4.  Gewichtete Teilnutzwerte zum Gesamtnutzwert aggregieren
-5.  Alternativen nach Gesamtnutzwert rangordnen
+### Procedure
 
-### Kritische Punkte
+1.  Define relevant evaluation criteria
+2.  Determine criteria weights
+3.  Rate alternatives per criterion
+4.  Aggregate weighted partial scores into a total score
+5.  Rank alternatives by total score
 
-- Additives Modell nur eingeschränkt interpretierbar
-- Schlechte Ausprägungen können durch gute kompensiert werden
-- Nutzenunabhängigkeit der Kriterien oft fraglich
-- Ergebnisse reagieren empfindlich auf die Gewichtung
-- Gefahr der Zielaufspaltung
+### Critical points
+
+- Additive model only interpretable to a limited extent
+- Poor ratings can be compensated by good ones
+- Utility independence of criteria often questionable
+- Results are sensitive to the weighting
+- Risk of goal fragmentation
 :::
 ::::
 
 :::: {.column width="58%"}
 ::: callout-note
-## Fallbeispiel
 
-SushiFresh bewertet die drei Kandidatenstandorte **Wiesbaden-Erbenheim**, **Mainz-Hechtsheim** und **Raunheim** für die neue Produktionsstätte anhand der Kriterien **Transportnähe**, **Mietkosten** und **Fachkräfteverfügbarkeit**, die hier aus Vereinfachungsgründen gleich gewichtet werden.
+## Case example
 
-Die Konstellation ist bewusst so gewählt, dass sich sehr unterschiedliche Standortprofile ergeben: Wiesbaden-Erbenheim ist stark bei den Mietkosten, Raunheim bei der Transportnähe, während Mainz-Hechtsheim bei den Fachkräften vorn liegt.
+SushiFresh evaluates the three candidate locations **Wiesbaden-Erbenheim**, **Mainz-Hechtsheim** and **Raunheim** for the new production facility using the criteria **transport proximity**, **rental costs** and **availability of skilled labour**, which for simplicity are weighted equally here.
 
-Gerade dieses Beispiel zeigt die Schwäche der additiven Nutzwertanalyse: Trotz klar unterschiedlicher Stärken- und Schwächenprofile können alle Alternativen denselben Gesamtnutzwert erreichen.
+The set-up is deliberately chosen to produce very different location profiles: Wiesbaden-Erbenheim is strong on rental costs, Raunheim on transport proximity, while Mainz-Hechtsheim leads on skilled labour.
+
+This very example shows the weakness of the additive scoring model: despite clearly different profiles of strengths and weaknesses, all alternatives can achieve the same total score.
 :::
 ::::
 :::::::
 
-## Qualitative Standortplanung
+## Qualitative Facility Location Planning
 
 ::: slide-subtitle
-Nutzwertanalyse in R: Code und Ergebnistabelle
+Scoring model in R: code and results table
 :::
 
 ::: small-text
@@ -409,12 +411,12 @@ Nutzwertanalyse in R: Code und Ergebnistabelle
 library(dplyr)
 library(knitr)
 
-# Tabelle mit Rohdaten der Fallstudie (drei Kriterien, gleich gewichtet)
+# Table with raw data of the case study (three criteria, equally weighted)
 nwa <- tibble(
   Kriterium = c(
-    "Transportnaehe",
-    "Mietkosten",
-    "Fachkraefteverfuegbarkeit"
+    "Transport proximity",
+    "Rental costs",
+    "Skilled labour availability"
   ),
   Gewicht = c(1/3, 1/3, 1/3),
   `WI-Erb`  = c(5, 8, 2),
@@ -422,29 +424,29 @@ nwa <- tibble(
   Raunheim  = c(8, 2, 5)
 )
 
-# Berechne Nutzwerte der Standorte
+# Calculate the scores of the locations
 nutzwert <- c(
     `WI-Erb`  = sum(nwa$Gewicht * nwa$`WI-Erb`),
     `MZ-Hech` = sum(nwa$Gewicht * nwa$`MZ-Hech`),
     Raunheim  = sum(nwa$Gewicht * nwa$Raunheim)
   )
 
-# Verbinde Rohdaten und Nutzwerte in einer Tabelle
+# Combine raw data and scores in one table
 nwa <- bind_rows(nwa, nutzwert)
 
-# Setze Namen Nutzwert in Zeile 4 und Spalte Kriterium
-nwa$Kriterium[4] <- "Nutzwert"
+# Set name "Score" in row 4, column Kriterium
+nwa$Kriterium[4] <- "Score"
 
-# Gib Tabelle aus
+# Output table
 nwa |>
   mutate(
-    Gewicht = ifelse(is.na(Gewicht), "", sprintf("%.2f", Gewicht)), # Stelle 2 Nachkommastellen dar
+    Gewicht = ifelse(is.na(Gewicht), "", sprintf("%.2f", Gewicht)), # Show 2 decimal places
     `WI-Erb` = sprintf("%.1f", `WI-Erb`),
     `MZ-Hech` = sprintf("%.1f", `MZ-Hech`),
     Raunheim = sprintf("%.1f", Raunheim)
   ) |>
   kable(
-    col.names = c("Kriterium", "Gewichtung", "WI-Erb", "MZ-Hech", "Raunheim"),
+    col.names = c("Criterion", "Weight", "WI-Erb", "MZ-Hech", "Raunheim"),
     format = "html",
     align = c("l", "c", "c", "c", "c")
   )
@@ -453,79 +455,104 @@ nwa |>
 
 ------------------------------------------------------------------------
 
-## Qualitative Standortplanung {#slide-77}
+## Qualitative Facility Location Planning {#slide-77}
 
 ::: slide-subtitle
-Analytical Hierarchy Process (AHP Methode)
+Analytic Hierarchy Process (AHP method)
 :::
 
-![](images/image67.png){width="500"}
+::: {.ahp-hierarchy}
+::: {.ahp-level}
+**Bottom level:** Determine how the alternatives contribute to the criteria.
+:::
 
-### Ablauf
+::: {.ahp-arrow}
+⇓
+:::
 
-1.  Bilde paarweise Vergleiche zwischen allen Alternativen im Hinblick auf die Bewertungskriterien.
-2.  Bilde für jedes Bewertungskriterium ein Alternativenranking (Synthese).
-3.  Bilde paarweise Vergleiche zwischen allen Bewertungskriterien.
-4.  Bilde ein Ranking der Bewertungskriterien (Synthese).
-5.  Berechne den Scoring-Wert für die Alternativen.
+::: {.ahp-level}
+**Medium level:** Determine how the evaluation criteria contribute to achieving the objective.
+:::
 
-## Qualitative Standortplanung {#slide-78}
+::: {.ahp-arrow}
+⇓
+:::
+
+::: {.ahp-level}
+**Top level:** Determine the best of the given alternatives (objective).
+:::
+
+::: {.ahp-source}
+Bottom-up hierarchy [@klein2011planung, p. 361]
+:::
+:::
+
+### Procedure
+
+1.  Carry out pairwise comparisons between all alternatives with respect to the evaluation criteria.
+2.  Derive a ranking of alternatives for each evaluation criterion (synthesis).
+3.  Carry out pairwise comparisons between all evaluation criteria.
+4.  Derive a ranking of the evaluation criteria (synthesis).
+5.  Calculate the score for the alternatives.
+
+## Qualitative Facility Location Planning {#slide-78}
 
 ::: slide-subtitle
-Analytical Hierarchy Process (AHP Methode) - Beispiel
+Analytic Hierarchy Process (AHP method) – example
 :::
 
 ::::::: {.columns .v-center}
 :::: {.column width="50%"}
 ::: callout-note
-## Fallbeispiel
 
-SushiFresh vergleicht die drei Kandidatenstandorte Wiesbaden-Erbenheim (W-E), Mainz-Hechtsheim (M-H) und Raunheim (R) nun **paarweise** statt über direkt geschätzte Punktwerte. Folgende Bewertungskriterien werden herangezogen.
+## Case example
 
-1.  Transportnähe: Distanz zu den sechs Filialen
-2.  Mietkosten: jährliche Fixkosten des Grundstücks
-3.  Fachkräfteverfügbarkeit: Zugang zu Gastronomie-/Lebensmittelfachkräften
+SushiFresh now compares the three candidate locations Wiesbaden-Erbenheim (W-E), Mainz-Hechtsheim (M-H) and Raunheim (R) **pairwise** instead of using directly estimated scores. The following evaluation criteria are used.
+
+1.  Transport proximity: distance to the six stores
+2.  Rental costs: annual fixed costs of the site
+3.  Skilled labour availability: access to catering/food specialists
 :::
 ::::
 
 :::: {.column width="50%"}
 ::: smaller-text
-**Bewertungsskala**
+**Rating scale**
 
-| Präferenz                     | Wert |
+| Preference                    | Value |
 |:------------------------------|:-----|
-| Gleich                        | 1    |
-| Gleich bis leicht bevorzugt   | 2    |
-| leicht bevorzugt              | 3    |
-| leicht bis deutlich bevorzugt | 4    |
-| deutlich bevorzugt            | 5    |
-| deutlich bis stark bevorzugt  | 6    |
-| stark bevorzugt               | 7    |
-| Stark bis extrem bevorzugt    | 8    |
+| Equal                         | 1    |
+| Equal to slightly preferred   | 2    |
+| Slightly preferred            | 3    |
+| Slightly to clearly preferred | 4    |
+| Clearly preferred             | 5    |
+| Clearly to strongly preferred | 6    |
+| Strongly preferred            | 7    |
+| Strongly to extremely preferred | 8  |
 | Extremely preferred           | 9    |
 :::
 ::::
 :::::::
 
-## Qualitative Standortplanung {#slide-79}
+## Qualitative Facility Location Planning {#slide-79}
 
 ::: slide-subtitle
-Analytical Hierarchy Process (AHP Methode) - Beispiel
+Analytic Hierarchy Process (AHP method) – example
 :::
 
 ::: smaller-text
-**Ablauf**
+**Procedure**
 
-1.  **Bilde paarweise Vergleiche zwischen allen Alternativen im Hinblick auf die Bewertungskriterien.**
-2.  Bilde für jedes Bewertungskriterium ein Alternativenranking (Synthese).
-3.  Bilde paarweise Vergleiche zwischen allen Bewertungskriterien.
-4.  Bilde ein Ranking der Bewertungskriterien (Synthese).
-5.  Berechne den Scoring-Wert für die Alternativen.
+1.  **Carry out pairwise comparisons between all alternatives with respect to the evaluation criteria.**
+2.  Derive a ranking of alternatives for each evaluation criterion (synthesis).
+3.  Carry out pairwise comparisons between all evaluation criteria.
+4.  Derive a ranking of the evaluation criteria (synthesis).
+5.  Calculate the score for the alternatives.
 :::
 
 ::::::: {.columns .v-center}
 ::: {.column width="33%"}
-Transportnähe
+Transport proximity
 
 | site    |  W-E  |  M-H  |  R  |
 |:--------|:--------:|:---------:|:----------:|
@@ -535,7 +562,7 @@ Transportnähe
 :::
 
 ::: {.column width="33%"}
-Mietkosten
+Rental costs
 
 | site    |  W-E  |  M-H  |  R  |
 |:--------|:--------:|:---------:|:----------:|
@@ -545,7 +572,7 @@ Mietkosten
 :::
 
 ::: {.column width="33%"}
-Fachkräfte
+Skilled labour
 
 | site    |  W-E  |  M-H  |  R  |
 |:--------|:--------:|:---------:|:----------:|
@@ -555,28 +582,28 @@ Fachkräfte
 :::
 :::::::
 
-## Qualitative Standortplanung {#slide-80}
+## Qualitative Facility Location Planning {#slide-80}
 
 ::: slide-subtitle
-Analytical Hierarchy Process (AHP Methode) - Beispiel
+Analytic Hierarchy Process (AHP method) – example
 :::
 
 ::: smaller-text
-**Ablauf**
+**Procedure**
 
-1.  Bilde paarweise Vergleiche zwischen allen Alternativen im Hinblick auf die Bewertungskriterien.
-2.  **Bilde für jedes Bewertungskriterium ein Alternativenranking (Synthese).**
-3.  Bilde paarweise Vergleiche zwischen allen Bewertungskriterien.
-4.  Bilde ein Ranking der Bewertungskriterien (Synthese).
-5.  Berechne den Scoring-Wert für die Alternativen.
+1.  Carry out pairwise comparisons between all alternatives with respect to the evaluation criteria.
+2.  **Derive a ranking of alternatives for each evaluation criterion (synthesis).**
+3.  Carry out pairwise comparisons between all evaluation criteria.
+4.  Derive a ranking of the evaluation criteria (synthesis).
+5.  Calculate the score for the alternatives.
 :::
 
 ::::::: small-text
-**Transportnähe** — Synthese (Berechnung des größten Eigenvektors)
+**Transport proximity** — synthesis (calculation of the principal eigenvector)
 
 :::::: {.columns .v-center}
 ::: {.column width="31%"}
-Spaltensummen
+Column sums
 
 | site    |  W-E  |  M-H  |  R  |
 |:--------|:--------:|:---------:|:----------:|
@@ -589,7 +616,7 @@ Spaltensummen
 ::: {.column width="31%"}
 ::: {.fragment .fade-up}
 
-Normierung
+Normalisation
 
 | site    |  W-E  |  M-H  |  R  |
 |:--------|:--------:|:---------:|:----------:|
@@ -603,7 +630,7 @@ Normierung
 
 ::: {.column width="37%"}
 ::: {.fragment .fade-up}
-Konsolidierung
+Consolidation
 
 | site    |  W-E  |  M-H  |  R  | $\varnothing$ |
 |:--------|:--------:|:---------:|:----------:|:----------:|
@@ -616,92 +643,92 @@ Konsolidierung
 ::::::
 :::::::
 
-## Qualitative Standortplanung {#slide-81}
+## Qualitative Facility Location Planning {#slide-81}
 
 ::: slide-subtitle
-Analytical Hierarchy Process (AHP Methode) - Beispiel
+Analytic Hierarchy Process (AHP method) – example
 :::
 
 ::: smaller-text
-**Ablauf**
+**Procedure**
 
-1.  Bilde paarweise Vergleiche zwischen allen Alternativen im Hinblick auf die Bewertungskriterien.
-2.  **Bilde für jedes Bewertungskriterium ein Alternativenranking (Synthese).**
-3.  Bilde paarweise Vergleiche zwischen allen Bewertungskriterien.
-4.  Bilde ein Ranking der Bewertungskriterien (Synthese).
-5.  Berechne den Scoring-Wert für die Alternativen.
+1.  Carry out pairwise comparisons between all alternatives with respect to the evaluation criteria.
+2.  **Derive a ranking of alternatives for each evaluation criterion (synthesis).**
+3.  Carry out pairwise comparisons between all evaluation criteria.
+4.  Derive a ranking of the evaluation criteria (synthesis).
+5.  Calculate the score for the alternatives.
 :::
 
-Präferenzvektoren aller Standorte für alle Kriterien
+Preference vectors of all locations for all criteria
 
-| site     | Transportnähe | Mietkosten | Fachkräfte |
+| site     | Transport proximity | Rental costs | Skilled labour |
 |:---------|:-------------:|:----------:|:----------:|
 | WI-Erb   |    0.297     |   0.571   |   0.160   |
 | MZ-Hech  |    0.163     |   0.286   |   0.730   |
 | Raunheim |    0.540     |   0.143   |   0.110   |
 
-## Qualitative Standortplanung {#slide-82}
+## Qualitative Facility Location Planning {#slide-82}
 
 ::: slide-subtitle
-Analytical Hierarchy Process (AHP Methode) - Beispiel
+Analytic Hierarchy Process (AHP method) – example
 :::
 
 ::: smaller-text
-**Ablauf**
+**Procedure**
 
-1.  Bilde paarweise Vergleiche zwischen allen Alternativen im Hinblick auf die Bewertungskriterien.
-2.  Bilde für jedes Bewertungskriterium ein Alternativenranking (Synthese).
-3.  **Bilde paarweise Vergleiche zwischen allen Bewertungskriterien.**
-4.  Bilde ein Ranking der Bewertungskriterien (Synthese).
-5.  Berechne den Scoring-Wert für die Alternativen.
+1.  Carry out pairwise comparisons between all alternatives with respect to the evaluation criteria.
+2.  Derive a ranking of alternatives for each evaluation criterion (synthesis).
+3.  **Carry out pairwise comparisons between all evaluation criteria.**
+4.  Derive a ranking of the evaluation criteria (synthesis).
+5.  Calculate the score for the alternatives.
 :::
 
-| Kriterium      | Transportnähe | Mietkosten | Fachkräfte |
+| Criterion      | Transport proximity | Rental costs | Skilled labour |
 |:---------------|:-------------:|:----------:|:----------:|
-| Transportnähe  |       1       |     3      |     2      |
-| Mietkosten     |      1/3      |     1      |    1/5     |
-| Fachkräfte     |      1/2      |     5      |     1      |
+| Transport proximity |       1       |     3      |     2      |
+| Rental costs   |      1/3      |     1      |    1/5     |
+| Skilled labour |      1/2      |     5      |     1      |
 | $\sum$         |     11/6      |     9      |    16/5     |
 
-## Qualitative Standortplanung
+## Qualitative Facility Location Planning
 
 ::: slide-subtitle
-Analytical Hierarchy Process (AHP Methode) - Beispiel
+Analytic Hierarchy Process (AHP method) – example
 :::
 
 ::: smaller-text
-**Ablauf**
+**Procedure**
 
-1.  Bilde paarweise Vergleiche zwischen allen Alternativen im Hinblick auf die Bewertungskriterien.
-2.  Bilde für jedes Bewertungskriterium ein Alternativenranking (Synthese).
-3.  Bilde paarweise Vergleiche zwischen allen Bewertungskriterien.
-4.  **Bilde ein Ranking der Bewertungskriterien (Synthese).**
-5.  Berechne den Scoring-Wert für die Alternativen.
+1.  Carry out pairwise comparisons between all alternatives with respect to the evaluation criteria.
+2.  Derive a ranking of alternatives for each evaluation criterion (synthesis).
+3.  Carry out pairwise comparisons between all evaluation criteria.
+4.  **Derive a ranking of the evaluation criteria (synthesis).**
+5.  Calculate the score for the alternatives.
 :::
 
-Nach demselben Verfahren (geometrisches Mittel der Zeilen, dann normieren) wie auf der vorherigen Folie für die Standorte ergibt sich für die drei Kriterien:
+Applying the same procedure (geometric mean of the rows, then normalise) as on the previous slide for the locations yields for the three criteria:
 
-| Kriterium      | Transportnähe | Mietkosten | Fachkräfte | $\varnothing$ |
+| Criterion      | Transport proximity | Rental costs | Skilled labour | $\varnothing$ |
 |:---------------|:-------------:|:----------:|:----------:|:----------:|
-| Transportnähe  |     6/11      |     1/3    |     10/16   | 0.501 |
-| Mietkosten     |     2/11      |     1/9    |     1/16    | 0.118 |
-| Fachkräfte     |     3/11      |     5/9    |     5/16    | 0.380 |
+| Transport proximity |     6/11      |     1/3    |     10/16   | 0.501 |
+| Rental costs   |     2/11      |     1/9    |     1/16    | 0.118 |
+| Skilled labour |     3/11      |     5/9    |     5/16    | 0.380 |
 | $\sum$         |     1         |     1      |     1      | 1 |
 
-## Qualitative Standortplanung {#slide-83}
+## Qualitative Facility Location Planning {#slide-83}
 
 ::: slide-subtitle
-Analytical Hierarchy Process (AHP Methode) - Beispiel
+Analytic Hierarchy Process (AHP method) – example
 :::
 
 ::: smaller-text
-**Ablauf**
+**Procedure**
 
-1.  Bilde paarweise Vergleiche zwischen allen Alternativen im Hinblick auf die Bewertungskriterien.
-2.  Bilde für jedes Bewertungskriterium ein Alternativenranking (Synthese).
-3.  Bilde paarweise Vergleiche zwischen allen Bewertungskriterien.
-4.  Bilde ein Ranking der Bewertungskriterien (Synthese).
-5.  **Berechne den Scoring-Wert für die Alternativen.**
+1.  Carry out pairwise comparisons between all alternatives with respect to the evaluation criteria.
+2.  Derive a ranking of alternatives for each evaluation criterion (synthesis).
+3.  Carry out pairwise comparisons between all evaluation criteria.
+4.  Derive a ranking of the evaluation criteria (synthesis).
+5.  **Calculate the score for the alternatives.**
 :::
 
 ::: smaller-text
@@ -734,28 +761,28 @@ $\left(
 \text{= Score Raunheim}
 \end{array}$
 
-**Ergebnis:** Beste Alternative ist Mainz-Hechtheim — allerdings nur **knapp** vor Raunheim!
+**Result:** The best alternative is Mainz-Hechtsheim — but only **narrowly** ahead of Raunheim!
 
 ::: {.fragment .fade-up}
-**Vorteile AHP**
+**Advantages of AHP**
 
-- Paarweises Vergleichen erhöht die Transparenz und vereinfacht die Rangbildung zwischen Alternativen.
-- AHP bietet der "Voreingenommenheit" von Entscheidern weniger Angriffsfläche als die Nutzwertanalyse.
-- Irrationale Beurteilungen der Entscheider können durch einen Konsistenzindex erfasst werden
+- Pairwise comparison increases transparency and simplifies ranking the alternatives.
+- AHP offers less scope for decision-makers' "bias" than the scoring model.
+- Irrational judgements by decision-makers can be detected via a consistency index
 :::
 :::
 
-## Qualitative Standortplanung {#slide-84}
+## Qualitative Facility Location Planning {#slide-84}
 
 ::: slide-subtitle
-Analytical Hierarchy Process (AHP Methode) - Konsistenzindex
+Analytic Hierarchy Process (AHP method) – consistency index
 :::
 
 :::::: {.columns .v-center}
 :::: {.column width="70%"}
 
 ::: smaller-text
-1.  Produkt aus nicht-normalisierter Präferenzmatrix und Präferenzvektor (Kriterienvergleich): $$\left(\begin{array}{ccc}
+1.  Product of non-normalised preference matrix and preference vector (criteria comparison): $$\left(\begin{array}{ccc}
      1 & 3 & 2 \\
      1\!/\!3 & 1 & 1\!/\!5 \\
      1\!/\!2 & 5 & 1 \\
@@ -769,48 +796,49 @@ Analytical Hierarchy Process (AHP Methode) - Konsistenzindex
      0.364\\
      1.225\\
      \end{array}\right)$$
-2.  Dividiere den Vektor komponentenweise durch die Präferenzwerte: $$\begin{align*}
+2.  Divide the vector component-wise by the preference values: $$\begin{align*}
     1.624 / 0.510 &=  3.184\\
     0.364 / 0.118 &=  3.085\\
     1.225 / 0.380 &=  3.224\\
     \text{average }\bar{P} &= 3.164
     \end{align*}$$
-3.  Berechne den Konsistenzwert mit $n=3$ durch $$ KI =\frac{\bar{P}- n}{n-1} = 0.08. $$
+3.  Calculate the consistency index with $n=3$ as $$ CI =\frac{\bar{P}- n}{n-1} = 0.08. $$
 :::
 ::::
 
 :::: {.column width="30%"}
 ::: {.fragment .fade-up}
 ::: callout-note
+
 ## Interpretation
 
-Je näher $KI$ an 0 liegt, desto konsistenter ist die Präferenzmatrix. Wenn $KI=0$ ist sie perfekt konsistent. $\bar{P}$ ist der größte Eigenwert der Präferenzmatrix. Mit $CR \approx 0{,}08$ ist die Matrix sehr nah an 0 und kann damit als konsistent gelten.
+The closer $CI$ is to 0, the more consistent the preference matrix. If $CI=0$, it is perfectly consistent. $\bar{P}$ is the largest eigenvalue of the preference matrix. With $CR \approx 0.08$ the matrix is very close to 0 and can therefore be regarded as consistent.
 :::
 :::
 ::::
 ::::::
 
-## Strategische Gestaltung von Supply Chains {#slide-85}
+## Strategic Design of Supply Chains {#slide-85}
 
-- Multikriterielle Standortplanung
-- **Kontinuierliche Standortplanung**
-- Diskrete Standortplanung
+- Multi-criteria facility location planning
+- **Continuous facility location planning**
+- Discrete facility location planning
 
 
-## Kontinuierliche Standortplanung {#slide-86}
+## Continuous Facility Location Planning {#slide-86}
 ::: slide-subtitle
-Neoklassische Standorttheorie -- Steiner-Weber-Modell
+Neoclassical location theory -- Steiner–Weber model
 :::
 
 :::::: {.columns .v-center}
 :::: {.column width="60%"}
 ::: small-text
-**Annahmen**
+**Assumptions**
 
-1. Eine homogene Ebene (**Absatzgebiet**), in der sich eine endliche Anzahl von **Kundenstandorten** befindet.
-2. **Nachfragemengen** sind für jeden der Kundenstandorte gegeben und muss vollständig bedient werden.
-3. Eine **Transportkostenfunktion**, die von der Transportentfernung und der Transportmenge abhängt.
-4. Zeit wird nicht betrachtet
+1. A homogeneous plane (**sales area**) containing a finite number of **customer locations**.
+2. **Demand quantities** are given for each customer location and must be served in full.
+3. A **transport cost function** that depends on transport distance and transport quantity.
+4. Time is not considered
 :::
 ::::
 
@@ -821,40 +849,40 @@ Neoklassische Standorttheorie -- Steiner-Weber-Modell
 ::::::
 
 ::: {.fragment .fade-up}
-**Ziel**
+**Objective**
 
-Gesucht ist der **transportkostenminimale Standort** für eine Produktions-, Lager- oder Umschlagsstelle im Absatzgebiet — bei SushiFresh: der ideale Punkt im Rhein-Main-Gebiet für die neue Produktionsstätte, unabhängig von den drei konkret verfügbaren Grundstücken.
+We seek the **transport-cost-minimising location** for a production, storage or transhipment facility in the sales area — for SushiFresh: the ideal point in the Rhine-Main region for the new production facility, regardless of the three sites actually available.
 :::
 
 ---
 
-## Kontinuierliche Standortplanung {#slide-87}
+## Continuous Facility Location Planning {#slide-87}
 
 ::: {.slide-subtitle}
-Neoklassische Standorttheorie – Steiner-Weber-Modell
+Neoclassical location theory – Steiner–Weber model
 :::
 
 :::::: {.columns .v-center}
 ::: {.column width="55%"}
 ::: {.smaller-text}
 
-**Modellformulierung**
+**Model formulation**
 
-Bestimme Koordinaten $(x,y)$ im Absatzgebiet, die die gewichtete gesamte Transportdistanz zu den Kundenstandorten minimieren.
+Determine coordinates $(x,y)$ in the sales area that minimise the weighted total transport distance to the customer locations.
 
 $$
 \min\; Z(x,y) = \sum_{i=1}^{n} a_i \cdot d\big((x,y),(u_i,v_i)\big)
 $$
 
-**Entscheidungsvariable**
+**Decision variable**
 
-- $(x,y)$: Koordinaten des zu bestimmenden Standorts.
+- $(x,y)$: coordinates of the location to be determined.
 
-**Parameter**
+**Parameters**
 
-- $(u_i,v_i)$: Koordinaten von Kundenstandort $i$.
-- $a_i$: Nachfrage von Kundenstandort $i$, bei SushiFresh: Boxen pro Tag.
-- $d(\cdot)$: verwendetes Distanzmaß.
+- $(u_i,v_i)$: coordinates of customer location $i$.
+- $a_i$: demand of customer location $i$; for SushiFresh: boxes per day.
+- $d(\cdot)$: distance measure used.
 
 :::
 :::
@@ -862,11 +890,11 @@ $$
 ::: {.column width="45%"}
 ::: {.smaller-text}
 ::: {.fragment .fade-up}
-**Distanzmaße**
+**Distance measures**
 
-- Euklidische Distanz: $d = \sqrt{(x-u_i)^2 + (y-v_i)^2}$
-- Manhattan-Distanz: $d = |x-u_i| + |y-v_i|$
-- Straßendistanzen: kürzeste Wege in einem Verkehrsnetz.
+- Euclidean distance: $d = \sqrt{(x-u_i)^2 + (y-v_i)^2}$
+- Manhattan distance: $d = |x-u_i| + |y-v_i|$
+- Road distances: shortest paths in a transport network.
 
 ```{r}
 #| echo: false
@@ -895,11 +923,11 @@ xy_goal  <- st_coordinates(goal_sf)
 route_sf <- osrmRoute(src = start_sf, dst = goal_sf) |>
   mutate(
     dist_km = round(as.numeric(distance), 1),
-    label_txt = paste0("Straßennetz: ", format(dist_km, nsmall = 1), " km")
+    label_txt = paste0("Road network: ", format(dist_km, nsmall = 1), " km")
   )
 
 euclid_sf <- st_sf(
-  name = "Euklidische Distanz",
+  name = "Euclidean distance",
   geometry = st_sfc(
     st_linestring(rbind(xy_start[1, ], xy_goal[1, ])),
     crs = 4326
@@ -907,7 +935,7 @@ euclid_sf <- st_sf(
 )
 
 manhattan_sf <- st_sf(
-  name = "Manhattan-Distanz",
+  name = "Manhattan distance",
   geometry = st_sfc(
     st_linestring(matrix(
       c(
@@ -928,7 +956,7 @@ euclid_sf <- euclid_sf |>
   st_transform(crs_proj) |>
   mutate(
     dist_km = round(as.numeric(set_units(st_length(geometry), "km")), 1),
-    label_txt = paste0("Euklidisch: ", format(dist_km, nsmall = 1), " km")
+    label_txt = paste0("Euclidean: ", format(dist_km, nsmall = 1), " km")
   ) |>
   st_transform(4326)
 
@@ -941,9 +969,9 @@ manhattan_sf <- manhattan_sf |>
   st_transform(4326)
 
 all_routes <- bind_rows(
-  euclid_sf |> mutate(route_type = "Euklidisch"),
+  euclid_sf |> mutate(route_type = "Euclidean"),
   manhattan_sf |> mutate(route_type = "Manhattan"),
-  route_sf |> mutate(route_type = "Straßennetz")
+  route_sf |> mutate(route_type = "Road network")
 )
 
 label_points <- all_routes |>
@@ -969,14 +997,14 @@ leaflet(width = "100%", height = 420) |>
     color = "#dc2626",
     weight = 5,
     opacity = 0.9,
-    label = ~paste0("Straßendistanz (kürzester Weg): ", format(dist_km, nsmall = 1), " km")
+    label = ~paste0("Road distance (shortest path): ", format(dist_km, nsmall = 1), " km")
   ) |>
   addPolylines(
     data = euclid_sf,
     color = "#2563eb",
     weight = 4,
     opacity = 0.85,
-    label = ~paste0("Euklidische Distanz: ", format(dist_km, nsmall = 1), " km")
+    label = ~paste0("Euclidean distance: ", format(dist_km, nsmall = 1), " km")
   ) |>
   addPolylines(
     data = manhattan_sf,
@@ -984,7 +1012,7 @@ leaflet(width = "100%", height = 420) |>
     weight = 4,
     opacity = 0.85,
     dashArray = "8,8",
-    label = ~paste0("Manhattan-Distanz: ", format(dist_km, nsmall = 1), " km")
+    label = ~paste0("Manhattan distance: ", format(dist_km, nsmall = 1), " km")
   ) |>
   addLabelOnlyMarkers(
     lng = label_coords[, 1],
@@ -1026,7 +1054,7 @@ leaflet(width = "100%", height = 420) |>
   addLegend(
     "bottomright",
     colors = c("#2563eb", "#059669", "#dc2626"),
-    labels = c("Euklidisch", "Manhattan", "Straßennetz"),
+    labels = c("Euclidean", "Manhattan", "Road network"),
     opacity = 1
   ) |>
   fitBounds(
@@ -1044,24 +1072,24 @@ leaflet(width = "100%", height = 420) |>
 
 ---
 
-## Kontinuierliche Standortplanung {#slide-88}
+## Continuous Facility Location Planning {#slide-88}
 ::: slide-subtitle
-Steiner-Weber-Modell bei euklidischer Distanz
+Steiner–Weber model with Euclidean distance
 :::
 
 :::::: columns
 :::: {.column width="54%"}
 ::: {.smaller-text}
 
-### Iterativer Lösungsansatz
+### Iterative solution approach
 
-Für gegebene Kundenstandorte $(u_i,v_i)$ und Gewichte $a_i$ gilt mit
+For given customer locations $(u_i,v_i)$ and weights $a_i$, with
 
 $$
 g_i(x,y)=\frac{a_i}{\sqrt{(x-u_i)^2+(y-v_i)^2}}
 $$
 
-die Update-Regel
+the update rule is
 
 $$
 x_{t+1}=\frac{\sum_{i=1}^n u_i\, g_i(x_t,y_t)}{\sum_{i=1}^n g_i(x_t,y_t)},
@@ -1069,11 +1097,11 @@ x_{t+1}=\frac{\sum_{i=1}^n u_i\, g_i(x_t,y_t)}{\sum_{i=1}^n g_i(x_t,y_t)},
 y_{t+1}=\frac{\sum_{i=1}^n v_i\, g_i(x_t,y_t)}{\sum_{i=1}^n g_i(x_t,y_t)}.
 $$
 
-### Weiszfeld-Algorithmus (vereinfacht)
+### Weiszfeld algorithm (simplified)
 
-1. Wähle eine Startlösung $(x_0,y_0)$, z. B. den gewichteten Schwerpunkt.
-2. Berechne mit der Update-Regel einen neuen Standort.
-3. Wiederhole den Schritt bis die Änderung kleiner als eine Toleranz ist.
+1. Choose a starting solution $(x_0,y_0)$, e.g. the weighted centre of gravity.
+2. Use the update rule to compute a new location.
+3. Repeat the step until the change is smaller than a tolerance.
 
 
 :::
@@ -1082,7 +1110,7 @@ $$
 :::: {.column width="46%"}
 ::: {.fragment .fade-up}
 ::: {.smaller-text}
-**Umsetzung in R**
+**Implementation in R**
 
 ```{r}
 #| echo: true
@@ -1091,14 +1119,14 @@ $$
 
 steiner_weber_euclid <- function(data, x0 = NULL, y0 = NULL,
                                  tol = 1e-6, max_iter = 1000) {
-  # data muss die Spalten u, v und a enthalten:
-  # u = x-Koordinate der Kunden
-  # v = y-Koordinate der Kunden
-  # a = Nachfragegewicht
+  # data must contain the columns u, v and a:
+  # u = x-coordinate of the customers
+  # v = y-coordinate of the customers
+  # a = demand weight
 
   stopifnot(all(c("u", "v", "a") %in% names(data)))
 
-  # Startwert: gewichteter Schwerpunkt, falls nichts vorgegeben ist
+  # Starting value: weighted centre of gravity, if none is given
   if (is.null(x0)) x0 <- sum(data$a * data$u) / sum(data$a)
   if (is.null(y0)) y0 <- sum(data$a * data$v) / sum(data$a)
 
@@ -1113,17 +1141,17 @@ steiner_weber_euclid <- function(data, x0 = NULL, y0 = NULL,
   )
 
   for (t in 1:max_iter) {
-    # Abstand des aktuellen Standorts zu jedem Kunden
+    # Distance from the current location to each customer
     d <- sqrt((x - data$u)^2 + (y - data$v)^2)
 
-    # Iterationsgewichte gemäß Weiszfeld-Algorithmus
+    # Iteration weights according to the Weiszfeld algorithm
     g <- data$a / d
 
-    # Aktualisierung der Koordinaten
+    # Update the coordinates
     x_new <- sum(data$u * g) / sum(g)
     y_new <- sum(data$v * g) / sum(g)
 
-    # Änderung zwischen zwei Iterationen
+    # Change between two iterations
     delta <- sqrt((x_new - x)^2 + (y_new - y)^2)
 
     history <- rbind(
@@ -1131,7 +1159,7 @@ steiner_weber_euclid <- function(data, x0 = NULL, y0 = NULL,
       data.frame(iter = t, x = x_new, y = y_new, delta = delta)
     )
 
-    # Abbruch bei hinreichend kleiner Änderung
+    # Stop once the change is sufficiently small
     if (delta < tol) {
       return(list(
         x = x_new,
@@ -1158,10 +1186,11 @@ steiner_weber_euclid <- function(data, x0 = NULL, y0 = NULL,
 
 
 ::: callout-note
-## Hinweise
-- Nahe Kunden mit hoher Nachfrage erhalten im Iterationsschritt ein hohes Gewicht $\rightarrow$ Standort verschiebt sich in diese Richtung
-- Startwert zweckmäßig: gewichteter Schwerpunkt.
-- Abbruch: kleine Positionsänderung oder maximale Iterationszahl.
+
+## Notes
+- Nearby customers with high demand receive a high weight in the iteration step $\rightarrow$ location shifts in that direction
+- Sensible starting value: weighted centre of gravity.
+- Stop: small change in position or maximum number of iterations.
 :::
 
 
@@ -1172,15 +1201,15 @@ steiner_weber_euclid <- function(data, x0 = NULL, y0 = NULL,
 
 ---
 
-## Kontinuierliche Standortplanung {#slide-89}
+## Continuous Facility Location Planning {#slide-89}
 ::: slide-subtitle
-Steiner-Weber-Modell bei euklidischer Distanz - Beispiel
+Steiner–Weber model with Euclidean distance – example
 :::
 
 ```{r}
 #| include: true
 
-# SushiFresh-Filialen als Steiner-Weber-Kunden: u = Laengengrad, v = Breitengrad
+# SushiFresh stores as Steiner-Weber customers: u = longitude, v = latitude
 kunden <- data.frame(
   i = c("Wiesbaden", "Mainz", "Frankfurt", "Ruesselsheim", "Darmstadt", "Offenbach"),
   u = c(8.2398, 8.2711, 8.6821, 8.4116, 8.6512, 8.7761),
@@ -1188,7 +1217,7 @@ kunden <- data.frame(
   a = c(120, 150, 280, 90, 110, 95)
 )
 
-# bewusst entfernter Startpunkt (nicht der Schwerpunkt), um den Weg zu zeigen
+# deliberately distant starting point (not the centre of gravity) to show the path
 res <- steiner_weber_euclid(kunden, x0 = 8.75, y0 = 49.85, tol = 1e-4, max_iter = 100)
 iter_tbl <- res$history |>
   mutate(
@@ -1242,8 +1271,8 @@ fig <- plot_ly(height = "100%", width = 650) |>
               showlegend = FALSE) |>
   layout(
     margin = list(l = 40, r = 10, t = 10, b = 35),
-    xaxis = list(title = "Laengengrad", range = c(8.1, 8.9), dtick = 0.2, zeroline = FALSE, gridcolor = "#e5e5e5"),
-    yaxis = list(title = "Breitengrad", range = c(49.75, 50.25), dtick = 0.1, zeroline = FALSE, gridcolor = "#e5e5e5"),
+    xaxis = list(title = "Longitude", range = c(8.1, 8.9), dtick = 0.2, zeroline = FALSE, gridcolor = "#e5e5e5"),
+    yaxis = list(title = "Latitude", range = c(49.75, 50.25), dtick = 0.1, zeroline = FALSE, gridcolor = "#e5e5e5"),
     paper_bgcolor = "white",
     plot_bgcolor = "white"
   ) |>
@@ -1251,7 +1280,7 @@ fig <- plot_ly(height = "100%", width = 650) |>
   animation_button(x = 1, xanchor = "right", y = 0, yanchor = "top")
 
 htmltools::tagList(
-  htmltools::tags$div(class = "anim-title", "Animation des Iterationsverlaufs"),
+  htmltools::tags$div(class = "anim-title", "Animation of the iteration path"),
   fig
 )
 ```
@@ -1260,20 +1289,21 @@ htmltools::tagList(
 
 ::: {.column width="58%"}
 ::: {.smaller-text}
-### Eingabedaten
+
+### Input data
 
 ```{r}
 #| echo: false
 #| results: asis
-kable(input_tbl, align = c("c", "c", "c"), format = "html", table.attr = 'class="steiner-table"')
+kable(input_tbl, col.names = c("Store", "Location (u_i,v_i)", "Demand a_i"), align = c("c", "c", "c"), format = "html", table.attr = 'class="steiner-table"')
 ```
 
-### Iterationen
+### Iterations
 
 ```{r}
 #| echo: false
 #| results: asis
-kable(iter_tbl |> slice(1:6), align = c("c", "c", "c"), format = "html", table.attr = 'class="steiner-table"')
+kable(iter_tbl |> slice(1:6), col.names = c("Iteration t", "Location (x,y)", "Deviation"), align = c("c", "c", "c"), format = "html", table.attr = 'class="steiner-table"')
 ```
 :::
 :::
@@ -1282,15 +1312,15 @@ kable(iter_tbl |> slice(1:6), align = c("c", "c", "c"), format = "html", table.a
 
 ---
 
-## Kontinuierliche Standortplanung {#slide-steiner-weber-shortcut}
+## Continuous Facility Location Planning {#slide-steiner-weber-shortcut}
 ::: slide-subtitle
-euklidisches Steiner-Weber-Modell — Short cut
+Euclidean Steiner–Weber model — shortcut
 :::
 
 ```{r}
 #| include: false
 
-# Euklidisches Optimum aus der vorhandenen Weiszfeld-Funktion (Start = CoG)
+# Euclidean optimum from the existing Weiszfeld function (start = CoG)
 res_euclid <- steiner_weber_euclid(
   data = kunden,
   x0 = NULL,
@@ -1304,15 +1334,15 @@ euclid_opt <- data.frame(
   y = res_euclid$y
 )
 
-# Center of Gravity als gewichteter Schwerpunkt
+# Centre of gravity as weighted mean point
 cog <- data.frame(
   x = weighted.mean(kunden$u, kunden$a),
   y = weighted.mean(kunden$v, kunden$a)
 )
 
-# Vergleich der nachfragegewichteten Gesamtdistanzen - diesmal mit der
-# tatsaechlichen (sphaerischen) Haversine-Distanz statt naiver Grad-Differenzen,
-# da u/v hier Laengen-/Breitengrad sind
+# Comparison of demand-weighted total distances - this time with the
+# actual (spherical) haversine distance instead of naive degree differences,
+# since u/v here are longitude/latitude
 vergleich <- kunden |>
   mutate(
     `Opt. Standort (x, y)` =
@@ -1353,11 +1383,11 @@ vergleich <- bind_rows(
   )
 )
 
-# Fuer die Darstellung im Diagramm
+# For display in the chart
 kunden_plot <- kunden |>
   mutate(
     kunden_label = i,
-    nachfrage_label = paste0("Nachfrage: ", a)
+    nachfrage_label = paste0("Demand: ", a)
   )
 
 rmse.eucl <- sum(haversine(euclid_opt$y, euclid_opt$x, kunden$v, kunden$u) * kunden$a)
@@ -1370,16 +1400,17 @@ rmse.cog  <- sum(haversine(cog$y, cog$x, kunden$v, kunden$u) * kunden$a)
 
 :::: {.small-text}
 ::: {.callout-tip appearance="simple"}
-## Center of gravity
 
-Das Center of Gravity ist eine Schwerpunkt-Approximation des euklidischen Steiner-Weber-Problems (hier: Laengen-/Breitengrad naeherungsweise als planare Koordinaten behandelt):
+## Centre of gravity
+
+The centre of gravity is a centroid approximation of the Euclidean Steiner–Weber problem (here: longitude/latitude treated approximately as planar coordinates):
 
 $$
 x^{CoG} = \frac{\sum_{i=1}^{n} a_i u_i}{\sum_{i=1}^{n} a_i},
 \qquad
 y^{CoG} = \frac{\sum_{i=1}^{n} a_i v_i}{\sum_{i=1}^{n} a_i}.
 $$
-Für das SushiFresh-Beispiel gilt:
+For the SushiFresh example:
 
 $$
 (x^{CoG}, y^{CoG}) =
@@ -1390,9 +1421,9 @@ $$
 
 
 ::: {.callout-note appearance="simple"}
-Das Center of Gravity ist schnell berechenbar, aber nur eine Approximation:
-Der iterative Steiner-Weber-Standort weist im Beispiel eine geringere
-nachfragegewichtete Gesamt-**Haversine-Distanz** auf (`r round(rmse.eucl,0)` vs. `r round(rmse.cog,0)` Box-km).
+The centre of gravity is quick to compute, but only an approximation:
+in the example, the iterative Steiner–Weber location has a lower
+demand-weighted total **haversine distance** (`r round(rmse.eucl,0)` vs. `r round(rmse.cog,0)` box-km).
 :::
 
 
@@ -1441,7 +1472,7 @@ ggplot(kunden_plot, aes(x = u, y = v)) +
     "text",
     x = euclid_opt$x + 0.03,
     y = euclid_opt$y + 0.02,
-    label = "Weiszfeld-Optimum",
+    label = "Weiszfeld optimum",
     color = "#e31a1c",
     size = 3.1
   ) +
@@ -1449,7 +1480,7 @@ ggplot(kunden_plot, aes(x = u, y = v)) +
     "text",
     x = cog$x + 0.03,
     y = cog$y - 0.02,
-    label = "Center of gravity",
+    label = "Centre of gravity",
     color = "#2563eb",
     size = 3.1
   ) +
@@ -1462,7 +1493,7 @@ ggplot(kunden_plot, aes(x = u, y = v)) +
     limits = c(49.75, 50.25),
     breaks = seq(49.8, 50.2, 0.1)
   ) +
-  labs(x = "Laengengrad", y = "Breitengrad") +
+  labs(x = "Longitude", y = "Latitude") +
   theme_minimal(base_size = 12) +
   theme(
     panel.grid.major = element_line(color = "#e5e5e5", linewidth = 0.4),
@@ -1478,10 +1509,10 @@ ggplot(kunden_plot, aes(x = u, y = v)) +
 
 ---
 
-## Kontinuierliche Standortplanung {#slide-steiner-weber-manhattan}
+## Continuous Facility Location Planning {#slide-steiner-weber-manhattan}
 
 ::: slide-subtitle
-Steiner-Weber-Modell mit Manhattan-Distanzen
+Steiner–Weber model with Manhattan distances
 :::
 
 ```{r}
@@ -1491,9 +1522,9 @@ library(dplyr)
 library(ggplot2)
 library(knitr)
 
-# Gewichteter Median einer Koordinate:
-# kleinster Wert, bei dem die kumulierte Nachfrage mindestens
-# die Hälfte der Gesamtnachfrage erreicht
+# Weighted median of a coordinate:
+# smallest value at which the cumulative demand reaches at least
+# half of the total demand
 weighted_median <- function(x, w) {
   ord <- order(x)
   x <- x[ord]
@@ -1502,7 +1533,7 @@ weighted_median <- function(x, w) {
   x[which(cumsum(w) >= sum(w) / 2)][1]
 }
 
-# Manhattan-Optimum: gewichteter Median je Koordinate
+# Manhattan optimum: weighted median per coordinate
 manhattan_opt <- data.frame(
   x = weighted_median(kunden$u, kunden$a),
   y = weighted_median(kunden$v, kunden$a)
@@ -1515,25 +1546,26 @@ manhattan_opt <- data.frame(
 
 ::: {.smaller-text}
 ::: {.callout-tip appearance="simple"}
-## Steiner-Weber-Modell mit Manhattan-Distanzen
 
-Bestimme Koordinaten $(x,y)$ im Absatzgebiet, die die gewichtete
-gesamte Transportdistanz zu den Kundenstandorten minimieren.
+## Steiner–Weber model with Manhattan distances
+
+Determine coordinates $(x,y)$ in the sales area that minimise the weighted
+total transport distance to the customer locations.
 
 $$
 \min \; Z(x,y) = \sum_{i=1}^{n} a_i \left( |x-u_i| + |y-v_i| \right) = \sum_{i=1}^{n} a_i |x-u_i| + \sum_{i=1}^{n} a_i |y-v_i|
 $$
 :::
 
-**Algorithmus für den optimalen Standort**
+**Algorithm for the optimal location**
 
-Bestimme für jede Dimension den **gewichteten Median** — hier beispielhaft
-für die $x$-Koordinate (Längengrad):
+Determine the **weighted median** for each dimension — shown here
+for the $x$-coordinate (longitude):
 
-1. Sortiere die Filialen nach aufsteigenden $u_i$-Koordinaten.
-2. Bestimme die kumulierte Nachfrage $A_j = \sum_{i=1}^{j} a_i$.
-3. Wähle den ersten Kunden mit $A_j \geq \frac{1}{2}\sum_{i=1}^{n} a_i$.
-4. Seine $u_i$-Koordinate ist die optimale $x$-Koordinate.
+1. Sort the stores by ascending $u_i$-coordinates.
+2. Determine the cumulative demand $A_j = \sum_{i=1}^{j} a_i$.
+3. Choose the first customer with $A_j \geq \frac{1}{2}\sum_{i=1}^{n} a_i$.
+4. Its $u_i$-coordinate is the optimal $x$-coordinate.
 
 :::
 ::::
@@ -1587,7 +1619,7 @@ ggplot(kunden_plot, aes(x = u, y = v)) +
     limits = c(49.75, 50.25),
     breaks = seq(49.8, 50.2, 0.1)
   ) +
-  labs(x = "Laengengrad", y = "Breitengrad") +
+  labs(x = "Longitude", y = "Latitude") +
   theme_minimal(base_size = 12) +
   theme(
     panel.grid.major = element_line(color = "#d5d5d5", linewidth = 0.45),
@@ -1600,7 +1632,7 @@ ggplot(kunden_plot, aes(x = u, y = v)) +
 
 ::: {.small-text}
 ::: {.callout-note appearance="simple"}
-Für das SushiFresh-Beispiel ergibt sich:
+For the SushiFresh example:
 $$
 (x^*, y^*) = (`r sprintf("%.4f", manhattan_opt$x)`; `r sprintf("%.4f", manhattan_opt$y)`)
 $$

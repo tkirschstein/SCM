@@ -1,64 +1,64 @@
-# Vorwort {.unnumbered}
+# Preface {.unnumbered}
 
-Dieses Lehrbuch begleitet die Vorlesung **Supply Chain Management (SCM)** und vertieft die Inhalte der Vorlesungsfolien (`slides/`) in ausführlicher, textbasierter Form. Es ist als **Reader zum Selbststudium** gedacht: Während die Folien in der Vorlesung als visuelle Gedächtnisstütze dienen, erläutert dieses Buch dieselben Modelle, Verfahren und Fallbeispiele in vollständigen Sätzen, mit hergeleiteten Formeln und lauffähigem, kommentiertem R-Code.
+This textbook accompanies the lecture **Supply Chain Management (SCM)** and expands on the content of the lecture slides (`slides/`) in detailed, text-based form. It is intended as a **course reader for self-study**: while the slides serve as a visual aid to memory in the lecture, this book explains the same models, methods and case examples in full sentences, with derived formulas and runnable, commented R code.
 
-**Dieser Reader ist primär KI-generiert und bedarf der weiteren Korrektur. Etwaige Fehler können an thomas.kirschstein@hs-rm.de gemeldet werden.**
+**This course reader is primarily AI-generated and requires further correction. Any errors can be reported to thomas.kirschstein@hs-rm.de.**
 
-## Aufbau des Buches
+## Structure of the book
 
-Die Kapitel folgen den Vorlesungseinheiten, die sich in drei Blöcke gliedern: **Grundlagen des Supply Chain Managements**, **strategische Gestaltung von Supply Chains** und **Unsicherheits- und Risikomanagement in Supply Chains**.
+The chapters follow the lecture units, which are divided into three blocks: **fundamentals of supply chain management**, **strategic design of supply chains** and **uncertainty and risk management in supply chains**.
 
-1. **Einführung und Grundbegriffe des Supply Chain Managements** — Was ist eine Supply Chain? Flüsse, Akteure, Strukturen, SCM-Gewinn und doppelte Marginalisierung.
-2. **Wertschöpfung, strategische Fertigung und Strategic Fit** — Wertschöpfungsprozess, Entkopplungspunkt, Make-or-Buy, implizierte Unsicherheit, Strategic Fit.
-3. **Ziele, Zielkonflikte und Logistikkosten** — Zielsystem des SCM, das Tetraeder der Zielkonflikte, Kostenarten sowie die Einführung der Fallstudie **SushiFresh GmbH**.
-4. **Nachhaltigkeit im Supply Chain Management** — Vertiefung der Nachhaltigkeitsinhalte aus Einheit 3: ökologischer Strategic Fit, ökologische SCM-Strategien, Kreislaufwirtschaft und Circular Supply Chains.
-5. **Standortplanung I** — Qualitative Verfahren (Nutzwertanalyse, AHP) und kontinuierliche Verfahren (Center of Gravity, Weiszfeld-Algorithmus).
-6. **Standortplanung II** — Diskrete Netzwerkplanungsmodelle: Transportproblem, Warehouse-Location-Problem, Heuristiken und exakte Verfahren.
-7. **Unsicherheit in Supply Chains und Pooling** — Nachfrageunsicherheit, Kapazitäts- und Lagerbestandspooling, Sicherheitsbestände, das Quadratwurzelgesetz des Pooling.
-8. **Das Newsvendor-Modell** — Optimale Bestellmengen unter Unsicherheit, kritische Verhältniszahl, Servicegrad.
-9. **Der Bullwhip-Effekt und das Beergame** — Verstärkung von Nachfrageschwankungen entlang der Kette, Ursachen und Gegenmaßnahmen.
+1. **Introduction and basic concepts of supply chain management** — What is a supply chain? Flows, actors, structures, supply chain profit and double marginalisation.
+2. **Value creation, strategic manufacturing and strategic fit** — Value creation process, decoupling point, make-or-buy, implied uncertainty, strategic fit.
+3. **Objectives, trade-offs and logistics costs** — The SCM system of objectives, the tetrahedron of trade-offs, cost types and the introduction of the case study **SushiFresh GmbH**.
+4. **Sustainability in supply chain management** — In-depth treatment of the sustainability content from unit 3: environmental strategic fit, environmental SCM strategies, circular economy and circular supply chains.
+5. **Facility location planning I** — Qualitative methods (scoring model, AHP) and continuous methods (centre-of-gravity method, Weiszfeld algorithm).
+6. **Facility location planning II** — Discrete network planning models: transportation problem, warehouse location problem, heuristics and exact methods.
+7. **Uncertainty in supply chains and pooling** — Demand uncertainty, capacity and inventory pooling, safety stocks, the square-root law of risk pooling.
+8. **The newsvendor model** — Optimal order quantities under uncertainty, critical ratio, service level.
+9. **The bullwhip effect and the Beer Game** — Amplification of demand fluctuations along the chain, causes and countermeasures.
 
-Ab Kapitel [-@sec-logistikkosten] begleitet ein durchgängiges Fallbeispiel den Reader: Die fiktive **SushiFresh GmbH** produziert frische Sushi-Boxen für Supermärkte im Rhein-Main-Gebiet. An ihr werden – wie in der Vorlesung – Standortwahl, Netzwerkdesign, Sicherheitsbestände, Produktionsmengen und der Bullwhip-Effekt durchgerechnet.
+From Chapter [-@sec-logistikkosten] onwards, a continuous case example accompanies the course reader: the fictitious **SushiFresh GmbH** produces fresh sushi boxes for supermarkets in the Rhine-Main area. As in the lecture, it is used to work through location choice, network design, safety stocks, production quantities and the bullwhip effect.
 
-Jedes Kapitel folgt derselben Struktur:
+Each chapter follows the same structure:
 
-- **Lernziele** zu Beginn, damit klar ist, welche Kompetenzen erworben werden sollen.
-- **Konzeptionelle Erläuterungen** mit Beispielen aus der Praxis.
-- **Theorie-Vertiefungen** (violett hinterlegt), die theoretische Hintergründe, Herleitungen und Bezüge zur Fachliteratur ausführlicher darstellen als die Folien.
-- **Fallstudien-Boxen** (gelb hinterlegt) zur SushiFresh GmbH.
-- **Mathematische Herleitungen** in nachvollziehbaren Schritten.
-- **Kommentierter R-Code**, der die Modelle direkt berechnet und visualisiert — jeder Code-Block ist lauffähig und so kommentiert, dass auch Studierende ohne Vorerfahrung in R den Ablauf nachvollziehen können. Neben den fachlichen Inhalten werden dabei grundlegende R-Konzepte (Vektoren, Funktionen, Datenrahmen, das `tidyverse`, Pipes `|>`, Visualisierung mit `ggplot2`) Schritt für Schritt eingeführt.
-- **Kontrollfragen** am Kapitelende zur Selbstüberprüfung.
+- **Learning objectives** at the beginning, so that it is clear which competences are to be acquired.
+- **Conceptual explanations** with examples from practice.
+- **In-depth theory boxes** (shaded purple), which present theoretical background, derivations and links to the academic literature in more detail than the slides.
+- **Case study boxes** (shaded yellow) on SushiFresh GmbH.
+- **Mathematical derivations** in easy-to-follow steps.
+- **Commented R code** that calculates and visualises the models directly — every code block is runnable and commented so that even students with no prior experience of R can follow the process. Alongside the subject content, basic R concepts (vectors, functions, data frames, the `tidyverse`, pipes `|>`, visualisation with `ggplot2`) are introduced step by step.
+- **Review questions** at the end of each chapter for self-assessment.
 
-## Voraussetzungen
+## Prerequisites
 
-- Grundlagen der linearen Algebra und Wahrscheinlichkeitsrechnung.
-- Keine R-Vorkenntnisse notwendig — die Grundlagen werden im Buch eingeführt.
-- Grundlagen der Mikroökonomie sind hilfreich, aber nicht zwingend erforderlich.
+- Fundamentals of linear algebra and probability theory.
+- No prior knowledge of R required — the basics are introduced in the book.
+- Fundamentals of microeconomics are helpful but not essential.
 
 ## Software
 
-Der gesamte R-Code dieses Buches verwendet die folgenden Pakete:
+All R code in this book uses the following packages:
 
 ```r
 install.packages(c(
-  "tidyverse",       # Datenmanipulation (dplyr, tidyr) und Visualisierung (ggplot2)
-  "plotly",          # interaktive Grafiken
-  "knitr",           # Einbettung von R-Code in Quarto-Dokumente
-  "kableExtra",      # formatierte Tabellen
-  "sf",              # Verarbeitung von Geodaten
-  "leaflet",         # interaktive Karten
-  "ompr", "ompr.roi", "ROI.plugin.glpk",  # algebraische Optimierungsmodelle (MILP)
-  "scales"           # Achsen- und Zahlenformatierung in ggplot2
+  "tidyverse",       # data manipulation (dplyr, tidyr) and visualisation (ggplot2)
+  "plotly",          # interactive graphics
+  "knitr",           # embedding R code in Quarto documents
+  "kableExtra",      # formatted tables
+  "sf",              # processing geodata
+  "leaflet",         # interactive maps
+  "ompr", "ompr.roi", "ROI.plugin.glpk",  # algebraic optimisation models (MILP)
+  "scales"           # axis and number formatting in ggplot2
 ))
 ```
 
-Alle Beispielfunktionen (z. B. für Center of Gravity, das Newsvendor-Modell oder die Add-/Drop-Heuristik) sind zusätzlich in `R/scm_functions.R` gebündelt und werden im Buch an den passenden Stellen referenziert.
+All example functions (e.g. for the centre-of-gravity method, the newsvendor model or the add/drop heuristic) are also bundled in `R/scm_functions.R` and are referenced at the appropriate points in the book.
 
-## Literaturempfehlungen
+## Recommended reading
 
-Als Hauptlehrbuch dient:
+The main textbook is:
 
 > Chopra, S., & Meindl, P. *Supply Chain Management: Strategy, Planning, and Operation*. Pearson.
 
-Ergänzend werden im Text u. a. herangezogen: Thonemann, Günther & Tempelmeier  sowie Cachon & Terwich (vollständige Angaben siehe [Literaturverzeichnis](references.qmd)).
+In addition, the text draws on, among others: Thonemann, Günther & Tempelmeier  as well as Cachon & Terwich (for full details see [References](references.qmd)).

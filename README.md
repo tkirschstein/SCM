@@ -1,105 +1,105 @@
-# Global Supply Chain Management – Kursmaterialien
+# Global Supply Chain Management – Course Materials
 
-**Hochschule RheinMain | Master International Management | 1. Fachsemester | Wintersemester 2026/27**
+**Hochschule RheinMain | Master International Management | 1st semester | Winter semester 2026/27**
 
 Prof. Dr. Matthias Kalverkamp & Prof. Dr. Thomas Kirschstein
 
 ---
 
-## Kursüberblick
+## Course overview
 
-Dieses Repository enthält alle Materialien zur Lehrveranstaltung *Supply Chain Management* im Masterstudiengang International Management: Vorlesungsfolien, den begleitenden Reader, sechs Fallstudien und die zugehörige R-Funktionsbibliothek.
+This repository contains all materials for the course *Supply Chain Management* in the Master's programme International Management: lecture slides, the companion course reader, six case studies and the accompanying R function library.
 
-Die Veranstaltung vermittelt die strategischen und quantitativen Grundlagen des Supply Chain Managements. Im Mittelpunkt steht die Übertragung von Methoden aus der Vorlesung auf möglichst realistische Problemstellungen. Das geschieht in Fallstudien, die in Gruppen bearbeitet, im Plenum präsentiert und gemeinsam reflektiert werden.
+The course covers the strategic and quantitative foundations of supply chain management. Its focus is on transferring the methods from the lecture to problems that are as realistic as possible. This happens in case studies that are worked on in groups, presented in class and reflected on together.
 
 | | |
 |---|---|
-| **Studiengang** | Master International Management, 1. Fachsemester |
-| **Umfang** | 2 SWS (seminaristische Vorlesung) |
-| **Termine** | donnerstags, 29.10.2026 – 28.01.2027 (12 Termine, keine Veranstaltung am 24.12. und 31.12.) |
-| **Sprache** | Deutsch (Fachliteratur überwiegend Englisch) |
-| **Lehrformat** | Inverted Classroom: Vorbereitung mit dem Reader, in der Veranstaltung kurzer Input, Fallstudienpräsentationen und gemeinsame Reflexion |
-| **Prüfungsleistung** | Individueller Reflexionsbericht (siehe unten), keine Klausur |
-| **Voraussetzungen** | Grundkenntnisse in Statistik; Programmierkenntnisse sind hilfreich, aber nicht erforderlich (R-Startercode wird bereitgestellt) |
+| **Programme** | Master International Management, 1st semester |
+| **Scope** | 2 SWS (weekly contact hours; seminar-style lecture) |
+| **Sessions** | Thursdays, 29 Oct 2026 – 28 Jan 2027 (12 sessions; no class on 24 Dec and 31 Dec) |
+| **Language** | English |
+| **Teaching format** | Inverted classroom: preparation with the reader and slides; in class, questions, selected in-depth topics, case study presentations and joint reflection |
+| **Assessment** | Individual reflection report (see below); no written exam |
+| **Prerequisites** | Basic statistics; programming skills are helpful but not required (R starter code is provided) |
 
-**Lernziele:** Nach der Veranstaltung können die Studierenden
+**Learning objectives:** After the course, students are able to
 
-- Supply Chains als Netzwerke beschreiben und ihre strategische Ausrichtung (Strategic Fit) beurteilen,
-- Zielkonflikte zwischen Kosten, Service und Nachhaltigkeit erkennen und bewerten,
-- Standortentscheidungen mit qualitativen (Nutzwertanalyse, AHP), kontinuierlichen (Steiner-Weber) und diskreten Modellen (WLP) vorbereiten,
-- Bestandsentscheidungen unter Unsicherheit (Pooling, Newsvendor) treffen,
-- die Ursachen des Bullwhip-Effekts erklären und Gegenmaßnahmen bewerten sowie
-- die Aussagekraft und Grenzen quantitativer Modelle für reale Managemententscheidungen kritisch reflektieren.
+- describe supply chains as networks and assess their strategic orientation (strategic fit),
+- identify and evaluate trade-offs between cost, service and sustainability,
+- prepare location decisions with qualitative (scoring model, AHP), continuous (Steiner–Weber) and discrete models (WLP),
+- make inventory decisions under uncertainty (risk pooling, newsvendor),
+- explain the causes of the bullwhip effect and evaluate countermeasures, and
+- critically reflect on the explanatory power and limitations of quantitative models for real management decisions.
 
 ---
 
-## Ablaufplan
+## Schedule
 
-Jede Veranstaltung umfasst 90 Minuten. Es werden jeweils 2 Themen behandelt. Das jeweilige Kapitel ist **vor** dem Termin zu studieren (Reader & Folien). Die Kapitel werden in den Veranstaltungen **nicht** vollständig präsentiert, sondern nur Rückfragen disktiert und ausgewählte Inhalte vertieft bzw. wiederholt. 
+Each session lasts 90 minutes and covers two topics. The respective chapter must be studied **before** the session (reader & slides). The chapters are **not** presented in full in class; instead, we discuss questions and deepen or revisit selected content.
 
-| Nr. | Datum | Teil 1  | Teil 2 |
+| No. | Date | Part 1 | Part 2 |
 |:--:|---|---|---|
-| 1 | Do, 29.10.2026 | Kick-off und Organisation; Einführung und Grundbegriffe des SCM (Kap. 1) | Ausgabe aller Fallstudien & Beergame (1) |
-| 2 | Do, 05.11.2026 | Wertschöpfung, strategische Fertigung und Strategic Fit (Kap. 2) | Kick-off-Gespräche mit den Gruppen  |
-| 3 | Do, 12.11.2026 | Ziele, Zielkonflikte und Logistikkosten (Kap. 3) | Konsultation |
-| 4 | Do, 19.11.2026 | Standortplanung I: Nutzwertanalyse, AHP, Steiner-Weber (Kap. 4) | Konsultation  |
-| 5 | Do, 26.11.2026 | Standortplanung II: diskrete Netzwerkplanung, WLP (Kap. 5) |Konsultation |
-| 6 | Do, 03.12.2026 | Unsicherheit in Supply Chains: Pooling (Kap. 6) |Konsultation  |
-| 7 | Do, 10.12.2026 | Das Newsvendor-Modell (Kap. 7) | **FS 1: Strategische Gestaltung – Werner & Mertz / Frosch** |
-| 8 | Do, 17.12.2026 | Der Bullwhip-Effekt (Kap. 8) und **Beer Game** |  Beergame (2)|
-| – | Do, 24.12.2026 | *keine Veranstaltung* | |
-| – | Do, 31.12.2026 | *keine Veranstaltung* | |
-| 9 | Do, 07.01.2027 | **FS 2: Distributionshub LATAM – AHP und Steiner-Weber** | **FS 3: Batterielogistik – WLP** |
-| 10 | Do, 14.01.2027 | Zwischenfeedback Case Studies 1-3  | Konsultationen  |
-| 11 | Do, 21.01.2027 | **FS 4: Risk Pooling im E-Commerce (Olist-Daten)** | **FS 5: Newsvendor – französische Bäckerei** |
-| 12 | Do, 28.01.2027 | **FS 6: Bullwhip-Effekt – MTIS-Daten und Simulation** | (Beergame (3)) |
+| 1 | Thu, 29 Oct 2026 | Kick-off and organisation; introduction and basic concepts of SCM (ch. 1) | Hand-out of all case studies & Beer Game (1) |
+| 2 | Thu, 5 Nov 2026 | Value creation, strategic manufacturing and strategic fit (ch. 2) | Kick-off meetings with the groups |
+| 3 | Thu, 12 Nov 2026 | Objectives, trade-offs and logistics costs (ch. 3) | Consultation |
+| 4 | Thu, 19 Nov 2026 | Facility location planning I: scoring model, AHP, Steiner–Weber (ch. 4) | Consultation |
+| 5 | Thu, 26 Nov 2026 | Facility location planning II: discrete network planning, WLP (ch. 5) | Consultation |
+| 6 | Thu, 3 Dec 2026 | Uncertainty in supply chains: risk pooling (ch. 6) | Consultation |
+| 7 | Thu, 10 Dec 2026 | The newsvendor model (ch. 7) | **CS 1: Strategic design – Werner & Mertz / Frosch** |
+| 8 | Thu, 17 Dec 2026 | The bullwhip effect (ch. 8) and **Beer Game** | Beer Game (2) |
+| – | Thu, 24 Dec 2026 | *no class* | |
+| – | Thu, 31 Dec 2026 | *no class* | |
+| 9 | Thu, 7 Jan 2027 | **CS 2: Distribution hub LATAM – AHP and Steiner–Weber** | **CS 3: Battery logistics – WLP** |
+| 10 | Thu, 14 Jan 2027 | Interim feedback on case studies 1–3 | Consultations |
+| 11 | Thu, 21 Jan 2027 | **CS 4: Risk pooling in e-commerce (Olist data)** | **CS 5: Newsvendor – French bakery** |
+| 12 | Thu, 28 Jan 2027 | **CS 6: Bullwhip effect – MTIS data and simulation** | (Beer Game (3)) |
 
-Die Fallstudien werden jeweils zwei bis drei Wochen nach dem zugehörigen Input präsentiert. Die Gruppen mit späteren Präsentationsterminen beginnen mit Datenbeschaffung und -aufbereitung bereits vor dem Input. Die Weihnachtspause verschafft den Gruppen 2–6 zusätzliche Bearbeitungszeit. Das Beer Game wird dreimal während der Veranstaltung gespielt und liefert ergänzende Daten für Fallstudie 6.
+Each case study is presented two to three weeks after the corresponding input. Groups with later presentation dates start collecting and preparing their data before the input. The Christmas break gives groups 2–6 additional working time. The Beer Game is played three times during the course and provides additional data for case study 6.
 
 ---
 
-## Fallstudien
+## Case studies
 
-Die sechs Fallstudien werden in Gruppen von **3–6 Personen** bearbeitet; jede Gruppe übernimmt eine Fallstudie. Bis auf Fallstudie 1 arbeiten alle mit realen oder realitätsnahen Datensätzen.
+The six case studies are worked on in groups of **3–6 students**; each group takes on one case study. Except for case study 1, all of them work with real or realistic datasets.
 
-| Nr. | Thema | Methoden | Daten |
+| No. | Topic | Methods | Data |
 |:--:|---|---|---|
-| 1 | Strategische Gestaltung von SCs: Werner & Mertz / Frosch | Strategic Fit, SC-Treiber, Zielkonflikte, Closed-Loop-SC | Recherche (qualitativ) |
-| 2 | Distributionshub für Lateinamerika | AHP, Nutzwertanalyse, Steiner-Weber, Haversine | Prognose- und Kostendaten (fiktiv), Weltbank-Indikatoren (LPI, WGI) |
-| 3 | Batterielogistik Norddeutschland/Benelux | UFLP/CFLP als MILP, Add/Drop, Transportproblem, Szenarien | reale Werksstandorte, Mengen und Kosten realitätsnah geschätzt |
-| 4 | Risk Pooling im E-Commerce: Zentral- oder Regionallager in Brasilien | Sicherheitsbestand, Quadratwurzelgesetz, Korrelation, Produkt-Pooling | Bestelldaten des Marktplatzes Olist (Kaggle) |
-| 5 | Newsvendor in einer französischen Bäckerei | Newsvendor (normal/empirisch), Backtest, zensierte Nachfrage | Kassendaten *French bakery daily sales* (Kaggle) |
-| 6 | Bullwhip-Effekt | Varianzverhältnis, Simulation, Chen-Schranke, Beer Game | U.S. Census MTIS über FRED |
+| 1 | Strategic supply chain design: Werner & Mertz / Frosch | Strategic fit, supply chain drivers, trade-offs, closed-loop supply chain | Desk research (qualitative) |
+| 2 | Distribution hub for Latin America | AHP, scoring model, Steiner–Weber, haversine distance | Forecast and cost data (fictitious), World Bank indicators (LPI, WGI) |
+| 3 | Battery logistics in Northern Germany/Benelux | UFLP/CFLP as MILP, add/drop heuristics, transportation problem, scenarios | Real plant locations, realistically estimated volumes and costs |
+| 4 | Risk pooling in e-commerce: central or regional warehouses in Brazil | Safety stock, square-root law, correlation, product pooling | Order data of the Olist marketplace (Kaggle) |
+| 5 | Newsvendor in a French bakery | Newsvendor (normal/empirical), backtest, censored demand | Point-of-sale data *French bakery daily sales* (Kaggle) |
+| 6 | Bullwhip effect | Variance ratio, simulation, Chen bound, Beer Game | U.S. Census MTIS via FRED |
 
-**Ablauf je Gruppe:**
+**Process for each group:**
 
-1. Kick-off-Gespräch & Konsultationen zu den Veranstaltungsterminen,
-2. Zwischenstand etwa eine Woche vor der Präsentation,
-3. Präsentation (30 Min.) mit Beantwortung der Reflexionsfragen und Diskussion (15 Min.),
-4. Abgabe von Foliensatz (PDF) und – bei den datenbasierten Fallstudien – reproduzierbarem Quarto-/R-Code bis 24 Stunden vor dem Termin.
+1. Kick-off meeting & consultations during class sessions,
+2. interim status about one week before the presentation,
+3. presentation (30 min) including answers to the reflection questions, followed by discussion (15 min),
+4. submission of the slide deck (PDF) and – for the data-based case studies – reproducible Quarto/R code no later than 24 hours before the session.
 
-Jede Fallstudie endet mit **Reflexionsfragen**, die die Gruppe in der Präsentation beantwortet und die die anschließende Diskussion eröffnen. Die Diskussion wird von einer anderen Gruppe moderiert.
-
----
-
-## Prüfungsleistung: Reflexionsbericht
-
-Die Prüfungsleistung ist ein **individueller Reflexionsbericht**. Die Fallstudienpräsentationen und die anschließenden Diskussionen sind seine Grundlage. Die **aktive Teilnahme an den Diskussionen** ist Teil der Reflexion und geht in die **Benotung ein**. Insgesamt umfasst die Reflektion:
-
-- **Reflexionsjournal (begleitend):** Zu jeder Fallstudienpräsentation halten alle Teilnehmenden etwa eine Seite fest: Kernaussage, Annahmen und Grenzen der Methode, Bezug zur eigenen Erfahrung bzw. zu einem bekannten Unternehmen, offene Fragen.
-- **Reflexionsbericht:** Er umfasst zwei Teile:
-  1. Präsentation der eigenen Fallstudie,
-  2. Zusammenfassung der Reflektionsfragen & Diskussionsergbnisse,
-- Umfang, Abgabetermin und Bewertungskriterien werden in der ersten Veranstaltung bekannt gegeben.
+Each case study ends with **reflection questions**, which the group answers in its presentation and which open the subsequent discussion. The discussion is moderated by another group.
 
 ---
 
-## Direkter Zugriff auf die Ressourcen
+## Assessment: reflection report
+
+The assessment is an **individual reflection report**. It is based on the case study presentations and the subsequent discussions. **Active participation in the discussions** is part of the reflection and **counts towards the grade**. Overall, the reflection comprises:
+
+- **Reflection journal (ongoing):** for each case study presentation, all participants write about one page: key message, assumptions and limitations of the method, links to their own experience or to a company they know, open questions.
+- **Reflection report:** it consists of two parts:
+  1. presentation of the student's own case study,
+  2. summary of the reflection questions & discussion results.
+- Length, submission deadline and assessment criteria will be announced in the first session.
+
+---
+
+## Direct access to the resources
 
 - Navigation: https://tkirschstein.github.io/SCM/
 - Slides: https://tkirschstein.github.io/SCM/slides/scm-komplett.html
 - Reader: https://tkirschstein.github.io/SCM/book/index
-- Case-Studies: 
+- Case studies:
   - https://tkirschstein.github.io/SCM/case_studies/case_study_01_strategie_frosch
   - https://tkirschstein.github.io/SCM/case_studies/case_study_02_standort_ahp_steiner_weber
   - https://tkirschstein.github.io/SCM/case_studies/case_study_03_wlp_batterielogistik
@@ -111,95 +111,95 @@ Die Prüfungsleistung ist ein **individueller Reflexionsbericht**. Die Fallstudi
 
 ## Beer Game
 
-Das **Beer Distribution Game** (Sterman 1989) simuliert den Bullwhip-Effekt in einer vierstufigen Supply Chain (Einzelhandel → Großhandel → Distributor → Hersteller). Wir spielen das Spiel mehrfach in der Veranstaltung in der Regel mit folgendem Ablauf:
+The **Beer Distribution Game** (Sterman 1989) simulates the bullwhip effect in a four-stage supply chain (retailer → wholesaler → distributor → manufacturer). We play the game several times during the course, usually as follows:
 
-1. Einführung in die Regeln/Annahmen (variieren während des Semesters),
-2. Spielrunden/Simulation,
-3. Auswertung der Bestell- und Bestandsverläufe und Diskussion.
+1. introduction to the rules/assumptions (these vary during the semester),
+2. game rounds/simulation,
+3. analysis of the order and inventory patterns and discussion.
 
-Online-Plattform: [Transentis](https://beergame.transentis.com/de). 
+Online platform: [Transentis](https://beergame.transentis.com/).
 
-Machen Sie sich gern vorab mit den Regeln und Ablauf vertraut.
+Feel free to familiarise yourself with the rules and procedure in advance.
 
 ---
 
 
-## Aufbau des Repositories
+## Repository structure
 
 ```
 SCM/
-├── slides/                  # Vorlesungsfolien (Quarto revealjs) → docs/slides
-│   ├── lectures/            # 8 Vorlesungseinheiten (01–08)
-│   ├── scm-komplett.qmd     # Gesamtausgabe aller Einheiten
+├── slides/                  # Lecture slides (Quarto revealjs) → docs/slides
+│   ├── lectures/            # 8 lecture units (01–08)
+│   ├── scm-komplett.qmd     # Complete edition of all units
 │   └── _quarto.yml
-├── book/                    # Reader (Quarto Book) → docs/book
-│   ├── chapters/            # Kapitel 1–9
+├── book/                    # Course reader (Quarto book) → docs/book
+│   ├── chapters/            # Chapters 1–9
 │   ├── index.qmd
 │   └── _quarto.yml
-├── case_studies/            # 6 Fallstudien → docs/case_studies
+├── case_studies/            # 6 case studies → docs/case_studies
 │   └── _quarto.yml
 ├── R/
-│   └── scm_functions.R      # R-Funktionsbibliothek des Kurses (roxygen2-dokumentiert)
-└── docs/                    # gerenderte Ausgabe (HTML)
+│   └── scm_functions.R      # Course R function library (roxygen2-documented)
+└── docs/                    # Rendered output (HTML)
 ```
 
-### Rendern
+### Rendering
 
 ```bash
-# Reader
+# Course reader
 cd book && quarto render
 
-# Vorlesungsfolien (einzeln oder als Gesamtausgabe, siehe slides/README.md)
+# Lecture slides (single unit or complete edition, see slides/README.md)
 cd slides && quarto render lectures/01_einfuehrung-und-grundbegriffe-des-supply-chain-managements.qmd
 cd slides && quarto render --profile full
 
-# Fallstudien
+# Case studies
 cd case_studies && quarto render
 ```
 
-Die Ausgabe landet jeweils im Ordner `docs/`. Das Arbeitsverzeichnis für R-Code ist der jeweilige Projektordner, die Funktionsbibliothek wird daher mit `source("../R/scm_functions.R")` eingebunden.
+The output is written to the `docs/` folder in each case. The working directory for R code is the respective project folder, so the function library is loaded with `source("../R/scm_functions.R")`.
 
 ---
 
 ## Software
 
-- **R** ≥ 4.3 mit **RStudio** oder Positron
+- **R** ≥ 4.3 with **RStudio** or Positron
 - **Quarto** ≥ 1.4 (<https://quarto.org>)
 
 ```r
 install.packages(c(
-  "tidyverse",        # Datenaufbereitung und Grafiken
-  "lubridate",        # Datumsfunktionen (Fallstudie 5)
-  "zoo",              # gleitende Durchschnitte (Fallstudie 4)
+  "tidyverse",        # data preparation and graphics
+  "lubridate",        # date functions (case study 5)
+  "zoo",              # moving averages (case study 4)
   "knitr", "kableExtra",
-  "plotly",           # interaktive Grafiken im Reader
-  "ompr", "ompr.roi", "ROI", "ROI.plugin.glpk",  # MILP (Fallstudie 3)
-  "lpSolve",          # Transportproblem
+  "plotly",           # interactive graphics in the reader
+  "ompr", "ompr.roi", "ROI", "ROI.plugin.glpk",  # MILP (case study 3)
+  "lpSolve",          # transportation problem
   "MASS"
 ))
 ```
 
-Für die Fallstudien 4 und 5 ist ein (kostenloses) **Kaggle-Konto** erforderlich, um die Datensätze herunterzuladen.
+A (free) **Kaggle account** is required to download the datasets for case studies 4 and 5.
 
-Für diejenigen, die sich mit R vertraut machen wollen, ist unter [Data Science](https://ds-pl-r-book.netlify.app/) ein Einführungs-Kurs verfügbar. 
+If you want to familiarise yourself with R, an introductory course is available at [Data Science](https://ds-pl-r-book.netlify.app/).
 
 
 ---
 
-## Literatur
+## Literature
 
-| Titel | Autoren | Relevanz |
+| Title | Authors | Relevance |
 |---|---|---|
-| *Supply Chain Management: Strategy, Planning, and Operation* | Chopra & Meindl | alle Themen |
-| *Matching Supply with Demand* | Cachon & Terwiesch | Pooling, Newsvendor, Bullwhip |
-| *Sustainable Logistics and Supply Chain Management* | Grant et al. | Nachhaltigkeit |
+| *Supply Chain Management: Strategy, Planning, and Operation* | Chopra & Meindl | all topics |
+| *Matching Supply with Demand* | Cachon & Terwiesch | risk pooling, newsvendor, bullwhip |
+| *Sustainable Logistics and Supply Chain Management* | Grant et al. | sustainability |
 
-Weitere Quellen sind im Reader und in den Fallstudien angegeben (`literature/!references.bib`).
+Further sources are listed in the reader and in the case studies (`literature/!references.bib`).
 
 ---
 
-## Kontakt
+## Contact
 
 Prof. Dr. Thomas Kirschstein – thomas.kirschstein@hs-rm.de
 
-Fehler und Verbesserungsvorschläge bitte als GitHub-Issue melden oder an thomas.kirschstein@hs-rm.de.
+Please report errors and suggestions for improvement as a GitHub issue or by e-mail to thomas.kirschstein@hs-rm.de.

@@ -5,7 +5,7 @@
 #| warning: false
 #| message: false
 
-# Funktionen aus scm_functions.R einbinden
+# Load functions from scm_functions.R
 source("../R/scm_functions.R")
 
 library(tidyverse)
@@ -23,34 +23,34 @@ library(osrm)
 
 ---
 
-## Strategische Gestaltung von Supply Chains {#slide-92}
+## Strategic Design of Supply Chains {#slide-92}
 
-- Multikriterielle  Standortplanung
-- Kontinuierliche Standortplanung
-- **Diskrete Standortplanung**
-
----
-
-## Lernziele {#learning-objectives-location-discrete}
-
-Nach dieser Einheit können Sie …
-
-- diskrete Standort- und Netzwerkplanungsprobleme **formulieren**,
-- Transport-, Umschlags- und Standortentscheidungen in einem Netzwerk **modellieren**,
-- zentrale Entscheidungsvariablen, Zielfunktionen und Nebenbedingungen **interpretieren**,
-- Ergebnisse diskreter Netzwerkmodelle für strategische Standortentscheidungen **bewerten**.
-
-**Literatur zur Vertiefung**
-
-- **Transport-, Umschlags- und Netzwerkmodelle:** [@guenther2012produktion, Kapitel 4].
-- **Diskrete Standortmodelle, Algorithmen und Anwendungen:** Kapitel 1–4 in [@daskin2013network].
-- **Theorie und Anwendungen der Standortplanung:** [@drezner2002facility].
+- Multi-criteria facility location planning
+- Continuous facility location planning
+- **Discrete facility location planning**
 
 ---
 
-## Planung von Distributionsnetzen {#slide-93}
+## Learning objectives {#learning-objectives-location-discrete}
+
+After this unit, you will be able to …
+
+- **formulate** discrete facility location and network design problems,
+- **model** transport, transshipment and location decisions in a network,
+- **interpret** key decision variables, objective functions and constraints,
+- **evaluate** the results of discrete network models for strategic location decisions.
+
+**Further reading**
+
+- **Transportation, transshipment and network models:** [@guenther2012produktion, Chapter 4].
+- **Discrete location models, algorithms and applications:** Chapters 1–4 in [@daskin2013network].
+- **Theory and applications of facility location:** [@drezner2002facility].
+
+---
+
+## Planning Distribution Networks {#slide-93}
 ::: slide-subtitle
-Einordnung
+Context
 :::
 
 ::: r-stretch
@@ -62,7 +62,7 @@ Einordnung
 #| fig-height: 1.1
 
 top_boxes <- data.frame(
-  label = c("Beschaffung", "Produktion", "Distribution", "Absatz"),
+  label = c("Procurement", "Production", "Distribution", "Sales"),
   x0 = c(0.00, 2.00, 4.00, 6.00),
   x1 = c(2.00, 4.00, 6.00, 8.00),
   y0 = 9.25,
@@ -211,16 +211,16 @@ digraph network {
 ```
 :::
 
-$\rightarrow$ Wähle konkrete Standorte im Netzwerk aus $\rightarrow$ in der Regel begrenzte Betrachtung der SC
+$\rightarrow$ Select specific locations in the network $\rightarrow$ usually a limited view of the SC
 
 
 
 
 ---
 
-## Fallstudie – SushiFresh GmbH {#slide-cs1}
+## Case study – SushiFresh GmbH {#slide-cs1}
 ::: slide-subtitle
-Ausgangslage
+Initial situation
 :::
 
 ::: columns
@@ -233,7 +233,7 @@ Ausgangslage
 #| out-width: "100%"
 #| fig-height: 6.5
 
-# Filialen (Nachfrageknoten): sechs Supermarkt-Filialen im Rhein-Main-Gebiet
+# Stores (demand nodes): six supermarket stores in the Rhine-Main area
 werke <- data.frame(
   ID     = paste0("C",1:6),
   Ort    = c("Wiesbaden", "Mainz", "Frankfurt", "Rüsselsheim",
@@ -255,22 +255,22 @@ standorte <- data.frame(
 
 
 
-# Kandidatenstandorte fuer Produktion/Distribution (aus Kapitel 4)
+# Candidate locations for production/distribution (from Chapter 4)
 lager_data <- standorte
 
-# Haversine-Distanzen (aus scm_functions.R) exemplarisch zur Filiale Frankfurt
+# Haversine distances (from scm_functions.R), e.g. to the Frankfurt store
 lager_data$dist_frankfurt <- mapply(
   haversine,
   lager_data$Lat, lager_data$Lon,
   MoreArgs = list(lat2 = 50.1109, lon2 = 8.6821)
 )
 
-# Leaflet-Karte
+# Leaflet map
 map <- leaflet(options = leafletOptions(zoomControl = TRUE)) %>%
   addProviderTiles(providers$OpenStreetMap.Mapnik) %>%
   setView(lng = 8.5, lat = 50.02, zoom = 10) %>%
 
-  # Filialen (blau)
+  # Stores (blue)
   addAwesomeMarkers(
     data        = werke,
     lng         = ~Lon,
@@ -282,10 +282,10 @@ map <- leaflet(options = leafletOptions(zoomControl = TRUE)) %>%
       markerColor = "blue",
       iconColor   = "white"
     ),
-    group = "Filialen"
+    group = "Stores"
   ) %>%
 
-  # Kandidatenstandorte (grün)
+  # Candidate locations (green)
   addAwesomeMarkers(
     data        = lager_data,
     lng         = ~Lon,
@@ -297,18 +297,18 @@ map <- leaflet(options = leafletOptions(zoomControl = TRUE)) %>%
       markerColor = "green",
       iconColor   = "white"
     ),
-    group = "Kandidatenstandorte"
+    group = "Candidate locations"
   ) %>%
 
   addLayersControl(
-    overlayGroups = c("Filialen", "Kandidatenstandorte"),
+    overlayGroups = c("Stores", "Candidate locations"),
     options       = layersControlOptions(collapsed = FALSE)
   ) %>%
   addLegend(
     position = "bottomleft",
     colors   = c("#2A7ACA", "#3DB843"),
-    labels   = c("Filiale (Nachfrage)", "Kandidatenstandort"),
-    title    = "Legende"
+    labels   = c("Store (demand)", "Candidate location"),
+    title    = "Legend"
   )
 
 map
@@ -320,15 +320,17 @@ map
 ::: {.small-text}
 
 ::: {.callout-note appearance="simple"}
-## Problemstellung
-Die **SushiFresh GmbH** beliefert täglich sechs Supermarkt-Filialen im Rhein-Main-Gebiet mit frisch produzierten Sushi-Boxen. In Kapitel 4 wurde bereits eine **qualitative Standortvorauswahl per AHP** durchgeführt (Ergebnis: Mainz-Hechtsheim knapp vorn) sowie eine **kontinuierliche Standortoptimierung** (Center of Gravity/Weiszfeld). Nun stellt sich die Frage: Hält dieses Ergebnis auch einer  kostenbasierten Prüfung stand?
+
+## Problem statement
+**SushiFresh GmbH** supplies six supermarket stores in the Rhine-Main area daily with freshly produced sushi boxes. In Chapter 4, a **qualitative pre-selection of locations using AHP** was carried out (result: Mainz-Hechtsheim narrowly ahead), as well as a **continuous location optimisation** (centre of gravity/Weiszfeld). The question now is: does this result also hold up under a cost-based assessment?
 :::
 
 ::: {.callout-tip appearance="simple"}
-## Rückblick Kapitel 4
-- **AHP-Bewertung:** Raunheim knapp vorn
-- **Center of Gravity / Weiszfeld:** Optimalpunkt mitten im Rhein-Main-Gebiet, nahe Raunheim
-- **Offene Frage:** Bestätigt eine Kostenoptimierung (Fixkosten + Transport) dieses Bild?
+
+## Review of Chapter 4
+- **AHP evaluation:** Raunheim narrowly ahead
+- **Centre of gravity / Weiszfeld:** optimal point in the middle of the Rhine-Main area, near Raunheim
+- **Open question:** does a cost optimisation (fixed costs + transport) confirm this picture?
 :::
 :::
 
@@ -337,22 +339,23 @@ Die **SushiFresh GmbH** beliefert täglich sechs Supermarkt-Filialen im Rhein-Ma
 
 ---
 
-## Fallstudie – SushiFresh GmbH {#slide-cs2}
+## Case study – SushiFresh GmbH {#slide-cs2}
 ::: slide-subtitle
-Entscheidungssituation
+Decision situation
 :::
 
 ::: {.callout-note appearance="simple"}
-## Entscheidungssituation
 
-SushiFresh muss entscheiden, welcher der drei Kandidatenstandorte für Produktion und Distribution ausgebaut wird und welche Filiale von welchem Standort versorgt werden soll. Das Unternehmen möchte die Entscheidung so treffen, dass die jährlichen Gesamtkosten aus Fixkosten und Transport minimiert werden. Folgende Informationen sind bekannt:
+## Decision situation
+
+SushiFresh must decide which of the three candidate locations will be developed for production and distribution, and which store should be supplied from which location. The company wants to make this decision so that the annual total costs of fixed costs and transport are minimised. The following information is known:
 :::
 
 ::: columns
 ::: {.column width="48%"}
 
 ::: small-text
-**Kandidatenstandorte und jährliche Fixkosten**
+**Candidate locations and annual fixed costs**
 
 ```{r lager-tabelle}
 #| echo: false
@@ -360,8 +363,8 @@ SushiFresh muss entscheiden, welcher der drei Kandidatenstandorte für Produktio
 #| message: false
 
 kbl(standorte,
-    col.names = c("ID","Standort","Längengrad","Breitengrad",
-                  "Fixkosten/Jahr (1000 €)"),
+    col.names = c("ID","Location","Longitude","Latitude",
+                  "Fixed costs/year (€1,000)"),
     align = c("c","l","r","r","r")) |>
   kable_styling(bootstrap_options = c("condensed","striped"),
                 full_width = TRUE, font_size = 20) |>
@@ -369,21 +372,21 @@ kbl(standorte,
   row_spec(0, background = "#2F3E46", color = "white", bold = TRUE)
 ```
 
-**Transportdistanzen in km**
+**Transport distances in km**
 
 ```{r dist-tabelle}
 #| echo: false
 #| warning: false
 #| message: false
- 
+
 ##########################################
-# Für direkte Berechnung via OSM
+# For direct calculation via OSM
 # matrix_result <- osrmTable(
 #   src = standorte[, c("Lon", "Lat")],
 #   dst = werke[, c("Lon", "Lat")],
 #   measure = "distance" # Can be "duration", "distance", or c("duration", "distance")
 # )
-# 
+#
 # dist_mat <- matrix(matrix_result$distances/1000,
 #   nrow = nrow(standorte), byrow = TRUE,
 #   dimnames = list(standorte$ID, werke$ID)
@@ -417,7 +420,7 @@ kbl(df_dist,
 ::: {.column width="50%"}
 
 ::: small-text
-**Filialen und tägliche Nachfrage**
+**Stores and daily demand**
 
 ```{r werke-tabelle}
 #| echo: false
@@ -427,12 +430,12 @@ kbl(df_dist,
 
 
 kbl(werke,
-    col.names = c("ID","Filiale",
-                  "Längengrad","Breitengrad",
-                  "Nachfrage $\\mu$ (Boxen/Tag)"),
+    col.names = c("ID","Store",
+                  "Longitude","Latitude",
+                  "Demand $\\mu$ (boxes/day)"),
     align = c("c","l","l","r","r","r"),
     escape = FALSE,
-    format.args = list(big.mark = "\u202f")) |>
+    format.args = list(big.mark = ",")) |>
   kable_styling(bootstrap_options = c("condensed","striped"),
                 full_width = TRUE, font_size = 20) |>
   column_spec(1, bold = TRUE, background = "#2F3E46", color = "white", width = "1em") |>
@@ -443,39 +446,39 @@ kbl(werke,
 :::
 :::
 
-<!-- ## Fallstudie - SushiFresh GmbH -->
+<!-- ## Case study - SushiFresh GmbH -->
 <!-- ::: slide-subtitle -->
-<!-- Aufgabe -->
+<!-- Task -->
 <!-- ::: -->
 
 <!-- ::: {.callout-note appearance="simple"} -->
-<!-- ## Zielformulierung -->
+<!-- ## Objective -->
 
-<!-- Sie wurden von der Geschäftsführung beauftragt, eine Entscheidungsvorlage dafür zu erarbeiten, wie die Produktion und Distribution der Sushi-Boxen organisiert werden sollte. Die Vorlage soll eine Zuordnung der Filialen zu Versorgungsstandorten enthalten. Auf Basis dieser Zuordnung erwartet die Geschäftsführung eine Abschätzung der jährlichen Gesamtkosten, die aus Ihrem Vorschlag resultieren würden – und eine Einordnung, ob dies die AHP-Empfehlung aus Kapitel 4 (Raunheim) bestätigt. -->
+<!-- You have been commissioned by the management to prepare a decision proposal on how the production and distribution of the sushi boxes should be organised. The proposal should include an assignment of the stores to supply locations. Based on this assignment, the management expects an estimate of the annual total costs that would result from your proposal – and an assessment of whether this confirms the AHP recommendation from Chapter 4 (Raunheim). -->
 <!-- ::: -->
 
 <!-- ::: {.fragment .fade-up} -->
-<!-- ### Aufgaben -->
+<!-- ### Tasks -->
 
-<!-- 1. Formulieren Sie einen Ansatz zur Berechnung der jährlichen Gesamtkosten. -->
-<!-- 2. Formulieren Sie einen Ansatz zur Berechnung der Transportkosten für die Distribution der Sushi-Boxen. -->
-<!-- 3. Nutzen Sie dazu den gegebenen Transportkostensatz von 0,02 €/(Box·km). -->
-<!-- 4. Finden Sie eine Zuordnung der Filialen zu den Kandidatenstandorten und ermitteln Sie die Gesamtkosten Ihrer Lösung. -->
+<!-- 1. Formulate an approach for calculating the annual total costs. -->
+<!-- 2. Formulate an approach for calculating the transport costs for the distribution of the sushi boxes. -->
+<!-- 3. Use the given transport cost rate of €0.02/(box·km). -->
+<!-- 4. Find an assignment of the stores to the candidate locations and determine the total costs of your solution. -->
 <!-- ::: -->
 
 ---
 
 ## Warehouse Location Problem {#slide-wlp-1}
 ::: slide-subtitle
-Problembeschreibung
+Problem description
 :::
 
 ::: {.callout-note appearance="minimal" icon=false}
-**Problemstellung**
+**Problem statement**
 
-Gegeben sei eine Menge an **Kundenstandorten** und eine Menge (potentieller) **Lagerhausstandorte**. Jeder Kundenstandort hat eine **Warennachfrage** (z.B. in Stück pro Monat/Jahr), die von den Lagerhäusern beliefert warden muss. Der Transport der Waren verursacht entfernungsabhängige **Transportkosten**. Die Eröffnung eines Lagerhauses verursacht **Einrichtungskosten**.
+Consider a set of **customer locations** and a set of (potential) **warehouse locations**. Each customer location has a **demand for goods** (e.g. in units per month/year) that must be supplied by the warehouses. Transporting the goods incurs distance-dependent **transport costs**. Opening a warehouse incurs **set-up costs**.
 
-Es ist zu entscheiden, an welchen Standorten Lagerhäuser eingerichtet werden sollen und welche Kunden diese versorgen sollen.
+The decision is at which locations warehouses should be set up and which customers they should supply.
 :::
 
 ::: columns
@@ -485,12 +488,12 @@ Es ist zu entscheiden, an welchen Standorten Lagerhäuser eingerichtet werden so
 ::: {.fragment .fade-up}
 **Notation**
 
-- Menge der Lagerhäuser $i \in I$
-- Menge der Kundenstandorte $j \in J$
-- Transportverbindungen $E \subseteq I \times J$
-- Eröffnungskosten an Lagerstandort $i$: $f_i$
-- Transportkosten (z.B. in €/Monat) Standort $i$ zu Kunde $j$: $c_{ij}$
-- Nachfrage von Kunde $j$: $a_j$
+- Set of warehouses $i \in I$
+- Set of customer locations $j \in J$
+- Transport links $E \subseteq I \times J$
+- Opening costs at warehouse location $i$: $f_i$
+- Transport costs (e.g. in €/month) from location $i$ to customer $j$: $c_{ij}$
+- Demand of customer $j$: $a_j$
 :::
 :::
 :::
@@ -505,7 +508,7 @@ Es ist zu entscheiden, an welchen Standorten Lagerhäuser eingerichtet werden so
 #| out-width: "90%"
 #| fig-height: 5
 
-# --- Koordinaten (normiert 0..1) ---
+# --- Coordinates (normalised 0..1) ---
 lager_nodes <- data.frame(
   id  = c("W1","W2","W3"),
   lbl = c("1","2","3"),
@@ -525,8 +528,8 @@ kunden_nodes <- data.frame(
 lxy <- setNames(lager_nodes[, c("x","y")],   c("x","y")); rownames(lxy) <- lager_nodes$id
 kxy <- setNames(kunden_nodes[, c("x","y")],  c("x","y")); rownames(kxy) <- kunden_nodes$id
 
-# Knotenradius in Plot-Koordinaten (angepasst an fig-Größe)
-r <- 0.058   # <-- ggf. leicht anpassen wenn Größe ändert
+# Node radius in plot coordinates (adjusted to fig size)
+r <- 0.058   # <-- adjust slightly if size changes
 
 edges <- data.frame(
   from = c("W3","W3","W2","W2","W2","W1"),
@@ -537,7 +540,7 @@ edges <- data.frame(
 
 fig <- plot_ly(type = "scatter", mode = "markers")
 
-# Kanten: Endpunkte auf Rand der Knoten verschieben
+# Edges: move end points to the node boundary
 for (i in seq_len(nrow(edges))) {
   x0 <- lxy[edges$from[i], "x"];  y0 <- lxy[edges$from[i], "y"]
   x1 <- kxy[edges$to[i],   "x"];  y1 <- kxy[edges$to[i],   "y"]
@@ -545,10 +548,10 @@ for (i in seq_len(nrow(edges))) {
   dx <- x1 - x0;  dy <- y1 - y0
   d  <- sqrt(dx^2 + dy^2)
 
-  # Startpunkt: r vom Lager-Mittelpunkt entfernt Richtung Kunde
+  # Start point: r away from the warehouse centre towards the customer
   ax <- x0 + r * dx / d
   ay <- y0 + r * dy / d
-  # Endpunkt:   r vom Kunden-Mittelpunkt entfernt Richtung Lager
+  # End point:   r away from the customer centre towards the warehouse
   ex <- x1 - r * dx / d
   ey <- y1 - r * dy / d
 
@@ -559,7 +562,7 @@ for (i in seq_len(nrow(edges))) {
     arrowwidth = 1.5, arrowcolor = "#4B4B4B", text = ""
   )
 
-  # Kanten-Label mittig
+  # Edge label centred
   if (nchar(edges$lbl[i]) > 0) {
     fig <- fig %>% add_annotations(
       x = (ax + ex) / 2 + 0.02, y = (ay + ey) / 2 + 0.025,
@@ -570,7 +573,7 @@ for (i in seq_len(nrow(edges))) {
   }
 }
 
-# Lager-Knoten (Hexagon)
+# Warehouse nodes (hexagon)
 fig <- fig %>% add_trace(
   x = lager_nodes$x, y = lager_nodes$y, text = lager_nodes$lbl,
   mode = "markers+text",
@@ -581,7 +584,7 @@ fig <- fig %>% add_trace(
   hoverinfo = "skip", showlegend = FALSE
 )
 
-# f_i links
+# f_i on the left
 fig <- fig %>% add_annotations(
   x = lager_nodes$x - 0.10, y = lager_nodes$y,
   xref = "x", yref = "y",
@@ -590,7 +593,7 @@ fig <- fig %>% add_annotations(
   xanchor = "right"
 )
 
-# Kunden-Knoten (Circle)
+# Customer nodes (circle)
 fig <- fig %>% add_trace(
   x = kunden_nodes$x, y = kunden_nodes$y, text = kunden_nodes$lbl,
   mode = "markers+text",
@@ -601,7 +604,7 @@ fig <- fig %>% add_trace(
   hoverinfo = "skip", showlegend = FALSE
 )
 
-# a_j rechts
+# a_j on the right
 fig <- fig %>% add_annotations(
   x = kunden_nodes$x + 0.08, y = kunden_nodes$y,
   xref = "x", yref = "y",
@@ -610,7 +613,7 @@ fig <- fig %>% add_annotations(
   xanchor = "left"
 )
 
-# Set-Labels
+# Set labels
 fig <- fig %>% add_annotations(
   x = c(0.20, 0.75), y = c(1.00, 1.00),
   xref = "x", yref = "y",
@@ -640,28 +643,29 @@ fig
 
 ## Warehouse Location Problem {#slide-wlp-model}
 ::: slide-subtitle
-Mathematisches Modell
+Mathematical model
 :::
 
 ::: columns
 ::: {.column width="55%"}
 
 ::: {.callout-tip appearance="simple" icon=false}
-#### Gemischt-ganzzahliges lineares Optimierungsmodell
-Minimiere die Gesamtkosten aus Transport und Standorteröffnung
+
+#### Mixed-integer linear programming model
+Minimise the total costs of transport and opening locations
 
 $$\min \rightarrow \sum_{i \in I} y_i \cdot f_i + \sum_{(i,j) \in E} x_{ij} \cdot c_{ij}$$
 :::
 
 ::: {.smaller-text}
 
-**Nebenbedingungen**
+**Constraints**
 $$
 \begin{align}
-  \sum_{(i,j) \in E} x_{ij} &= a_j          & \forall j \in J      &\quad\rightarrow \text{Nachfrage befriedigen} \\
-  x_{ij}                    &\leq y_i \cdot a_j & \forall (i,j) \in E &\quad\rightarrow \text{nur Transporte von eröffneten Standorten} \\
-  x_{ij}                    &\geq 0          & \forall (i,j) \in E &\quad\rightarrow \text{Transportmengen nicht negativ} \\
-  y_i                       &\in \{0,1\}     & \forall i \in I     &\quad\rightarrow \text{Standort wird eröffnet oder nicht}
+  \sum_{(i,j) \in E} x_{ij} &= a_j          & \forall j \in J      &\quad\rightarrow \text{satisfy demand} \\
+  x_{ij}                    &\leq y_i \cdot a_j & \forall (i,j) \in E &\quad\rightarrow \text{transport only from opened locations} \\
+  x_{ij}                    &\geq 0          & \forall (i,j) \in E &\quad\rightarrow \text{transport quantities non-negative} \\
+  y_i                       &\in \{0,1\}     & \forall i \in I     &\quad\rightarrow \text{location is opened or not}
 \end{align}
 $$
 :::
@@ -676,7 +680,7 @@ $$
 #| out-width: "99%"
 #| fig-height: 5
 
-# --- Koordinaten (normiert 0..1) ---
+# --- Coordinates (normalised 0..1) ---
 lager <- data.frame(
   id  = c("W1","W2","W3"),
   lbl = c("1","2","3"),
@@ -696,8 +700,8 @@ kunden <- data.frame(
 lxy <- setNames(lager[, c("x","y")],   c("x","y")); rownames(lxy) <- lager$id
 kxy <- setNames(kunden[, c("x","y")],  c("x","y")); rownames(kxy) <- kunden$id
 
-# Knotenradius in Plot-Koordinaten (angepasst an fig-Größe)
-r <- 0.058   # <-- ggf. leicht anpassen wenn Größe ändert
+# Node radius in plot coordinates (adjusted to fig size)
+r <- 0.058   # <-- adjust slightly if size changes
 
 edges <- data.frame(
   from = c("W3","W3","W2","W2","W2","W1"),
@@ -708,7 +712,7 @@ edges <- data.frame(
 
 fig <- plot_ly(type = "scatter", mode = "markers")
 
-# Kanten: Endpunkte auf Rand der Knoten verschieben
+# Edges: move end points to the node boundary
 for (i in seq_len(nrow(edges))) {
   x0 <- lxy[edges$from[i], "x"];  y0 <- lxy[edges$from[i], "y"]
   x1 <- kxy[edges$to[i],   "x"];  y1 <- kxy[edges$to[i],   "y"]
@@ -716,10 +720,10 @@ for (i in seq_len(nrow(edges))) {
   dx <- x1 - x0;  dy <- y1 - y0
   d  <- sqrt(dx^2 + dy^2)
 
-  # Startpunkt: r vom Lager-Mittelpunkt entfernt Richtung Kunde
+  # Start point: r away from the warehouse centre towards the customer
   ax <- x0 + r * dx / d
   ay <- y0 + r * dy / d
-  # Endpunkt:   r vom Kunden-Mittelpunkt entfernt Richtung Lager
+  # End point:   r away from the customer centre towards the warehouse
   ex <- x1 - r * dx / d
   ey <- y1 - r * dy / d
 
@@ -730,7 +734,7 @@ for (i in seq_len(nrow(edges))) {
     arrowwidth = 1.5, arrowcolor = "#4B4B4B", text = ""
   )
 
-  # Kanten-Label mittig
+  # Edge label centred
   if (nchar(edges$lbl[i]) > 0) {
     fig <- fig %>% add_annotations(
       x = (ax + ex) / 2 + 0.02, y = (ay + ey) / 2 + 0.025,
@@ -741,7 +745,7 @@ for (i in seq_len(nrow(edges))) {
   }
 }
 
-# Lager-Knoten (Hexagon)
+# Warehouse nodes (hexagon)
 fig <- fig %>% add_trace(
   x = lager$x, y = lager$y, text = lager$lbl,
   mode = "markers+text",
@@ -752,7 +756,7 @@ fig <- fig %>% add_trace(
   hoverinfo = "skip", showlegend = FALSE
 )
 
-# f_i links
+# f_i on the left
 fig <- fig %>% add_annotations(
   x = lager$x - 0.10, y = lager$y,
   xref = "x", yref = "y",
@@ -761,7 +765,7 @@ fig <- fig %>% add_annotations(
   xanchor = "right"
 )
 
-# Kunden-Knoten (Circle)
+# Customer nodes (circle)
 fig <- fig %>% add_trace(
   x = kunden$x, y = kunden$y, text = kunden$lbl,
   mode = "markers+text",
@@ -772,7 +776,7 @@ fig <- fig %>% add_trace(
   hoverinfo = "skip", showlegend = FALSE
 )
 
-# a_j rechts
+# a_j on the right
 fig <- fig %>% add_annotations(
   x = kunden$x + 0.08, y = kunden$y,
   xref = "x", yref = "y",
@@ -781,7 +785,7 @@ fig <- fig %>% add_annotations(
   xanchor = "left"
 )
 
-# Set-Labels
+# Set labels
 fig <- fig %>% add_annotations(
   x = c(0.20, 0.75), y = c(1.00, 1.00),
   xref = "x", yref = "y",
@@ -810,7 +814,7 @@ fig
 
 ## Warehouse Location Problem {#slide-wlp-example}
 ::: slide-subtitle
-Fallbeispiel
+Case example
 :::
 
 ```{r wlp-example-data}
@@ -818,20 +822,20 @@ Fallbeispiel
 #| warning: false
 #| message: false
 
-# Problemdaten: 3 Kandidatenstandorte, 6 Filialen (SushiFresh GmbH)
+# Problem data: 3 candidate locations, 6 stores (SushiFresh GmbH)
 wlp_lager <- data.frame(
   ID      = standorte$ID,
-  fi      = standorte$Kosten*1000,   # Fixkosten (EUR/Jahr)
+  fi      = standorte$Kosten*1000,   # Fixed costs (EUR/year)
   stringsAsFactors = FALSE
 )
 
 wlp_kunden <- data.frame(
   ID  = werke$ID,
-  aj  = werke$Bedarf*1000,   # Nachfrage (Boxen/Jahr)
+  aj  = werke$Bedarf*1000,   # Demand (boxes/year)
   stringsAsFactors = FALSE
 )
 
-# Transportkosten cij (EUR je Box, aus Distanz x 0,02 EUR/(Box*km))
+# Transport costs cij (EUR per box, from distance x 0.02 EUR/(box*km))
 wlp_cij <-df_dist*.02
 ```
 
@@ -839,28 +843,28 @@ wlp_cij <-df_dist*.02
 ::: {.column width="38%"}
 
 ::: small-text
-**Standorte – Fixkosten $f_i$ (€/Jahr)**
+**Locations – fixed costs $f_i$ (€/year)**
 
 ```{r}
 #| echo: false
 kbl(wlp_lager,
-    col.names = c("Standort i", "f_i (€)"),
+    col.names = c("Location i", "f_i (€)"),
     align = c("c","r"), escape = FALSE,
-    format.args = list(big.mark = " ")) |>
+    format.args = list(big.mark = ",")) |>
   kable_styling(bootstrap_options = c("condensed","striped"),
                 full_width = TRUE, font_size = 24) |>
   column_spec(1, bold = TRUE, background = "#2F3E46", color = "white") |>
   row_spec(0, background = "#2F3E46", color = "white", bold = TRUE)
 ```
 
-**Filialen – Nachfrage $a_j$ (Boxen/Jahr)**
+**Stores – demand $a_j$ (boxes/year)**
 
 ```{r}
 #| echo: false
 kbl(wlp_kunden,
-    col.names = c("Filiale j", "a_j"),
+    col.names = c("Store j", "a_j"),
     align = c("c","r"), escape = FALSE,
-    format.args = list(big.mark = " ")) |>
+    format.args = list(big.mark = ",")) |>
   kable_styling(bootstrap_options = c("condensed","striped"),
                 full_width = TRUE, font_size = 24) |>
   column_spec(1, bold = TRUE, background = "#2D9E8E", color = "white") |>
@@ -872,7 +876,7 @@ kbl(wlp_kunden,
 ::: {.column width="59%"}
 
 ::: small-text
-**Transportkosten $c_{ij}$ (€/Box)**
+**Transport costs $c_{ij}$ (€/box)**
 
 ```{r}
 #| echo: false
@@ -893,7 +897,7 @@ kbl(round(as.data.frame(wlp_cij), 3),
 
 ## Warehouse Location Problem {#slide-wlp-ompr}
 ::: slide-subtitle
-Implementierung mit R/OMPR
+Implementation with R/OMPR
 :::
 
 ::: columns
@@ -910,7 +914,7 @@ library(ompr)
 library(ompr.roi)
 library(ROI.plugin.glpk)
 
-# Problemdaten
+# Problem data
 n_I <- 5; n_J <- 6
 f   <- c(36000, 42000, 52000, 48000, 40000)
 a   <- c(120000, 150000, 280000, 90000, 110000, 95000)
@@ -923,23 +927,23 @@ c_ij <- matrix(
   	0.50226,	0.87512,	0.90576,	0.60740,	0.32042,	0.11400),
   nrow = n_I, byrow = TRUE)
 
-# MILP-Modell
+# MILP model
 model <- MIPModel() |>
-  # Variablen
+  # Variables
   add_variable(y[i], i = 1:n_I, type = "binary") |>
   add_variable(x[i,j], i = 1:n_I, j = 1:n_J,
                type = "continuous", lb = 0) |>
-  # Zielfunktion
+  # Objective function
   set_objective(
     sum_expr(f[i] * y[i], i = 1:n_I) +
     sum_expr(c_ij[i,j] * x[i,j],
              i = 1:n_I, j = 1:n_J),
     sense = "min") |>
-  # NB1: Nachfrage vollständig befriedigen
+  # C1: satisfy demand completely
   add_constraint(
     sum_expr(x[i,j], i = 1:n_I) == a[j],
     j = 1:n_J) |>
-  # NB2: Transport nur von eröffneten Lagern
+  # C2: transport only from opened warehouses
   add_constraint(
     x[i,j] <= y[i] * a[j],
     i = 1:n_I, j = 1:n_J)
@@ -952,14 +956,15 @@ result <- solve_model(model,
 ::: {.column width="42%"}
 
 ::: {.callout-note appearance="simple"}
-## OMPR – Workflow
 
-1. `MIPModel()` → leeres Modell
-2. `add_variable()` → Entscheidungsvariablen
-3. `set_objective()` → Zielfunktion
-4. `add_constraint()` → Nebenbedingungen
-5. `solve_model()` → Solver aufrufen
-6. `get_solution()` → Lösung extrahieren
+## OMPR – workflow
+
+1. `MIPModel()` → empty model
+2. `add_variable()` → decision variables
+3. `set_objective()` → objective function
+4. `add_constraint()` → constraints
+5. `solve_model()` → call solver
+6. `get_solution()` → extract solution
 :::
 
 ```{r wlp-ompr-result}
@@ -968,14 +973,14 @@ result <- solve_model(model,
 #| warning: false
 #| message: false
 
-# Optimale Lösung extrahieren
+# Extract optimal solution
 y_sol <- get_solution(result, y[i])
 x_sol <- get_solution(result, x[i,j])
 
-# Geöffnete Lager
+# Opened warehouses
 offene_lager <- y_sol$i[y_sol$value > 0.5]
 
-# Optimaler Zielfunktionswert
+# Optimal objective value
 obj_val <- objective_value(result)
 ```
 
@@ -987,7 +992,7 @@ obj_val <- objective_value(result)
 
 ## Warehouse Location Problem  {#slide-wlp-solution}
 ::: slide-subtitle
-Fallbeispiel – Optimale Lösung
+Case example – optimal solution
 :::
 
 ::: columns
@@ -998,7 +1003,7 @@ Fallbeispiel – Optimale Lösung
 #| warning: false
 #| message: false
 
-# Zuordnungstabelle aufbereiten
+# Prepare assignment table
 zuordnung <- x_sol |>
   dplyr::filter(value > 0.001) |>
   dplyr::mutate(
@@ -1010,10 +1015,10 @@ zuordnung <- x_sol |>
   dplyr::select(Lager, Kunde, Menge, Kosten)
 
 kbl(zuordnung,
-    col.names = c("Standort $i$","Filiale $j$",
-                  "Menge $x_{ij}$ (Boxen)","Transportkosten (€)"),
+    col.names = c("Location $i$","Store $j$",
+                  "Quantity $x_{ij}$ (boxes)","Transport costs (€)"),
     align = c("c","c","r","r"), escape = F,
-    format.args = list(big.mark = " ")) |>
+    format.args = list(big.mark = ",")) |>
   kable_styling(bootstrap_options = c("condensed","striped"),
                 full_width = TRUE, font_size = 24) |>
   column_spec(1, bold = TRUE, background = "#2F3E46", color = "white") |>
@@ -1030,14 +1035,14 @@ eroeffnung  <- sum(f[offene_lager])
 transport   <- sum(zuordnung$Kosten)
 
 kosten_df <- data.frame(
-  Kostenart = c("Fixkosten", "Transportkosten", "Gesamtkosten Z*"),
+  Kostenart = c("Fixed costs", "Transport costs", "Total costs Z*"),
   Wert      = c(eroeffnung, transport, round(obj_val, 1))
 )
 
 kbl(kosten_df,
-    col.names = c("Kostenart", "€/Jahr"),
+    col.names = c("Cost type", "€/year"),
     align = c("l","r"),
-    format.args = list(big.mark = " ")) |>
+    format.args = list(big.mark = ",")) |>
   kable_styling(bootstrap_options = c("condensed"),
                 full_width = TRUE, font_size = 24) |>
   row_spec(3, bold = TRUE, background = "#2F3E46", color = "white") |>
@@ -1076,11 +1081,11 @@ r2 <- 0.048
 
 fig2 <- plot_ly(type = "scatter", mode = "markers")
 
-# Aktive Kanten
+# Active edges
 active_edges <- x_sol |> dplyr::filter(value > 0.001) |>
   dplyr::mutate(from = paste0("S", i), to = paste0("C", j))
 
-# Alle möglichen Kanten (dünn, grau)
+# All possible edges (thin, grey)
 for (ii in 1:nrow(standorte)) for (jj in 1:nrow(werke)) {
   wi <- paste0("S", ii); cj <- paste0("C", jj)
   x0 <- lxy2[wi,"x"]; y0 <- lxy2[wi,"y"]
@@ -1095,7 +1100,7 @@ for (ii in 1:nrow(standorte)) for (jj in 1:nrow(werke)) {
     arrowwidth=0.8,arrowcolor="#D0D5DD",text="")
 }
 
-# Aktive Kanten (fett, farbig)
+# Active edges (bold, coloured)
 for (k in seq_len(nrow(active_edges))) {
   wi <- active_edges$from[k]; cj <- active_edges$to[k]
   x0 <- lxy2[wi,"x"]; y0 <- lxy2[wi,"y"]
@@ -1116,7 +1121,7 @@ for (k in seq_len(nrow(active_edges))) {
     font=list(size=11,color="#01696f",family="Arial"))
 }
 
-# Lagerpunkte
+# Warehouse points
 lager_col <- ifelse(lager_pos$open, "#BFDBF7", "#E8E8E8")
 lager_brd <- ifelse(lager_pos$open, "#4B5563", "#B0B0B0")
 fig2 <- fig2 %>% add_trace(
@@ -1129,7 +1134,7 @@ fig2 <- fig2 %>% add_trace(
   textposition="middle center",
   hoverinfo="skip",showlegend=FALSE)
 
-# Öffnungs-Label
+# Opening label
 fig2 <- fig2 %>% add_annotations(
   x=lager_pos$x - 0.09, y=lager_pos$y,
   xref="x",yref="y",
@@ -1142,7 +1147,7 @@ fig2 <- fig2 %>% add_annotations(
             family="Arial"),
   xanchor="right")
 
-# Kundenpunkte
+# Customer points
 fig2 <- fig2 %>% add_trace(
   x=kunden_pos$x, y=kunden_pos$y, text=kunden_pos$id,
   mode="markers+text",
@@ -1179,26 +1184,27 @@ fig2
 
 ## Warehouse Location Problem {#slide-heuristics-intro}
 ::: slide-subtitle
-Heuristische Lösungsverfahren - Grundideen
+Heuristic solution methods – basic ideas
 :::
 
 ::: columns
 ::: {.column width="55%"}
 
 ::: {.callout-warning appearance="simple"}
-## Warum Heuristiken?
 
-Das WLP ist **NP-schwer**: exakte Solver (MILP) finden zwar optimale Lösungen, aber die Rechenzeit wächst exponentiell mit $|I|$ und $|J|$. Für große Praxisinstanzen sind **konstruktive Heuristiken** oft der einzig praktikable Ansatz.
+## Why heuristics?
+
+The WLP is **NP-hard**: exact solvers (MILP) do find optimal solutions, but the computing time grows exponentially with $|I|$ and $|J|$. For large real-world instances, **constructive heuristics** are often the only practicable approach.
 :::
 
 :::: {.fragment .fade-up}
 ::: {.small-text}
-**Grundidee**
+**Basic idea**
 
-- start mit einer zulässigen Lösung und versuche diese schrittweise zu verbessern
-- Jeder Schritt: **greedy** – wähle die Änderung mit der größten Kostenreduktion
-- Abbruch, wenn keine weitere Verbesserung möglich
-- Kunden werden stets dem **günstigsten offenen Lager** zugeordnet
+- start with a feasible solution and try to improve it step by step
+- Each step: **greedy** – choose the change with the largest cost reduction
+- Stop when no further improvement is possible
+- Customers are always assigned to the **cheapest open warehouse**
 :::
 ::::
 
@@ -1207,18 +1213,18 @@ Das WLP ist **NP-schwer**: exakte Solver (MILP) finden zwar optimale Lösungen, 
 
 ::: {.fragment .fade-up}
 ::: {.smaller-text}
-**Zwei klassische Ansätze**
+**Two classic approaches**
 
-| Methode | Ausgangspunkt | Richtung |
+| Method | Starting point | Direction |
 |---|---|---|
-| **Add-Heuristik** | Keine Lager offen | Schrittweise hinzufügen |
-| **Drop-Heuristik** | Alle Lager offen | Schrittweise schließen |
+| **Add heuristic** | No warehouses open | Add step by step |
+| **Drop heuristic** | All warehouses open | Close step by step |
 :::
 :::
 
 ::: {.fragment .fade-up}
 ::: {.smaller-text}
-**Grundideen Add/Drop - graphisch**
+**Basic ideas of add/drop – graphical**
 :::
 ```{r heuristic-overview-plot}
 #| echo: false
@@ -1227,25 +1233,25 @@ Das WLP ist **NP-schwer**: exakte Solver (MILP) finden zwar optimale Lösungen, 
 #| out-width: "99%"
 #| fig-height: 5
 
-# Kostenkurve Add- vs. Drop-Verlauf (reale Werte des SushiFresh-Fallbeispiels,
-# T€/Jahr)
+# Cost curve add vs. drop progression (actual values from the SushiFresh case example,
+# k€/year)
 fig_h <- plot_ly()
 
-# Add-Kurve: startet leer, oeffnet direkt S1 (Wiesbaden-Erbenheim) -> Optimum
+# Add curve: starts empty, opens S1 (Wiesbaden-Erbenheim) directly -> optimum
 fig_h <- fig_h %>% add_trace(
   x = c(1, 2), y = c(269, 262),
   type = "scatter", mode = "lines+markers",
-  name = "Add-Heuristik",
+  name = "Add heuristic",
   line   = list(color = "#01696f", width = 2.5),
   marker = list(color = "#01696f", size = 10)
 )
 
-# Drop-Kurve: startet mit allen 3 Standorten offen, schliesst Raunheim, dann
-# Mainz-Hechtsheim -> selbes Optimum
+# Drop curve: starts with all 3 locations open, closes Raunheim, then
+# Mainz-Hechtsheim -> same optimum
 fig_h <- fig_h %>% add_trace(
   x = c(5,4,3, 2), y = c(388, 340 ,300, 262),
   type = "scatter", mode = "lines+markers",
-  name = "Drop-Heuristik",
+  name = "Drop heuristic",
   line   = list(color = "#da7101", width = 2.5, dash = "dash"),
   marker = list(color = "#da7101", size = 10)
 )
@@ -1259,9 +1265,9 @@ fig_h <- fig_h %>% add_trace(
 )
 
 fig_h <- fig_h %>% layout(
-  xaxis = list(title = "Anzahl offener Standorte", dtick = 1,
+  xaxis = list(title = "Number of open locations", dtick = 1,
                range = c(0.5, 5.5)),
-  yaxis = list(title = "Gesamtkosten (T€/Jahr)",
+  yaxis = list(title = "Total costs (k€/year)",
                range = c(250, 760)),
   legend = list(orientation = "h", y = -0.2),
   plot_bgcolor  = "transparent",
@@ -1281,36 +1287,36 @@ fig_h
 
 ## Warehouse Location Problem {#slide-add-heuristic}
 ::: slide-subtitle
-Add-Heuristik
+Add heuristic
 :::
 
 ::: columns
 ::: {.column width="52%"}
 
 ::: {.callout-note appearance="minimal" icon=false}
-**Idee:** Starte ohne geöffnetes Lager. Füge in jedem Schritt dasjenige Lager $i^*$ hinzu, das die Gesamtkosten am stärksten **reduziert**.
+**Idea:** Start with no open warehouse. In each step, add the warehouse $i^*$ that **reduces** the total costs the most.
 :::
 
 ::: {.fragment .fade-up}
 
-**Algorithmus**
+**Algorithm**
 
 ::: {.smaller-text}
 
-**Initialisierung:** $S \leftarrow \emptyset$
+**Initialisation:** $S \leftarrow \emptyset$
 
-**Wiederhole:**
+**Repeat:**
 
-1. Berechne für jedes noch nicht geöffnete Lager $i \notin S$ den Kostenbeitrag:
+1. For each warehouse not yet opened $i \notin S$, calculate the cost contribution:
 $$\Delta_i = Z(S) - Z(S \cup \{i\})$$
 
-2. Wähle $i^* = \arg\max_{i \notin S} \Delta_i$
+2. Choose $i^* = \arg\max_{i \notin S} \Delta_i$
 
-3. **Falls** $\Delta_{i^*} > 0$: öffne $i^*$, setze $S \leftarrow S \cup \{i^*\}$
+3. **If** $\Delta_{i^*} > 0$: open $i^*$, set $S \leftarrow S \cup \{i^*\}$
 
-4. **Sonst:** Abbruch
+4. **Otherwise:** stop
 
-**Zuordnungsregel:** Jeder Kunde $j$ wird dem günstigsten offenen Lager zugeordnet:
+**Assignment rule:** Each customer $j$ is assigned to the cheapest open warehouse:
 $\sigma(j) = \arg\min_{i \in S} c_{ij}$
 :::
 :::
@@ -1320,22 +1326,24 @@ $\sigma(j) = \arg\min_{i \in S} c_{ij}$
 
 ::: {.fragment .fade-up}
 ::: {.callout-tip appearance="simple"}
-## Kostenberechnung
 
-$$Z(S) = \underbrace{\sum_{i \in S} f_i}_{\text{Eröffnung}} + \underbrace{\sum_{j \in J} \min_{i \in S} c_{ij} \cdot a_j}_{\text{Transport}}$$
+## Cost calculation
 
-- **Eigenschaft:** 
-  - Greedy, nicht garantiert optimal
-  - Transportkosten sinken von Schritt zu Schritt
-  - neues Lager wird eröffnet, wenn Eröffnungskosten < Transportkosteneinsparungen
+$$Z(S) = \underbrace{\sum_{i \in S} f_i}_{\text{Opening}} + \underbrace{\sum_{j \in J} \min_{i \in S} c_{ij} \cdot a_j}_{\text{Transport}}$$
+
+- **Properties:**
+  - Greedy, not guaranteed to be optimal
+  - Transport costs decrease from step to step
+  - A new warehouse is opened if opening costs < transport cost savings
 :::
 :::
 
 ::: {.fragment .fade-up}
 ::: {.callout-warning appearance="simple"}
-## Abbruchbedingung
 
-Die Heuristik stoppt, sobald **kein** weiteres Lager die Gesamtkosten senkt.
+## Stopping condition
+
+The heuristic stops as soon as **no** further warehouse reduces the total costs.
 :::
 :::
 
@@ -1346,34 +1354,34 @@ Die Heuristik stoppt, sobald **kein** weiteres Lager die Gesamtkosten senkt.
 
 ## Warehouse Location Problem {#slide-drop-heuristic}
 ::: slide-subtitle
-Drop-Heuristik
+Drop heuristic
 :::
 
 ::: columns
 ::: {.column width="52%"}
 
 ::: {.callout-note appearance="minimal" icon=false}
-**Idee:** Starte mit **allen** Lagern geöffnet. Schließe in jedem Schritt dasjenige Lager $i^*$, dessen Schließung die Gesamtkosten am stärksten **reduziert**.
+**Idea:** Start with **all** warehouses open. In each step, close the warehouse $i^*$ whose closure **reduces** the total costs the most.
 :::
 
 ::: {.fragment .fade-up}
-**Algorithmus**
+**Algorithm**
 
 ::: {.smaller-text}
-**Initialisierung:** $S \leftarrow I$
+**Initialisation:** $S \leftarrow I$
 
-**Wiederhole:**
+**Repeat:**
 
-1. Berechne für jedes noch geöffnete Lager $i \in S$ den Kostenbeitrag:
+1. For each warehouse still open $i \in S$, calculate the cost contribution:
 $$\Delta_i = Z(S) - Z(S \setminus \{i\})$$
 
-2. Wähle $i^* = \arg\max_{i \in S} \Delta_i$
+2. Choose $i^* = \arg\max_{i \in S} \Delta_i$
 
-3. **Falls** $\Delta_{i^*} > 0$: schließe $i^*$, setze $S \leftarrow S \setminus \{i^*\}$
+3. **If** $\Delta_{i^*} > 0$: close $i^*$, set $S \leftarrow S \setminus \{i^*\}$
 
-4. **Sonst:** Abbruch
+4. **Otherwise:** stop
 
-**Zuordnungsregel:** $\sigma(j) = \arg\min_{i \in S} c_{ij}$
+**Assignment rule:** $\sigma(j) = \arg\min_{i \in S} c_{ij}$
 :::
 :::
 :::
@@ -1381,24 +1389,26 @@ $$\Delta_i = Z(S) - Z(S \setminus \{i\})$$
 
 ::: {.fragment .fade-up}
 ::: {.callout-tip appearance="simple"}
-## Vergleich mit Add-Heuristik
 
-| Merkmal | Add | Drop |
+## Comparison with add heuristic
+
+| Feature | Add | Drop |
 |---|---|---|
 | **Start** | $S = \emptyset$ | $S = I$ |
-| **Richtung** | aufbauend | abbauend |
-| **Startkosten** | $\infty$ (kein Lager) | $\sum_i f_i + \ldots$ |
-| **Laufzeit** | $\mathcal{O}(|I|^2 \cdot |J|)$ | $\mathcal{O}(|I|^2 \cdot |J|)$ |
-| **Tendenz** | wenige Lager | mehr Lager |
+| **Direction** | constructive | destructive |
+| **Starting costs** | $\infty$ (no warehouse) | $\sum_i f_i + \ldots$ |
+| **Running time** | $\mathcal{O}(|I|^2 \cdot |J|)$ | $\mathcal{O}(|I|^2 \cdot |J|)$ |
+| **Tendency** | few warehouses | more warehouses |
 
 :::
 :::
 
 ::: {.fragment .fade-up}
 ::: {.callout-warning appearance="simple"}
-## Wichtig
 
-Beide Heuristiken sind **nicht garantiert optimal**. Sie liefern zulässige Lösungen, die Lösungsqualität hängt stark von der Kostenstruktur der Instanz ab.
+## Important
+
+Neither heuristic is **guaranteed to be optimal**. They deliver feasible solutions; the solution quality depends heavily on the cost structure of the instance.
 :::
 :::
 
@@ -1409,7 +1419,7 @@ Beide Heuristiken sind **nicht garantiert optimal**. Sie liefern zulässige Lös
 
 ## Warehouse Location Problem {#slide-add-example}
 ::: slide-subtitle
-Add-Heuristik – Fallbeispiel
+Add heuristic – case example
 :::
 
 ```{r add-heuristic-compute}
@@ -1417,7 +1427,7 @@ Add-Heuristik – Fallbeispiel
 #| warning: false
 #| message: false
 
-# Problemdaten (identisch zu slide-wlp-example)
+# Problem data (identical to slide-wlp-example)
 n_I  <- nrow(standorte); n_J <- nrow(werke)
 f_h  <- standorte$Kosten*1000 # c(180000, 210000, 260000)
 a_h  <- werke$Bedarf*1000 # c(43800, 54750, 102200, 32850, 40150, 34675)
@@ -1439,7 +1449,7 @@ best_assign <- function(S) {
   sapply(1:n_J, function(j) S[which.min(c_h[S, j])])
 }
 
-# Add-Heuristik durchführen
+# Run add heuristic
 S_add_h  <- integer(0)
 rem_h    <- 1:n_I
 add_log  <- list()
@@ -1448,10 +1458,10 @@ repeat {
   cur_cost  <- total_cost_h(S_add_h)
   cand_cost <- sapply(rem_h, function(i) total_cost_h(c(S_add_h, i)))
   gains     <- cur_cost - cand_cost
-  # Auswahl über die resultierenden Gesamtkosten (robust auch wenn
-  # cur_cost = Inf ist, d.h. im allerersten Schritt: dort sind alle
-  # Differenzen zu Inf gleich "Inf" und which.max(gains) waere nur
-  # Zufall der Reihenfolge in rem_h)
+  # Selection based on the resulting total costs (robust even if
+  # cur_cost = Inf, i.e. in the very first step: there all
+  # differences to Inf are equal to "Inf" and which.max(gains) would only
+  # be a coincidence of the order in rem_h)
   best_idx  <- which.min(cand_cost)
   best_gain <- gains[best_idx]
   best_i    <- rem_h[best_idx]
@@ -1497,10 +1507,10 @@ add_df <- do.call(rbind, lapply(add_log, function(s) {
 }))
 
 kbl(add_df[, c("Schritt","Aktion","Offen","Fix","Transport","Gesamt")],
-    col.names = c("Schritt","Aktion","Offene Standorte",
-                  "Fixkosten (€)","Transport (€)","Gesamt (€)"),
+    col.names = c("Step","Action","Open locations",
+                  "Fixed costs (€)","Transport (€)","Total (€)"),
     align = c("c","c","l","r","r","r"),
-    format.args = list(big.mark = " ")) |>
+    format.args = list(big.mark = ",")) |>
   kable_styling(bootstrap_options = c("condensed","striped"),
                 full_width = TRUE, font_size = 24) |>
   column_spec(1, bold = TRUE, background = "#2F3E46", color = "white") |>
@@ -1509,7 +1519,7 @@ kbl(add_df[, c("Schritt","Aktion","Offen","Fix","Transport","Gesamt")],
   row_spec(0, background = "#2F3E46", color = "white", bold = TRUE)
 ```
 
-**Filialzuordnung je Schritt:**
+**Store assignment per step:**
 
 ```{r add-assign-table}
 #| echo: false
@@ -1523,7 +1533,7 @@ assign_df <- do.call(rbind, lapply(add_log, function(s) {
 }))
 
 kbl(assign_df,
-    col.names = c("Schritt", paste0("C", 1:n_J)),
+    col.names = c("Step", paste0("C", 1:n_J)),
     align = c("c", rep("c", n_J))) |>
   kable_styling(bootstrap_options = c("condensed","striped"),
                 full_width = TRUE, font_size = 24) |>
@@ -1532,7 +1542,7 @@ kbl(assign_df,
 ```
 
 ::: {.callout-tip appearance="simple"}
-**Ergebnis Add-Heuristik:** Standort $\{`r paste0("S", sort(S_add_h), collapse=", ")`\}$ geöffnet, $Z_\text{Add} = `r format(round(total_cost_h(S_add_h), 1), big.mark=" ")`$ €/Jahr
+**Add heuristic result:** location $\{`r paste0("S", sort(S_add_h), collapse=", ")`\}$ opened, $Z_\text{Add} = `r format(round(total_cost_h(S_add_h), 1), big.mark=" ")`$ €/year
 :::
 :::
 
@@ -1603,7 +1613,7 @@ fig_a <- fig_a %>% add_trace(
   textposition="middle center",hoverinfo="skip",showlegend=FALSE)
 fig_a <- fig_a %>% add_annotations(
   x=lp_add$x-0.09, y=lp_add$y, xref="x",yref="y",
-  text=ifelse(lp_add$open, paste0("f=",round(f_h/1000),"T€ ✓"), paste0("f=",round(f_h/1000),"T€")),
+  text=ifelse(lp_add$open, paste0("f=",round(f_h/1000),"k€ ✓"), paste0("f=",round(f_h/1000),"k€")),
   showarrow=FALSE,
   font=list(size=11,color=ifelse(lp_add$open,"#01696f","#9CA3AF"),family="Arial"),
   xanchor="right")
@@ -1634,7 +1644,7 @@ fig_a
 
 ## Warehouse Location Problem {#slide-drop-example}
 ::: slide-subtitle
-Drop-Heuristik – Fallbeispiel
+Drop heuristic – case example
 :::
 
 ```{r drop-heuristic-compute}
@@ -1645,7 +1655,7 @@ Drop-Heuristik – Fallbeispiel
 S_drop_h  <- 1:n_I
 drop_log  <- list()
 
-# Startzeile
+# Starting row
 fix0   <- sum(f_h[S_drop_h])
 tr0    <- total_cost_h(S_drop_h) - fix0
 drop_log[[1]] <- list(
@@ -1708,10 +1718,10 @@ drop_df <- do.call(rbind, lapply(drop_log, function(s) {
 }))
 
 kbl(drop_df,
-    col.names = c("Schritt","Aktion","Offene Standorte",
-                  "Fixkosten (€)","Transport (€)","Gesamt (€)"),
+    col.names = c("Step","Action","Open locations",
+                  "Fixed costs (€)","Transport (€)","Total (€)"),
     align = c("c","c","l","r","r","r"),
-    format.args = list(big.mark = " ")) |>
+    format.args = list(big.mark = ",")) |>
   kable_styling(bootstrap_options = c("condensed","striped"),
                 full_width = TRUE, font_size = 24) |>
   column_spec(1, bold = TRUE, background = "#2F3E46", color = "white") |>
@@ -1721,7 +1731,7 @@ kbl(drop_df,
   row_spec(1, italic = TRUE, color = "#6B7280")
 ```
 
-**Filialzuordnung je Schritt:**
+**Store assignment per step:**
 
 ```{r drop-assign-table}
 #| echo: false
@@ -1735,7 +1745,7 @@ assign_drop_df <- do.call(rbind, lapply(drop_log, function(s) {
 }))
 
 kbl(assign_drop_df,
-    col.names = c("Schritt", paste0("C", 1:n_J)),
+    col.names = c("Step", paste0("C", 1:n_J)),
     align = c("c", rep("c", n_J))) |>
   kable_styling(bootstrap_options = c("condensed","striped"),
                 full_width = TRUE, font_size = 24) |>
@@ -1745,7 +1755,7 @@ kbl(assign_drop_df,
 ```
 
 ::: {.callout-tip appearance="simple"}
-**Ergebnis Drop-Heuristik:** Standort $\{`r paste0("S", sort(S_drop_h), collapse=", ")`\}$ geöffnet, $Z_\text{Drop} = `r format(round(total_cost_h(S_drop_h), 1), big.mark=" ")`$ €/Jahr — **identisch zum Ergebnis der Add-Heuristik!**
+**Drop heuristic result:** location $\{`r paste0("S", sort(S_drop_h), collapse=", ")`\}$ opened, $Z_\text{Drop} = `r format(round(total_cost_h(S_drop_h), 1), big.mark=" ")`$ €/year — **identical to the result of the add heuristic!**
 :::
 :::
 
@@ -1815,7 +1825,7 @@ fig_d <- fig_d %>% add_trace(
   textposition="middle center",hoverinfo="skip",showlegend=FALSE)
 fig_d <- fig_d %>% add_annotations(
   x=lp_drop$x-0.09, y=lp_drop$y, xref="x",yref="y",
-  text=ifelse(lp_drop$open, paste0("f=",round(f_h/1000),"T€ ✓"), paste0("f=",round(f_h/1000),"T€")),
+  text=ifelse(lp_drop$open, paste0("f=",round(f_h/1000),"k€ ✓"), paste0("f=",round(f_h/1000),"k€")),
   showarrow=FALSE,
   font=list(size=11,color=ifelse(lp_drop$open,"#da7101","#9CA3AF"),family="Arial"),
   xanchor="right")
@@ -1846,7 +1856,7 @@ fig_d
 
 ## Warehouse Location Problem {#slide-heuristic-comparison}
 ::: slide-subtitle
-Lösungsvergleich 
+Comparison of solutions
 :::
 
 ```{r comparison-compute}
@@ -1854,8 +1864,8 @@ Lösungsvergleich
 #| warning: false
 #| message: false
 
-# Alle Lösungsdaten zusammenführen
-cost_opt_val  <- total_cost_h(offene_lager) 
+# Merge all solution data
+cost_opt_val  <- total_cost_h(offene_lager)
 cost_add_val  <- total_cost_h(S_add_h)
 cost_drop_val <- total_cost_h(S_drop_h)
 
@@ -1884,12 +1894,12 @@ gap_drop <- round((cost_drop_val / cost_opt_val - 1) * 100, 2)
 
 comp_df <- data.frame(
   Kennzahl = c(
-    "Geöffnete Standorte",
-    "Anzahl Standorte",
-    "Fixkosten (€)",
-    "Transportkosten (€)",
-    "Gesamtkosten Z (€)",
-    "Gap zum Optimum (%)"
+    "Opened locations",
+    "Number of locations",
+    "Fixed costs (€)",
+    "Transport costs (€)",
+    "Total costs Z (€)",
+    "Gap to optimum (%)"
   ),
   Optimum = c(
     paste0("S", sort(offene_lager), collapse=", "),
@@ -1905,7 +1915,7 @@ comp_df <- data.frame(
     fix_add,
     round(tr_add, 1),
     round(cost_add_val, 1),
-    paste0(gap_add, " %")
+    paste0(gap_add, "%")
   ),
   Drop = c(
     paste0("S", sort(S_drop_h), collapse=", "),
@@ -1913,14 +1923,14 @@ comp_df <- data.frame(
     fix_drop,
     round(tr_drop, 1),
     round(cost_drop_val, 1),
-    paste0(gap_drop, " %")
+    paste0(gap_drop, "%")
   )
 )
 
 kbl(comp_df,
-    col.names = c("Kennzahl", "Optimum (MILP)", "Add-Heuristik", "Drop-Heuristik"),
+    col.names = c("Metric", "Optimum (MILP)", "Add heuristic", "Drop heuristic"),
     align = c("l","c","c","c"), escape = FALSE,
-    format.args = list(big.mark = " ")) |>
+    format.args = list(big.mark = ",")) |>
   kable_styling(bootstrap_options = c("condensed","striped"),
                 full_width = TRUE, font_size = 24) |>
   column_spec(1, bold = FALSE) |>
@@ -1932,13 +1942,13 @@ kbl(comp_df,
 ```
 
 ::: {.callout-note appearance="simple"}
-In diesem Fallbeispiel finden **Add-Heuristik und Drop-Heuristik unabhängig voneinander** dieselbe, **nachweislich optimale Lösung** ($Z = `r format(round(cost_add_val,1), big.mark=" ")`$ €/Jahr, nur Standort S1 = Wiesbaden-Erbenheim). Das ist keine Selbstverständlichkeit, zeigt hier aber den eindeutigen Kostenvorteil dieses Standorts.
+In this case example, the **add heuristic and the drop heuristic independently** find the same, **provably optimal solution** ($Z = `r format(round(cost_add_val,1), big.mark=" ")`$ €/year, only location S1 = Wiesbaden-Erbenheim). This is by no means a given, but here it shows the clear cost advantage of this location.
 :::
 
 :::
 ::: {.column width="48%"}
 
-**Kostenvergleich**
+**Cost comparison**
 
 ```{r comparison-bar}
 #| echo: false
@@ -1947,7 +1957,7 @@ In diesem Fallbeispiel finden **Add-Heuristik und Drop-Heuristik unabhängig von
 #| out-width: "99%"
 #| fig-height: 4.5
 
-methoden  <- c("Optimum (MILP)", "Add-Heuristik", "Drop-Heuristik")
+methoden  <- c("Optimum (MILP)", "Add heuristic", "Drop heuristic")
 fix_vals  <- round(c(fix_opt,  fix_add,  fix_drop) / 1000, 1)
 tr_vals   <- round(c(tr_opt, tr_add, tr_drop) / 1000, 1)
 farben_fix <- c("#a12c7b", "#01696f", "#da7101")
@@ -1956,26 +1966,26 @@ farben_tr  <- c("#d163a7", "#4f98a3", "#fdab43")
 fig_bar <- plot_ly()
 
 fig_bar <- fig_bar %>% add_trace(
-  x = methoden, y = fix_vals, type = "bar", name = "Fixkosten",
+  x = methoden, y = fix_vals, type = "bar", name = "Fixed costs",
   marker = list(color = farben_fix),
-  text = paste0(fix_vals, " T€"), textposition = "inside",
+  text = paste0(fix_vals, " k€"), textposition = "inside",
   insidetextanchor = "middle",
   textfont = list(color = "white", size = 13, family = "Arial")
 )
 
 fig_bar <- fig_bar %>% add_trace(
-  x = methoden, y = tr_vals, type = "bar", name = "Transportkosten",
+  x = methoden, y = tr_vals, type = "bar", name = "Transport costs",
   marker = list(color = farben_tr),
-  text = paste0(tr_vals, " T€"), textposition = "inside",
+  text = paste0(tr_vals, " k€"), textposition = "inside",
   insidetextanchor = "middle",
   textfont = list(color = "white", size = 13, family = "Arial")
 )
 
-# Gesamtkosten-Label oben
+# Total cost label on top
 total_vals <- fix_vals + tr_vals
 fig_bar <- fig_bar %>% add_annotations(
   x = methoden, y = total_vals + 12,
-  text = paste0("<b>", total_vals, " T€</b>"),
+  text = paste0("<b>", total_vals, " k€</b>"),
   showarrow = FALSE,
   font = list(size = 14, color = "#1F2933", family = "Arial")
 )
@@ -1983,7 +1993,7 @@ fig_bar <- fig_bar %>% add_annotations(
 fig_bar <- fig_bar %>% layout(
   barmode = "stack",
   xaxis   = list(title = ""),
-  yaxis   = list(title = "Kosten (T€/Jahr)", range = c(0, max(total_vals) * 1.15)),
+  yaxis   = list(title = "Costs (k€/year)", range = c(0, max(total_vals) * 1.15)),
   legend  = list(orientation = "h", y = -0.18),
   plot_bgcolor  = "transparent",
   paper_bgcolor = "transparent",
@@ -1999,18 +2009,19 @@ fig_bar
 
 ---
 
-## Qualitative vs. quantitative Standortbewertung {#slide-ahp-vs-wlp}
+## Qualitative vs. Quantitative Location Assessment {#slide-ahp-vs-wlp}
 ::: slide-subtitle
-Diskussion
+Discussion
 :::
 
 ::: columns
 ::: {.column width="52%"}
 
 ::: {.callout-warning appearance="simple"}
-## Widerspruch zu Kapitel 4?
 
-Die **AHP-Analyse** aus Kapitel 4 favorisierte knapp **Mainz-Hechtsheim**. Die **quantitative WLP-Analyse** dieses Kapitels favorisiert **Wiesbaden-Erbenheim** und **Raunheim**. Wie passt das zusammen?
+## A contradiction with Chapter 4?
+
+The **AHP analysis** in Chapter 4 narrowly favoured **Mainz-Hechtsheim**. The **quantitative WLP analysis** in this chapter favours **Wiesbaden-Erbenheim** and **Raunheim**. How do these fit together?
 :::
 
 ::: {.fragment .fade-up}
@@ -2028,10 +2039,10 @@ vergleich_ahp <- data.frame(
   dplyr::mutate(Gesamt = Fixkosten + Transport)
 
 kbl(vergleich_ahp,
-    col.names = c("Standort (Einzelbetrieb)", "Fixkosten (€)",
-                  "Transport (€/Jahr)", "Gesamt (€/Jahr)"),
+    col.names = c("Location (single site)", "Fixed costs (€)",
+                  "Transport (€/year)", "Total (€/year)"),
     align = c("l","r","r","r"),
-    format.args = list(big.mark = " ")) |>
+    format.args = list(big.mark = ",")) |>
   kable_styling(bootstrap_options = c("condensed","striped"),
                 full_width = TRUE, font_size = 22) |>
   row_spec(0, background = "#2F3E46", color = "white", bold = TRUE)
@@ -2039,7 +2050,7 @@ kbl(vergleich_ahp,
 :::
 
 ::: {.fragment .fade-up}
-Raunheim und Wiesbaden-Erbenheim sind transportkostengünstiger, die Einsparungen kompensieren die höheren Fixkosten.
+Raunheim and Wiesbaden-Erbenheim have lower transport costs; the savings compensate for the higher fixed costs.
 :::
 
 :::
@@ -2047,19 +2058,21 @@ Raunheim und Wiesbaden-Erbenheim sind transportkostengünstiger, die Einsparunge
 
 ::: {.fragment .fade-up}
 ::: {.callout-tip appearance="simple"}
-## Fazit
 
-- **AHP (Kapitel 4):** gut für erste **Vorauswahl** unter schwer quantifizierbaren, weichen Kriterien
-- **WLP (Kapitel 5):** liefert die belastbare **Kostenentscheidung**, sobald harte Zahlen vorliegen
-- Beide Verfahren **ergänzen** sich – keines ersetzt das andere
+## Conclusion
+
+- **AHP (Chapter 4):** good for an initial **pre-selection** based on soft criteria that are hard to quantify
+- **WLP (Chapter 5):** delivers the robust **cost-based decision** once hard figures are available
+- The two methods **complement** each other – neither replaces the other
 :::
 :::
 
 ::: {.fragment .fade-up}
 ::: {.callout-note appearance="simple"}
-## Entscheidung SushiFresh
 
-Konsolidierung des Produktionsstandorts auf **Wiesbaden-Erbenheim**. Diese Entscheidung wird in Kapitel 6 (Pooling) und Kapitel 8 (Bullwhip-Effekt) wieder aufgegriffen.
+## SushiFresh decision
+
+Consolidation of the production site at **Wiesbaden-Erbenheim**. This decision is revisited in Chapter 6 (risk pooling) and Chapter 8 (bullwhip effect).
 :::
 :::
 

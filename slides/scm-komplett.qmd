@@ -1,6 +1,6 @@
 ---
 title: "Supply Chain Management"
-subtitle: "Wintersemester 26/27"
+subtitle: "Winter semester 2026/27"
 author: "Thomas Kirschstein"
 
 execute:

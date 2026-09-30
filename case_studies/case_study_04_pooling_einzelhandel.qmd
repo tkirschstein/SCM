@@ -1,8 +1,8 @@
 ---
-title: "Fallstudie 4: Risk Pooling im E-Commerce"
-subtitle: "Zentral- oder Regionallager für einen brasilianischen Online-Marktplatz (Olist-Daten)"
-author: "Supply Chain Management – Gruppenarbeit"
-lang: de
+title: "Case Study 4: Risk Pooling in E-Commerce"
+subtitle: "Central or regional warehouses for a Brazilian online marketplace (Olist data)"
+author: "Supply Chain Management – Group Work"
+lang: en
 format:
   html:
     theme: cosmo
@@ -18,118 +18,120 @@ execute:
 ---
 
 ::: {.callout-note}
-## Steckbrief
+
+## Overview
 
 | | |
 |---|---|
-| **Thema** | Standort- und Produkt-Pooling, Zentralisierung von Beständen |
-| **Vorlesungsbezug** | Kapitel 6 des Readers: Sicherheitsbestand, Servicegrad, Quadratwurzelgesetz, Einfluss der Korrelation |
-| **Typ** | Datenbasierte Fallstudie mit **realen Bestelldaten** (*Brazilian E-Commerce Public Dataset by Olist*, Kaggle) |
-| **Gruppengröße** | 3–6 Personen |
-| **Ergebnis** | Präsentation (30 Min.) + Diskussion (15 Min.), Foliensatz (PDF) und reproduzierbarer R-/Quarto-Code |
+| **Topic** | Location and product pooling, centralisation of inventories |
+| **Link to the lecture** | Chapter 6 of the course reader: safety stock, service level, square-root law, influence of correlation |
+| **Type** | Data-based case study with **real order data** (*Brazilian E-Commerce Public Dataset by Olist*, Kaggle) |
+| **Group size** | 3–6 people |
+| **Deliverable** | Presentation (30 min) + discussion (15 min), slide deck (PDF) and reproducible R/Quarto code |
 :::
 
-# Lernziele
+# Learning objectives
 
-Nach Bearbeitung der Fallstudie können Sie
+After working through this case study, you will be able to
 
-- aus realen Bestelldaten die für die Bestandsplanung relevanten Kenngrößen (Mittelwert, Prognosefehler, Korrelation) ableiten,
-- Sicherheitsbestände für zentrale, regionale und hybride Lagerstrukturen berechnen,
-- das **Quadratwurzelgesetz** empirisch überprüfen und Abweichungen durch Korrelationen und ungleich große Regionen erklären,
-- Standort-Pooling und Produkt-Pooling unterscheiden und
-- den Pooling-Vorteil gegen Transportkosten und Lieferzeiten abwägen.
+- derive the key figures relevant to inventory planning (mean, forecast error, correlation) from real order data,
+- calculate safety stocks for central, regional and hybrid warehouse structures,
+- test the **square-root law** empirically and explain deviations through correlations and regions of unequal size,
+- distinguish between location pooling and product pooling, and
+- weigh the pooling advantage against transport costs and delivery times.
 
-# Ausgangslage
+# Initial situation
 
-**Olist** ist ein brasilianischer Online-Marktplatz, über den kleine und mittlere Händler ihre Produkte auf großen Verkaufsplattformen anbieten. Bisher versenden die Händler selbst, die meisten davon aus dem Bundesstaat São Paulo. Kundinnen und Kunden im Norden und Nordosten Brasiliens warten deshalb oft zwei bis drei Wochen auf ihre Bestellung und zahlen deutlich höhere Frachtkosten.
+**Olist** is a Brazilian online marketplace through which small and medium-sized merchants offer their products on large sales platforms. So far, the merchants ship themselves, most of them from the state of São Paulo. Customers in the north and north-east of Brazil therefore often wait two to three weeks for their order and pay significantly higher freight costs.
 
-Das Management prüft daher den Aufbau eines eigenen **Fulfillment-Netzes**: Die Händler lagern ihre Ware bei Olist ein, und Olist übernimmt Lagerung und Versand. Für die umsatzstärksten Produktkategorien stehen drei Strukturen zur Diskussion:
+Management is therefore considering setting up its own **fulfilment network**: the merchants store their goods with Olist, and Olist takes over storage and shipping. For the product categories with the highest revenue, three structures are under discussion:
 
-- **Struktur Z (zentral):** ein Fulfillment-Center in Cajamar (Großraum São Paulo) beliefert ganz Brasilien.
-- **Struktur R (regional):** fünf Regionallager, je eines pro Großregion: Cajamar (Sudeste), Curitiba (Sul), Goiânia (Centro-Oeste), Recife (Nordeste) und Belém (Norte).
-- **Struktur H (hybrid):** zwei Lager: Cajamar für Sudeste, Sul und Centro-Oeste sowie Recife für Nordeste und Norte.
+- **Structure Z (central):** one fulfilment centre in Cajamar (greater São Paulo area) supplies all of Brazil.
+- **Structure R (regional):** five regional warehouses, one per macro-region: Cajamar (Sudeste), Curitiba (Sul), Goiânia (Centro-Oeste), Recife (Nordeste) and Belém (Norte).
+- **Structure H (hybrid):** two warehouses: Cajamar for Sudeste, Sul and Centro-Oeste, and Recife for Nordeste and Norte.
 
-Die Brasilien-Perspektive macht den Fall besonders lehrreich: Die Regionen unterscheiden sich stark in Größe, Kaufkraft und Erreichbarkeit, und die Nachfrage ist sehr ungleich verteilt.
+The Brazilian perspective makes the case particularly instructive: the regions differ greatly in size, purchasing power and accessibility, and demand is very unevenly distributed.
 
-# Daten
+# Data
 
-## Datensatz
+## Dataset
 
-**Brazilian E-Commerce Public Dataset by Olist** (Kaggle, Lizenz CC BY-NC-SA 4.0, kein Wettbewerb):
+**Brazilian E-Commerce Public Dataset by Olist** (Kaggle, licence CC BY-NC-SA 4.0, not a competition):
 <https://www.kaggle.com/datasets/olistbr/brazilian-ecommerce>
 
-Der Datensatz enthält rund 100.000 echte, anonymisierte Bestellungen aus den Jahren 2016 bis 2018. Für die Fallstudie benötigen Sie fünf der neun Tabellen:
+The dataset contains around 100,000 real, anonymised orders from 2016 to 2018. For the case study you need five of the nine tables:
 
-| Datei | Relevante Spalten |
+| File | Relevant columns |
 |---|---|
 | `olist_orders_dataset.csv` | `order_id`, `customer_id`, `order_status`, `order_purchase_timestamp`, `order_delivered_customer_date` |
-| `olist_order_items_dataset.csv` | `order_id`, `product_id`, `seller_id`, `price`, `freight_value` (eine Zeile je Artikel) |
-| `olist_customers_dataset.csv` | `customer_id`, `customer_state` (Bundesstaat, z. B. `SP`, `BA`) |
-| `olist_products_dataset.csv` | `product_id`, `product_category_name` (portugiesisch) |
-| `product_category_name_translation.csv` | Übersetzung der Kategorienamen ins Englische |
+| `olist_order_items_dataset.csv` | `order_id`, `product_id`, `seller_id`, `price`, `freight_value` (one row per item) |
+| `olist_customers_dataset.csv` | `customer_id`, `customer_state` (state, e.g. `SP`, `BA`) |
+| `olist_products_dataset.csv` | `product_id`, `product_category_name` (Portuguese) |
+| `product_category_name_translation.csv` | Translation of the category names into English |
 
-Die Zuordnung der 27 Bundesstaaten zu den fünf Großregionen ist im Startercode enthalten.
+The assignment of the 27 states to the five macro-regions is included in the starter code.
 
 ::: {.callout-important}
-## Hinweise zur Datenaufbereitung
-- Verwenden Sie als Nachfrage die **Anzahl bestellter Artikel** (Zeilen in `order_items`) je Woche, Region und Produktkategorie. Schließen Sie stornierte und nicht verfügbare Bestellungen aus.
-- Die Daten sind erst ab Anfang 2017 vollständig und enden im August 2018. Beschränken Sie die Analyse auf die Wochen vom **02.01.2017 bis 20.08.2018** (86 Wochen).
-- Das Geschäft wächst 2017 stark, und im November gibt es einen deutlichen Ausschlag (Black Friday). Rohe Standardabweichungen sind daher kein geeignetes Maß für die Unsicherheit.
-- Konzentrieren Sie sich auf die **10 größten Produktkategorien**.
+
+## Notes on data preparation
+- Use the **number of items ordered** (rows in `order_items`) per week, region and product category as demand. Exclude cancelled and unavailable orders.
+- The data are only complete from the beginning of 2017 and end in August 2018. Restrict the analysis to the weeks from **2 Jan 2017 to 20 Aug 2018** (86 weeks).
+- The business grows strongly in 2017, and there is a clear spike in November (Black Friday). Raw standard deviations are therefore not a suitable measure of uncertainty.
+- Concentrate on the **10 largest product categories**.
 :::
 
-## Planungsparameter
+## Planning parameters
 
-| Parameter | Wert |
+| Parameter | Value |
 |---|---|
-| Hochrechnung | Der Datensatz ist ein Ausschnitt des Geschäfts. Rechnen Sie Mengen mit dem Faktor **50** auf das geplante Fulfillment-Volumen hoch. Unterstellen Sie dabei, dass der Variationskoeffizient der Prognosefehler gleich bleibt. |
-| Zielservicegrad (α) | 95 % |
-| Wiederbeschaffungszeit Händler → Lager | 2 Wochen (Recife und Belém: 3 Wochen) |
-| Warenwert | 60 % des Verkaufspreises (`price`) |
-| Lagerhaltungskostensatz | 25 % p. a. vom Warenwert |
-| Fracht zum Kunden | Zentrale Belieferung: durchschnittliche `freight_value` der jeweiligen Region laut Daten. Belieferung aus einem Lager in der eigenen Region: Frachtniveau der Region Sudeste. |
-| Nachschub in ein Regionallager | 4 BRL je Artikel (Komplettladungen ab São Paulo) |
-| Fixkosten je Lager (anteilig für die betrachteten Kategorien) | Cajamar: 2,0 Mio. BRL/Jahr, jedes weitere Lager: 0,9 Mio. BRL/Jahr |
+| Scaling up | The dataset is an extract of the business. Scale quantities up to the planned fulfilment volume using a factor of **50**. Assume that the coefficient of variation of the forecast errors remains the same. |
+| Target service level (α) | 95% |
+| Replenishment lead time merchant → warehouse | 2 weeks (Recife and Belém: 3 weeks) |
+| Value of goods | 60% of the selling price (`price`) |
+| Inventory holding cost rate | 25% p.a. of the value of goods |
+| Freight to the customer | Central supply: average `freight_value` of the respective region according to the data. Supply from a warehouse in the customer's own region: freight level of the Sudeste region. |
+| Replenishment of a regional warehouse | BRL 4 per item (full truckloads from São Paulo) |
+| Fixed costs per warehouse (pro rata for the categories considered) | Cajamar: BRL 2.0 million/year, each additional warehouse: BRL 0.9 million/year |
 
-# Aufgaben
+# Tasks
 
-## Teil A – Datenaufbereitung und Exploration
+## Part A – Data preparation and exploration
 
-**A1.** Verknüpfen Sie die Tabellen und erzeugen Sie für die 10 größten Kategorien die wöchentliche Artikelnachfrage je Region. Beschreiben Sie die Verteilung der Nachfrage auf die Regionen, den Trend und Sondereffekte. Stellen Sie außerdem die tatsächlichen Lieferzeiten (Bestellung bis Zustellung) und Frachtkosten je Region dar.
+**A1.** Join the tables and generate the weekly item demand per region for the 10 largest categories. Describe the distribution of demand across the regions, the trend and special effects. Also present the actual delivery times (order to delivery) and freight costs per region.
 
-**A2.** Bestimmen Sie je Kategorie und Region die Prognosefehler einer einfachen Prognose, z. B. gleitender Durchschnitt der letzten 8 Wochen. Begründen Sie, warum für den Sicherheitsbestand der Prognosefehler und nicht die Rohstreuung maßgeblich ist.
+**A2.** For each category and region, determine the forecast errors of a simple forecast, e.g. a moving average of the last 8 weeks. Explain why the forecast error and not the raw variability is decisive for the safety stock.
 
-## Teil B – Standort-Pooling
+## Part B – Location pooling
 
-**B1.** Berechnen Sie je Kategorie den Sicherheitsbestand $SB = z_\alpha\,\sigma\sqrt{L}$ in den Strukturen Z, R und H, und zwar (a) unter der Annahme **unabhängiger** regionaler Nachfragen (Quadratwurzelgesetz; beachten Sie die ungleich großen Regionen) und (b) mit der **empirischen Kovarianzmatrix** der Prognosefehler, $\sigma_{\text{pool}} = \sqrt{\mathbf 1^\top \Sigma\,\mathbf 1}$.
+**B1.** For each category, calculate the safety stock $SB = z_\alpha\,\sigma\sqrt{L}$ in structures Z, R and H, namely (a) assuming **independent** regional demands (square-root law; note the regions of unequal size) and (b) using the **empirical covariance matrix** of the forecast errors, $\sigma_{\text{pool}} = \sqrt{\mathbf 1^\top \Sigma\,\mathbf 1}$.
 
-**B2.** Vergleichen Sie (a) und (b). Warum fällt der Pooling-Effekt deutlich kleiner aus, als das Quadratwurzelgesetz mit $\sqrt{5}$ verspricht? Unterscheiden Sie zwischen dem Einfluss der Korrelation und dem der ungleichen Regionsgrößen.
+**B2.** Compare (a) and (b). Why is the pooling effect considerably smaller than the square-root law with $\sqrt{5}$ promises? Distinguish between the influence of correlation and that of unequal region sizes.
 
-**B3.** Vergleichen Sie die jährlichen Gesamtkosten der drei Strukturen: Lagerhaltungskosten der Sicherheitsbestände, Fracht zum Kunden, Nachschub und Fixkosten. Welche Struktur ist am günstigsten? Ab welchen Fixkosten je Regionallager kippt die Entscheidung (Break-even)?
+**B3.** Compare the annual total costs of the three structures: holding costs of the safety stocks, freight to the customer, replenishment and fixed costs. Which structure is the cheapest? At what fixed costs per regional warehouse does the decision tip (break-even)?
 
-## Teil C – Produkt-Pooling und selektive Bevorratung
+## Part C – Product pooling and selective stocking
 
-**C1.** Vergleichen Sie den Variationskoeffizienten der Prognosefehler einer einzelnen Kategorie mit dem aller 10 Kategorien zusammen. Nutzen Sie das Ergebnis für eine **selektive Bevorratung**: Welche Kategorien sollten in Recife (Struktur H) vorrätig sein, und welche sollten nur zentral in Cajamar gelagert werden? Berücksichtigen Sie Volumen, Variabilität, Warenwert und Frachtkosten.
+**C1.** Compare the coefficient of variation of the forecast errors of a single category with that of all 10 categories combined. Use the result for **selective stocking**: Which categories should be stocked in Recife (structure H), and which should only be stored centrally in Cajamar? Take volume, variability, value of goods and freight costs into account.
 
-## Teil D – Empfehlung und Reflexion
+## Part D – Recommendation and reflection
 
-**D1. Empfehlung.** Formulieren Sie eine Empfehlung an das Olist-Management. Berücksichtigen Sie dabei neben den Kosten auch die Lieferzeit als Wettbewerbsfaktor.
+**D1. Recommendation.** Formulate a recommendation to Olist's management. In addition to costs, take delivery time into account as a competitive factor.
 
-**D2. Reflexion.** Beantworten Sie in der Präsentation die folgenden Fragen. Sie bilden den Ausgangspunkt der anschließenden Diskussion:
+**D2. Reflection.** Answer the following questions in your presentation. They form the starting point for the subsequent discussion:
 
-1. Wie gut hat das Quadratwurzelgesetz die realen Daten beschrieben? Was lernen Sie daraus über die Anwendung von Lehrbuchformeln auf reale Daten?
-2. In diesem Fall ist der Pooling-Vorteil vermutlich klein im Vergleich zu Fracht und Lieferzeit. Was bedeutet das für die Rolle von Bestandsargumenten bei Netzwerkentscheidungen?
-3. Welche Entscheidungen bei der Datenaufbereitung (Zeitraum, Kategorien, Prognosemethode) und welche Annahmen (Hochrechnungsfaktor, gleichbleibender Variationskoeffizient) beeinflussen Ihr Ergebnis am stärksten?
-4. Die Daten zeigen Bestellungen, nicht die Nachfrage, die bei kürzeren Lieferzeiten entstanden wäre. Wie könnte ein Regionallager im Nordosten die Nachfrage selbst verändern, und warum fehlt dieser Effekt in Ihrer Rechnung?
-5. Welche Besonderheiten eines großen Schwellenlandes wie Brasilien (Infrastruktur, Steuern zwischen Bundesstaaten, Kaufkraftunterschiede) spielen für die Standortfrage eine Rolle, die das Pooling-Modell nicht abbildet?
+1. How well did the square-root law describe the real data? What do you learn from this about applying textbook formulas to real data?
+2. In this case, the pooling advantage is probably small compared with freight and delivery time. What does this mean for the role of inventory arguments in network decisions?
+3. Which data preparation decisions (time period, categories, forecasting method) and which assumptions (scaling factor, constant coefficient of variation) have the strongest influence on your result?
+4. The data show orders, not the demand that would have arisen with shorter delivery times. How could a regional warehouse in the north-east change demand itself, and why is this effect missing from your calculation?
+5. Which characteristics of a large emerging economy such as Brazil (infrastructure, taxes between states, differences in purchasing power) play a role in the location question that the pooling model does not capture?
 
-# Literatur
+# Literature
 
 - Olist (2018): *Brazilian E-Commerce Public Dataset by Olist*. Kaggle, <https://www.kaggle.com/datasets/olistbr/brazilian-ecommerce>.
 - Eppen, G. D. (1979): Effects of Centralization on Expected Costs in a Multi-Location Newsboy Problem. *Management Science* 25(5), 498–501.
-- Reader zur Vorlesung, Kapitel 6.
+- Course reader for the lecture, Chapter 6.
 
-# Anhang: R-Startercode
+# Appendix: R starter code
 
 ```{r}
 #| label: starter
@@ -137,13 +139,13 @@ Die Zuordnung der 27 Bundesstaaten zu den fünf Großregionen ist im Startercode
 library(tidyverse)
 source("../R/scm_functions.R")   # pooling_safety_stock()
 
-pfad   <- "olist/"   # Ordner mit den entpackten CSV-Dateien
+pfad   <- "olist/"   # folder containing the unzipped CSV files
 orders <- read_csv(paste0(pfad, "olist_orders_dataset.csv"))
 items  <- read_csv(paste0(pfad, "olist_order_items_dataset.csv"))
 cust   <- read_csv(paste0(pfad, "olist_customers_dataset.csv"))
 prod   <- read_csv(paste0(pfad, "olist_products_dataset.csv"))
 transl <- read_csv(paste0(pfad, "product_category_name_translation.csv"))
-names(transl)[1] <- "product_category_name"   # entfernt ggf. ein BOM-Zeichen
+names(transl)[1] <- "product_category_name"   # removes a BOM character if present
 
 regionen <- tibble(
   customer_state = c("AC","AP","AM","PA","RO","RR","TO",
@@ -173,7 +175,7 @@ wochen <- daten |>
   count(kategorie, region, woche, name = "menge") |>
   complete(kategorie, region, woche, fill = list(menge = 0))
 
-# Beispiel: Prognosefehler (gleitender Durchschnitt über 8 Wochen) für eine Kategorie
+# Example: forecast errors (moving average over 8 weeks) for one category
 fehler <- wochen |>
   filter(kategorie == "health_beauty") |>
   group_by(region) |> arrange(woche) |>
