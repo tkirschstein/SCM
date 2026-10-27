@@ -52,7 +52,7 @@ Each session lasts 90 minutes and covers two topics. The respective chapter must
 | 9 | Thu, 7 Jan 2027 | **CS 2: Distribution hub LATAM – AHP and Steiner–Weber** | **CS 3: Battery logistics – WLP** |
 | 10 | Thu, 14 Jan 2027 | Interim feedback on case studies 1–3 | Consultations |
 | 11 | Thu, 21 Jan 2027 | **CS 4: Risk pooling in e-commerce (Olist data)** | **CS 5: Newsvendor – French bakery** |
-| 12 | Thu, 28 Jan 2027 | **CS 6: Bullwhip effect – MTIS data and simulation** | (Beer Game (3)) |
+| 12 | Thu, 27 Jan 2027, 10-11:30 am, room N 3.06 | **CS 6: Bullwhip effect – MTIS data and simulation** | (Beer Game (3)) |
 
 Each case study is presented two to three weeks after the corresponding input. Groups with later presentation dates start collecting and preparing their data before the input. The Christmas break gives groups 2–6 additional working time. The Beer Game is played three times during the course and provides additional data for case study 6.
 
