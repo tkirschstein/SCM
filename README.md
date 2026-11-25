@@ -86,7 +86,7 @@ Each case study ends with **reflection questions**, which the group answers in i
 
 The assessment is an **individual reflection report**. It is based on the case study presentations and the subsequent discussions. **Active participation in the discussions** is part of the reflection and **counts towards the grade**. Overall, the reflection comprises:
 
-- **Reflection journal (ongoing):** for each case study presentation, all participants write about one page: key message, assumptions and limitations of the method, links to their own experience or to a company they know, open questions.
+- **Reflection journal (ongoing):** for each case study presentation, all participants write about one page: key message, assumptions and limitations of the method, links to their own experience or to a company they know, open questions. See the [example page](https://tkirschstein.github.io/SCM/case_studies/reflection_journal_example) for the expected scope and structure.
 - **Reflection report:** it consists of two parts:
   1.  presentation of the student's own case study,
   2.  summary of the reflection questions & discussion results (about 2 pages).
@@ -106,6 +106,7 @@ The assessment is an **individual reflection report**. It is based on the case s
   - https://tkirschstein.github.io/SCM/case_studies/case_study_04_pooling_einzelhandel
   - https://tkirschstein.github.io/SCM/case_studies/case_study_05_newsvendor_baeckerei
   - https://tkirschstein.github.io/SCM/case_studies/case_study_06_bullwhip
+- Reflection journal (example): https://tkirschstein.github.io/SCM/case_studies/reflection_journal_example
 
 ------------------------------------------------------------------------
 

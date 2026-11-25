@@ -1,0 +1,38 @@
+---
+title: "Reflection Journal – Example Page"
+subtitle: "Case Study 3: Discrete Facility Location and Network Planning (battery logistics)"
+lang: en
+format:
+  html:
+    theme: cosmo
+    toc: false
+    embed-resources: true
+---
+
+::: {.callout-note}
+## About this example
+This is a **fictitious mock-up** that shows the expected scope (about one page) and structure of a reflection journal entry. It refers to a presentation of Case Study 3, which is not being worked on this semester. The figures are illustrative. Your own entries should reflect *your* view of the presentation and discussion. Bullet points are fine, but write full sentences where you argue.
+:::
+
+**Presentation:** Case Study 3 – Battery logistics for NordCell Logistics GmbH · **Date:** 14 Jan 2027 · **Author:** Jane Doe
+
+## 1. Key message
+
+The group modelled the choice of hazardous-goods warehouses for ten vehicle plants as an uncapacitated and a capacitated warehouse location problem (WLP). The exact MILP solution opens **two warehouses (Langenhagen and Ghent)** at total costs of about €28.8 m per year. The add heuristic found the same network. The most interesting result for me was not the optimum itself, but how **flat the cost curve** is: the best network with three warehouses is only about 1% more expensive. In the 2030 scenario, demand shifts towards Wolfsburg and Emden, and the three-warehouse network turned out to be the more robust choice.
+
+## 2. Assumptions and limitations of the method
+
+- **Distances:** Transport costs are based on haversine distances times a detour factor of 1.2. For two routes the group compared this with a route planner and found deviations of up to 15%. Since the cost curve is so flat, errors of this size could change the ranking of the networks and questions the validity of the approach.
+- **Deterministic demand:** The model uses one demand figure per plant. The ramp-up of e-mobility is highly uncertain, so in my view the scenario analysis is not an add-on but the core of the decision.
+- **Fixed costs are estimates.** Permits for battery storage (fire protection, quarantine zones) can take years. The model treats all sites as equally feasible, which seems unrealistic.
+- **What the model does well:** It makes the trade-off between fixed and transport costs transparent and shows quickly which sites are never part of a good solution (e.g. Venlo).
+
+## 3. Link to my own experience and learning outcome
+
+It was intersting to see how to model such a problem. Although I couldn't follow some of the (mathematical) details, I got an impression on how such a problem could be solved by the model. During my internship at an automotive supplier, the decision for a new consolidation centre was made mainly on the basis of land availability and an existing customer relationship, not on transport costs. After this presentation I would say that this is not necessarily irrational: if several networks are almost equally cheap, "soft" criteria **should** make the final decision. This links Case Study 3 directly to the AHP approach of Case Study 2.
+
+## 4. Discussion and open questions
+
+- In the discussion, team CS 2 asked why the group did not combine the WLP with a scoring model for the shortlisted networks. The answer ("no time") was honest, but I think this would have been the most useful step for management.
+- **Open question:** How would the result change if single sourcing were enforced for just-in-sequence deliveries? The group only solved the multiple-sourcing variant.
+- **Open question:** Should a 3PL with a seven-year contract rather minimise expected costs or the maximum regret? I am not sure which criterion a risk-averse management would actually accept.
