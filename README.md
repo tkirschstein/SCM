@@ -12,23 +12,15 @@ This repository contains all materials for the course *Supply Chain Management* 
 
 The course covers the strategic and quantitative foundations of supply chain management. Its focus is on transferring the methods from the lecture to problems that are as realistic as possible. This happens in case studies that are worked on in groups, presented in class and reflected on together.
 
-+----------------------------------+----------------------------------------------------------------------------------------------------------------------------------------------------------+
-|                                  |                                                                                                                                                          |
-+==================================+==========================================================================================================================================================+
-| **Programme**                    | Master International Management, 1st semester                                                                                                            |
-+----------------------------------+----------------------------------------------------------------------------------------------------------------------------------------------------------+
-| **Scope**                        | 2 SWS (weekly contact hours; seminar-style lecture)                                                                                                      |
-+----------------------------------+----------------------------------------------------------------------------------------------------------------------------------------------------------+
-| **Sessions**                     | Thursdays, 29 Oct 2026 – 28 Jan 2027 (12 sessions; no class on 24 Dec and 31 Dec)                                                                        |
-+----------------------------------+----------------------------------------------------------------------------------------------------------------------------------------------------------+
-| **Language**                     | English                                                                                                                                                  |
-+----------------------------------+----------------------------------------------------------------------------------------------------------------------------------------------------------+
-| **Teaching format**              | Inverted classroom: preparation with the reader and slides; in class, questions, selected in-depth topics, case study presentations and joint reflection |
-+----------------------------------+----------------------------------------------------------------------------------------------------------------------------------------------------------+
-| **Assessment**                   | Individual reflection report (see below); no written exam                                                                                                |
-+----------------------------------+----------------------------------------------------------------------------------------------------------------------------------------------------------+
-| **Prerequisites**                | Basic statistics; programming skills are helpful but not required (R starter code is provided)                                                           |
-+----------------------------------+----------------------------------------------------------------------------------------------------------------------------------------------------------+
+|  |  |
+|----|----|
+| **Programme** | Master International Management, 1st semester |
+| **Scope** | 2 SWS (weekly contact hours; seminar-style lecture) |
+| **Sessions** | Thursdays, 29 Oct 2026 – 28 Jan 2027 (12 sessions; no class on 24 Dec and 31 Dec) |
+| **Language** | English |
+| **Teaching format** | Inverted classroom: preparation with the reader and slides; in class, questions, selected in-depth topics, case study presentations and joint reflection |
+| **Assessment** | Individual reflection report (see below); no written exam |
+| **Prerequisites** | Basic statistics; programming skills are helpful but not required (R starter code is provided) |
 
 **Learning objectives:** After the course, students are able to
 
@@ -45,41 +37,22 @@ The course covers the strategic and quantitative foundations of supply chain man
 
 Each session lasts 90 minutes and covers two topics. The respective chapter must be studied **before** the session (reader & slides). The chapters are **not** presented in full in class; instead, we discuss questions and deepen or revisit selected content.
 
-+--------------------+--------------------------------------------+-----------------------------------------------------------------------------+-----------------------------------------------------------------------+
-| No.                | Date                                       | Part 1                                                                      | Part 2                                                                |
-+:==================:+============================================+=============================================================================+=======================================================================+
-| 1                  | Wed, 28 Oct 2026, 10-11:30 am, room N 3.06 | Kick-off and organisation; introduction and basic concepts of SCM (ch. 1)   | Hand-out of all case studies & Beer Game (1)                          |
-+--------------------+--------------------------------------------+-----------------------------------------------------------------------------+-----------------------------------------------------------------------+
-| 2                  | Thu, 5 Nov 2026                            | Value creation, strategic manufacturing and strategic fit (ch. 2)           | Kick-off meetings with the groups                                     |
-+--------------------+--------------------------------------------+-----------------------------------------------------------------------------+-----------------------------------------------------------------------+
-| 3                  | Thu, 12 Nov 2026                           | Objectives, trade-offs and logistics costs (ch. 3)                          | Consultation                                                          |
-+--------------------+--------------------------------------------+-----------------------------------------------------------------------------+-----------------------------------------------------------------------+
-| 4                  | Thu, 19 Nov 2026                           | Facility location planning I: scoring model, AHP, Steiner–Weber (ch. 4)     | Facility location planning II: discrete network planning, WLP (ch. 5) |
-+--------------------+--------------------------------------------+-----------------------------------------------------------------------------+-----------------------------------------------------------------------+
-| 5                  | Thu, 26 Nov 2026                           | Consultation (status update)                                                | Consultation                                                          |
-+--------------------+--------------------------------------------+-----------------------------------------------------------------------------+-----------------------------------------------------------------------+
-| 6                  | Thu, 3 Dec 2026                            | Uncertainty in supply chains: risk pooling (ch. 6)                          | Consultation                                                          |
-+--------------------+--------------------------------------------+-----------------------------------------------------------------------------+-----------------------------------------------------------------------+
-| 7                  | Thu, 10 Dec 2026                           | The newsvendor model (ch. 7)                                                | Consultation                                                          |
-+--------------------+--------------------------------------------+-----------------------------------------------------------------------------+-----------------------------------------------------------------------+
-| 8                  | Thu, 17 Dec 2026                           | The bullwhip effect and Beer Game (ch. 8)                                   | Beer Game (2)                                                         |
-+--------------------+--------------------------------------------+-----------------------------------------------------------------------------+-----------------------------------------------------------------------+
-| –                  | Thu, 24 Dec 2026                           | *no class*                                                                  |                                                                       |
-+--------------------+--------------------------------------------+-----------------------------------------------------------------------------+-----------------------------------------------------------------------+
-| –                  | Thu, 31 Dec 2026                           | *no class*                                                                  |                                                                       |
-+--------------------+--------------------------------------------+-----------------------------------------------------------------------------+-----------------------------------------------------------------------+
-| 9                  | Thu, 7 Jan 2027                            | **CS 1: Strategic design – Werner & Mertz / Frosch** (moderator: team CS 5) | **CS 2: Distribution hub LATAM – AHP and Steiner–Weber**              |
-|                    |                                            |                                                                             |                                                                       |
-|                    |                                            |                                                                             | (moderator: team CS 4)                                                |
-+--------------------+--------------------------------------------+-----------------------------------------------------------------------------+-----------------------------------------------------------------------+
-| 10                 | Thu, 14 Jan 2027                           | Interim feedback on case studies 1–3                                        | Consultations                                                         |
-+--------------------+--------------------------------------------+-----------------------------------------------------------------------------+-----------------------------------------------------------------------+
-| 11                 | Thu, 21 Jan 2027                           | **CS 4: Risk pooling in e-commerce (Olist data)**                           | **CS 5: Newsvendor – French bakery** (moderator: team CS 1)           |
-|                    |                                            |                                                                             |                                                                       |
-|                    |                                            | (moderator: team CS 2)                                                      |                                                                       |
-+--------------------+--------------------------------------------+-----------------------------------------------------------------------------+-----------------------------------------------------------------------+
-| 12                 | Wed, 27 Jan 2027, 10-11:30 am, room N 3.06 | Beer Game (3)                                                               | Final feedback & hints for reflection reports                         |
-+--------------------+--------------------------------------------+-----------------------------------------------------------------------------+-----------------------------------------------------------------------+
+| No. | Date | Part 1 | Part 2 |
+|:--:|----|----|----|
+| 1 | Wed, 28 Oct 2026, 10-11:30 am, room N 3.06 | Kick-off and organisation; introduction and basic concepts of SCM (ch. 1) | Hand-out of all case studies & Beer Game (1) |
+| 2 | Thu, 5 Nov 2026 | Value creation, strategic manufacturing and strategic fit (ch. 2) | Kick-off meetings with the groups |
+| 3 | Thu, 12 Nov 2026 | Objectives, trade-offs and logistics costs (ch. 3) | Consultation |
+| 4 | Thu, 19 Nov 2026 | Facility location planning I: scoring model, AHP, Steiner–Weber (ch. 4) | Facility location planning II: discrete network planning, WLP (ch. 5) |
+| 5 | Thu, 26 Nov 2026 | Consultation (status update) | Consultation |
+| 6 | Thu, 3 Dec 2026 | Uncertainty in supply chains: risk pooling (ch. 6) | Consultation |
+| 7 | Thu, 10 Dec 2026 | The newsvendor model (ch. 7) | Consultation |
+| 8 | Thu, 17 Dec 2026 | The bullwhip effect and Beer Game (ch. 8) | Beer Game (2) |
+| – | Thu, 24 Dec 2026 | *no class* |  |
+| – | Thu, 31 Dec 2026 | *no class* |  |
+| 9 | Thu, 7 Jan 2027 | **CS 1: Strategic design – Werner & Mertz / Frosch** (moderator: team CS 5) | **CS 2: Distribution hub LATAM – AHP and Steiner–Weber**<br>(moderator: team CS 4) |
+| 10 | Thu, 14 Jan 2027 | Interim feedback on case studies 1–3 | Consultations |
+| 11 | Thu, 21 Jan 2027 | **CS 4: Risk pooling in e-commerce (Olist data)**<br>(moderator: team CS 2) | **CS 5: Newsvendor – French bakery** (moderator: team CS 1) |
+| 12 | Wed, 27 Jan 2027, 10-11:30 am, room N 3.06 | Beer Game (3) | Final feedback & hints for reflection reports |
 
 Each case study is presented two to three weeks after the corresponding input. Groups with later presentation dates start collecting and preparing their data before the input. The Christmas break gives groups 2–6 additional working time. The Beer Game is played three times during the course and provides additional data for case study 6.
 
@@ -89,21 +62,14 @@ Each case study is presented two to three weeks after the corresponding input. G
 
 The six case studies are worked on in groups of **3–6 students**; each group takes on one case study. Except for case study 1, all of them work with real or realistic datasets.
 
-+--------------------+----------------------------------------------------------------------+-------------------------------------------------------------------------------+-----------------------------------------------------------------------+
-| No.                | Topic                                                                | Methods                                                                       | Data                                                                  |
-+:==================:+======================================================================+===============================================================================+=======================================================================+
-| 1                  | Strategic supply chain design: Werner & Mertz / Frosch               | Strategic fit, supply chain drivers, trade-offs, closed-loop supply chain     | Desk research (qualitative)                                           |
-+--------------------+----------------------------------------------------------------------+-------------------------------------------------------------------------------+-----------------------------------------------------------------------+
-| 2                  | Distribution hub for Latin America                                   | AHP, scoring model, Steiner–Weber, haversine distance                         | Forecast and cost data (fictitious), World Bank indicators (LPI, WGI) |
-+--------------------+----------------------------------------------------------------------+-------------------------------------------------------------------------------+-----------------------------------------------------------------------+
-| ~~3~~              | ~~Battery logistics in Northern Germany/Benelux~~                    | ~~UFLP/CFLP as MILP, add/drop heuristics, transportation problem, scenarios~~ | ~~Real plant locations, realistically estimated volumes and costs~~   |
-+--------------------+----------------------------------------------------------------------+-------------------------------------------------------------------------------+-----------------------------------------------------------------------+
-| 4                  | Risk pooling in e-commerce: central or regional warehouses in Brazil | Safety stock, square-root law, correlation, product pooling                   | Order data of the Olist marketplace (Kaggle)                          |
-+--------------------+----------------------------------------------------------------------+-------------------------------------------------------------------------------+-----------------------------------------------------------------------+
-| 5                  | Newsvendor in a French bakery                                        | Newsvendor (normal/empirical), backtest, censored demand                      | Point-of-sale data *French bakery daily sales* (Kaggle)               |
-+--------------------+----------------------------------------------------------------------+-------------------------------------------------------------------------------+-----------------------------------------------------------------------+
-| ~~6~~              | ~~Bullwhip effect~~                                                  | ~~Variance ratio, simulation, Chen bound, Beer Game~~                         | ~~U.S. Census MTIS via FRED~~                                         |
-+--------------------+----------------------------------------------------------------------+-------------------------------------------------------------------------------+-----------------------------------------------------------------------+
+| No. | Topic | Methods | Data |
+|:--:|----|----|----|
+| 1 | Strategic supply chain design: Werner & Mertz / Frosch | Strategic fit, supply chain drivers, trade-offs, closed-loop supply chain | Desk research (qualitative) |
+| 2 | Distribution hub for Latin America | AHP, scoring model, Steiner–Weber, haversine distance | Forecast and cost data (fictitious), World Bank indicators (LPI, WGI) |
+| ~~3~~ | ~~Battery logistics in Northern Germany/Benelux~~ | ~~UFLP/CFLP as MILP, add/drop heuristics, transportation problem, scenarios~~ | ~~Real plant locations, realistically estimated volumes and costs~~ |
+| 4 | Risk pooling in e-commerce: central or regional warehouses in Brazil | Safety stock, square-root law, correlation, product pooling | Order data of the Olist marketplace (Kaggle) |
+| 5 | Newsvendor in a French bakery | Newsvendor (normal/empirical), backtest, censored demand | Point-of-sale data *French bakery daily sales* (Kaggle) |
+| ~~6~~ | ~~Bullwhip effect~~ | ~~Variance ratio, simulation, Chen bound, Beer Game~~ | ~~U.S. Census MTIS via FRED~~ |
 
 **Process for each group:**
 
@@ -220,15 +186,11 @@ If you want to familiarise yourself with R, an introductory course is available 
 
 ## Literature
 
-+--------------------------------------------------------------+----------------------+------------------------------------+
-| Title                                                        | Authors              | Relevance                          |
-+==============================================================+======================+====================================+
-| *Supply Chain Management: Strategy, Planning, and Operation* | Chopra & Meindl      | all topics                         |
-+--------------------------------------------------------------+----------------------+------------------------------------+
-| *Matching Supply with Demand*                                | Cachon & Terwiesch   | risk pooling, newsvendor, bullwhip |
-+--------------------------------------------------------------+----------------------+------------------------------------+
-| *Sustainable Logistics and Supply Chain Management*          | Grant et al.         | sustainability                     |
-+--------------------------------------------------------------+----------------------+------------------------------------+
+| Title | Authors | Relevance |
+|----|----|----|
+| *Supply Chain Management: Strategy, Planning, and Operation* | Chopra & Meindl | all topics |
+| *Matching Supply with Demand* | Cachon & Terwiesch | risk pooling, newsvendor, bullwhip |
+| *Sustainable Logistics and Supply Chain Management* | Grant et al. | sustainability |
 
 Further sources are listed in the reader and in the case studies (`literature/!references.bib`).
 
