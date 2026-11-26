@@ -88,9 +88,26 @@ The assessment is an **individual reflection report**. It is based on the case s
 
 - **Reflection journal (ongoing):** for each case study presentation, all participants write about one page: key message, assumptions and limitations of the method, links to their own experience or to a company they know, open questions. See the [example page](https://tkirschstein.github.io/SCM/case_studies/reflection_journal_example) for the expected scope and structure.
 - **Reflection report:** it consists of two parts:
-  1.  presentation of the student's own case study,
-  2.  summary of the reflection questions & discussion results (about 2 pages).
-- Length, submission deadline and assessment criteria will be announced in the first session.
+  1.  presentation of the student's own case study $\rightarrow$ What should we conclude about the case, and how well is that conclusion supported?
+  2.  summary of the reflection questions & discussion results (about 2 pages) $\rightarrow$ What have I learned from analysing and discussing the case, and how has this affected my judgement? What challenged or developed your understanding? You may use concrete examples from the case work and class discussion.
+
+### Hints for the presentation 
+
+The 30-minute case presentation is an analytical presentation, not a chronological account of your learning journey.
+
+As a group, you should:
+-	explain the decision problem and your main conclusion;
+-	present the **key findings** and **supporting evidence**;
+-	explain the assumptions needed to understand your analysis;
+-	critically evaluate robustness, limitations and their implications;
+-	provide a justified recommendation;
+-	address the mandatory tasks and discussion questions from the case.
+
+You may integrate related questions into a coherent argument. Detailed calculations, additional evidence and code belong in the appendix of the reflection report
+
+**Note**: IF you do not use R, you do not need to provide R code. Nevertheless, your results should be reproducible.
+
+
 
 ------------------------------------------------------------------------
 
